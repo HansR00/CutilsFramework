@@ -1,0 +1,78 @@
+;
+; ChartsCompiler definitions - Part of CumulusUtils
+;
+; © Copyright 2019 - 2021 Hans Rottier <hans.rottier@gmail.com>
+;
+; 
+; Author:      Hans Rottier <hans.rottier@gmail.com>
+; Project:     CumulusUtils meteo-wagenborgen.nl
+; Date:        04-09-2021
+;
+; This file is  part of the distribution. Users may modify this file up to the indicator line
+; Anything beyond that line will be removed at generation time (by the ExtraSensors module)
+;
+; The first set goes to cumuluscharts.txt and is seen as standard charts and obligatory
+; These charts may be modified and charts may be added. 
+; cumuluscharts.txt is userdefinable but must be present.
+;
+; The user can create multiple output files. Checkout the Wiki for this.
+;
+; The bottom part, below the Demarcation line: ExtraSensorCharts
+; is filled  in by CumulusUtils and will be replaced every run so don't modify
+; unless you set the right to modify through the parameter 'UserModificationExtraSensorCharts' (see Wiki)
+;
+
+Chart Overview Title Overview of the  current weather status ConnectsTo 2 4 15 20
+  PLOT Temperature Colour #058DC7 zindex 90
+  PLOT DewPoint Colour #50B432 zindex 80
+  PLOT pressure Colour red zindex 70
+  Plot Humidity Colour #64E572 zindex 60
+	Plot SolarRadiation As Area Opacity 0.2 Colour Orange zindex 20
+  Plot RainFall As Area colour #33B4FF opacity 0.2 zindex 10
+EndChart
+
+Chart Temperature Title Temperature and derivatives ConnectsTo 1 13 14
+  Plot InsideTemp As Spline Colour #DDDF00 zIndex 100
+  PLOT Temperature As SPline Colour #058DC7 zindex 90
+  PLOT FeelsLike As SPline Colour #ED561B zindex 80
+  PLOT DewPoint As SPline Colour #50B432 zindex 70
+EndCHART
+
+Chart Wind Title Wind ConnectsTo 5 8
+	Plot WindGust
+	Plot WindSpeed
+EndCHART
+
+Chart WindDirection Title Wind Direction ConnectsTo 6 7 
+	Plot Bearing As Scatter
+	Plot AverageBearing As Scatter
+EndCHART
+
+Chart Rain Title Rain and Rainspeed ConnectsTo 3 21 22
+  Plot RainFall As Area Colour green Opacity 0.2
+  Plot RainRate zIndex 100
+EndChart
+
+Chart Humidity Title Relative Humidity ConnectsTo 11 16
+  Plot Humidity
+  Plot InsideHumidity
+EndChart
+
+Chart Solar Title (Max) Radiation en UV ConnectsTo 12 23 24
+	Plot	UV	zIndex 100
+	Plot 	SolarRadiation As Area Opacity 0.4 Colour Orange zIndex 50 
+	Plot	TheoreticalSolarMax As Area Colour Gold zIndex 10 Opacity 0.2
+EndChart
+
+CHART DailyTemp TITLE Daily average Temperature with column range
+  PLOT DAILY AverageTemp colour green As ColumnRange
+  PLOT DAILY AverageTemp colour black As spline
+EndChart
+
+CHART DailyPressure TITLE Daily average Barometer with column range
+  PLOT DAILY MinBarometer colour Crimson As ColumnRange
+  PLOT DAILY AverageBarometer EVAL [ (MinBarometer + MaxBarometer)/2 ] colour black As spline Axis Pressure
+EndChart
+
+; DO NOT CHANGE ANYTHING BELOW THIS INDICATOR LINE
+; ExtraSensorCharts

@@ -1,0 +1,71 @@
+<!-- --------------------------------------------------------------------------------------- -->
+<!-- This is an example file for the UserMenu of the CumulusUtils website generator/template -->
+<!-- you can safely remove it, empty it or adjust to your own requirements ----------------- -->
+<!-- --------------------------------------------------------------------------------------- -->
+  <!-- ------------------------------------------------------------------------------------- -->
+  <!-- Or begin a drop down                                                                  -->
+  <!-- Notes:                                                                                -->
+  <!--   - Links can be made with <a> or <span> tags                                         -->
+  <!--   - a link needs to be of class: class='nav-link'                                     -->
+  <!--   - Sections can be separated with a dropdown-divider                                 -->
+  <!--   - See examples below                                                                -->
+  <!--                                                                                       -->
+  <!-- User extension work best with pure text, HTML/CSS and javascript code                 -->
+  <!-- When using an iframe with LoadUtilsReport, use this:                                  -->
+  <!--   <iframe src="..." width="100%" frameborder="0" style="border:0;height:75vh;">       -->
+  <!--                 </iframe>                                                             -->
+  <!--                                                                                       -->
+  <!-- You must leave the first <li></li> tags in tact. You may add more blocks              -->
+  <!-- The first 4 lines you must not change, but you may change the name of the menu        -->
+  <!-- You are not obliged to create a drop down, you may just create a link,                -->
+  <!--    See the line with Google                                                           -->
+  <!--                                                                                       -->
+  <!-- Once finalised, you can remove all  comments in this file,                            -->
+  <!-- rename it to CUsermenu.txt and put it in the ccumulus directory                       -->
+  <!-- In case of  problems, please go to the forum:                                         -->
+  <!--    https://cumulus.hosiene.co.uk/viewforum.php?f=44                                   -->
+  <!-- ------------------------------------------------------------------------------------- -->
+
+<li class='nav-item dropdown'>
+  <!-- Just put a link on the UserMenu text                                                  -->
+  <!-- a class='nav-link' href='http://google.com'>Google</a                                 -->
+
+  <a class='nav-link dropdown-toggle' href='#' id='navbarDropdown' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
+    NL
+  </a>
+  <div class='dropdown-menu' aria-labelledby='navbarDropdown'>
+    <span class='nav-link' onclick="LoadUtilsReport('Waterstanden.txt');">Waterstanden</span>
+    <span class='nav-link' onclick="LoadUtilsReport('TopoNL.txt');">TopoNL</span>
+    <span class='nav-link' onclick="LoadUtilsReport('Ahn.txt');">Hoogtekaart</span>
+    <span class='nav-link' onclick="LoadUtilsReport('Cropmap.txt');">Crop map</span>
+    <!-- a class='nav-link' href="https://topotijdreis.nl" target="_blank">Topo NL</a>
+    <a class='nav-link' href="https://waterinfo.rws.nl/#!/kaart/waterhoogte-t-o-v-nap/">Waterstanden</a>
+    <div class='dropdown-divider'></div -->
+  </div>
+</li>
+
+<li class='nav-item dropdown'>
+  <!-- Just put a link on the UserMenu text                                                  -->
+  <!-- a class='nav-link' href='http://google.com'>Google</a                                 -->
+
+  <a class='nav-link dropdown-toggle' href='#' id='navbarDropdown' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
+    Maps
+  </a>
+  <div class='dropdown-menu' aria-labelledby='navbarDropdown'>
+    <span class='nav-link' onclick="LoadUtilsReport('Effis.txt');">European Forest Fire Information System</span>
+    <div class='dropdown-divider'></div>
+    <!-- a class='nav-link' href="https://www.windy.com/station/pws-f06f5696?53.259,6.932,8" target="_blank">Windy (excl)</a -->
+    <span class='nav-link' onclick="LoadUtilsReport('Windy.txt');">Windy</span>
+    <span class='nav-link' onclick="LoadUtilsReport('GlobalWinds.txt');">Global Winds</span>
+    <span class='nav-link' onclick="LoadUtilsReport('Sat24-infrarood.txt');">Sat24 IR</span>
+    <span class='nav-link' onclick="LoadUtilsReport('Sat24-zonwolken.txt');">Sat24 Visual</span>
+    <div class='dropdown-divider'></div>
+    <span class='nav-link' onclick="LoadUtilsReport('Radar-regen.txt');">Radar-regen</span>
+    <span class='nav-link' onclick="LoadUtilsReport('Blitzortnung.txt');">Blitzortnung</span>
+    <span class='nav-link' onclick="LoadUtilsReport('MeteoAlarm.txt');">Meteo Alarm</span>
+    <div class='dropdown-divider'></div>
+    <a class='nav-link' href="https://wow.knmi.nl/#1211bb08-6c93-e911-80e7-0003ff59889d" target="_blank">KNMI WOW</a>
+    <a class='nav-link' href="https://www.wunderground.com/dashboard/pws/IWAGEN6" target="_blank">WU iwagen6</a>
+  </div>
+</li>
+
