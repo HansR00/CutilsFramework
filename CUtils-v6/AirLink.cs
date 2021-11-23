@@ -127,7 +127,8 @@ namespace CumulusUtils
 
             // Check the country. Order is 1) found  in inifile 2) part of locale 3) Use the default if not present or not supported
             string tmp = Sup.GetUtilsIniValue( "AirLink", "CountrySelected", "" );
-            if ( string.IsNullOrEmpty( tmp ) ) tmp = Sup.Country;
+            if ( string.IsNullOrEmpty( tmp ) )
+                tmp = Sup.Country;
 
             try
             {
@@ -146,33 +147,40 @@ namespace CumulusUtils
             switch ( CumulusCountrySetting )
             {
                 case CumulusCountries.US:
-                    if ( CountrySelected != SupportedCountries.US ) WrongNormativeCountry = true;
+                    if ( CountrySelected != SupportedCountries.US )
+                        WrongNormativeCountry = true;
                     break;
 
                 case CumulusCountries.GB:
-                    if ( CountrySelected != SupportedCountries.GB ) WrongNormativeCountry = true;
+                    if ( CountrySelected != SupportedCountries.GB )
+                        WrongNormativeCountry = true;
                     break;
 
                 case CumulusCountries.CA:
-                    if ( CountrySelected != SupportedCountries.CA ) WrongNormativeCountry = true;
+                    if ( CountrySelected != SupportedCountries.CA )
+                        WrongNormativeCountry = true;
                     break;
 
                 case CumulusCountries.EUAQI:
                 case CumulusCountries.EUCAQI:
-                    if ( CountrySelected != SupportedCountries.EU ) WrongNormativeCountry = true;
+                    if ( CountrySelected != SupportedCountries.EU )
+                        WrongNormativeCountry = true;
                     Sup.LogTraceWarningMessage( $"AirLink Contructor Warning: EUAQI or EUCAQI are both used as EUCAQI in CumulusUtils" );
                     break;
 
                 case CumulusCountries.AU:
-                    if ( CountrySelected != SupportedCountries.AU ) WrongNormativeCountry = true;
+                    if ( CountrySelected != SupportedCountries.AU )
+                        WrongNormativeCountry = true;
                     break;
 
                 case CumulusCountries.NL:
-                    if ( CountrySelected != SupportedCountries.NL ) WrongNormativeCountry = true;
+                    if ( CountrySelected != SupportedCountries.NL )
+                        WrongNormativeCountry = true;
                     break;
 
                 case CumulusCountries.BE:
-                    if ( CountrySelected != SupportedCountries.BE ) WrongNormativeCountry = true;
+                    if ( CountrySelected != SupportedCountries.BE )
+                        WrongNormativeCountry = true;
                     break;
 
                 default:
@@ -187,7 +195,8 @@ namespace CumulusUtils
                 Sup.LogTraceWarningMessage( $"Cumulusutils will continue with the existing CumulusUtils setting {CountrySelected}, values are from {CumulusCountrySetting}" );
                 Message = "<p style='color:red'>Settings for AQI Normative Country for calculation in both Cumulus and CumulusUtils should match for useful results.</p>";
             }
-            else Message = "";
+            else
+                Message = "";
 
             // Now fill the colours arrray for the different countries: colour research by Wim DKuil (Leuven Script) / Beteljuice / Mark Crossley
             // and fill the concentrations for the classes as defined in the Beteljuice script.
@@ -624,8 +633,12 @@ namespace CumulusUtils
 
                     tmpBuilder.Clear();
                     tmpBuilder.Append( $"  let ReferenceConcentrations{thisConc} = [" );
-                    if ( thisConc == "2p5" ) for ( int i = 0; i < ReferenceNrOfClasses; i++ ) tmpBuilder.Append( $"{ReferenceConcentrations2p5[ i ]}," );
-                    else for ( int i = 0; i < ReferenceNrOfClasses; i++ ) tmpBuilder.Append( $"{ReferenceConcentrations10[ i ]}," );
+                    if ( thisConc == "2p5" )
+                        for ( int i = 0; i < ReferenceNrOfClasses; i++ )
+                            tmpBuilder.Append( $"{ReferenceConcentrations2p5[ i ]}," );
+                    else
+                        for ( int i = 0; i < ReferenceNrOfClasses; i++ )
+                            tmpBuilder.Append( $"{ReferenceConcentrations10[ i ]}," );
                     tmpBuilder.Remove( tmpBuilder.Length - 1, 1 );
                     of.AppendLine( tmpBuilder.ToString() + "];" );
 
@@ -695,7 +708,8 @@ namespace CumulusUtils
                     tmpBuilder.Append( "    let titles = {" );
                     foreach ( string thisSerie in Series )
                         tmpBuilder.Append( $"'{InOut}_pm{thisConc}{thisSerie}': '{InOut}_pm{thisConc}{thisSerie}'," );
-                    if ( WantToSeeWind ) tmpBuilder.Append( $"'wind': 'wind'," );
+                    if ( WantToSeeWind )
+                        tmpBuilder.Append( $"'wind': 'wind'," );
                     tmpBuilder.Remove( tmpBuilder.Length - 1, 1 );
                     of.AppendLine( tmpBuilder.ToString() + "};" );
 
@@ -703,7 +717,8 @@ namespace CumulusUtils
                     tmpBuilder.Append( "    let idxs = [" );
                     foreach ( string thisSerie in Series )
                         tmpBuilder.Append( $"'{InOut}_pm{thisConc}{thisSerie}'," );
-                    if ( WantToSeeWind ) tmpBuilder.Append( $"'wind'," );
+                    if ( WantToSeeWind )
+                        tmpBuilder.Append( $"'wind'," );
                     tmpBuilder.Remove( tmpBuilder.Length - 1, 1 );
 
                     of.Append( tmpBuilder.ToString() + "];" );
@@ -726,7 +741,8 @@ namespace CumulusUtils
 
                     of.AppendLine( "          chart.addSeries({name: titles[idx], id: titles[idx], data: resp[idx]}, false);" );
 
-                    if ( WantToSeeWind ) of.AppendLine( "        };" );
+                    if ( WantToSeeWind )
+                        of.AppendLine( "        };" );
 
                     of.AppendLine( "    chart.hideLoading();" );
                     of.AppendLine( "    chart.redraw();" );
@@ -772,7 +788,8 @@ namespace CumulusUtils
             #region HTML
 
             // Create the page header titles, station  identification etc...
-            if ( !string.IsNullOrEmpty( Message ) ) of.AppendLine( Message );
+            if ( !string.IsNullOrEmpty( Message ) )
+                of.AppendLine( Message );
 
             of.AppendLine( "<div style='float:right;'>" );
             of.AppendLine( "<input type='button' class=buttonSlim id='TableViewBtn' value='TableView' onclick='SetTableView()'>" );
@@ -848,7 +865,8 @@ namespace CumulusUtils
                 of.AppendLine( $"<th style='width:{ColumnWidth}%'>PM</th>" );
                 of.AppendLine( $"<th style='width:{ColumnWidth}%'>raw AQI</th>" );
                 of.AppendLine( $"<th style='border-right:solid;width:{ColumnWidth}%'>Conc.<br/>(μg/m3)</th>" );
-                for ( int i = 0; i < NrOfClassesInCountry; i++ ) of.AppendLine( $"<th style='width:{ColumnWidth}%;background-color:{Colours[ i ]}'>{Description[ i ]}</th>" );
+                for ( int i = 0; i < NrOfClassesInCountry; i++ )
+                    of.AppendLine( $"<th style='width:{ColumnWidth}%;background-color:{Colours[ i ]}'>{Description[ i ]}</th>" );
                 of.AppendLine( "</tr>" );
                 of.AppendLine( "</thead>" );
 
@@ -859,7 +877,8 @@ namespace CumulusUtils
                     of.AppendLine( "<td>PM2.5</td>" );
                     of.AppendLine( $"<td id='nowPM2p5_{InOut}AQI'></td>" );
                     of.AppendLine( $"<td id='nowPM2p5_{InOut}Val' style='border-right:solid'></td>" );
-                    for ( int i = 0; i < NrOfClassesInCountry; i++ ) of.AppendLine( $"<td id='nowPM2p5Arrow{InOut}{i}' style='width:{ColumnWidth}%;'></td>" );
+                    for ( int i = 0; i < NrOfClassesInCountry; i++ )
+                        of.AppendLine( $"<td id='nowPM2p5Arrow{InOut}{i}' style='width:{ColumnWidth}%;'></td>" );
                     of.AppendLine( "</tr>" );
 
                     of.AppendLine( "<tr style='border-bottom:solid'>" );
@@ -867,7 +886,8 @@ namespace CumulusUtils
                     of.AppendLine( "<td>PM10</td>" );
                     of.AppendLine( $"<td id='nowPM10_{InOut}AQI'></td>" );
                     of.AppendLine( $"<td id='nowPM10_{InOut}Val' style='border-right:solid'></td>" );
-                    for ( int i = 0; i < NrOfClassesInCountry; i++ ) of.AppendLine( $"<td id='nowPM10Arrow{InOut}{i}' style='width:{ColumnWidth}%;'></td>" );
+                    for ( int i = 0; i < NrOfClassesInCountry; i++ )
+                        of.AppendLine( $"<td id='nowPM10Arrow{InOut}{i}' style='width:{ColumnWidth}%;'></td>" );
                     of.AppendLine( "</tr>" );
                 }
 
@@ -878,7 +898,8 @@ namespace CumulusUtils
                     of.AppendLine( "<td>PM2.5</td>" );
                     of.AppendLine( $"<td id='PM2p5_{InOut}AQI1h'></td>" );
                     of.AppendLine( $"<td id='PM2p5_{InOut}Val1h' style='border-right:solid'></td>" );
-                    for ( int i = 0; i < NrOfClassesInCountry; i++ ) of.AppendLine( $"<td id='PM2p5Arrow{InOut}1h{i}' style='width:{ColumnWidth}%;'></td>" );
+                    for ( int i = 0; i < NrOfClassesInCountry; i++ )
+                        of.AppendLine( $"<td id='PM2p5Arrow{InOut}1h{i}' style='width:{ColumnWidth}%;'></td>" );
                     of.AppendLine( "</tr>" );
 
                     of.AppendLine( "<tr style='border-bottom:solid'>" );
@@ -886,7 +907,8 @@ namespace CumulusUtils
                     of.AppendLine( "<td>PM10</td>" );
                     of.AppendLine( $"<td id='PM10_{InOut}AQI1h'></td>" );
                     of.AppendLine( $"<td id='PM10_{InOut}Val1h' style='border-right:solid'></td>" );
-                    for ( int i = 0; i < NrOfClassesInCountry; i++ ) of.AppendLine( $"<td id='PM10Arrow{InOut}1h{i}' style='width:{ColumnWidth}%;'></td>" );
+                    for ( int i = 0; i < NrOfClassesInCountry; i++ )
+                        of.AppendLine( $"<td id='PM10Arrow{InOut}1h{i}' style='width:{ColumnWidth}%;'></td>" );
                     of.AppendLine( "</tr>" );
                 }
 
@@ -897,7 +919,8 @@ namespace CumulusUtils
                     of.AppendLine( "<td>PM2.5</td>" );
                     of.AppendLine( $"<td id='PM2p5_{InOut}AQI3h'></td>" );
                     of.AppendLine( $"<td id='PM2p5_{InOut}Val3h' style='border-right:solid'></td>" );
-                    for ( int i = 0; i < NrOfClassesInCountry; i++ ) of.AppendLine( $"<td id='PM2p5Arrow{InOut}3h{i}' style='width:{ColumnWidth}%;'></td>" );
+                    for ( int i = 0; i < NrOfClassesInCountry; i++ )
+                        of.AppendLine( $"<td id='PM2p5Arrow{InOut}3h{i}' style='width:{ColumnWidth}%;'></td>" );
                     of.AppendLine( "</tr>" );
 
                     of.AppendLine( "<tr style='border-bottom:solid'>" );
@@ -905,7 +928,8 @@ namespace CumulusUtils
                     of.AppendLine( "<td>PM10</td>" );
                     of.AppendLine( $"<td id='PM10_{InOut}AQI3h'></td>" );
                     of.AppendLine( $"<td id='PM10_{InOut}Val3h' style='border-right:solid'></td>" );
-                    for ( int i = 0; i < NrOfClassesInCountry; i++ ) of.AppendLine( $"<td id='PM10Arrow{InOut}3h{i}' style='width:{ColumnWidth}%;'></td>" );
+                    for ( int i = 0; i < NrOfClassesInCountry; i++ )
+                        of.AppendLine( $"<td id='PM10Arrow{InOut}3h{i}' style='width:{ColumnWidth}%;'></td>" );
                     of.AppendLine( "</tr>" );
                 }
 
@@ -916,7 +940,8 @@ namespace CumulusUtils
                     of.AppendLine( "<td>PM2.5</td>" );
                     of.AppendLine( $"<td id='PM2p5_{InOut}AQI24h'></td>" );
                     of.AppendLine( $"<td id='PM2p5_{InOut}Val24h' style='border-right:solid'></td>" );
-                    for ( int i = 0; i < NrOfClassesInCountry; i++ ) of.AppendLine( $"<td id='PM2p5Arrow{InOut}24h{i}' style='width:{ColumnWidth}%;'></td>" );
+                    for ( int i = 0; i < NrOfClassesInCountry; i++ )
+                        of.AppendLine( $"<td id='PM2p5Arrow{InOut}24h{i}' style='width:{ColumnWidth}%;'></td>" );
                     of.AppendLine( "</tr>" );
 
                     of.AppendLine( "<tr style='border-bottom:solid'>" );
@@ -924,7 +949,8 @@ namespace CumulusUtils
                     of.AppendLine( "<td>PM10</td>" );
                     of.AppendLine( $"<td id='PM10_{InOut}AQI24h'></td>" );
                     of.AppendLine( $"<td id='PM10_{InOut}Val24h' style='border-right:solid'></td>" );
-                    for ( int i = 0; i < NrOfClassesInCountry; i++ ) of.AppendLine( $"<td id='PM10Arrow{InOut}24h{i}' style='width:{ColumnWidth}%;'></td>" );
+                    for ( int i = 0; i < NrOfClassesInCountry; i++ )
+                        of.AppendLine( $"<td id='PM10Arrow{InOut}24h{i}' style='width:{ColumnWidth}%;'></td>" );
                     of.AppendLine( "</tr>" );
                 }
 
@@ -935,7 +961,8 @@ namespace CumulusUtils
                     of.AppendLine( "<td>PM2.5</td>" );
                     of.AppendLine( $"<td id='nowcastPM2p5_{InOut}AQI'></td>" );
                     of.AppendLine( $"<td id='nowcastPM2p5_{InOut}Val' style='border-right:solid'></td>" );
-                    for ( int i = 0; i < NrOfClassesInCountry; i++ ) of.AppendLine( $"<td id='nowcastPM2p5Arrow{InOut}{i}' style='width:{ColumnWidth}%;'></td>" );
+                    for ( int i = 0; i < NrOfClassesInCountry; i++ )
+                        of.AppendLine( $"<td id='nowcastPM2p5Arrow{InOut}{i}' style='width:{ColumnWidth}%;'></td>" );
                     of.AppendLine( "</tr>" );
 
                     of.AppendLine( "<tr style='border-bottom:solid'>" );
@@ -943,7 +970,8 @@ namespace CumulusUtils
                     of.AppendLine( "<td>PM10</td>" );
                     of.AppendLine( $"<td id='nowcastPM10_{InOut}AQI'></td>" );
                     of.AppendLine( $"<td id='nowcastPM10_{InOut}Val' style='border-right:solid'></td>" );
-                    for ( int i = 0; i < NrOfClassesInCountry; i++ ) of.AppendLine( $"<td id='nowcastPM10Arrow{InOut}{i}' style='width:{ColumnWidth}%;'></td>" );
+                    for ( int i = 0; i < NrOfClassesInCountry; i++ )
+                        of.AppendLine( $"<td id='nowcastPM10Arrow{InOut}{i}' style='width:{ColumnWidth}%;'></td>" );
                     of.AppendLine( "</tr>" );
                 }
 
@@ -1133,14 +1161,16 @@ namespace CumulusUtils
                             sb.Append( $"\"wind\":[" );
 
                             startWind = JSONstringWind.IndexOf( "wspeed" ) + 9;
-                            startWindDir = JSONstringWindDir.IndexOf( "avgbearing" ) + 13; ;
+                            startWindDir = JSONstringWindDir.IndexOf( "avgbearing" ) + 13;
+                            ;
 
                             int L1, L2 = 0, L3 = 0;
 
                             do
                             {
                                 L1 = JSONstringWind.IndexOf( ']', startWind ) - startWind;
-                                if ( L1 <= 0 ) break;
+                                if ( L1 <= 0 )
+                                    break;
 
                                 L2 = JSONstringWindDir.IndexOf( ',', startWindDir );
                                 L3 = JSONstringWindDir.IndexOf( ']', L2 );
@@ -1151,8 +1181,10 @@ namespace CumulusUtils
                                 startWindDir = L3 + 2;
 
                                 sb.Append( $"{thisWindSubstr}{thisWindDirSubstr}," );
-                                if ( startWind >= JSONstringWind.Length ) break;
-                                if ( startWindDir >= JSONstringWindDir.Length ) break;
+                                if ( startWind >= JSONstringWind.Length )
+                                    break;
+                                if ( startWindDir >= JSONstringWindDir.Length )
+                                    break;
                             } while ( startWind < JSONstringWind.Length );
 
                             sb.Remove( sb.Length - 1, 1 );

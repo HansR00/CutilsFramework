@@ -38,9 +38,9 @@
  * 
  */
 
-using ServiceStack.Text;
 using System;
 using System.Threading.Tasks;
+using ServiceStack.Text;
 
 namespace CumulusUtils
 {
@@ -149,7 +149,8 @@ namespace CumulusUtils
             {
                 // https://stackoverflow.com/questions/21600968/using-servicestack-text-to-deserialize-a-json-string-to-object
                 //
-                if ( JSONstring[ 0 ] == '}' ) return "";
+                if ( JSONstring[ 0 ] == '}' )
+                    return "";
 
                 var o = JsonObject.Parse( JSONstring );
 
@@ -167,7 +168,8 @@ namespace CumulusUtils
 
             Sup.LogTraceInfoMessage( $"ReplaceWebtag start: {thisString}" );
 
-            if ( string.IsNullOrEmpty( thisString ) ) return "";
+            if ( string.IsNullOrEmpty( thisString ) )
+                return "";
 
             for ( i = 0; i < thisString.Length; i++ )
             {

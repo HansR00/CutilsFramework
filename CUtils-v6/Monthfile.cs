@@ -22,13 +22,13 @@
  * 
  */
 
-using MySqlConnector;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using MySqlConnector;
 
 namespace CumulusUtils
 {
@@ -155,7 +155,8 @@ namespace CumulusUtils
 
             filenameCopy = "data/" + "copy_" + Path.GetFileName( MonthfileList[ 0 ] );
 
-            if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
+            if ( File.Exists( filenameCopy ) )
+                File.Delete( filenameCopy );
             File.Copy( MonthfileList[ 0 ], filenameCopy );
 
             // Not sure about encoding of this file, let it be handled by the system. No presumtions.
@@ -166,11 +167,16 @@ namespace CumulusUtils
 
                 line = mf.ReadLine();
 
-                if ( line[ 2 ] == '-' && line[ 8 ] == ';' ) type = MonthfileType.DashSemicolonComma;
-                else if ( line[ 2 ] == '/' && line[ 8 ] == ';' ) type = MonthfileType.SlashSemicolonComma;
-                else if ( line[ 2 ] == '.' && line[ 8 ] == ';' ) type = MonthfileType.PointSemicolonComma;
-                else if ( line[ 2 ] == '-' && line[ 8 ] == ',' ) type = MonthfileType.DashCommaPoint;
-                else if ( line[ 2 ] == '/' && line[ 8 ] == ',' ) type = MonthfileType.SlashCommaPoint;
+                if ( line[ 2 ] == '-' && line[ 8 ] == ';' )
+                    type = MonthfileType.DashSemicolonComma;
+                else if ( line[ 2 ] == '/' && line[ 8 ] == ';' )
+                    type = MonthfileType.SlashSemicolonComma;
+                else if ( line[ 2 ] == '.' && line[ 8 ] == ';' )
+                    type = MonthfileType.PointSemicolonComma;
+                else if ( line[ 2 ] == '-' && line[ 8 ] == ',' )
+                    type = MonthfileType.DashCommaPoint;
+                else if ( line[ 2 ] == '/' && line[ 8 ] == ',' )
+                    type = MonthfileType.SlashCommaPoint;
                 else
                 {
                     Sup.LogTraceErrorMessage( "Monthfile constructor: Internal Error - Unkown format of inputfile. Please notify programmer." );
@@ -215,7 +221,8 @@ namespace CumulusUtils
                     ErrorCount = 0; // make sure we only log MaxErrors per file
                     filenameCopy = "data/" + "copy_" + Path.GetFileName( file );
 
-                    if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
+                    if ( File.Exists( filenameCopy ) )
+                        File.Delete( filenameCopy );
                     File.Copy( file, filenameCopy );
 
                     Sup.LogDebugMessage( $"ReadMonthlyLogs: reading {file}" );
@@ -245,7 +252,8 @@ namespace CumulusUtils
                         }
                     }
 
-                    if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
+                    if ( File.Exists( filenameCopy ) )
+                        File.Delete( filenameCopy );
 
                 } // Loop over all files in MonthfileList
 
@@ -283,7 +291,8 @@ namespace CumulusUtils
                 ErrorCount = 0; // make sure we only log MaxErrors per file
                 filenameCopy = "data/" + "copy_" + Path.GetFileName( file );
 
-                if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
+                if ( File.Exists( filenameCopy ) )
+                    File.Delete( filenameCopy );
                 File.Copy( "data/" + file, filenameCopy );
 
                 Sup.LogTraceInfoMessage( $"ReadPartialMonthlyLogs: reading {file}" );
@@ -304,7 +313,8 @@ namespace CumulusUtils
                     thisList.Add( tmp );
                 } // End Using the Monthly Log to Read
 
-                if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
+                if ( File.Exists( filenameCopy ) )
+                    File.Delete( filenameCopy );
             } // Loop over all files in FilesToRead
 
             watch.Stop();
@@ -328,19 +338,29 @@ namespace CumulusUtils
                 switch ( type )
                 {
                     case MonthfileType.DashSemicolonComma:
-                        if ( !( ( tmpLine[ 2 ] == '-' ) && ( tmpLine[ 8 ] == ';' ) ) ) SeparatorInconsistencyFound = true; break;
+                        if ( !( ( tmpLine[ 2 ] == '-' ) && ( tmpLine[ 8 ] == ';' ) ) )
+                            SeparatorInconsistencyFound = true;
+                        break;
 
                     case MonthfileType.PointSemicolonComma:
-                        if ( !( ( tmpLine[ 2 ] == '.' ) && ( tmpLine[ 8 ] == ';' ) ) ) SeparatorInconsistencyFound = true; break;
+                        if ( !( ( tmpLine[ 2 ] == '.' ) && ( tmpLine[ 8 ] == ';' ) ) )
+                            SeparatorInconsistencyFound = true;
+                        break;
 
                     case MonthfileType.SlashSemicolonComma:
-                        if ( !( ( tmpLine[ 2 ] == '/' ) && ( tmpLine[ 8 ] == ';' ) ) ) SeparatorInconsistencyFound = true; break;
+                        if ( !( ( tmpLine[ 2 ] == '/' ) && ( tmpLine[ 8 ] == ';' ) ) )
+                            SeparatorInconsistencyFound = true;
+                        break;
 
                     case MonthfileType.DashCommaPoint:
-                        if ( !( ( tmpLine[ 2 ] == '-' ) && ( tmpLine[ 8 ] == ',' ) ) ) SeparatorInconsistencyFound = true; break;
+                        if ( !( ( tmpLine[ 2 ] == '-' ) && ( tmpLine[ 8 ] == ',' ) ) )
+                            SeparatorInconsistencyFound = true;
+                        break;
 
                     case MonthfileType.SlashCommaPoint:
-                        if ( !( ( tmpLine[ 2 ] == '/' ) && ( tmpLine[ 8 ] == ',' ) ) ) SeparatorInconsistencyFound = true; break;
+                        if ( !( ( tmpLine[ 2 ] == '/' ) && ( tmpLine[ 8 ] == ',' ) ) )
+                            SeparatorInconsistencyFound = true;
+                        break;
 
                     default:
                         // Should never be here
@@ -357,7 +377,8 @@ namespace CumulusUtils
                 Sup.LogTraceErrorMessage( $"ReadMonthlyLogs: Separator Inconsistency in {filenameCopy} found, FATAL ERROR! Exiting." );
                 Sup.LogTraceErrorMessage( $"ReadMonthlyLogs: Please check {filenameCopy.Remove( 0, 5 )}." );
 
-                if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
+                if ( File.Exists( filenameCopy ) )
+                    File.Delete( filenameCopy );
 
                 Dispose();
                 Environment.Exit( 0 );
@@ -369,13 +390,15 @@ namespace CumulusUtils
                  */
                 if ( type == MonthfileType.DashSemicolonComma )
                 {
-                    tmpLine[ 2 ] = '/'; tmpLine[ 5 ] = '/';
+                    tmpLine[ 2 ] = '/';
+                    tmpLine[ 5 ] = '/';
                     tmpLine.Replace( ',', '.' );
                     tmpLine.Replace( ';', ',' );
                 }
                 else if ( type == MonthfileType.PointSemicolonComma )
                 {
-                    tmpLine[ 2 ] = '/'; tmpLine[ 5 ] = '/';
+                    tmpLine[ 2 ] = '/';
+                    tmpLine[ 5 ] = '/';
                     tmpLine.Replace( ',', '.' );
                     tmpLine.Replace( ';', ',' );
                 }
@@ -387,7 +410,8 @@ namespace CumulusUtils
                 }
                 else if ( type == MonthfileType.DashCommaPoint )
                 {
-                    tmpLine[ 2 ] = '/'; tmpLine[ 5 ] = '/';
+                    tmpLine[ 2 ] = '/';
+                    tmpLine[ 5 ] = '/';
                 }
             } // No Separator inconsistency found
 
@@ -473,7 +497,8 @@ namespace CumulusUtils
                 if ( IgnoreDataErrors )
                 {
                     ThisValue.Valid = false;
-                    if ( ErrorCount < MaxErrors ) Sup.LogTraceInfoMessage( "Monthfile.SetValues : Continuing to read data" );
+                    if ( ErrorCount < MaxErrors )
+                        Sup.LogTraceInfoMessage( "Monthfile.SetValues : Continuing to read data" );
                 }
                 else
                 {
@@ -497,7 +522,8 @@ namespace CumulusUtils
                 if ( IgnoreDataErrors )
                 {
                     ThisValue.Valid = false;
-                    if ( ErrorCount < MaxErrors ) Sup.LogTraceInfoMessage( "Monthfile.SetValues : Continuing to read data" );
+                    if ( ErrorCount < MaxErrors )
+                        Sup.LogTraceInfoMessage( "Monthfile.SetValues : Continuing to read data" );
                 }
                 else
                 {

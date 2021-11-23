@@ -139,9 +139,12 @@ namespace CumulusUtils
         {
             public override int Compare( DayfileValue x, DayfileValue y )
             {
-                if ( x.MonthlyRain > y.MonthlyRain ) return ( -1 );
-                else if ( x.MonthlyRain < y.MonthlyRain ) return ( 1 );
-                else return ( 0 );
+                if ( x.MonthlyRain > y.MonthlyRain )
+                    return ( -1 );
+                else if ( x.MonthlyRain < y.MonthlyRain )
+                    return ( 1 );
+                else
+                    return ( 0 );
             }
         }
 
@@ -149,9 +152,12 @@ namespace CumulusUtils
         {
             public override int Compare( DayfileValue x, DayfileValue y )
             {
-                if ( x.DryPeriod > y.DryPeriod ) return ( -1 );
-                else if ( x.DryPeriod < y.DryPeriod ) return ( 1 );
-                else return ( 0 );
+                if ( x.DryPeriod > y.DryPeriod )
+                    return ( -1 );
+                else if ( x.DryPeriod < y.DryPeriod )
+                    return ( 1 );
+                else
+                    return ( 0 );
             }
         }
 
@@ -159,9 +165,12 @@ namespace CumulusUtils
         {
             public override int Compare( DayfileValue x, DayfileValue y )
             {
-                if ( x.WetPeriod > y.WetPeriod ) return ( -1 );
-                else if ( x.WetPeriod < y.WetPeriod ) return ( 1 );
-                else return ( 0 );
+                if ( x.WetPeriod > y.WetPeriod )
+                    return ( -1 );
+                else if ( x.WetPeriod < y.WetPeriod )
+                    return ( 1 );
+                else
+                    return ( 0 );
             }
         }
 
@@ -227,11 +236,13 @@ namespace CumulusUtils
                     }
                 }
 
-                if ( FoundInTop10 ) continue;
+                if ( FoundInTop10 )
+                    continue;
                 else
                 {
                     Top10List[ (int) Top10Types.highestMonthlyRain ].Add( element );
-                    if ( Top10List[ (int) Top10Types.highestMonthlyRain ].Count == 10 ) break;
+                    if ( Top10List[ (int) Top10Types.highestMonthlyRain ].Count == 10 )
+                        break;
                 }
             }
 
@@ -263,11 +274,13 @@ namespace CumulusUtils
                     }
                 }
 
-                if ( FoundInTop10 ) continue;
+                if ( FoundInTop10 )
+                    continue;
                 else
                 {
                     Top10List[ (int) Top10Types.longestDryPeriod ].Add( element );
-                    if ( Top10List[ (int) Top10Types.longestDryPeriod ].Count == 10 ) break;
+                    if ( Top10List[ (int) Top10Types.longestDryPeriod ].Count == 10 )
+                        break;
                 }
             }
 
@@ -288,11 +301,13 @@ namespace CumulusUtils
                     }
                 }
 
-                if ( FoundInTop10 ) continue;
+                if ( FoundInTop10 )
+                    continue;
                 else
                 {
                     Top10List[ (int) Top10Types.longestWetPeriod ].Add( element );
-                    if ( Top10List[ (int) Top10Types.longestWetPeriod ].Count == 10 ) break;
+                    if ( Top10List[ (int) Top10Types.longestWetPeriod ].Count == 10 )
+                        break;
                 }
             }
 
@@ -493,9 +508,11 @@ namespace CumulusUtils
             }
 
             // If the cycle is true then set records dirty so it is always uploaded; required to release accented records when 30 day period has  passed
-            if ( CMXutils.RunStarted.DayOfYear % CMXutils.ThriftyTop10RecordsPeriod == 0 ) CMXutils.ThriftyTop10RecordsDirty = true;
+            if ( CMXutils.RunStarted.DayOfYear % CMXutils.ThriftyTop10RecordsPeriod == 0 )
+                CMXutils.ThriftyTop10RecordsDirty = true;
 
-            if ( !CMXutils.Thrifty || CMXutils.ThriftyTop10RecordsDirty ) HTMLexportTop10();
+            if ( !CMXutils.Thrifty || CMXutils.ThriftyTop10RecordsDirty )
+                HTMLexportTop10();
             Sup.LogTraceVerboseMessage( $"Thrifty: !Thrifty || ThriftyTop10RecordsDirty - {!CMXutils.Thrifty || CMXutils.ThriftyTop10RecordsDirty} => Top10 , NO HTML generated!" );
 
             return; //all done
@@ -554,7 +571,8 @@ namespace CumulusUtils
 
                     for ( k = 0; k < Top10TableFormat.NrOfColumns; k++ )
                     {
-                        if ( i + k >= NrOfRecordTypes ) break;
+                        if ( i + k >= NrOfRecordTypes )
+                            break;
                         of.WriteLine( "<th style=\"color:{0};\">{1}</th>", Top10TableFormat.TxtcolorHeader, TypesHeaders[ i + k ] ); //enumNames[i + k]
                     }
 
@@ -567,8 +585,10 @@ namespace CumulusUtils
 
                         for ( k = 0; k < Top10TableFormat.NrOfColumns; k++ )
                         {
-                            if ( i + k >= NrOfRecordTypes ) break;
-                            if ( j >= Top10List[ i + k ].Count ) break;
+                            if ( i + k >= NrOfRecordTypes )
+                                break;
+                            if ( j >= Top10List[ i + k ].Count )
+                                break;
                             if ( Math.Abs( Top10List[ i + k ][ j ].ThisDate.Subtract( DateTime.Now ).Days ) < AttentionPeriod )
                             {
                                 /*
@@ -581,7 +601,8 @@ namespace CumulusUtils
 
                                 buf = string.Format( $"style=\"color:{Top10TableFormat.TxtAccentTable};\"" );
                             }
-                            else buf = "";
+                            else
+                                buf = "";
 
                             switch ( i + k )
                             {

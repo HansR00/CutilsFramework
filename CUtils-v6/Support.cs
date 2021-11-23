@@ -117,7 +117,8 @@ namespace CumulusUtils
             else
             {
                 string filenameCopy = "copy_Cumulus.ini";
-                if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
+                if ( File.Exists( filenameCopy ) )
+                    File.Delete( filenameCopy );
                 File.Copy( "Cumulus.ini", filenameCopy );
 
                 Ini = new IniFile( filenameCopy, this );
@@ -139,8 +140,10 @@ namespace CumulusUtils
             }
 
             // We need strings.ini entries for the ExtraSensor module
-            if ( !File.Exists( "strings.ini" ) ) File.Copy( "samplestrings.ini", "strings.ini" );
-            if ( File.Exists( "strings.ini" ) ) StringsIni = new IniFile( "strings.ini", this );
+            if ( !File.Exists( "strings.ini" ) )
+                File.Copy( "samplestrings.ini", "strings.ini" );
+            if ( File.Exists( "strings.ini" ) )
+                StringsIni = new IniFile( "strings.ini", this );
 
             // Init the logging
             //
@@ -205,19 +208,22 @@ namespace CumulusUtils
                         {
                             str.Append( $"'{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( i + 1 )}'," );
                         }
-                        str.Remove( str.Length - 1, 1 ); str.Append( "],\nshortMonths:[" );
+                        str.Remove( str.Length - 1, 1 );
+                        str.Append( "],\nshortMonths:[" );
 
                         for ( int i = 0; i < 12; i++ )
                         {
                             str.Append( $"'{CultureInfo.CurrentCulture.DateTimeFormat.AbbreviatedMonthNames[ i ]}'," );
                         }
-                        str.Remove( str.Length - 1, 1 ); str.Append( "],\nweekdays:[" );
+                        str.Remove( str.Length - 1, 1 );
+                        str.Append( "],\nweekdays:[" );
 
                         for ( int i = 0; i < 7; i++ )
                         {
                             str.Append( $"'{CultureInfo.CurrentCulture.DateTimeFormat.DayNames[ i ]}'," );
                         }
-                        str.Remove( str.Length - 1, 1 ); str.Append( "],\n}\n};\n" );
+                        str.Remove( str.Length - 1, 1 );
+                        str.Append( "],\n}\n};\n" );
 
                         of.WriteLine( $"{str}" );
                         of.WriteLine( $"highchartsOptions = Highcharts.setOptions(Highcharts.lang);" );
@@ -289,7 +295,8 @@ namespace CumulusUtils
             //
             string tmp = CUstringIni.GetValue( section, key, def );
 
-            if ( string.IsNullOrEmpty( tmp ) ) return ( tmp );
+            if ( string.IsNullOrEmpty( tmp ) )
+                return ( tmp );
 
             if ( javaScript && tmp.IndexOf( '\'' ) >= 0 )
             {
@@ -313,8 +320,10 @@ namespace CumulusUtils
                 "Fine Offset", "LaCrosse WS2300", "Fine Offset with Solar", "Oregon Scientific WMR100", "Oregon Scientific WMR200", "Instromet", "Davis WLL", "GW1000",
                 "HTTP WUnderground", "HTTP Ecowitt", "HTTP Ambient", "WeatherFlow Tempest" };
 
-            if ( i > StationDesc.Length - 1 ) return "Unknown Station";
-            else return StationDesc[ i ];
+            if ( i > StationDesc.Length - 1 )
+                return "Unknown Station";
+            else
+                return StationDesc[ i ];
         }
 
         public bool DateIsToday( DateTime thisDate )
@@ -374,7 +383,8 @@ namespace CumulusUtils
             sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/modules/exporting.js\" ></script>" );
             sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/modules/heatmap.js\"></script>" );
             sb.AppendLine( "<script src='https://code.highcharts.com/stock/modules/windbarb.js'></script>" );
-            if ( UseHighchartsBoostModule ) sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/modules/boost.js\"></script>" );
+            if ( UseHighchartsBoostModule )
+                sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/modules/boost.js\"></script>" );
             sb.AppendLine( "  <script src='lib/HighchartsLanguage.js'></script>" );
             sb.AppendLine( "  <script src='lib/HighchartsDefaults.js'></script>" );
 
@@ -435,7 +445,8 @@ namespace CumulusUtils
 
         public void LogDebugMessage( string message )
         {
-            if ( NormalMessageToConsole ) Console.WriteLine( DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + message );
+            if ( NormalMessageToConsole )
+                Console.WriteLine( DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + message );
             Debug.WriteLine( DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + message );
         }
 
@@ -471,7 +482,8 @@ namespace CumulusUtils
                 EndMyIniFile();
 
                 string filenameCopy = "copy_Cumulus.ini";
-                if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
+                if ( File.Exists( filenameCopy ) )
+                    File.Delete( filenameCopy );
 
                 ThisListener.Dispose();
 
@@ -527,7 +539,8 @@ namespace CumulusUtils
         //Check, not sure this works because of the i-- required to stay on the position of the deleted item.
         public static T[] RemoveAt<T>( this T[] source, int index )
         {
-            if ( source == null ) throw new ArgumentNullException( paramName: nameof( source ), "RemoveAt method used with array argument Null." );
+            if ( source == null )
+                throw new ArgumentNullException( paramName: nameof( source ), "RemoveAt method used with array argument Null." );
 
             T[] dest = new T[ source.Length - 1 ];
             if ( index > 0 )

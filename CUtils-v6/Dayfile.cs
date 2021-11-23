@@ -21,13 +21,13 @@
  *              C# / Visual Studio
  * 
  */
-using MySqlConnector;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using MySqlConnector;
 
 
 namespace CumulusUtils
@@ -157,7 +157,8 @@ namespace CumulusUtils
                 Sup.LogDebugMessage( $"Dayfile constructor: Using path: | data/ |; file: | dayfile.txt" );
 
                 filenameCopy = path + "copy_" + filename;
-                if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
+                if ( File.Exists( filenameCopy ) )
+                    File.Delete( filenameCopy );
                 File.Copy( path + filename, filenameCopy );
                 df = new StreamReader( filenameCopy ); //File.OpenRead(filenameCopy);
 
@@ -170,13 +171,20 @@ namespace CumulusUtils
                 throw; // satisfy the compiler
             }
 
-            line = df.ReadLine(); df.Dispose(); df = new StreamReader( filenameCopy ); //reset to start
+            line = df.ReadLine();
+            df.Dispose();
+            df = new StreamReader( filenameCopy ); //reset to start
 
-            if ( line[ 2 ] == '-' && line[ 8 ] == ';' ) type = DayfileType.DashSemicolonComma;
-            else if ( line[ 2 ] == '/' && line[ 8 ] == ';' ) type = DayfileType.SlashSemicolonComma;
-            else if ( line[ 2 ] == '.' && line[ 8 ] == ';' ) type = DayfileType.PointSemicolonComma;
-            else if ( line[ 2 ] == '-' && line[ 8 ] == ',' ) type = DayfileType.DashCommaPoint;
-            else if ( line[ 2 ] == '/' && line[ 8 ] == ',' ) type = DayfileType.SlashCommaPoint;
+            if ( line[ 2 ] == '-' && line[ 8 ] == ';' )
+                type = DayfileType.DashSemicolonComma;
+            else if ( line[ 2 ] == '/' && line[ 8 ] == ';' )
+                type = DayfileType.SlashSemicolonComma;
+            else if ( line[ 2 ] == '.' && line[ 8 ] == ';' )
+                type = DayfileType.PointSemicolonComma;
+            else if ( line[ 2 ] == '-' && line[ 8 ] == ',' )
+                type = DayfileType.DashCommaPoint;
+            else if ( line[ 2 ] == '/' && line[ 8 ] == ',' )
+                type = DayfileType.SlashCommaPoint;
             else
             {
                 Sup.LogTraceErrorMessage( "Dayfile constructor: Internal Error - Unkown format of inputfile. Please notify programmer." );
@@ -241,7 +249,8 @@ namespace CumulusUtils
             //int i, separatorCount = 0;
             StringBuilder tmpLine = new StringBuilder();
 
-            if ( df.EndOfStream ) Sup.LogTraceVerboseMessage( "Dayfile : EOF detected" ); // nothing to do;
+            if ( df.EndOfStream )
+                Sup.LogTraceVerboseMessage( "Dayfile : EOF detected" ); // nothing to do;
             else
             {
                 tmpLine.Append( df.ReadLine() );
@@ -251,13 +260,15 @@ namespace CumulusUtils
                  */
                 if ( type == DayfileType.DashSemicolonComma )
                 {
-                    tmpLine[ 2 ] = '/'; tmpLine[ 5 ] = '/';
+                    tmpLine[ 2 ] = '/';
+                    tmpLine[ 5 ] = '/';
                     tmpLine.Replace( ',', '.' );
                     tmpLine.Replace( ';', ',' );
                 }
                 else if ( type == DayfileType.PointSemicolonComma )
                 {
-                    tmpLine[ 2 ] = '/'; tmpLine[ 5 ] = '/';
+                    tmpLine[ 2 ] = '/';
+                    tmpLine[ 5 ] = '/';
                     tmpLine.Replace( ',', '.' );
                     tmpLine.Replace( ';', ',' );
                 }
@@ -269,7 +280,8 @@ namespace CumulusUtils
                 }
                 else if ( type == DayfileType.DashCommaPoint )
                 {
-                    tmpLine[ 2 ] = '/'; tmpLine[ 5 ] = '/';
+                    tmpLine[ 2 ] = '/';
+                    tmpLine[ 5 ] = '/';
                 }
             }
 
@@ -495,7 +507,8 @@ namespace CumulusUtils
             DayfileValue tmpValue;
 
             lastEntry = values.Count - 1;
-            if ( lastEntry == 0 ) return;
+            if ( lastEntry == 0 )
+                return;
 
             tmpValue = values[ lastEntry ];
 
@@ -510,8 +523,10 @@ namespace CumulusUtils
                 tmpValue.YearToDateRain += values[ lastEntry - 1 ].YearToDateRain;
             }
 
-            if ( values[ lastEntry ].TotalRainThisDay > 0 ) tmpValue.WetPeriod += values[ lastEntry - 1 ].WetPeriod;
-            else tmpValue.DryPeriod += values[ lastEntry - 1 ].DryPeriod;
+            if ( values[ lastEntry ].TotalRainThisDay > 0 )
+                tmpValue.WetPeriod += values[ lastEntry - 1 ].WetPeriod;
+            else
+                tmpValue.DryPeriod += values[ lastEntry - 1 ].DryPeriod;
 
             values.RemoveAt( lastEntry );
             values.Add( tmpValue );

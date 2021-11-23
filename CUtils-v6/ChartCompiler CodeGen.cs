@@ -43,7 +43,8 @@ namespace CumulusUtils
 
         internal void GenerateUserDefinedCharts( List<ChartDef> theseCharts, string filename, int UniqueOutputId )
         {
-            if ( theseCharts.Count == 0 ) return;
+            if ( theseCharts.Count == 0 )
+                return;
 
             StringBuilder Html = new StringBuilder();
             StringBuilder MenuJavascript = new StringBuilder();
@@ -112,7 +113,8 @@ namespace CumulusUtils
                     GenericJavascript.AppendLine( $"  if (CurrentChart{UniqueOutputId} === 'Temp') {{" );   // Temp is the default when no compiler is used
 
                 GenericJavascript.Append( "    ClickEventChart = [" );
-                for ( int i = 0; i < 24; i++ ) GenericJavascript.Append( $"'{ClickEvents[ i ]}'," );
+                for ( int i = 0; i < 24; i++ )
+                    GenericJavascript.Append( $"'{ClickEvents[ i ]}'," );
                 GenericJavascript.Remove( GenericJavascript.Length - 1, 1 );
                 GenericJavascript.AppendLine( "];" );
                 GenericJavascript.AppendLine( "     console.log('Cumuluscharts Compiler version has been initialised');" );
@@ -125,7 +127,8 @@ namespace CumulusUtils
 
                 foreach ( string df in theseDatafiles )
                 {
-                    if ( !string.IsNullOrEmpty( df ) ) GenericJavascript.AppendLine( $", {df.Substring( 0, df.IndexOf( '.' ) )}Ajax()" );
+                    if ( !string.IsNullOrEmpty( df ) )
+                        GenericJavascript.AppendLine( $", {df.Substring( 0, df.IndexOf( '.' ) )}Ajax()" );
                 }
 
                 GenericJavascript.AppendLine( $"]).then( () => $( '#graph{UniqueOutputId}' ).trigger( 'change' ) ) ) " );
@@ -161,7 +164,8 @@ namespace CumulusUtils
                         AjaxJavascript.AppendLine( $"function {df.Substring( 0, df.IndexOf( '.' ) )}Ajax(){{" );
 
                         foreach ( AllVarInfo avi in AllVars )
-                            if ( df == avi.Datafile ) AjaxJavascript.AppendLine( $"  {avi.KeywordName}.length = 0;" );
+                            if ( df == avi.Datafile )
+                                AjaxJavascript.AppendLine( $"  {avi.KeywordName}.length = 0;" );
 
                         AjaxJavascript.AppendLine( "  return $.ajax({" );
 
@@ -231,8 +235,10 @@ namespace CumulusUtils
                     }
                     else
                     {
-                        if ( thisChart.Range == PlotvarRangeType.Daily ) TheCharts.AppendLine( "      rangeSelector:{allButtonsEnabled: true, selected: 0}" );
-                        else TheCharts.AppendLine( "      rangeSelector:{allButtonsEnabled: true, selected: 4}" );
+                        if ( thisChart.Range == PlotvarRangeType.Daily )
+                            TheCharts.AppendLine( "      rangeSelector:{allButtonsEnabled: true, selected: 0}" );
+                        else
+                            TheCharts.AppendLine( "      rangeSelector:{allButtonsEnabled: true, selected: 4}" );
                     }
 
                     TheCharts.AppendLine( "  });" );
@@ -282,7 +288,8 @@ namespace CumulusUtils
                                 tmpEquation = tmp.Insert( startSum, "sumResult[i][1]" );
 
                                 foreach ( AllVarInfo avi in thisPlotvar.EqAllVarList )
-                                    if ( sumExpr.Contains( avi.KeywordName ) ) sumExpr = sumExpr.Replace( avi.KeywordName, $"{avi.KeywordName}[i][1]" );
+                                    if ( sumExpr.Contains( avi.KeywordName ) )
+                                        sumExpr = sumExpr.Replace( avi.KeywordName, $"{avi.KeywordName}[i][1]" );
 
                                 GenerateSumFunction( GenericJavascript );
                                 AddSeriesJavascript.AppendLine( $"sumResult.length = 0;" );
@@ -303,7 +310,8 @@ namespace CumulusUtils
                             if ( thisPlotvar.EqAllVarList.Count > 0 )
                             {
                                 foreach ( AllVarInfo avi in thisPlotvar.EqAllVarList )
-                                    if ( tmpEquation.Contains( avi.KeywordName ) ) tmpEquation = tmpEquation.Replace( avi.KeywordName, $"{avi.KeywordName}[i][1]" );
+                                    if ( tmpEquation.Contains( avi.KeywordName ) )
+                                        tmpEquation = tmpEquation.Replace( avi.KeywordName, $"{avi.KeywordName}[i][1]" );
 
                                 // Now write out the values in the array at runtime.
                                 AddSeriesJavascript.AppendLine( $"{thisPlotvar.Keyword}.length=0;" );
@@ -341,7 +349,7 @@ namespace CumulusUtils
                         }
                         else
                         {
-                            if (thisPlotvar.PlotvarRange == PlotvarRangeType.Extra)
+                            if ( thisPlotvar.PlotvarRange == PlotvarRangeType.Extra )
                             {
                                 string tmp = Sup.GetCUstringValue( "Compiler", thisPlotvar.Keyword, "", true );
                                 AddSeriesJavascript.AppendLine( $"    name:'{Sup.GetCUstringValue( "Compiler", thisPlotvar.Keyword, thisPlotvar.Keyword, true )}'," );
@@ -423,7 +431,8 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( $"Compiler - Creating Axis for {thisChart.Id} " );
 
-            if ( AxisSet.Equals( AxisType.None ) ) NoClosingAddAxis = true;
+            if ( AxisSet.Equals( AxisType.None ) )
+                NoClosingAddAxis = true;
 
             foreach ( Plotvar thisPlotvar in thisChart.PlotVars )
             {
@@ -582,7 +591,8 @@ namespace CumulusUtils
                 {
                     buf.AppendLine( "}, false, false );" );
                 }
-                else break; // Skip the other plotvars, first var now has its axis
+                else
+                    break; // Skip the other plotvars, first var now has its axis
 
             } // For loop over all plotvars
 
@@ -625,8 +635,10 @@ namespace CumulusUtils
         {
             Sup.LogTraceVerboseMessage( $"Compiler - Creating Runtime Sum function" );
 
-            if ( SumFunctionGenerated ) return;
-            else SumFunctionGenerated = true;
+            if ( SumFunctionGenerated )
+                return;
+            else
+                SumFunctionGenerated = true;
 
             //buf.AppendLine( "// This is the Compiler Runtime for the functions" );
             buf.AppendLine( "function sum( curVal, valArray, curIndex, thisEpochDate)" );
@@ -703,7 +715,8 @@ namespace CumulusUtils
                 Sup.LogTraceInfoMessage( $"Generate UserAskedData: Must generate the ALL Range." );
                 Sup.SetUtilsIniValue( "Compiler", "DoneToday", $"{Now:dd/MM/yy}" );
             }
-            else Sup.LogTraceInfoMessage( $"Generate UserAskedData: Must NOT generate the ALL Range." );
+            else
+                Sup.LogTraceInfoMessage( $"Generate UserAskedData: Must NOT generate the ALL Range." );
 
             foreach ( ChartDef thisChart in thisList )
             {
@@ -730,7 +743,8 @@ namespace CumulusUtils
 
                             case PlotvarRangeType.Daily:
                             case PlotvarRangeType.All:
-                                if ( !DoDailyAndAll ) break;
+                                if ( !DoDailyAndAll )
+                                    break;
 
                                 All.Append( $"\"{thisVar.PlotVar}\":[" );
 
@@ -762,19 +776,22 @@ namespace CumulusUtils
             // Done so cleanup and finish the Stringbuilders and write out to files
             if ( Recent.Length > 1 )
             {
-                Recent.Remove( Recent.Length - 1, 1 ); Recent.Append( "}" );
+                Recent.Remove( Recent.Length - 1, 1 );
+                Recent.Append( "}" );
                 using ( StreamWriter sw = new StreamWriter( $"{Sup.PathUtils}{Sup.CUserdataRECENT}", false, Encoding.UTF8 ) ) { sw.Write( Recent.ToString() ); }
             }
 
             if ( Daily.Length > 1 )
             {
-                Daily.Remove( Daily.Length - 1, 1 ); Daily.Append( "}" );
+                Daily.Remove( Daily.Length - 1, 1 );
+                Daily.Append( "}" );
                 using ( StreamWriter sw = new StreamWriter( $"{Sup.PathUtils}{Sup.CUserdataDAILY}", false, Encoding.UTF8 ) ) { sw.Write( Daily.ToString() ); }
             }
 
             if ( All.Length > 1 )
             {
-                All.Remove( All.Length - 1, 1 ); All.Append( "}" );
+                All.Remove( All.Length - 1, 1 );
+                All.Append( "}" );
                 using ( StreamWriter sw = new StreamWriter( $"{Sup.PathUtils}{Sup.CUserdataALL}", false, Encoding.UTF8 ) ) { sw.Write( All.ToString() ); }
             }
         } // End Generate JSON
@@ -812,7 +829,8 @@ namespace CumulusUtils
                         tmpVarInfo.Datafile = p.Datafile;
                         AllVars.Add( tmpVarInfo );
                     }
-                    else found = false;
+                    else
+                        found = false;
                 }
 
             found = false;
@@ -877,7 +895,8 @@ namespace CumulusUtils
                                     tmpVarInfo.Datafile = df;
                                     AllVars.Add( tmpVarInfo );
                                 }
-                                else found = false;
+                                else
+                                    found = false;
 
                                 p.EqAllVarList.Add( tmpVarInfo );
                             }

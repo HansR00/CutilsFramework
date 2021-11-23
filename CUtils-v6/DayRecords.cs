@@ -243,7 +243,8 @@ namespace CumulusUtils
                                 HighlightFormat = CMXutils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CMXutils.StartOfObservations.AddYears( 1 )
                                   ? "style=\"color: Red\""
                                   : "";
-                                of.WriteLine( $"<td class=\"reportttl\"><table class=\"CUtable\">" ); ;
+                                of.WriteLine( $"<td class=\"reportttl\"><table class=\"CUtable\">" );
+                                ;
                                 of.WriteLine( $"<tr><td {HighlightFormat}>{thisEntry.MaxTemp:F1} ({thisEntry.ThisDate.Year})</td></tr>" );
 
                                 // Do LowHighTemp

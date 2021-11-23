@@ -107,14 +107,19 @@ namespace CumulusUtils
                 Sup.LogTraceInfoMessage( $" Setting default WarningLevel = 5" );
                 WarningLevel = 5;
             }
-            else if ( WarningLevel == 6 ) ExtremeFWIvalue = dngrLevelValue[ (int) DngrLevel.purple ];
+            else if ( WarningLevel == 6 )
+                ExtremeFWIvalue = dngrLevelValue[ (int) DngrLevel.purple ];
             // else the default remains
 
-            if ( Sup.GetUtilsIniValue( "pwsFWI", "ResultFormat", "Standard" ).Equals( "Beteljuice", StringComparison.OrdinalIgnoreCase ) ) BeteljuiceFormat = true;
-            else BeteljuiceFormat = false;
+            if ( Sup.GetUtilsIniValue( "pwsFWI", "ResultFormat", "Standard" ).Equals( "Beteljuice", StringComparison.OrdinalIgnoreCase ) )
+                BeteljuiceFormat = true;
+            else
+                BeteljuiceFormat = false;
 
-            if ( Sup.GetUtilsIniValue( "pwsFWI", "FireImage", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase ) ) UseFireImage = true;
-            else UseFireImage = false;
+            if ( Sup.GetUtilsIniValue( "pwsFWI", "FireImage", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase ) )
+                UseFireImage = true;
+            else
+                UseFireImage = false;
         }
 
         #endregion
@@ -143,7 +148,8 @@ namespace CumulusUtils
                     // When returning false something went wrong. Not a problem, only DoPrediction becomes false
                     DoPrediction = false;
                 }
-                else DoPrediction = true;
+                else
+                    DoPrediction = true;
 
                 if ( DoPrediction )
                 {
@@ -159,7 +165,8 @@ namespace CumulusUtils
                 // On return, ThisList contains 5 extra days from the prediction. They should automatically be taken into the system
                 // of pwsFWI calculation. Afterwards, they must be deleted from the list.
             }
-            else DoPrediction = false;
+            else
+                DoPrediction = false;
 
             Sup.LogTraceInfoMessage( $" PwsFWIfuncs BeteljuiceFormat = {BeteljuiceFormat}" );
             Sup.LogTraceInfoMessage( $" PwsFWIfuncs USerFireImage = {UseFireImage}" );
@@ -178,8 +185,10 @@ namespace CumulusUtils
                     Sup.LogDebugMessage( "calculatePwsFWI : ANALYSE is ON" );
                     Sup.LogDebugMessage( "calculatePwsFWI : Opening ANALYSIS output" );
 
-                    if ( Analyse > ThisList.Count ) startValue = 0;
-                    else startValue = ThisList.Count - Analyse - NrOfSmoothingDays;
+                    if ( Analyse > ThisList.Count )
+                        startValue = 0;
+                    else
+                        startValue = ThisList.Count - Analyse - NrOfSmoothingDays;
 
                     af.WriteLine( $"Date{separator}Temp{separator}Wind{separator}Rain{separator}RH{separator}Psat{separator}VPD{separator}dayFWI{separator}No Rain{separator}SmoothedFWI" );
                 }
@@ -352,7 +361,8 @@ namespace CumulusUtils
                     bool UseTodaysValue = Sup.GetUtilsIniValue( "pwsFWI", "CurrentIndexDay", "Yesterday" ).Equals( "Today", StringComparison.OrdinalIgnoreCase );
                     IndexOfCurrent = FWIlist.Count - NrOfPredictiveDays - ( UseTodaysValue ? 0 : 1 );
                 }
-                else IndexOfCurrent = FWIlist.Count - 1;
+                else
+                    IndexOfCurrent = FWIlist.Count - 1;
 
                 fmtindex = SetFmtIndex( IndexOfCurrent );
 
@@ -602,7 +612,8 @@ namespace CumulusUtils
                     of.WriteLine( "    linear-gradient(to right, Blue, Yellow)," );
                     of.WriteLine( "    linear-gradient(to right, Yellow, Orange)," );
                     of.WriteLine( "    linear-gradient(to right, Orange, Red)," );
-                    if ( WarningLevel == 6 ) of.WriteLine( "    linear-gradient(to right, Red, Purple)," );
+                    if ( WarningLevel == 6 )
+                        of.WriteLine( "    linear-gradient(to right, Red, Purple)," );
                     of.WriteLine( "    linear-gradient(to right, Green, Green)," );
                     of.WriteLine( "    linear-gradient(to right, Blue, Blue)," );
                     of.WriteLine( "    linear-gradient(to right, Yellow, Yellow)," );
@@ -622,12 +633,14 @@ namespace CumulusUtils
                     of.WriteLine( $"    {blueyellowSeparation.ToString( "F1", NumberFormatInfo.InvariantInfo )}% 0px," );
                     of.WriteLine( $"    {yelloworangeSeparation.ToString( "F1", NumberFormatInfo.InvariantInfo )}% 0px," );
                     of.WriteLine( $"    {orangeredSeparation.ToString( "F1", NumberFormatInfo.InvariantInfo )}% 0px," );
-                    if ( WarningLevel == 6 ) of.WriteLine( $"    {redpurpleSeperation.ToString( "F1", NumberFormatInfo.InvariantInfo )}% 0px," );
+                    if ( WarningLevel == 6 )
+                        of.WriteLine( $"    {redpurpleSeperation.ToString( "F1", NumberFormatInfo.InvariantInfo )}% 0px," );
                     of.WriteLine( "    0% 0px," );
                     of.WriteLine( "    0% 0px," );
                     of.WriteLine( "    0% 0px," );
                     of.WriteLine( "    0% 0px," );
-                    if ( WarningLevel == 6 ) of.WriteLine( "    0% 0px," );
+                    if ( WarningLevel == 6 )
+                        of.WriteLine( "    0% 0px," );
                     of.WriteLine( "    0% 0px;" );
 
                     of.WriteLine( "  background-size:" );
@@ -635,12 +648,14 @@ namespace CumulusUtils
                     of.WriteLine( "    8% 100%," );
                     of.WriteLine( "    8% 100%," );
                     of.WriteLine( "    8% 100%," );
-                    if ( WarningLevel == 6 ) of.WriteLine( "    8% 100%," );
+                    if ( WarningLevel == 6 )
+                        of.WriteLine( "    8% 100%," );
                     of.WriteLine( $"    {greenblueSeperation.ToString( "F1", NumberFormatInfo.InvariantInfo )}% 100%," );
                     of.WriteLine( $"    {blueyellowSeparation.ToString( "F1", NumberFormatInfo.InvariantInfo )}% 100%," );
                     of.WriteLine( $"    {yelloworangeSeparation.ToString( "F1", NumberFormatInfo.InvariantInfo )}% 100%," );
                     of.WriteLine( $"    {orangeredSeparation.ToString( "F1", NumberFormatInfo.InvariantInfo )}% 100%," );
-                    if ( WarningLevel == 6 ) of.WriteLine( $"  {redpurpleSeperation.ToString( "F1", NumberFormatInfo.InvariantInfo )}% 100%," );
+                    if ( WarningLevel == 6 )
+                        of.WriteLine( $"  {redpurpleSeperation.ToString( "F1", NumberFormatInfo.InvariantInfo )}% 100%," );
                     of.WriteLine( $"    100% 100%;" );
                     of.WriteLine( "}" );
 
@@ -684,8 +699,10 @@ namespace CumulusUtils
                     of.WriteLine( "  animation-iteration-count: infinite;" );
                     of.WriteLine( "}" );
 
-                    if ( !DoPrediction ) fmtindex = SetFmtIndex( FWIlist.Count - 1 );
-                    else fmtindex = SetFmtIndex( FWIlist.Count - 1 - NrOfPredictiveDays );
+                    if ( !DoPrediction )
+                        fmtindex = SetFmtIndex( FWIlist.Count - 1 );
+                    else
+                        fmtindex = SetFmtIndex( FWIlist.Count - 1 - NrOfPredictiveDays );
 
                     of.WriteLine( "@keyframes color{" );
                     of.WriteLine( "0% { color: white;}" );
@@ -962,7 +979,8 @@ namespace CumulusUtils
                         {
                             lowHum = Convert.ToSingle( hr.Element( "humidity" ).Attribute( "value" ).Value, CultureInfo.InvariantCulture );
 
-                            if ( lowHum < ThisValue.LowHumidity ) ThisValue.LowHumidity = lowHum;
+                            if ( lowHum < ThisValue.LowHumidity )
+                                ThisValue.LowHumidity = lowHum;
                         }
 
                         ThisValue.ThisDate = DateTime.ParseExact( el.Attribute( "value" ).Value, "yyyyMMdd", CultureInfo.InvariantCulture );
@@ -1040,17 +1058,22 @@ namespace CumulusUtils
         {
             DngrLevel fmtindex;
 
-            if ( FWIlist[ i ].SmoothedFWI <= dngrLevelValue[ (int) DngrLevel.green ] ) fmtindex = DngrLevel.green;
-            else if ( FWIlist[ i ].SmoothedFWI <= dngrLevelValue[ (int) DngrLevel.blue ] ) fmtindex = DngrLevel.blue;
-            else if ( FWIlist[ i ].SmoothedFWI <= dngrLevelValue[ (int) DngrLevel.yellow ] ) fmtindex = DngrLevel.yellow;
-            else if ( FWIlist[ i ].SmoothedFWI <= dngrLevelValue[ (int) DngrLevel.orange ] ) fmtindex = DngrLevel.orange;
+            if ( FWIlist[ i ].SmoothedFWI <= dngrLevelValue[ (int) DngrLevel.green ] )
+                fmtindex = DngrLevel.green;
+            else if ( FWIlist[ i ].SmoothedFWI <= dngrLevelValue[ (int) DngrLevel.blue ] )
+                fmtindex = DngrLevel.blue;
+            else if ( FWIlist[ i ].SmoothedFWI <= dngrLevelValue[ (int) DngrLevel.yellow ] )
+                fmtindex = DngrLevel.yellow;
+            else if ( FWIlist[ i ].SmoothedFWI <= dngrLevelValue[ (int) DngrLevel.orange ] )
+                fmtindex = DngrLevel.orange;
             else if ( WarningLevel == 5 )
             {
                 fmtindex = DngrLevel.red;
             }
             else // WarningLevel == 6
             {
-                if ( FWIlist[ i ].SmoothedFWI <= dngrLevelValue[ (int) DngrLevel.red ] ) fmtindex = DngrLevel.red;
+                if ( FWIlist[ i ].SmoothedFWI <= dngrLevelValue[ (int) DngrLevel.red ] )
+                    fmtindex = DngrLevel.red;
                 else
                     fmtindex = DngrLevel.purple;
             }

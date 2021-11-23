@@ -148,9 +148,11 @@ namespace CumulusUtils
                 for ( int i = 0; i < returnValues.Count; i++ )
                 {
                     string line = returnValues[ i ];
-                    if ( String.IsNullOrEmpty( line ) ) continue;
+                    if ( String.IsNullOrEmpty( line ) )
+                        continue;
                     if ( count < LinesToSkip.Length && i == LinesToSkip[ count ] ) { count++; continue; }
-                    if ( line.Contains( "pagefile.sys" ) ) break;
+                    if ( line.Contains( "pagefile.sys" ) )
+                        break;
                     of.WriteLine( $"{line}" );
 
                 }
@@ -197,8 +199,10 @@ namespace CumulusUtils
             {
                 StartProcess( "lshw", "-quiet -class system" );
 
-                if ( !string.IsNullOrEmpty( returnValues[ 2 ] ) ) of.WriteLine( $"System: {returnValues[ 2 ].Remove( 0, "    product: ".Length )}" );
-                if ( !string.IsNullOrEmpty( returnValues[ 1 ] ) ) of.WriteLine( $"Processor: {returnValues[ 1 ].Remove( 0, "    description: ".Length )}" );
+                if ( !string.IsNullOrEmpty( returnValues[ 2 ] ) )
+                    of.WriteLine( $"System: {returnValues[ 2 ].Remove( 0, "    product: ".Length )}" );
+                if ( !string.IsNullOrEmpty( returnValues[ 1 ] ) )
+                    of.WriteLine( $"Processor: {returnValues[ 1 ].Remove( 0, "    description: ".Length )}" );
                 of.WriteLine( $"Nr of processors: {thisInfo.CpuCount}" );
                 of.WriteLine( $"Processor Temperature: {thisInfo.CpuTemp} °C" );
             }
@@ -248,7 +252,8 @@ namespace CumulusUtils
                 of.WriteLine( "Memory info:" );
                 for ( i = 0; i < 3; i++ )
                 {
-                    if ( !String.IsNullOrEmpty( returnValues[ i ] ) ) of.WriteLine( $"{returnValues[ i ]}" );
+                    if ( !String.IsNullOrEmpty( returnValues[ i ] ) )
+                        of.WriteLine( $"{returnValues[ i ]}" );
                 }
             }
             catch ( Exception e )
@@ -287,10 +292,12 @@ namespace CumulusUtils
                 StartProcess( "mono", "-V" );
                 tmp = Convert.ToInt32( returnValues[ 0 ].Substring( 26, 1 ) ); // Skip "Mono JIT compiler version " and get the major version nr
 
-                Sup.LogDebugMessage( $"CheckMonoVersion: detected MONO major version: {tmp} ({returnValues[0]})" );
+                Sup.LogDebugMessage( $"CheckMonoVersion: detected MONO major version: {tmp} ({returnValues[ 0 ]})" );
 
-                if ( tmp >= 6 ) return true;
-                else return false;
+                if ( tmp >= 6 )
+                    return true;
+                else
+                    return false;
             }
             catch ( Exception e )
             {

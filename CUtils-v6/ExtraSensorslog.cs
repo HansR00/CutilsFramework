@@ -194,9 +194,11 @@ namespace CumulusUtils
                 filenameCopy = "data/" + "copy_" + Path.GetFileName( ExtraSensorslogList[ 0 ] );
                 Sup.LogDebugMessage( $"ExtraSensorslog constructor: Using {filenameCopy}" );
             }
-            else return;
+            else
+                return;
 
-            if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
+            if ( File.Exists( filenameCopy ) )
+                File.Delete( filenameCopy );
             File.Copy( ExtraSensorslogList[ 0 ], filenameCopy );
 
             // Not sure about encoding of this file, let it be handled by the system. No presumtions.
@@ -207,11 +209,16 @@ namespace CumulusUtils
 
                 line = mf.ReadLine();
 
-                if ( line[ 2 ] == '-' && line[ 8 ] == ';' ) type = ExtraSensorslogType.DashSemicolonComma;
-                else if ( line[ 2 ] == '/' && line[ 8 ] == ';' ) type = ExtraSensorslogType.SlashSemicolonComma;
-                else if ( line[ 2 ] == '.' && line[ 8 ] == ';' ) type = ExtraSensorslogType.PointSemicolonComma;
-                else if ( line[ 2 ] == '-' && line[ 8 ] == ',' ) type = ExtraSensorslogType.DashCommaPoint;
-                else if ( line[ 2 ] == '/' && line[ 8 ] == ',' ) type = ExtraSensorslogType.SlashCommaPoint;
+                if ( line[ 2 ] == '-' && line[ 8 ] == ';' )
+                    type = ExtraSensorslogType.DashSemicolonComma;
+                else if ( line[ 2 ] == '/' && line[ 8 ] == ';' )
+                    type = ExtraSensorslogType.SlashSemicolonComma;
+                else if ( line[ 2 ] == '.' && line[ 8 ] == ';' )
+                    type = ExtraSensorslogType.PointSemicolonComma;
+                else if ( line[ 2 ] == '-' && line[ 8 ] == ',' )
+                    type = ExtraSensorslogType.DashCommaPoint;
+                else if ( line[ 2 ] == '/' && line[ 8 ] == ',' )
+                    type = ExtraSensorslogType.SlashCommaPoint;
                 else
                 {
                     Sup.LogTraceErrorMessage( "ExtraSensorslog constructor: Internal Error - Unkown format of inputfile. Please notify programmer." );
@@ -293,7 +300,8 @@ namespace CumulusUtils
             while ( !PeriodComplete )
             {
                 filenameCopy = "data/" + "copy_" + Path.GetFileName( Filename );
-                if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
+                if ( File.Exists( filenameCopy ) )
+                    File.Delete( filenameCopy );
                 File.Copy( Filename, filenameCopy );
 
                 using ( StreamReader af = new StreamReader( filenameCopy ) )
@@ -307,12 +315,14 @@ namespace CumulusUtils
                         tmp = SetValues( line, timeStart );
                         if ( tmp.Valid )
                             MainExtraSensorsValuesList.Add( tmp );
-                        if ( tmp.ThisDate >= timeEnd ) break; // we have our set of data required
+                        if ( tmp.ThisDate >= timeEnd )
+                            break; // we have our set of data required
                         line = ReadLine( af, false );
                     } while ( !string.IsNullOrEmpty( line ) );
                 } // End Using the ExtraSensorslog to Read
 
-                if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
+                if ( File.Exists( filenameCopy ) )
+                    File.Delete( filenameCopy );
 
                 if ( tmp.ThisDate.Month == timeEnd.Month )
                 {
@@ -355,19 +365,29 @@ namespace CumulusUtils
                     switch ( type )
                     {
                         case ExtraSensorslogType.DashSemicolonComma:
-                            if ( !( ( tmpLine[ 2 ] == '-' ) && ( tmpLine[ 8 ] == ';' ) ) ) SeparatorInconsistencyFound = true; break;
+                            if ( !( ( tmpLine[ 2 ] == '-' ) && ( tmpLine[ 8 ] == ';' ) ) )
+                                SeparatorInconsistencyFound = true;
+                            break;
 
                         case ExtraSensorslogType.PointSemicolonComma:
-                            if ( !( ( tmpLine[ 2 ] == '.' ) && ( tmpLine[ 8 ] == ';' ) ) ) SeparatorInconsistencyFound = true; break;
+                            if ( !( ( tmpLine[ 2 ] == '.' ) && ( tmpLine[ 8 ] == ';' ) ) )
+                                SeparatorInconsistencyFound = true;
+                            break;
 
                         case ExtraSensorslogType.SlashSemicolonComma:
-                            if ( !( ( tmpLine[ 2 ] == '/' ) && ( tmpLine[ 8 ] == ';' ) ) ) SeparatorInconsistencyFound = true; break;
+                            if ( !( ( tmpLine[ 2 ] == '/' ) && ( tmpLine[ 8 ] == ';' ) ) )
+                                SeparatorInconsistencyFound = true;
+                            break;
 
                         case ExtraSensorslogType.DashCommaPoint:
-                            if ( !( ( tmpLine[ 2 ] == '-' ) && ( tmpLine[ 8 ] == ',' ) ) ) SeparatorInconsistencyFound = true; break;
+                            if ( !( ( tmpLine[ 2 ] == '-' ) && ( tmpLine[ 8 ] == ',' ) ) )
+                                SeparatorInconsistencyFound = true;
+                            break;
 
                         case ExtraSensorslogType.SlashCommaPoint:
-                            if ( !( ( tmpLine[ 2 ] == '/' ) && ( tmpLine[ 8 ] == ',' ) ) ) SeparatorInconsistencyFound = true; break;
+                            if ( !( ( tmpLine[ 2 ] == '/' ) && ( tmpLine[ 8 ] == ',' ) ) )
+                                SeparatorInconsistencyFound = true;
+                            break;
 
                         default:
                             // Should never be here
@@ -389,13 +409,15 @@ namespace CumulusUtils
                      */
                     if ( type == ExtraSensorslogType.DashSemicolonComma )
                     {
-                        tmpLine[ 2 ] = '/'; tmpLine[ 5 ] = '/';
+                        tmpLine[ 2 ] = '/';
+                        tmpLine[ 5 ] = '/';
                         tmpLine.Replace( ',', '.' );
                         tmpLine.Replace( ';', ',' );
                     }
                     else if ( type == ExtraSensorslogType.PointSemicolonComma )
                     {
-                        tmpLine[ 2 ] = '/'; tmpLine[ 5 ] = '/';
+                        tmpLine[ 2 ] = '/';
+                        tmpLine[ 5 ] = '/';
                         tmpLine.Replace( ',', '.' );
                         tmpLine.Replace( ';', ',' );
                     }
@@ -407,7 +429,8 @@ namespace CumulusUtils
                     }
                     else if ( type == ExtraSensorslogType.DashCommaPoint )
                     {
-                        tmpLine[ 2 ] = '/'; tmpLine[ 5 ] = '/';
+                        tmpLine[ 2 ] = '/';
+                        tmpLine[ 5 ] = '/';
                     }
                 }// NO Separator Inconsistency
             } // Not EOF
@@ -741,7 +764,8 @@ namespace CumulusUtils
                 }
 
                 if ( IgnoreDataErrors )
-                    if ( ErrorCount < MaxErrors ) Sup.LogTraceErrorMessage( "ExtraSensorslogValue.SetValues : Continuing to read data" );
+                    if ( ErrorCount < MaxErrors )
+                        Sup.LogTraceErrorMessage( "ExtraSensorslogValue.SetValues : Continuing to read data" );
                     else
                         // Environment.Exit(0);
                         throw;
@@ -760,7 +784,8 @@ namespace CumulusUtils
                 }
 
                 if ( IgnoreDataErrors )
-                    if ( ErrorCount < MaxErrors ) Sup.LogTraceErrorMessage( "ExtraSensorslogValue.SetValues : Continuing to read data" );
+                    if ( ErrorCount < MaxErrors )
+                        Sup.LogTraceErrorMessage( "ExtraSensorslogValue.SetValues : Continuing to read data" );
                     else
                         throw;
             }

@@ -44,10 +44,8 @@ namespace CumulusUtils
         // *** File name ***
         private string m_FileName;
 
-        internal string FileName
-        {
-            get
-            {
+        internal string FileName {
+            get {
                 return m_FileName;
             }
         }
@@ -84,7 +82,8 @@ namespace CumulusUtils
         {
             m_FileName = FileName;
             m_Lazy = Lazy;
-            if ( !m_Lazy ) Refresh();
+            if ( !m_Lazy )
+                Refresh();
         }
 
         // *** Read file contents into local cache ***
@@ -161,7 +160,8 @@ namespace CumulusUtils
                 finally
                 {
                     // *** Cleanup: close file ***
-                    if ( sr != null ) sr.Dispose();
+                    if ( sr != null )
+                        sr.Dispose();
                     sr = null;
                     fs.Close();
                 }
@@ -176,7 +176,8 @@ namespace CumulusUtils
             lock ( m_Lock )
             {
                 // *** If local cache was not modified, exit ***
-                if ( !m_CacheModified ) return;
+                if ( !m_CacheModified )
+                    return;
                 m_CacheModified = false;
 
                 // *** Open the file ***
@@ -187,7 +188,8 @@ namespace CumulusUtils
                     foreach ( KeyValuePair<string, Dictionary<string, string>> SectionPair in m_Sections )
                     {
                         Dictionary<string, string> Section = SectionPair.Value;
-                        if ( First ) sw.WriteLine();
+                        if ( First )
+                            sw.WriteLine();
                         First = true;
 
                         // *** Write the section name ***
@@ -266,7 +268,8 @@ namespace CumulusUtils
                 }
 
                 // *** Modify the value ***
-                if ( Section.ContainsKey( Key ) ) Section.Remove( Key );
+                if ( Section.ContainsKey( Key ) )
+                    Section.Remove( Key );
                 Section.Add( Key, Value );
             }
         }
@@ -275,7 +278,8 @@ namespace CumulusUtils
         // *** Encode byte array ***
         private string EncodeByteArray( byte[] Value )
         {
-            if ( Value == null ) return null;
+            if ( Value == null )
+                return null;
 
             StringBuilder sb = new StringBuilder();
             foreach ( byte b in Value )
@@ -288,7 +292,8 @@ namespace CumulusUtils
                 }
                 else
                 {
-                    if ( l < 2 ) sb.Append( '0' );
+                    if ( l < 2 )
+                        sb.Append( '0' );
                     sb.Append( hex );
                 }
             }
@@ -299,14 +304,17 @@ namespace CumulusUtils
         // *** Decode byte array ***
         private byte[] DecodeByteArray( string Value )
         {
-            if ( Value == null ) return null;
+            if ( Value == null )
+                return null;
 
             int l = Value.Length;
-            if ( l < 2 ) return Array.Empty<byte>();
+            if ( l < 2 )
+                return Array.Empty<byte>();
 
             l /= 2;
             byte[] Result = new byte[ l ];
-            for ( int i = 0; i < l; i++ ) Result[ i ] = Convert.ToByte( Value.Substring( i * 2, 2 ), 16 );
+            for ( int i = 0; i < l; i++ )
+                Result[ i ] = Convert.ToByte( Value.Substring( i * 2, 2 ), 16 );
             return Result;
         }
 
@@ -314,21 +322,24 @@ namespace CumulusUtils
         internal bool GetValue( string SectionName, string Key, bool DefaultValue )
         {
             string StringValue = GetValue( SectionName, Key, DefaultValue.ToString( System.Globalization.CultureInfo.InvariantCulture ) );
-            if ( int.TryParse( StringValue, out int Value ) ) return ( Value != 0 );
+            if ( int.TryParse( StringValue, out int Value ) )
+                return ( Value != 0 );
             return DefaultValue;
         }
 
         internal int GetValue( string SectionName, string Key, int DefaultValue )
         {
             string StringValue = GetValue( SectionName, Key, DefaultValue.ToString( CultureInfo.InvariantCulture ) );
-            if ( int.TryParse( StringValue, NumberStyles.Any, CultureInfo.InvariantCulture, out int Value ) ) return Value;
+            if ( int.TryParse( StringValue, NumberStyles.Any, CultureInfo.InvariantCulture, out int Value ) )
+                return Value;
             return DefaultValue;
         }
 
         internal double GetValue( string SectionName, string Key, double DefaultValue )
         {
             string StringValue = GetValue( SectionName, Key, DefaultValue.ToString( CultureInfo.InvariantCulture ) );
-            if ( double.TryParse( StringValue, NumberStyles.Any, CultureInfo.InvariantCulture, out double Value ) ) return Value;
+            if ( double.TryParse( StringValue, NumberStyles.Any, CultureInfo.InvariantCulture, out double Value ) )
+                return Value;
             return DefaultValue;
         }
 
@@ -348,7 +359,8 @@ namespace CumulusUtils
         internal DateTime GetValue( string SectionName, string Key, DateTime DefaultValue )
         {
             string StringValue = GetValue( SectionName, Key, DefaultValue.ToString( CultureInfo.InvariantCulture ) );
-            if ( DateTime.TryParse( StringValue, out DateTime Value ) ) return Value;
+            if ( DateTime.TryParse( StringValue, out DateTime Value ) )
+                return Value;
             return DefaultValue;
         }
 

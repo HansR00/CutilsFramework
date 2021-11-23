@@ -83,7 +83,7 @@ namespace CumulusUtils
 
             Latitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Latitude", "" ), CultureInfo.InvariantCulture );
             Longitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Longitude", "" ), CultureInfo.InvariantCulture );
-            Altitude = Convert.ToInt32( Sup.GetCumulusIniValue( "Station", "Altitude", "" ), CultureInfo.InvariantCulture ); ;
+            Altitude = Convert.ToInt32( Sup.GetCumulusIniValue( "Station", "Altitude", "" ), CultureInfo.InvariantCulture );
 
             // ShowSolar and HasSolar are the same for now, but it may be different as HasSolar determines whether there is a sensor, ShowSolar is to show it on screen....
             // Difficult. May change into one variable (which must be global then: also used in Graphs
@@ -220,7 +220,8 @@ namespace CumulusUtils
                 int DST = 0;
 
                 TZ = TimeZoneInfo.Local;
-                if ( TZ.SupportsDaylightSavingTime ) DST = TZ.GetUtcOffset( DateTime.Today.AddHours( 12 ) ).Hours - TZ.BaseUtcOffset.Hours;
+                if ( TZ.SupportsDaylightSavingTime )
+                    DST = TZ.GetUtcOffset( DateTime.Today.AddHours( 12 ) ).Hours - TZ.BaseUtcOffset.Hours;
 
                 indexFile.Append(
                         "<script>" +
@@ -318,7 +319,7 @@ namespace CumulusUtils
                   $"          <span class='nav-link' onclick=\"LoadUtilsReport('forecast.txt', false);\">{Sup.GetCUstringValue( "Website", "Forecast", "Forecast", false )}</span>" +
                   $"          <span class='nav-link' onclick=\"LoadUtilsReport('systeminfoTable.txt', false);\">{Sup.GetCUstringValue( "Website", "SystemInfo", "System Info", false )}</span>" );
 
-                if (CMXutils.CanDoMap)
+                if ( CMXutils.CanDoMap )
                     indexFile.Append( $"<span class='nav-link' onclick=\"LoadUtilsReport('maps.txt', false);\">{Sup.GetCUstringValue( "Website", "UserMap", "User Map", false )}</span>" );
 
                 if ( CMXutils.HasStationMapMenu )
@@ -592,7 +593,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   // Default: RainSpeedGauge
                   $"       { GeneratePanelCode( PanelsConfiguration[ 21 ] ) }" +
                   "    </div>" +
-                  "    <div class='col border rounded-lg CUCellBody' onclick=\"ClickGauge(23);\">");
+                  "    <div class='col border rounded-lg CUCellBody' onclick=\"ClickGauge(23);\">" );
 
 
                 if ( ShowSolar || ShowUV )
@@ -603,7 +604,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "    <div class='col border rounded-lg CUCellBody' onclick=\"ClickGauge(24);\">" +
                   // Default: UVGauge
                   $"       { GeneratePanelCode( PanelsConfiguration[ 23 ] ) }" +
-                  "    </div>");
+                  "    </div>" );
                 }
 
                 indexFile.Append( "  </div>" +
@@ -684,6 +685,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
         private void GenerateCUlib()
         {
             StringBuilder CUlibFile = new StringBuilder();
+            bool UseCMXMoonImage = Sup.GetUtilsIniValue( "Website", "UseCMXMoonImage", "false" ).ToLowerInvariant().Equals( "true" );
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}cumulusutils.js", false, Encoding.UTF8 ) )
             {
@@ -691,7 +693,8 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 int DST = 0;
 
                 TZ = TimeZoneInfo.Local;
-                if ( TZ.SupportsDaylightSavingTime ) DST = TZ.GetUtcOffset( DateTime.Now ).Hours - TZ.BaseUtcOffset.Hours;
+                if ( TZ.SupportsDaylightSavingTime )
+                    DST = TZ.GetUtcOffset( DateTime.Now ).Hours - TZ.BaseUtcOffset.Hours;
 
                 string DecimalSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
                 string TimeSeparator = ":";    // CultureInfo.CurrentCulture.DateTimeFormat.TimeSeparator;
@@ -773,7 +776,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "}" +
                   // Hours timer
                   "function HourFunctions() {" +
-                  "  MoveMoonPosition();" +
+                  $" MoveMoonPosition();" +
                   "  setTimeout('HourFunctions()', 60*60000);" +
                   "  return;" +
                   "}" +
@@ -924,7 +927,8 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "function DoRealtime(input) {" +
                   "let tmpInput = input;" );
 
-                if ( ReplaceDecimalSeparator ) CUlibFile.Append( $"  tmpInput = tmpInput.replace(/\\./g, '{DecimalSeparator}');" );
+                if ( ReplaceDecimalSeparator )
+                    CUlibFile.Append( $"  tmpInput = tmpInput.replace(/\\./g, '{DecimalSeparator}');" );
 
                 CUlibFile.Append( "" +
                           "  let realtime = tmpInput.split(' '); " +
@@ -1216,92 +1220,126 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                           "  angle = (hours + minutes / 60) / 24 * 360;" +
                           "  const line = d3.select('#HandOfClock')" +
                           "     .attr('transform', 'rotate(' + angle + ')');" +
-                          "}" +
-                          "var MoonRadius = 40;" +
-                          "var MoonLight = '#ffff80';" +
-                          "var MoonShadow = 'grey';" +
-                          "function CreateMoon() {" +
-                          "  const svgContainer = d3.select('#d3MoonDisc')" +
-                          "    .append('svg')" +
-                          "    .attr('id', 'moonDisc')" +
-                          "    .attr('viewBox', [-Radius, -Radius, 2 * Radius, 2 * Radius])" +
-                          "    .attr('width', 2 * Radius)" +
-                          "    .attr('height', 2 * Radius)" +
-                          "    .attr('style', 'mix-blend-mode: normal');" +
-                          "  if (Latitude < 0) { svgContainer.attr('transform', 'rotate(180)'); }" +
-                          "  const moon = d3.select('#moonDisc')" +
-                          "    .append('circle')" +
-                          "    .attr('id','baseMoon')" +
-                          "    .attr('r', MoonRadius)" +
-                          "    .attr('stroke', 'lightgrey')" +
-                          "    .attr('stroke-width', 1)" +
-                          "    .attr('fill', MoonShadow);" +
-                          "  const semiMoon = d3.select('#moonDisc')" +
-                          "    .append('path')" +
-                          "    .attr('id', 'semiMoon');" +
-                          "  const moonEllipse = d3.select('#moonDisc')" +
-                          "    .append('ellipse')" +
-                          "    .attr('id','ellipseMoon')" +
-                          "    .attr('rx', MoonRadius)" +
-                          "    .attr('ry', MoonRadius)" +
-                          "    .attr('fill', MoonLight);" +
-                          "}" +
-                          "function MoveMoonPosition(){" +
-                          "  var MoonTimes;" +
-                          "  var BaseMoonColor = '';" +
-                          "  var EllipseMoonColor = '';" +
-                          "  var SemiMoonColor = '';" +
-                          "  var CurrEndAngle = Math.PI;" +
-                          "  var thisDate = new Date();" +
-                          "  MoonTimes = SunCalc.getMoonTimes(thisDate, Latitude, Longitude);" +
-                          "  Illum = SunCalc.getMoonIllumination(thisDate);" +
-                          "  if (MoonTimes.alwaysUp)" +
-                          $"    $('#CUmoonrise').html('<br/>{Sup.GetCUstringValue( "Website", "24HrsAboveHorizon", "24 hrs above hor.", true )}');" +
-                          "  else if ((MoonTimes.alwaysDown))" +
-                          $"    $('#CUmoonset').html('<br/>{Sup.GetCUstringValue( "Website", "24HrsBelowHorizon", "24 hrs below hor.", true )}');" +
-                          "  else {" +
-                          "    for (let moonEvent in MoonTimes) {" +
-                          "      MoonTimes[moonEvent].setHours(MoonTimes[moonEvent].getHours() + TZ + DST - TZdiffBrowser2UTC);" +
-                          "    }" +
-                          "    if (!isNaN(MoonTimes.rise)) { $('#CUmoonrise').html(HHmm(MoonTimes.rise)); } else { $('#CUmoonrise').html('--:--'); } " +
-                          "    if (!isNaN(MoonTimes.set)) { $('#CUmoonset').html(HHmm(MoonTimes.set)); } else { $('#CUmoonset').html('--:--'); }" +
-                          "  }" +
-                          "  if (Illum.phase >= 0.5) {" +
-                          "    BaseMoonColor = MoonLight;" +
-                          "    SemiMoonColor = MoonShadow;" +
-                          "    ellipseXradius = Math.abs(Illum.phase - 0.75) / 0.25 * MoonRadius;" +
-                          "    if (Illum.phase > 0.75) {" +
-                          "      EllipseMoonColor = MoonShadow;" +
-                          "    }" +
-                          "    else {" +
-                          "      EllipseMoonColor = MoonLight;" +
-                          "    }" +
-                          "  }" +
-                          "  else {" +
-                          "    BaseMoonColor = MoonShadow;" +
-                          "    SemiMoonColor = MoonLight;" +
-                          "    ellipseXradius = Math.abs(Illum.phase - 0.25) / 0.25 * MoonRadius;" +
-                          "    if (Illum.phase > 0.25) {" +
-                          "      EllipseMoonColor = MoonLight;" +
-                          "    }" +
-                          "    else {" +
-                          "      EllipseMoonColor = MoonShadow;" +
-                          "    }" +
-                          "  }" +
-                          "  const arc = d3.arc()" +
-                          "    .innerRadius(0)" +
-                          "    .outerRadius(MoonRadius)" +
-                          "    .startAngle(0)" +
-                          "    .endAngle(CurrEndAngle);" +
-                          "  const baseMoon = d3.select('#baseMoon')" +
-                          "    .attr('fill', BaseMoonColor);" +
-                          "  const semiMoon = d3.select('#semiMoon')" +
-                          "    .attr('d', arc)" +
-                          "    .attr('fill', SemiMoonColor);" +
-                          "  const ellipseMoon = d3.select('#ellipseMoon')" +
-                          "    .attr('rx', ellipseXradius)" +
-                          "    .attr('fill', EllipseMoonColor);" +
-                          "}" +
+                          "}" );
+
+                if ( UseCMXMoonImage )
+                {
+                    CUlibFile.Append(
+                        "function CreateMoon() {" +
+                       $"    tmpMoon = '<img src=\"{ Sup.GetCumulusIniValue( "Graphs", "MoonImageFtpDest", "" ) }\">';" +
+                        "    $('#d3MoonDisc').html(tmpMoon);" +
+                        "}" +
+                        "function MoveMoonPosition() {" +
+                        "  var MoonTimes;" +
+                        "  var thisDate = new Date();" +
+                        "  MoonTimes = SunCalc.getMoonTimes(thisDate, Latitude, Longitude);" +
+                        "  Illum = SunCalc.getMoonIllumination(thisDate);" +
+                        "  if (MoonTimes.alwaysUp)" +
+                        $"    $('#CUmoonrise').html('<br/>{Sup.GetCUstringValue( "Website", "24HrsAboveHorizon", "24 hrs above hor.", true )}');" +
+                        "  else if ((MoonTimes.alwaysDown))" +
+                        $"    $('#CUmoonset').html('<br/>{Sup.GetCUstringValue( "Website", "24HrsBelowHorizon", "24 hrs below hor.", true )}');" +
+                        "  else {" +
+                        "    for (let moonEvent in MoonTimes) {" +
+                        "      MoonTimes[moonEvent].setHours(MoonTimes[moonEvent].getHours() + TZ + DST - TZdiffBrowser2UTC);" +
+                        "    }" +
+                        "    if (!isNaN(MoonTimes.rise)) { $('#CUmoonrise').html(HHmm(MoonTimes.rise)); } else { $('#CUmoonrise').html('--:--'); } " +
+                        "    if (!isNaN(MoonTimes.set)) { $('#CUmoonset').html(HHmm(MoonTimes.set)); } else { $('#CUmoonset').html('--:--'); }" +
+                        "  }" +
+                        "}"
+                        );
+                }
+                else
+                {
+                    CUlibFile.Append(
+                              "var MoonRadius = 40;" +
+                              "var MoonLight = '#ffff80';" +
+                              "var MoonShadow = 'grey';" +
+                              "function CreateMoon() {" +
+                              "  const svgContainer = d3.select('#d3MoonDisc')" +
+                              "    .append('svg')" +
+                              "    .attr('id', 'moonDisc')" +
+                              "    .attr('viewBox', [-Radius, -Radius, 2 * Radius, 2 * Radius])" +
+                              "    .attr('width', 2 * Radius)" +
+                              "    .attr('height', 2 * Radius)" +
+                              "    .attr('style', 'mix-blend-mode: normal');" +
+                              "  if (Latitude < 0) { svgContainer.attr('transform', 'rotate(180)'); }" +
+                              "  const moon = d3.select('#moonDisc')" +
+                              "    .append('circle')" +
+                              "    .attr('id','baseMoon')" +
+                              "    .attr('r', MoonRadius)" +
+                              "    .attr('stroke', 'lightgrey')" +
+                              "    .attr('stroke-width', 1)" +
+                              "    .attr('fill', MoonShadow);" +
+                              "  const semiMoon = d3.select('#moonDisc')" +
+                              "    .append('path')" +
+                              "    .attr('id', 'semiMoon');" +
+                              "  const moonEllipse = d3.select('#moonDisc')" +
+                              "    .append('ellipse')" +
+                              "    .attr('id','ellipseMoon')" +
+                              "    .attr('rx', MoonRadius)" +
+                              "    .attr('ry', MoonRadius)" +
+                              "    .attr('fill', MoonLight);" +
+                              "}" +
+                              "function MoveMoonPosition(){" +
+                              "  var MoonTimes;" +
+                              "  var BaseMoonColor = '';" +
+                              "  var EllipseMoonColor = '';" +
+                              "  var SemiMoonColor = '';" +
+                              "  var CurrEndAngle = Math.PI;" +
+                              "  var thisDate = new Date();" +
+                              "  MoonTimes = SunCalc.getMoonTimes(thisDate, Latitude, Longitude);" +
+                              "  Illum = SunCalc.getMoonIllumination(thisDate);" +
+                              "  if (MoonTimes.alwaysUp)" +
+                              $"    $('#CUmoonrise').html('<br/>{Sup.GetCUstringValue( "Website", "24HrsAboveHorizon", "24 hrs above hor.", true )}');" +
+                              "  else if ((MoonTimes.alwaysDown))" +
+                              $"    $('#CUmoonset').html('<br/>{Sup.GetCUstringValue( "Website", "24HrsBelowHorizon", "24 hrs below hor.", true )}');" +
+                              "  else {" +
+                              "    for (let moonEvent in MoonTimes) {" +
+                              "      MoonTimes[moonEvent].setHours(MoonTimes[moonEvent].getHours() + TZ + DST - TZdiffBrowser2UTC);" +
+                              "    }" +
+                              "    if (!isNaN(MoonTimes.rise)) { $('#CUmoonrise').html(HHmm(MoonTimes.rise)); } else { $('#CUmoonrise').html('--:--'); } " +
+                              "    if (!isNaN(MoonTimes.set)) { $('#CUmoonset').html(HHmm(MoonTimes.set)); } else { $('#CUmoonset').html('--:--'); }" +
+                              "  }" +
+                              "  if (Illum.phase >= 0.5) {" +
+                              "    BaseMoonColor = MoonLight;" +
+                              "    SemiMoonColor = MoonShadow;" +
+                              "    ellipseXradius = Math.abs(Illum.phase - 0.75) / 0.25 * MoonRadius;" +
+                              "    if (Illum.phase > 0.75) {" +
+                              "      EllipseMoonColor = MoonShadow;" +
+                              "    }" +
+                              "    else {" +
+                              "      EllipseMoonColor = MoonLight;" +
+                              "    }" +
+                              "  }" +
+                              "  else {" +
+                              "    BaseMoonColor = MoonShadow;" +
+                              "    SemiMoonColor = MoonLight;" +
+                              "    ellipseXradius = Math.abs(Illum.phase - 0.25) / 0.25 * MoonRadius;" +
+                              "    if (Illum.phase > 0.25) {" +
+                              "      EllipseMoonColor = MoonLight;" +
+                              "    }" +
+                              "    else {" +
+                              "      EllipseMoonColor = MoonShadow;" +
+                              "    }" +
+                              "  }" +
+                              "  const arc = d3.arc()" +
+                              "    .innerRadius(0)" +
+                              "    .outerRadius(MoonRadius)" +
+                              "    .startAngle(0)" +
+                              "    .endAngle(CurrEndAngle);" +
+                              "  const baseMoon = d3.select('#baseMoon')" +
+                              "    .attr('fill', BaseMoonColor);" +
+                              "  const semiMoon = d3.select('#semiMoon')" +
+                              "    .attr('d', arc)" +
+                              "    .attr('fill', SemiMoonColor);" +
+                              "  const ellipseMoon = d3.select('#ellipseMoon')" +
+                              "    .attr('rx', ellipseXradius)" +
+                              "    .attr('fill', EllipseMoonColor);" +
+                              "}" );
+
+                }
+
+                CUlibFile.Append(
                           "var DayMilliSeconds = 24*60*60*1000;" +
                           "function DurationOfPartOfDay(start, end) {" +
                           "  if ( isNaN(start) ) return 0;" +
@@ -2478,6 +2516,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     thisPanelCode =
                   $"        <h4 class='CUCellTitle'>{Sup.GetCUstringValue( "Website", "Moon", "Moon", false )}</h4>" +
                   "        <div id='d3MoonDisc'></div>" +
+                  "        <br/>" +
                   "        <p>" +
                   $"          <span>{Sup.GetCUstringValue( "Website", "Moonrise", "Moonrise", false )}: @&nbsp;</span><span id='CUmoonrise'></span><br />" +
                   $"          <span>{Sup.GetCUstringValue( "Website", "Moonset", "Moonset", false )}: @&nbsp;</span><span id='CUmoonset'></span >" +
@@ -2557,7 +2596,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     break;
 
                 case DashboardPanels.WindGauge2:
-                    thisPanelCode = 
+                    thisPanelCode =
                     "    <section id='WindGauge2'>" +
                     "    </section>";
                     break;
@@ -2643,9 +2682,12 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
             bool ValidColor3 = false;
             StringBuilder result = new StringBuilder();
 
-            if ( !String.IsNullOrEmpty( Color1 ) ) ValidColor1 = true;
-            if ( !String.IsNullOrEmpty( Color2 ) ) ValidColor2 = true;
-            if ( !String.IsNullOrEmpty( Color3 ) ) ValidColor3 = true;
+            if ( !String.IsNullOrEmpty( Color1 ) )
+                ValidColor1 = true;
+            if ( !String.IsNullOrEmpty( Color2 ) )
+                ValidColor2 = true;
+            if ( !String.IsNullOrEmpty( Color3 ) )
+                ValidColor3 = true;
 
             if ( ValidColor1 )
             {

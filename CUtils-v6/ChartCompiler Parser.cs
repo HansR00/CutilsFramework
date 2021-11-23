@@ -73,8 +73,10 @@ namespace CumulusUtils
                 DefLinesArray = File.ReadAllLines( $"{Sup.PathUtils}{Sup.CutilsChartsDef}", Encoding.UTF8 );
 
                 foreach ( string line in DefLinesArray )
-                    if ( string.IsNullOrEmpty( line ) || line[ 0 ] == ';' ) continue;
-                    else DefContents += line + ' ';
+                    if ( string.IsNullOrEmpty( line ) || line[ 0 ] == ';' )
+                        continue;
+                    else
+                        DefContents += line + ' ';
 
                 DefContents = Regex.Replace( DefContents, @"\s+", " " );
 
@@ -273,8 +275,10 @@ namespace CumulusUtils
                                 Datafiles = DatafilesALL;
                                 PlotvarUnits = PlotvarUnitsALL;
 
-                                if ( Keywords[ CurrPosition ].Equals( "Daily", cmp ) ) thisPlotvar.PlotvarRange = PlotvarRangeType.Daily;
-                                else thisPlotvar.PlotvarRange = PlotvarRangeType.All;
+                                if ( Keywords[ CurrPosition ].Equals( "Daily", cmp ) )
+                                    thisPlotvar.PlotvarRange = PlotvarRangeType.Daily;
+                                else
+                                    thisPlotvar.PlotvarRange = PlotvarRangeType.All;
 
                                 CurrPosition++;
                             }
@@ -339,7 +343,8 @@ namespace CumulusUtils
                                     Sup.LogTraceErrorMessage( $"Parsing User Charts: No Equation found for {thisPlotvar.Keyword}" );
                                     return null;
                                 }
-                                else thisPlotvar.EqAllVarList = new List<AllVarInfo>();
+                                else
+                                    thisPlotvar.EqAllVarList = new List<AllVarInfo>();
                             }
                             else if ( EquationRequired )
                             {
@@ -401,7 +406,8 @@ namespace CumulusUtils
                                 {
                                     thisPlotvar.Opacity = Convert.ToDouble( Keywords[ CurrPosition++ ], ci );
 
-                                    if ( thisPlotvar.Opacity < 0 || thisPlotvar.Opacity > 1 ) thisPlotvar.Opacity = 1.0;
+                                    if ( thisPlotvar.Opacity < 0 || thisPlotvar.Opacity > 1 )
+                                        thisPlotvar.Opacity = 1.0;
                                 }
                                 catch ( Exception e )
                                 {
@@ -500,7 +506,8 @@ namespace CumulusUtils
 
                         thisChart.PlotVars.Add( thisPlotvar );
 
-                        if ( thisPlotvar.GraphType == "scatter" ) thisChart.HasScatter = true;
+                        if ( thisPlotvar.GraphType == "scatter" )
+                            thisChart.HasScatter = true;
 
                     } while ( Keywords[ CurrPosition ].Equals( "Plot", cmp ) || Keywords[ CurrPosition ].Equals( "Stats", cmp ) );  // End while if PLOT keyword
 
@@ -570,7 +577,8 @@ namespace CumulusUtils
                             bool found = false;
                             foreach ( Plotvar plotvar2 in chart.PlotVars )
                                 if ( plotvar2.PlotVar == plotvar.PlotVar ) { found = true; break; }  // The STATS plotvar is also plotted for itself in this chart
-                                else continue;
+                                else
+                                    continue;
                             if ( !found ) { Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : STATS variable '{plotvar.Keyword}' not plotted in this CHART" ); return null; }
                         }
 

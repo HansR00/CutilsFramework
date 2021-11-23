@@ -176,7 +176,16 @@ namespace CumulusUtils
 
                 // The order is the same as in writing the realtime file so we follow that with i to give the index
                 //
-                ExtraTemp = 0; ExtraDP = 0; ExtraHum = 0; SoilTemp = 0; SoilMoisture = 0; AirQuality = 0; AirQualityAvg = 0; UserTemp = 0; LeafTemp = 0; LeafWetness = 0;
+                ExtraTemp = 0;
+                ExtraDP = 0;
+                ExtraHum = 0;
+                SoilTemp = 0;
+                SoilMoisture = 0;
+                AirQuality = 0;
+                AirQualityAvg = 0;
+                UserTemp = 0;
+                LeafTemp = 0;
+                LeafWetness = 0;
                 i = 0;
 
                 foreach ( ExtraSensor tmp in ExtraSensorList )
@@ -252,7 +261,16 @@ namespace CumulusUtils
 
                 StringBuilder buf = new StringBuilder();
 
-                ExtraTemp = 0; ExtraDP = 0; ExtraHum = 0; SoilTemp = 0; SoilMoisture = 0; AirQuality = 0; AirQualityAvg = 0; UserTemp = 0; LeafTemp = 0; LeafWetness = 0;
+                ExtraTemp = 0;
+                ExtraDP = 0;
+                ExtraHum = 0;
+                SoilTemp = 0;
+                SoilMoisture = 0;
+                AirQuality = 0;
+                AirQualityAvg = 0;
+                UserTemp = 0;
+                LeafTemp = 0;
+                LeafWetness = 0;
                 i = 0;
                 bool SwitchRowBackground = true;
 
@@ -381,19 +399,23 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( $"GenerateExtraSensorsCharts: Testing UserModificationExtraSensorCharts: {Sup.GetUtilsIniValue( "ExtraSensors", "UserModificationExtraSensorCharts", "false" )}" );
 
-            if ( Sup.GetUtilsIniValue( "ExtraSensors", "UserModificationExtraSensorCharts", "false" ).Equals( "true" ) ) return;
+            if ( Sup.GetUtilsIniValue( "ExtraSensors", "UserModificationExtraSensorCharts", "false" ).Equals( "true" ) )
+                return;
 
             CutilsCharts = File.ReadAllLines( $"{Sup.PathUtils}{Sup.CutilsChartsDef}" );
 
             for ( i = 0; i < CutilsCharts.Length; i++ )
                 if ( CutilsCharts[ i ].Contains( DemarcationLine ) )
                 {
-                    if ( i < CutilsCharts.Length - 1 ) for ( j = CutilsCharts.Length - 1; j > i; j-- ) CutilsCharts = CutilsCharts.RemoveAt( j );
+                    if ( i < CutilsCharts.Length - 1 )
+                        for ( j = CutilsCharts.Length - 1; j > i; j-- )
+                            CutilsCharts = CutilsCharts.RemoveAt( j );
                     DemarcationLineFound = true;
                 }
 
             CutilsChartsMods = CutilsCharts.ToList();
-            if ( !DemarcationLineFound ) CutilsChartsMods.Add( DemarcationLine );
+            if ( !DemarcationLineFound )
+                CutilsChartsMods.Add( DemarcationLine );
 
             // Now the road is clear to add the charts from the list of plotparameters per class (Temp, Humidity etc....
             ExtraSensorType currentType;
@@ -434,7 +456,8 @@ namespace CumulusUtils
                     CutilsChartsMods.Add( $"EndChart Output {Sup.ExtraSensorsCharts}" );
                     OutputWritten = true;
                 }
-                else CutilsChartsMods.Add( $"EndChart" );
+                else
+                    CutilsChartsMods.Add( $"EndChart" );
 
                 CutilsChartsMods.Add( "" );
             }
@@ -646,7 +669,7 @@ namespace CumulusUtils
 
                     // And immediately set the name as default in the Language file so the chart legend becomes comprehensible
                     // and does not require additional user action
-                    Sup.SetCUstringValue( "Compiler", tmp.PlotvarType, thisSensor);
+                    Sup.SetCUstringValue( "Compiler", tmp.PlotvarType, thisSensor );
                 }
             }
 
@@ -666,7 +689,7 @@ namespace CumulusUtils
                     };
 
                     ExtraSensorList.Add( tmp );
-                    Sup.SetCUstringValue( "Compiler", tmp.PlotvarType, thisSensor);
+                    Sup.SetCUstringValue( "Compiler", tmp.PlotvarType, thisSensor );
                 }
             }
 
@@ -686,7 +709,7 @@ namespace CumulusUtils
                     };
 
                     ExtraSensorList.Add( tmp );
-                    Sup.SetCUstringValue( "Compiler", tmp.PlotvarType, thisSensor);
+                    Sup.SetCUstringValue( "Compiler", tmp.PlotvarType, thisSensor );
                 }
             }
 
@@ -835,10 +858,12 @@ namespace CumulusUtils
                 DateTime timeStart = CMXutils.RunStarted;
                 string Filename = $"data/ExtraLog{timeStart:yyyy}{timeStart:MM}.txt";
 
-                if ( !File.Exists( Filename ) ) return; // Nothing to do, may not happen
+                if ( !File.Exists( Filename ) )
+                    return; // Nothing to do, may not happen
 
                 string filenameCopy = "data/" + "copy_" + Path.GetFileName( Filename );
-                if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
+                if ( File.Exists( filenameCopy ) )
+                    File.Delete( filenameCopy );
                 File.Copy( Filename, filenameCopy );
 
                 theseLines = File.ReadAllLines( filenameCopy );
@@ -892,7 +917,8 @@ namespace CumulusUtils
                 // @formatter:on
 
                 Sup.LogTraceInfoMessage( $"InitialiseExtraSensorList: Found the following Extra Sensors:" );
-                foreach ( ExtraSensor tmp in ExtraSensorList ) Sup.LogTraceInfoMessage( $"  {tmp.Name} of type: {tmp.Type}" );
+                foreach ( ExtraSensor tmp in ExtraSensorList )
+                    Sup.LogTraceInfoMessage( $"  {tmp.Name} of type: {tmp.Type}" );
             }
 
             return;

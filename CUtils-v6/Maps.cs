@@ -21,9 +21,6 @@
  *              C# / Visual Studio
  *              
  */
-using Renci.SshNet;
-using Renci.SshNet.Common;
-using Renci.SshNet.Sftp;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -33,6 +30,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
+using Renci.SshNet;
+using Renci.SshNet.Common;
+using Renci.SshNet.Sftp;
 
 namespace CumulusUtils
 {
@@ -134,9 +134,11 @@ namespace CumulusUtils
                 retval = await CMXutils.Isup.PostUrlDataAsync( new Uri( "https://meteo-wagenborgen.nl/cgi-bin/receive.pl" ), thisContent );
                 Sup.LogTraceInfoMessage( $"MapsOn : Success" );
             }
-            else retval = $"MapsOn: Must NOT send signature, has been done already : {DoneToday:dd/MM/yy}";
+            else
+                retval = $"MapsOn: Must NOT send signature, has been done already : {DoneToday:dd/MM/yy}";
 
-            if ( File.Exists( $"{Sup.PathUtils}{FileToSend}" ) ) File.Delete( $"{Sup.PathUtils}{FileToSend}" );
+            if ( File.Exists( $"{Sup.PathUtils}{FileToSend}" ) )
+                File.Delete( $"{Sup.PathUtils}{FileToSend}" );
 
             return retval;
         }
@@ -163,7 +165,8 @@ namespace CumulusUtils
             // This function is not used anymore so could be deleted.
             // If we find another use then this is where the upload must be.
 
-            if ( File.Exists( $"{Sup.PathUtils}{FileToSend}" ) ) File.Delete( $"{Sup.PathUtils}{FileToSend}" );
+            if ( File.Exists( $"{Sup.PathUtils}{FileToSend}" ) )
+                File.Delete( $"{Sup.PathUtils}{FileToSend}" );
         }
 
         #endregion
@@ -371,7 +374,8 @@ namespace CumulusUtils
 
                     // Remove an existing entry (only one, if more than the old one will disappear eventually by timing out
                     tmp = root.Descendants( "Station" ).Where( x => x.Element( "Name" ).Value.Equals( thisName ) ).FirstOrDefault();
-                    if ( tmp != null ) tmp.Remove();
+                    if ( tmp != null )
+                        tmp.Remove();
 
                     root.Add( thisStation );
                 }

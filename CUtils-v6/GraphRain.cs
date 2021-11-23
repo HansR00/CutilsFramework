@@ -100,7 +100,8 @@ namespace CumulusUtils
                 {
                     string iniKeyName = "NOAARainNorm" + Enum.GetNames( typeof( Months ) )[ i - 1 ];
                     string iniResult = Sup.GetCumulusIniValue( "NOAA", iniKeyName, "0.0" );
-                    if ( iniResult.IndexOf( ',' ) > 0 ) iniResult = iniResult.Replace( ',', '.' );
+                    if ( iniResult.IndexOf( ',' ) > 0 )
+                        iniResult = iniResult.Replace( ',', '.' );
                     NOAARainNormYearAv += (float) Convert.ToDouble( iniResult, CultureInfo.InvariantCulture );
                 }
 
@@ -118,7 +119,8 @@ namespace CumulusUtils
 
                 for ( j = YearMin; j <= YearMax; j++ )
                 {
-                    if ( ThisList.Where( x => x.ThisDate.Year == j ).Count() < 365 ) continue; // Incomplete year
+                    if ( ThisList.Where( x => x.ThisDate.Year == j ).Count() < 365 )
+                        continue; // Incomplete year
                     tmp.Add( ThisList.Where( x => x.ThisDate.Year == j ).Select( x => x.TotalRainThisDay ).Sum() );
                 }
 
@@ -231,7 +233,8 @@ namespace CumulusUtils
                     movingAverage += ( ThisList[ i - 1 ].TotalRainThisDay - ThisList[ i - period - 1 ].TotalRainThisDay ) / period;
                 }
 
-                if ( i >= period ) ma.Append( $"[{CuSupport.DateTimeToJS( ThisList[ i ].ThisDate )},{movingAverage.ToString( "F2", NumberFormatInfo.InvariantInfo )}],\n" );
+                if ( i >= period )
+                    ma.Append( $"[{CuSupport.DateTimeToJS( ThisList[ i ].ThisDate )},{movingAverage.ToString( "F2", NumberFormatInfo.InvariantInfo )}],\n" );
                 cr.Append( $"[{CuSupport.DateTimeToJS( ThisList[ i ].ThisDate )},{ThisList[ i ].YearToDateRain.ToString( "F1", NumberFormatInfo.InvariantInfo )}],\n" );
 
                 i++;
@@ -284,7 +287,8 @@ namespace CumulusUtils
                 {
                     string iniKeyName = "NOAARainNorm" + Enum.GetNames( typeof( Months ) )[ i - 1 ];
                     string iniResult = Sup.GetCumulusIniValue( "NOAA", iniKeyName, "0.0" );
-                    if ( iniResult.IndexOf( ',' ) > 0 ) iniResult = iniResult.Replace( ',', '.' );
+                    if ( iniResult.IndexOf( ',' ) > 0 )
+                        iniResult = iniResult.Replace( ',', '.' );
                     NOAARainNorm[ i - 1 ] = (float) Convert.ToDouble( iniResult, CultureInfo.InvariantCulture );
 
                     Sup.LogTraceInfoMessage( $" Normal values: {iniKeyName} -> {NOAARainNorm[ i - 1 ].ToString( "F1", CultureInfo.InvariantCulture )}" );
@@ -418,7 +422,8 @@ namespace CumulusUtils
 
             if ( StationAverage )
             {
-                if ( StationNormal ) sb.Append( "},{\n" );
+                if ( StationNormal )
+                    sb.Append( "},{\n" );
 
                 //Do the Station Average serie
                 sb.Append( $"       name : '{Sup.GetCUstringValue( "Graphs", "MTStationAverage", "Station average", true )}', color: 'grey', visible:true, zIndex:-2,\n" +
@@ -446,13 +451,16 @@ namespace CumulusUtils
             }
 
             bool PrintFirstAccolades = false;
-            if ( StationNormal || StationAverage ) PrintFirstAccolades = true;
+            if ( StationNormal || StationAverage )
+                PrintFirstAccolades = true;
 
             counter = 0;
             foreach ( float[] ValuesList in YearValues )
             {
-                if ( PrintFirstAccolades ) sb.Append( "},{\n" );
-                else PrintFirstAccolades = true;
+                if ( PrintFirstAccolades )
+                    sb.Append( "},{\n" );
+                else
+                    PrintFirstAccolades = true;
 
                 sb.Append( $"      name: '{years[ counter ].ToString( CultureInfo.InvariantCulture )}', \n" );
 
@@ -464,8 +472,10 @@ namespace CumulusUtils
 
                 for ( int i = 0; i < 12; i++ )
                 {
-                    if ( ValuesList[ i ] == -1 ) sb.Append( "null," );
-                    else sb.Append( $"{ValuesList[ i ].ToString( "F1", NumberFormatInfo.InvariantInfo )}," );
+                    if ( ValuesList[ i ] == -1 )
+                        sb.Append( "null," );
+                    else
+                        sb.Append( $"{ValuesList[ i ].ToString( "F1", NumberFormatInfo.InvariantInfo )}," );
                 }
 
                 sb.Remove( sb.Length - 1, 1 ); //remove last comma
@@ -481,7 +491,8 @@ namespace CumulusUtils
 
         private void GenerateYearRainStatistics( List<DayfileValue> Thislist, StringBuilder thisBuffer )
         {
-            StringBuilder sb = new StringBuilder(); ;
+            StringBuilder sb = new StringBuilder();
+            ;
 
             List<int> years = new List<int>();
             List<float> average = new List<float>();
@@ -495,7 +506,8 @@ namespace CumulusUtils
             {
                 List<DayfileValue> yearlist = Thislist.Where( x => x.ThisDate.Year == i ).ToList();
 
-                if ( yearlist.Count == 0 ) continue;
+                if ( yearlist.Count == 0 )
+                    continue;
 
                 Sup.LogTraceInfoMessage( $"Generating Year Rain Statistics, doing year {i}" );
 
@@ -627,7 +639,8 @@ namespace CumulusUtils
 
         private void GenerateYearMonthRainStatistics( List<DayfileValue> Thislist, Months thisMonth, StringBuilder thisBuffer )
         {
-            StringBuilder sb = new StringBuilder(); ;
+            StringBuilder sb = new StringBuilder();
+            ;
 
             List<int> years = new List<int>();
             List<float> average = new List<float>();

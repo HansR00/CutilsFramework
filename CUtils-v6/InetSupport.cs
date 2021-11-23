@@ -32,16 +32,15 @@
  *   https://www.venafi.com/blog/tls-session-resumption  // description!
  */
 
-using FluentFTP;
-using FluentFTP.Helpers;
-using Renci.SshNet;
-using Renci.SshNet.Common;
 using System;
 using System.IO;
 using System.Net.Http;
 using System.Security.Authentication;
 using System.Text;
 using System.Threading.Tasks;
+using FluentFTP;
+using Renci.SshNet;
+using Renci.SshNet.Common;
 
 namespace CumulusUtils
 {
@@ -246,15 +245,15 @@ namespace CumulusUtils
             bool Upload;
 
             // Immediately return if something was wrong at contructor time
-            if ( !FTPvalid ) return false;
+            if ( !FTPvalid )
+                return false;
 
             string URL = "";
             string Dir = "";
 
             Sup.LogDebugMessage( $"UploadFile: Start {localfile} => {remotefile}" );
 
-            if ( string.IsNullOrEmpty( remotefile ) || string.IsNullOrEmpty( localfile ) )
-            { Sup.LogTraceErrorMessage( $"UploadFile: Nothing uploaded either in or outfile are empty." ); return false; }           // No reason to upload if there is  no file or destination
+            if ( string.IsNullOrEmpty( remotefile ) || string.IsNullOrEmpty( localfile ) ) { Sup.LogTraceErrorMessage( $"UploadFile: Nothing uploaded either in or outfile are empty." ); return false; }           // No reason to upload if there is  no file or destination
 
             Upload = Sup.GetUtilsIniValue( "FTP site", "DoUploadFTP", "false" ).ToLower() == "true";
             if ( !Upload ) { Sup.LogTraceInfoMessage( $"UploadFile: DoUploadFTP configured false => No Upload." ); return false; }      // No reason to do the whole procedure if we don't have to upload
@@ -266,13 +265,16 @@ namespace CumulusUtils
             string CumulusUtilsDir = Sup.GetUtilsIniValue( "FTP site", "UploadDir", "" );
 
             // Check for URL in CumulusIni
-            if ( string.IsNullOrEmpty( CumulusURL ) ) Upload = false;                                                               // Kind of paranoia check but well,you never know :(
+            if ( string.IsNullOrEmpty( CumulusURL ) )
+                Upload = false;                                                               // Kind of paranoia check but well,you never know :(
             else
             {
                 URL = CumulusURL;
 
-                if ( string.IsNullOrEmpty( CumulusUtilsDir ) ) Dir = CumulusDir;
-                else Dir = CumulusUtilsDir;
+                if ( string.IsNullOrEmpty( CumulusUtilsDir ) )
+                    Dir = CumulusDir;
+                else
+                    Dir = CumulusUtilsDir;
             }
 
             if ( Upload )
@@ -297,19 +299,22 @@ namespace CumulusUtils
                     catch ( Exception e ) when ( e is TimeoutException )
                     {
                         Sup.LogTraceErrorMessage( $"UploadFile ERROR: Timeout Exception: {e.Message}" );
-                        if ( e.InnerException != null ) Sup.LogTraceErrorMessage( $"UploadFile ERROR: Inner Exception: {e.InnerException}" );
+                        if ( e.InnerException != null )
+                            Sup.LogTraceErrorMessage( $"UploadFile ERROR: Inner Exception: {e.InnerException}" );
                         return false;
                     }
                     catch ( Exception e ) when ( e is FtpAuthenticationException || e is FtpCommandException || e is FtpSecurityNotAvailableException )
                     {
                         Sup.LogTraceErrorMessage( $"UploadFile ERROR: Exception: {e.Message}" );
-                        if ( e.InnerException != null ) Sup.LogTraceErrorMessage( $"UploadFile ERROR: Inner Exception: {e.InnerException}" );
+                        if ( e.InnerException != null )
+                            Sup.LogTraceErrorMessage( $"UploadFile ERROR: Inner Exception: {e.InnerException}" );
                         return false;
                     }
                     catch ( Exception e )
                     {
                         Sup.LogTraceErrorMessage( $"UploadFile ERROR: General Exception: {e.Message}" );
-                        if ( e.InnerException != null ) Sup.LogTraceErrorMessage( $"UploadFile ERROR: Inner Exception: {e.InnerException}" );
+                        if ( e.InnerException != null )
+                            Sup.LogTraceErrorMessage( $"UploadFile ERROR: Inner Exception: {e.InnerException}" );
                         return false;
                     }
                 }
@@ -373,13 +378,15 @@ namespace CumulusUtils
                         catch ( Exception e ) when ( e is SshException )
                         {
                             Sup.LogTraceErrorMessage( $"Upload SFTP: Error uploading {localfile} to {remotefile} : {e.Message}" );
-                            if ( e.InnerException != null ) Sup.LogTraceErrorMessage( $"UploadFile SFTP ERROR: Inner Exception: {e.InnerException}" );
+                            if ( e.InnerException != null )
+                                Sup.LogTraceErrorMessage( $"UploadFile SFTP ERROR: Inner Exception: {e.InnerException}" );
                             return false;
                         }
                         catch ( Exception e )
                         {
                             Sup.LogTraceErrorMessage( $"Upload SFTP: ERROR General Exception: {e.Message}" );
-                            if ( e.InnerException != null ) Sup.LogTraceErrorMessage( $"UploadFile SFTP ERROR: Inner Exception: {e.InnerException}" );
+                            if ( e.InnerException != null )
+                                Sup.LogTraceErrorMessage( $"UploadFile SFTP ERROR: Inner Exception: {e.InnerException}" );
                             return false;
                         }
                     }
@@ -417,10 +424,11 @@ namespace CumulusUtils
                     Sup.LogTraceInfoMessage( $"GetUrlData Calling GetAsync" );
                     retval = await GetClient.GetStringAsync( thisURL );
                 }
-                catch ( Exception e) when (e is HttpRequestException)
+                catch ( Exception e ) when ( e is HttpRequestException )
                 {
                     Sup.LogTraceErrorMessage( $"GetUrlData : Exception - {e.Message}" );
-                    if ( e.InnerException != null ) Sup.LogTraceErrorMessage( $"GetUrlData: Inner Exception: {e.InnerException}" );
+                    if ( e.InnerException != null )
+                        Sup.LogTraceErrorMessage( $"GetUrlData: Inner Exception: {e.InnerException}" );
                     retval = "";
                 }
                 catch ( Exception e )
@@ -430,7 +438,7 @@ namespace CumulusUtils
                 }
             }
 
-                return retval;
+            return retval;
         } // EndOf GetUrlData
 
 
@@ -475,7 +483,8 @@ namespace CumulusUtils
                 catch ( Exception e ) when ( e is HttpRequestException )
                 {
                     Sup.LogTraceErrorMessage( $"PostUrlData : Exception - {e.Message}" );
-                    if ( e.InnerException != null ) Sup.LogTraceErrorMessage( $"PostUrlData: Inner Exception: {e.InnerException}" );
+                    if ( e.InnerException != null )
+                        Sup.LogTraceErrorMessage( $"PostUrlData: Inner Exception: {e.InnerException}" );
                     retval = "";
                 }
                 catch ( Exception e )
@@ -499,8 +508,10 @@ namespace CumulusUtils
                 if ( disposing )
                 {
                     // TODO: dispose managed state (managed objects).
-                    if ( clientFluentFTP != null ) clientFluentFTP.Dispose();
-                    if ( clientRenci != null ) clientRenci.Dispose();
+                    if ( clientFluentFTP != null )
+                        clientFluentFTP.Dispose();
+                    if ( clientRenci != null )
+                        clientRenci.Dispose();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.

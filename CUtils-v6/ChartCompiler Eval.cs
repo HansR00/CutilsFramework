@@ -50,8 +50,10 @@ namespace CumulusUtils
                 thisEq.Id = Keywords[ CurrPosition++ ];
                 thisEq.Equation = ParseSingleEval( thisEq.Id );
 
-                if ( string.IsNullOrEmpty( thisEq.Equation ) ) return false;
-                else AllEquations.Add( thisEq );
+                if ( string.IsNullOrEmpty( thisEq.Equation ) )
+                    return false;
+                else
+                    AllEquations.Add( thisEq );
             } while ( !Keywords[ CurrPosition ].Equals( "Chart", cmp ) && CurrPosition < Keywords.Count - 1 );
 
             Equationblock = false;  // Checked by the parser when substituting
@@ -163,7 +165,8 @@ namespace CumulusUtils
 
                         tmp1 = Term( Exp, ref i, ref EquationSubstitution );
 
-                        if ( tmp1 != null ) tmp += tmp1;
+                        if ( tmp1 != null )
+                            tmp += tmp1;
                         else
                         {
                             Sup.LogTraceErrorMessage( $"ParseExpression : Error in Expression, operator expected " );
@@ -199,7 +202,8 @@ namespace CumulusUtils
                     List<string> subExp = new List<string>();
                     string[] subExpArr;
 
-                    if ( string.IsNullOrEmpty( Exp[ i ] ) ) continue;
+                    if ( string.IsNullOrEmpty( Exp[ i ] ) )
+                        continue;
 
                     if ( Exp[ i ] == "(" )
                     {
@@ -209,9 +213,12 @@ namespace CumulusUtils
                         {
                             i++;
 
-                            if ( Exp[ i ] == "(" ) b++;
-                            else if ( Exp[ i ] == ")" && b > 0 ) b--;
-                            else if ( Exp[ i ] == ")" ) break;
+                            if ( Exp[ i ] == "(" )
+                                b++;
+                            else if ( Exp[ i ] == ")" && b > 0 )
+                                b--;
+                            else if ( Exp[ i ] == ")" )
+                                break;
 
                             subExp.Add( Exp[ i ] );
                         }
@@ -220,7 +227,8 @@ namespace CumulusUtils
 
                         tmpTerm = Expression( subExpArr, ref EquationSubstitution, false );
 
-                        if ( tmpTerm != null ) tmp += "(" + tmpTerm + ")";
+                        if ( tmpTerm != null )
+                            tmp += "(" + tmpTerm + ")";
                         else
                         {
                             Sup.LogTraceErrorMessage( $"Term : Error in Term in pos {i}" );
@@ -246,9 +254,12 @@ namespace CumulusUtils
                                 {
                                     i++;
 
-                                    if ( Exp[ i ] == "(" ) b++;
-                                    else if ( Exp[ i ] == ")" && b > 0 ) b--;
-                                    else if ( Exp[ i ] == ")" ) break;
+                                    if ( Exp[ i ] == "(" )
+                                        b++;
+                                    else if ( Exp[ i ] == ")" && b > 0 )
+                                        b--;
+                                    else if ( Exp[ i ] == ")" )
+                                        break;
 
                                     subExp.Add( Exp[ i ] );
                                 }
@@ -258,7 +269,8 @@ namespace CumulusUtils
                                 bool commaPermitted = "pow".Equals( tmpWord, cmp ) || "max".Equals( tmpWord, cmp ) || "min".Equals( tmpWord, cmp );
                                 tmpTerm = Expression( subExpArr, ref EquationSubstitution, commaPermitted );
 
-                                if ( tmpTerm != null ) tmp += "(" + tmpTerm + ")";
+                                if ( tmpTerm != null )
+                                    tmp += "(" + tmpTerm + ")";
                                 else
                                 {
                                     Sup.LogTraceErrorMessage( $"Term : Error in Term in pos {i}" );
@@ -276,7 +288,8 @@ namespace CumulusUtils
                             // not a function so must be a variable and we're done, return to expression
                             if ( !Equationblock )
                             {
-                                if ( Array.Exists( PlotvarKeyword, word => word.Equals( tmpWord, cmp ) ) ) tmp += tmpWord;
+                                if ( Array.Exists( PlotvarKeyword, word => word.Equals( tmpWord, cmp ) ) )
+                                    tmp += tmpWord;
                                 else
                                 {
                                     bool EqExists = false;
@@ -299,7 +312,8 @@ namespace CumulusUtils
                                     }
                                 }
                             }
-                            else tmp += tmpWord;
+                            else
+                                tmp += tmpWord;
                         }
                     }
                     else if ( char.IsDigit( Exp[ i ][ 0 ] ) )
@@ -313,7 +327,8 @@ namespace CumulusUtils
                         try { nmbr = Convert.ToDouble( tmp, ci ); }
                         catch ( Exception e ) { Sup.LogTraceErrorMessage( $"Term : Error in Expression, not a number {tmp} ({e.Message})" ); return null; }
                     }
-                    else break;  // Can only be an operator, anything else is an error
+                    else
+                        break;  // Can only be an operator, anything else is an error
                 }
 
                 return tmp;
@@ -341,13 +356,16 @@ namespace CumulusUtils
                 if ( Array.Exists( Operators, word => word.Equals( "" + rawExpression[ i ] ) ) ||
                      Array.Exists( Brackets, word => word.Equals( "" + rawExpression[ i ] ) ) )
                 {
-                    if ( !string.IsNullOrEmpty( tmp ) ) rawExp.Add( tmp );
+                    if ( !string.IsNullOrEmpty( tmp ) )
+                        rawExp.Add( tmp );
                     rawExp.Add( "" + rawExpression[ i ] );
                     tmp = "";
                 }
-                else tmp += rawExpression[ i ];
+                else
+                    tmp += rawExpression[ i ];
 
-            if ( !string.IsNullOrEmpty( tmp ) ) rawExp.Add( tmp );
+            if ( !string.IsNullOrEmpty( tmp ) )
+                rawExp.Add( tmp );
 
             return rawExp;
         }

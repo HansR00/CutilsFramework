@@ -96,8 +96,6 @@
  * 4) https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/demo/combo-meteogram
  */
 
-using FluentFTP;
-using FluentFTP.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -106,6 +104,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentFTP;
 
 namespace CumulusUtils
 {
@@ -197,15 +196,18 @@ namespace CumulusUtils
                     Environment.Exit( 0 );
                 }
 
-                if ( !Directory.Exists( "utils" ) ) Directory.CreateDirectory( "utils" );
-                if ( !Directory.Exists( "utils/utilslog" ) ) Directory.CreateDirectory( "utils/utilslog" );
+                if ( !Directory.Exists( "utils" ) )
+                    Directory.CreateDirectory( "utils" );
+                if ( !Directory.Exists( "utils/utilslog" ) )
+                    Directory.CreateDirectory( "utils/utilslog" );
 
                 string[] files = Directory.GetFiles( "utils/utilslog" );
 
                 foreach ( string file in files )
                 {
                     FileInfo fi = new FileInfo( file );
-                    if ( fi.CreationTime < DateTime.Now.AddDays( -2 ) ) fi.Delete();
+                    if ( fi.CreationTime < DateTime.Now.AddDays( -2 ) )
+                        fi.Delete();
                 }
 
                 Sup = new CuSupport();
@@ -253,7 +255,8 @@ namespace CumulusUtils
 
                     CanDoMap = tmp.CheckMonoVersion();
                 }
-                else CanDoMap = true;
+                else
+                    CanDoMap = true;
 
 
                 HasStationMapMenu = Sup.GetUtilsIniValue( "StationMap", "StationMapMenu", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
@@ -291,6 +294,7 @@ namespace CumulusUtils
             finally
             {
                 Sup.LogDebugMessage( $"All done, Entering the finally section...; Closing down." );
+
                 if ( FtpListener != null )
                 {
                     Sup.LogDebugMessage( "Disposing FtpListener..." );
@@ -440,7 +444,8 @@ namespace CumulusUtils
                 ExtraSensors fncs = new ExtraSensors( Sup );
 
                 fncs.DoExtraSensors();
-                if ( ParticipatesSensorCommunity ) fncs.CreateSensorCommunityMapIframeFile();
+                if ( ParticipatesSensorCommunity )
+                    fncs.CreateSensorCommunityMapIframeFile();
 
                 watch.Stop();
                 Sup.LogTraceInfoMessage( $"Timing of ExtraSensors generation = {watch.ElapsedMilliseconds} ms" );
@@ -586,7 +591,8 @@ namespace CumulusUtils
                     retval = await fncs.MapsOn();
                     Sup.LogTraceInfoMessage( retval );
 
-                    if ( DoCreateMap && File.Exists( "paMuCetaerCyaM.txt" ) ) fncs.CreateMap();
+                    if ( DoCreateMap && File.Exists( "paMuCetaerCyaM.txt" ) )
+                        fncs.CreateMap();
                     else if ( !File.Exists( "paMuCetaerCyaM.txt" ) )  // 
                     {
                         Sup.LogTraceInfoMessage( $"Fetch Map: Fetching the generated map" );
@@ -595,8 +601,10 @@ namespace CumulusUtils
 
                         if ( !string.IsNullOrEmpty( retval ) )
                         {
-                            if ( retval.Length > 50 ) Sup.LogTraceInfoMessage( $"Main: {retval.Substring( 0, 50 )}" );
-                            else Sup.LogTraceInfoMessage( $"Main: {retval}" );
+                            if ( retval.Length > 50 )
+                                Sup.LogTraceInfoMessage( $"Main: {retval.Substring( 0, 50 )}" );
+                            else
+                                Sup.LogTraceInfoMessage( $"Main: {retval}" );
 
                             File.WriteAllText( $"{ Sup.PathUtils}{ Sup.MapsOutputFilename}", retval, Encoding.UTF8 );
 
@@ -630,7 +638,8 @@ namespace CumulusUtils
                                 Sup.LogTraceInfoMessage( $"Fetch Map: Added jQuery library to the Map." );
                             } // Should we include the jQuery library?
                         } // Did the map.txt download correctly?
-                        else Sup.LogTraceErrorMessage( "Fetch Map from server: Fail... empty map." );
+                        else
+                            Sup.LogTraceErrorMessage( "Fetch Map from server: Fail... empty map." );
                     }
 
                     fncs.Dispose();
@@ -658,7 +667,8 @@ namespace CumulusUtils
                             foreach ( OutputDef thisOutput in theseOutputs )
                             {
                                 if ( !thisOutput.Filename.Equals( Sup.ExtraSensorsCharts ) )
-                                    foreach ( ChartDef tmpChart in thisOutput.TheseCharts ) tmpChartsList.Add( tmpChart );
+                                    foreach ( ChartDef tmpChart in thisOutput.TheseCharts )
+                                        tmpChartsList.Add( tmpChart );
                             }
 
                             fncs.GenerateUserAskedData( tmpChartsList );
@@ -817,7 +827,8 @@ namespace CumulusUtils
             if ( DoExtraSensors && HasExtraSensors && !Thrifty )
             {
                 Isup.UploadFile( $"{Sup.ExtraSensorsOutputFilename}", $"{Sup.PathUtils}{Sup.ExtraSensorsOutputFilename}" );
-                if ( ParticipatesSensorCommunity ) Isup.UploadFile( $"{Sup.SensorCommunityOutputFilename}", $"{Sup.PathUtils}{Sup.SensorCommunityOutputFilename}" );
+                if ( ParticipatesSensorCommunity )
+                    Isup.UploadFile( $"{Sup.SensorCommunityOutputFilename}", $"{Sup.PathUtils}{Sup.SensorCommunityOutputFilename}" );
             }
 
             if ( DoYadr )
@@ -837,8 +848,10 @@ namespace CumulusUtils
                 {
                     string[] filelist;
 
-                    if ( RunStarted.DayOfYear == 1 ) filelist = Directory.GetFiles( Sup.PathUtils, $"Yadr*{RunStarted.Year - 1}.txt" );
-                    else filelist = Directory.GetFiles( Sup.PathUtils, $"Yadr*{RunStarted.Year}.txt" );
+                    if ( RunStarted.DayOfYear == 1 )
+                        filelist = Directory.GetFiles( Sup.PathUtils, $"Yadr*{RunStarted.Year - 1}.txt" );
+                    else
+                        filelist = Directory.GetFiles( Sup.PathUtils, $"Yadr*{RunStarted.Year}.txt" );
 
                     if ( RunStarted.DayOfYear == 2 )
                     {
@@ -866,7 +879,8 @@ namespace CumulusUtils
                     FileInfo fi = new FileInfo( file );
 
                     Sup.LogTraceInfoMessage( $"Uploading => {fi.Name} from {Sup.PathUtils}{fi.Name}" );
-                    if ( Isup.UploadFile( $"{fi.Name}", $"{Sup.PathUtils}{fi.Name}" ) ) fi.Delete();
+                    if ( Isup.UploadFile( $"{fi.Name}", $"{Sup.PathUtils}{fi.Name}" ) )
+                        fi.Delete();
                     // else leave the files so they can be uploaded manually
                 }
             }
@@ -937,28 +951,45 @@ namespace CumulusUtils
                     }
                     else
                     {
-                        if ( s.Equals( "Top10", StringComparison.OrdinalIgnoreCase ) ) DoTop10 = true;
-                        if ( s.Equals( "pwsFWI", StringComparison.OrdinalIgnoreCase ) ) DoPwsFWI = true;
-                        if ( s.Equals( "Sysinfo", StringComparison.OrdinalIgnoreCase ) ) DoSystemChk = true;
-                        if ( s.Equals( "Graphs", StringComparison.OrdinalIgnoreCase ) ) DoGraphs = true;
-                        if ( s.Equals( "CreateMap", StringComparison.OrdinalIgnoreCase ) ) DoCreateMap = true;    // Undocumented feature only for the keeper of the map
-                        if ( s.Equals( "Yadr", StringComparison.OrdinalIgnoreCase ) ) DoYadr = true;
-                        if ( s.Equals( "Records", StringComparison.OrdinalIgnoreCase ) ) DoRecords = true;
-                        if ( s.Equals( "NOAA", StringComparison.OrdinalIgnoreCase ) ) DoNOAA = true;
-                        if ( s.Equals( "DayRecords", StringComparison.OrdinalIgnoreCase ) ) DoDayRecords = true;
-                        if ( s.Equals( "CheckOnly", StringComparison.OrdinalIgnoreCase ) ) DoCheckOnly = true;
-                        if ( s.Equals( "Forecast", StringComparison.OrdinalIgnoreCase ) ) DoForecast = true;
-                        if ( s.Equals( "UserReports", StringComparison.OrdinalIgnoreCase ) ) DoUserReports = true;
-                        if ( s.Equals( "StationMap", StringComparison.OrdinalIgnoreCase ) ) DoStationMap = true;
-                        if ( s.Equals( "MeteoCam", StringComparison.OrdinalIgnoreCase ) ) DoMeteoCam = true;
-                        if ( s.Equals( "AirLink", StringComparison.OrdinalIgnoreCase ) ) DoAirLink = true;
-                        if ( s.Equals( "CompileOnly", StringComparison.OrdinalIgnoreCase ) ) DoCompileOnly = true;
+                        if ( s.Equals( "Top10", StringComparison.OrdinalIgnoreCase ) )
+                            DoTop10 = true;
+                        if ( s.Equals( "pwsFWI", StringComparison.OrdinalIgnoreCase ) )
+                            DoPwsFWI = true;
+                        if ( s.Equals( "Sysinfo", StringComparison.OrdinalIgnoreCase ) )
+                            DoSystemChk = true;
+                        if ( s.Equals( "Graphs", StringComparison.OrdinalIgnoreCase ) )
+                            DoGraphs = true;
+                        if ( s.Equals( "CreateMap", StringComparison.OrdinalIgnoreCase ) )
+                            DoCreateMap = true;    // Undocumented feature only for the keeper of the map
+                        if ( s.Equals( "Yadr", StringComparison.OrdinalIgnoreCase ) )
+                            DoYadr = true;
+                        if ( s.Equals( "Records", StringComparison.OrdinalIgnoreCase ) )
+                            DoRecords = true;
+                        if ( s.Equals( "NOAA", StringComparison.OrdinalIgnoreCase ) )
+                            DoNOAA = true;
+                        if ( s.Equals( "DayRecords", StringComparison.OrdinalIgnoreCase ) )
+                            DoDayRecords = true;
+                        if ( s.Equals( "CheckOnly", StringComparison.OrdinalIgnoreCase ) )
+                            DoCheckOnly = true;
+                        if ( s.Equals( "Forecast", StringComparison.OrdinalIgnoreCase ) )
+                            DoForecast = true;
+                        if ( s.Equals( "UserReports", StringComparison.OrdinalIgnoreCase ) )
+                            DoUserReports = true;
+                        if ( s.Equals( "StationMap", StringComparison.OrdinalIgnoreCase ) )
+                            DoStationMap = true;
+                        if ( s.Equals( "MeteoCam", StringComparison.OrdinalIgnoreCase ) )
+                            DoMeteoCam = true;
+                        if ( s.Equals( "AirLink", StringComparison.OrdinalIgnoreCase ) )
+                            DoAirLink = true;
+                        if ( s.Equals( "CompileOnly", StringComparison.OrdinalIgnoreCase ) )
+                            DoCompileOnly = true;
                         if ( s.Equals( "ExtraSensors", StringComparison.OrdinalIgnoreCase ) )
                         {
                             DoExtraSensors = true;
                             DoCompileOnly = true;  // Implicit for Extra Sensors
                         }
-                        if ( s.Equals( "UserAskedData", StringComparison.OrdinalIgnoreCase ) ) DoUserAskedData = true;
+                        if ( s.Equals( "UserAskedData", StringComparison.OrdinalIgnoreCase ) )
+                            DoUserAskedData = true;
                     }
                 }
             }

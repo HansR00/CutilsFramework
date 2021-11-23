@@ -87,12 +87,18 @@ namespace CumulusUtils
             Windrunbase = Windrunstep = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "WindrunClassWidth", "75" ), CultureInfo.InvariantCulture );
 
             // we have 13 classes in the table. If it becomes more or less we have to adjust tables
-            for ( i = 0; i < 13; i++ ) TempRanges[ i ] = Celsius2UnitUsed( Tempbase + i * Tempstep );
-            for ( i = 0; i < 13; i++ ) RainRanges[ i ] = Millimeter2UnitUsed( Rainbase + i * Rainstep );
-            for ( i = 0; i < 13; i++ ) WindRanges[ i ] = KilometerPerHour2UnitUsed( WindRanges[ i ] );
-            for ( i = 0; i < 13; i++ ) WindrunRanges[ i ] = Windrunbase + i * Windrunstep;
-            for ( i = 0; i < 13; i++ ) PressRanges[ i ] = HectoPascal2UnitUsed( Pressbase + i * Pressstep ); // PressRanges[12] = 1043;
-            for ( i = 0; i < 13; i++ ) HumRanges[ i ] = Humbase + i * Humstep;
+            for ( i = 0; i < 13; i++ )
+                TempRanges[ i ] = Celsius2UnitUsed( Tempbase + i * Tempstep );
+            for ( i = 0; i < 13; i++ )
+                RainRanges[ i ] = Millimeter2UnitUsed( Rainbase + i * Rainstep );
+            for ( i = 0; i < 13; i++ )
+                WindRanges[ i ] = KilometerPerHour2UnitUsed( WindRanges[ i ] );
+            for ( i = 0; i < 13; i++ )
+                WindrunRanges[ i ] = Windrunbase + i * Windrunstep;
+            for ( i = 0; i < 13; i++ )
+                PressRanges[ i ] = HectoPascal2UnitUsed( Pressbase + i * Pressstep ); // PressRanges[12] = 1043;
+            for ( i = 0; i < 13; i++ )
+                HumRanges[ i ] = Humbase + i * Humstep;
 
             WindDescr[ 0 ] = Sup.GetCUstringValue( "Yadr", "BeaufortDesc0", "Calm", false );
             WindDescr[ 1 ] = Sup.GetCUstringValue( "Yadr", "BeaufortDesc1", "Light air", false );
@@ -131,7 +137,8 @@ namespace CumulusUtils
 
             if ( CMXutils.Thrifty )
             {
-                if ( CMXutils.RunStarted.DayOfYear == 2 ) GenerateYadrTxtfile( YearMin, YearMax );
+                if ( CMXutils.RunStarted.DayOfYear == 2 )
+                    GenerateYadrTxtfile( YearMin, YearMax );
 
                 // So now, do only the current year
                 YearMin = YearMax;
@@ -327,13 +334,15 @@ namespace CumulusUtils
 
                     of.WriteLine( "<tr>" );
                     of.WriteLine( $"  <th rowspan='2' class='labels'  style='width:7%;'>{Sup.GetCUstringValue( "Yadr", "DayText", "Day", false )}</th>" );
-                    for ( int i = 0; i < 12; i++ ) of.WriteLine( $"  <th colspan='2' class='labels' style='width:6%;'>{Months[ i ]}</th>" );
+                    for ( int i = 0; i < 12; i++ )
+                        of.WriteLine( $"  <th colspan='2' class='labels' style='width:6%;'>{Months[ i ]}</th>" );
                     of.WriteLine( "</tr>" );
 
                     of.WriteLine( "<tr>" );
-                    for ( int i = 0; i < 12; i++ ) of.WriteLine( $"  <th class='labels' style='width:2%;'>" +
-                              $"{Sup.GetCUstringValue( "Yadr", "HighShortText", "Hi", false )}</th><th class='labels' style='width:2%;'>" +
-                              $"{Sup.GetCUstringValue( "Yadr", "LowShortText", "Lo", false )}</th>" );
+                    for ( int i = 0; i < 12; i++ )
+                        of.WriteLine( $"  <th class='labels' style='width:2%;'>" +
+   $"{Sup.GetCUstringValue( "Yadr", "HighShortText", "Hi", false )}</th><th class='labels' style='width:2%;'>" +
+   $"{Sup.GetCUstringValue( "Yadr", "LowShortText", "Lo", false )}</th>" );
                     of.WriteLine( "</tr>\n" );
 
                     for ( int thisDay = 1; thisDay <= 31; thisDay++ )
@@ -377,7 +386,8 @@ namespace CumulusUtils
                     of.WriteLine( "<tr><th class='labels' style='width:7%;'>&nbsp;</th>" );
 
                     // Write the tableheaders for the months  
-                    for ( int i = 0; i < 12; i++ ) of.WriteLine( $"  <th colspan ='2'  class='labels' style='width:6%;'>{Months[ i ]}</th>" );
+                    for ( int i = 0; i < 12; i++ )
+                        of.WriteLine( $"  <th colspan ='2'  class='labels' style='width:6%;'>{Months[ i ]}</th>" );
 
                     float[,] values = new float[ 5, 12 ];
 
@@ -412,11 +422,21 @@ namespace CumulusUtils
 
                         switch ( statistic )
                         {
-                            case 0: sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "HighLongText", "High", false )}</td>" ); break;
-                            case 1: sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "AvgHighText", "Avg High", false )}</td>" ); break;
-                            case 2: sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "MeanText", "Mean", false )}</td>" ); break;
-                            case 3: sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "AvgLowText", "Avg Low", false )}</td>" ); break;
-                            case 4: sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "LowLongText", "Low", false )}</td>" ); break;
+                            case 0:
+                                sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "HighLongText", "High", false )}</td>" );
+                                break;
+                            case 1:
+                                sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "AvgHighText", "Avg High", false )}</td>" );
+                                break;
+                            case 2:
+                                sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "MeanText", "Mean", false )}</td>" );
+                                break;
+                            case 3:
+                                sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "AvgLowText", "Avg Low", false )}</td>" );
+                                break;
+                            case 4:
+                                sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "LowLongText", "Low", false )}</td>" );
+                                break;
                         }
 
 
@@ -488,7 +508,8 @@ namespace CumulusUtils
 
                     of.WriteLine( "<tr>" );
                     of.WriteLine( $"  <th class='labels'>{Sup.GetCUstringValue( "Yadr", "DayText", "Day", false )}</th>" );
-                    for ( int i = 0; i < 12; i++ ) of.WriteLine( $"  <th class='labels'>{Months[ i ]}</th>" );
+                    for ( int i = 0; i < 12; i++ )
+                        of.WriteLine( $"  <th class='labels'>{Months[ i ]}</th>" );
                     of.WriteLine( "</tr>" );
 
                     for ( int thisDay = 1; thisDay <= 31; thisDay++ )
@@ -530,7 +551,8 @@ namespace CumulusUtils
                     of.WriteLine( "<tr><td class='separator' colspan='13'>&nbsp;</td></tr>" );
                     of.WriteLine( "<tr>" );
                     of.WriteLine( "<th class='labels' style='width:7%;'>&nbsp;</th>" );
-                    for ( int i = 0; i < 12; i++ ) of.WriteLine( $"  <th class='labels' style='width:6%;'>{Months[ i ]}</th>" ); //  ??
+                    for ( int i = 0; i < 12; i++ )
+                        of.WriteLine( $"  <th class='labels' style='width:6%;'>{Months[ i ]}</th>" ); //  ??
                     of.WriteLine( "</tr>" );
 
                     float[,] values = new float[ 3, 12 ];
@@ -563,9 +585,15 @@ namespace CumulusUtils
 
                         switch ( statistic )
                         {
-                            case 0: sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "RainDaysText", "Rain Days", false )}</td>" ); break;
-                            case 1: sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "MonthTotal", "Month Total", false )}</td>" ); break;
-                            case 2: sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "YtdTotalText", "Ytd Total", false )}</td>" ); break;
+                            case 0:
+                                sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "RainDaysText", "Rain Days", false )}</td>" );
+                                break;
+                            case 1:
+                                sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "MonthTotal", "Month Total", false )}</td>" );
+                                break;
+                            case 2:
+                                sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "YtdTotalText", "Ytd Total", false )}</td>" );
+                                break;
                         }
 
 
@@ -636,12 +664,14 @@ namespace CumulusUtils
 
                     of.WriteLine( "<tr>" );
                     of.WriteLine( $"  <th rowspan='2' class='labels' style='width:7%;'>{Sup.GetCUstringValue( "Yadr", "DayText", "Day", false )}</th>" );
-                    for ( i = 0; i < 12; i++ ) of.WriteLine( $"  <th colspan='2' class='labels' style='width:6%;'>{Months[ i ]}</th>" );
+                    for ( i = 0; i < 12; i++ )
+                        of.WriteLine( $"  <th colspan='2' class='labels' style='width:6%;'>{Months[ i ]}</th>" );
                     of.WriteLine( "</tr>" );
 
                     of.WriteLine( "<tr>" );
-                    for ( i = 0; i < 12; i++ ) of.WriteLine( $"  <th class='labels' style='width:3%;'>{Sup.GetCUstringValue( "Yadr", "AvgText", "Avg", false )}</th>" +
-                        $"<th class='labels' style='width:3%;'>{Sup.GetCUstringValue( "Yadr", "HiText", "Hi", false )}</th>" );
+                    for ( i = 0; i < 12; i++ )
+                        of.WriteLine( $"  <th class='labels' style='width:3%;'>{Sup.GetCUstringValue( "Yadr", "AvgText", "Avg", false )}</th>" +
+ $"<th class='labels' style='width:3%;'>{Sup.GetCUstringValue( "Yadr", "HiText", "Hi", false )}</th>" );
                     of.WriteLine( "</tr>\n" );
 
                     for ( int thisDay = 1; thisDay <= 31; thisDay++ )
@@ -681,7 +711,8 @@ namespace CumulusUtils
                     of.WriteLine( "<tr><td class=\"separator\" colspan=\"25\">&nbsp;</td></tr>" );
                     of.WriteLine( "<tr>" );
                     of.WriteLine( "<th class='labels' style='width:8%;'>&nbsp;</th>" );
-                    for ( i = 0; i < 12; i++ ) of.WriteLine( $"  <th colspan='2' class='labels' style='width:6%;'>{Months[ i ]}</th>" );
+                    for ( i = 0; i < 12; i++ )
+                        of.WriteLine( $"  <th colspan='2' class='labels' style='width:6%;'>{Months[ i ]}</th>" );
                     of.WriteLine( "</tr>\n" );
 
                     float[,] values = new float[ 4, 12 ];
@@ -715,8 +746,12 @@ namespace CumulusUtils
 
                         switch ( statistic )
                         {
-                            case 0: sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "MonthAvgText", "Month Avg", false )}</td>" ); break;
-                            case 1: sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "MonthHighText", "Month High", false )}</td>" ); break;
+                            case 0:
+                                sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "MonthAvgText", "Month Avg", false )}</td>" );
+                                break;
+                            case 1:
+                                sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "MonthHighText", "Month High", false )}</td>" );
+                                break;
                         }
 
 
@@ -792,7 +827,8 @@ namespace CumulusUtils
 
                     of.WriteLine( "<tr>" );
                     of.WriteLine( $"  <th class=\"labels\">{Sup.GetCUstringValue( "Yadr", "DayText", "Day", false )}</th>" );
-                    for ( int i = 0; i < 12; i++ ) of.WriteLine( $"  <th class=\"labels\">{Months[ i ]}</th>" );
+                    for ( int i = 0; i < 12; i++ )
+                        of.WriteLine( $"  <th class=\"labels\">{Months[ i ]}</th>" );
                     of.WriteLine( "</tr>" );
 
                     for ( int thisDay = 1; thisDay <= 31; thisDay++ )
@@ -835,7 +871,8 @@ namespace CumulusUtils
 
                     of.WriteLine( "<tr>" );
                     of.WriteLine( "<th class='labels' style='width:7%;'>&nbsp;</th>" );
-                    for ( int i = 0; i < 12; i++ ) of.WriteLine( $"  <th class='labels' style='width:6%;'>{Months[ i ]}</th>" );
+                    for ( int i = 0; i < 12; i++ )
+                        of.WriteLine( $"  <th class='labels' style='width:6%;'>{Months[ i ]}</th>" );
                     of.WriteLine( "</tr>" );
 
                     float[,] values = new float[ 3, 12 ];
@@ -867,9 +904,15 @@ namespace CumulusUtils
 
                         switch ( statistic )
                         {
-                            case 0: sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "HighLongText", "High", false )}</td>" ); break;
-                            case 1: sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "MeanText", "Mean", false )}</td>" ); break;
-                            case 2: sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "LowLongText", "Low", false )}</td>" ); break;
+                            case 0:
+                                sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "HighLongText", "High", false )}</td>" );
+                                break;
+                            case 1:
+                                sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "MeanText", "Mean", false )}</td>" );
+                                break;
+                            case 2:
+                                sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "LowLongText", "Low", false )}</td>" );
+                                break;
                         }
 
 
@@ -943,7 +986,8 @@ namespace CumulusUtils
                     of.WriteLine( "<tr>" );
                     of.WriteLine( $"  <th class='labels' style='width:6%;'>{Sup.GetCUstringValue( "Yadr", "DayText", "Day", false )}</th>" );
                     of.WriteLine( $"  <th class='labels' style='width:9%;'>{Sup.GetCUstringValue( "Yadr", "High/Low", "High/Low", false )}</th>" );
-                    for ( int i = 0; i < 12; i++ ) of.WriteLine( $"  <th class='labels' style='width:7%;'>{Months[ i ]}</th>" );
+                    for ( int i = 0; i < 12; i++ )
+                        of.WriteLine( $"  <th class='labels' style='width:7%;'>{Months[ i ]}</th>" );
                     of.WriteLine( "</tr>" );
 
                     for ( int thisDay = 1; thisDay <= 31; thisDay++ )
@@ -1008,7 +1052,8 @@ namespace CumulusUtils
 
                     of.WriteLine( "<tr>" );
                     of.WriteLine( "<th class='labels' style='width:7%;'>&nbsp;</th>" );
-                    for ( int i = 0; i < 12; i++ ) of.WriteLine( $"  <th class='labels' style='width:6%;'>{Months[ i ]}</th>" ); //  ??
+                    for ( int i = 0; i < 12; i++ )
+                        of.WriteLine( $"  <th class='labels' style='width:6%;'>{Months[ i ]}</th>" ); //  ??
                     of.WriteLine( "</tr>" );
 
                     float[,] values = new float[ 3, 12 ];
@@ -1040,9 +1085,15 @@ namespace CumulusUtils
 
                         switch ( statistic )
                         {
-                            case 0: sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "HighLongText", "High", false )}</td>" ); break;
-                            case 1: sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "MeanText", "Mean", false )}</td>" ); break;
-                            case 2: sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "LowLongText", "Low", false )}</td>" ); break;
+                            case 0:
+                                sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "HighLongText", "High", false )}</td>" );
+                                break;
+                            case 1:
+                                sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "MeanText", "Mean", false )}</td>" );
+                                break;
+                            case 2:
+                                sb.Append( $"<td class=\"reportttl\">{Sup.GetCUstringValue( "Yadr", "LowLongText", "Low", false )}</td>" );
+                                break;
                         }
 
 
@@ -1115,13 +1166,15 @@ namespace CumulusUtils
 
                     of.WriteLine( "<tr>" );
                     of.WriteLine( $"  <th rowspan='2' class='labels'  style='width:7%;'>{Sup.GetCUstringValue( "Yadr", "DayText", "Day", false )}</th>" );
-                    for ( int i = 0; i < 12; i++ ) of.WriteLine( $"  <th colspan='2' class='labels' style='width:6%;'>{Months[ i ]}</th>" );
+                    for ( int i = 0; i < 12; i++ )
+                        of.WriteLine( $"  <th colspan='2' class='labels' style='width:6%;'>{Months[ i ]}</th>" );
                     of.WriteLine( "</tr>" );
 
                     of.WriteLine( "<tr>" );
-                    for ( int i = 0; i < 12; i++ ) of.WriteLine( $"  <th class='labels' style='width:2%;'>" +
-                        $"{Sup.GetCUstringValue( "Yadr", "HighShortText", "Hi", false )}</th><th class='labels' style='width:2%;'>" +
-                        $"{Sup.GetCUstringValue( "Yadr", "LowShortText", "Lo", false )}</th>" );
+                    for ( int i = 0; i < 12; i++ )
+                        of.WriteLine( $"  <th class='labels' style='width:2%;'>" +
+$"{Sup.GetCUstringValue( "Yadr", "HighShortText", "Hi", false )}</th><th class='labels' style='width:2%;'>" +
+$"{Sup.GetCUstringValue( "Yadr", "LowShortText", "Lo", false )}</th>" );
                     of.WriteLine( "</tr>\n" );
 
                     for ( int thisDay = 1; thisDay <= 31; thisDay++ )
@@ -1166,7 +1219,8 @@ namespace CumulusUtils
                     of.WriteLine( "<tr><th class='labels' style='width:7%;'>&nbsp;</th>" );
 
                     // Write the tableheaders for the months  
-                    for ( int i = 0; i < 12; i++ ) of.WriteLine( $"<th class='labels' style='width:6%;'>{Months[ i ]}</th>" );
+                    for ( int i = 0; i < 12; i++ )
+                        of.WriteLine( $"<th class='labels' style='width:6%;'>{Months[ i ]}</th>" );
                     of.WriteLine( "</tr>" );
 
                     float[,] values = new float[ 5, 12 ];
@@ -1202,11 +1256,21 @@ namespace CumulusUtils
 
                         switch ( statistic )
                         {
-                            case 0: sb.Append( $"<td class='reportttl'>{Sup.GetCUstringValue( "Yadr", "HighLongText", "High", false )}</td>" ); break;
-                            case 1: sb.Append( $"<td class='reportttl'>{Sup.GetCUstringValue( "Yadr", "AvgHighText", "Avg High", false )}</td>" ); break;
-                            case 2: sb.Append( $"<td class='reportttl'>{Sup.GetCUstringValue( "Yadr", "MeanText", "Mean", false )}</td>" ); break;
-                            case 3: sb.Append( $"<td class='reportttl'>{Sup.GetCUstringValue( "Yadr", "AvgLowText", "Avg Low", false )}</td>" ); break;
-                            case 4: sb.Append( $"<td class='reportttl'>{Sup.GetCUstringValue( "Yadr", "LowLongText", "Low", false )}</td>" ); break;
+                            case 0:
+                                sb.Append( $"<td class='reportttl'>{Sup.GetCUstringValue( "Yadr", "HighLongText", "High", false )}</td>" );
+                                break;
+                            case 1:
+                                sb.Append( $"<td class='reportttl'>{Sup.GetCUstringValue( "Yadr", "AvgHighText", "Avg High", false )}</td>" );
+                                break;
+                            case 2:
+                                sb.Append( $"<td class='reportttl'>{Sup.GetCUstringValue( "Yadr", "MeanText", "Mean", false )}</td>" );
+                                break;
+                            case 3:
+                                sb.Append( $"<td class='reportttl'>{Sup.GetCUstringValue( "Yadr", "AvgLowText", "Avg Low", false )}</td>" );
+                                break;
+                            case 4:
+                                sb.Append( $"<td class='reportttl'>{Sup.GetCUstringValue( "Yadr", "LowLongText", "Low", false )}</td>" );
+                                break;
                         }
 
                         for ( int thisMonth = 0; thisMonth < 12; thisMonth++ )
@@ -1262,8 +1326,10 @@ namespace CumulusUtils
                 {
                     string c;
 
-                    if ( i <= 2 || i >= 10 ) c = "color:white;";
-                    else c = "";
+                    if ( i <= 2 || i >= 10 )
+                        c = "color:white;";
+                    else
+                        c = "";
 
                     if ( thisValue <= TempRanges[ i ] )
                         return $"class=\"levelT\" style=\"{c}background-color:{TempColorFormat[ i ]}\"";
@@ -1282,13 +1348,15 @@ namespace CumulusUtils
         {
             try
             {
-                if ( thisValue < 0.2 ) return "class=\"reportday\"";
+                if ( thisValue < 0.2 )
+                    return "class=\"reportday\"";
                 else
                     for ( int i = 0; i < 13; i++ )
                     {
                         string c = "";
 
-                        if ( i >= 10 ) c = "color:white;";
+                        if ( i >= 10 )
+                            c = "color:white;";
 
                         if ( thisValue <= RainRanges[ i ] )
                         {
@@ -1311,7 +1379,8 @@ namespace CumulusUtils
             try
             {
                 for ( int i = 0; i < 13; i++ )
-                    if ( thisValue < WindRanges[ i ] ) return $"class=\"beaufort\" style=\"background-color: {WindColorFormat[ i ]}\"";
+                    if ( thisValue < WindRanges[ i ] )
+                        return $"class=\"beaufort\" style=\"background-color: {WindColorFormat[ i ]}\"";
             }
             catch ( IndexOutOfRangeException e )
             {
@@ -1359,8 +1428,10 @@ namespace CumulusUtils
                 {
                     string c;
 
-                    if ( i <= 2 || i >= 10 ) c = "color:white;";
-                    else c = "";
+                    if ( i <= 2 || i >= 10 )
+                        c = "color:white;";
+                    else
+                        c = "";
 
                     if ( thisValue <= PressRanges[ i ] )
                         return $"class=\"levelT\" style=\"{c}background-color:{PressColorFormat[ i ]}\"";
@@ -1383,8 +1454,10 @@ namespace CumulusUtils
                 {
                     string c;
 
-                    if ( i <= 2 || i >= 10 ) c = "color:white;";
-                    else c = "";
+                    if ( i <= 2 || i >= 10 )
+                        c = "color:white;";
+                    else
+                        c = "";
 
                     if ( thisValue < HumRanges[ i ] )
                         return $"class=\"levelT\" style=\"{c}background-color:{HumColorFormat[ i - 1 ]}\"";

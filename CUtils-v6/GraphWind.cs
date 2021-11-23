@@ -574,7 +574,8 @@ namespace CumulusUtils
 #endif
 
             // Watch out if we get more WindGraphs, this then should be the first graph you want to see and it gets a multiple choice
-            if ( !GraphWindRose ) thisBuffer.AppendLine( "    eval('graph' + $('#yearRun option:selected').val() + '();');" );
+            if ( !GraphWindRose )
+                thisBuffer.AppendLine( "    eval('graph' + $('#yearRun option:selected').val() + '();');" );
             thisBuffer.AppendLine( "  $('#yearRun').change(function() {" );
 
 #if !RELEASE

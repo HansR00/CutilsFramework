@@ -157,12 +157,14 @@ namespace CumulusUtils
             MaxWindrun = (int) thisList.Select( x => x.TotalWindRun ).Max();
             NrofWindrunClasses = MaxWindrun / WindrunClassWidth + 1;
             WindrunClasses = new int[ NrofWindrunClasses ];   // { 100, 200, 300, 400, 500, 600, 700}; // in km, other unist need conversion
-            for ( int i = 0; i < NrofWindrunClasses; i++ ) WindrunClasses[ i ] = WindrunClassWidth + WindrunClassWidth * i;
+            for ( int i = 0; i < NrofWindrunClasses; i++ )
+                WindrunClasses[ i ] = WindrunClassWidth + WindrunClassWidth * i;
 
             // For scatter graph
             UseHighchartsBoostModule = Sup.GetUtilsIniValue( "Graphs", "UseHighchartsBoostModule", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
 
-            if ( UseHighchartsBoostModule ) Sup.LogTraceInfoMessage( "Graphx: Using Highcharts Boost Module!" );
+            if ( UseHighchartsBoostModule )
+                Sup.LogTraceInfoMessage( "Graphx: Using Highcharts Boost Module!" );
 
             // Just the initialisation. The reading is done once when the list is asked.
             thisMonthfile = new Monthfile( Sup );
@@ -235,7 +237,8 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "  var w1 = document.getElementById(\"graph\").value;" );
                     thisBuffer.AppendLine( $"  if (w1 == 'DailyRain') {{ graph{GraphNr++}(); }}" );
                     thisBuffer.AppendLine( $"  if (w1 == 'MonthlyRain') {{ graph{GraphNr++}(); }}" );
-                    thisBuffer.AppendLine( $"  if (w1 == 'YearRainstatistics') {{ graph{GraphNr++}(); }}" ); GraphNrForYearMonthRainStats = GraphNr;
+                    thisBuffer.AppendLine( $"  if (w1 == 'YearRainstatistics') {{ graph{GraphNr++}(); }}" );
+                    GraphNrForYearMonthRainStats = GraphNr;
                     thisBuffer.AppendLine( $"  if (w1 == 'YearMonthRainstatistics') {{ $('[id*=\"YMR\"]').show(); graph{GraphNr++}{CMXutils.RunStarted.Month}(); }}" );
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
@@ -254,10 +257,14 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "<p>" );
                     thisBuffer.AppendLine( "  <select id='graph'>" );
 
-                    if ( GraphDailyRain ) thisBuffer.AppendLine( $"    <option value='DailyRain' selected>{Sup.GetCUstringValue( "Graphs", "DRMenuText", "Daily Rain", false )}</option>" );
-                    if ( GraphMonthlyRain ) thisBuffer.AppendLine( $"    <option value='MonthlyRain'>{Sup.GetCUstringValue( "Graphs", "MRMenuText", "Monthly Rain", false )}</option>" );
-                    if ( GraphYearRainStats ) thisBuffer.AppendLine( $"    <option value='YearRainstatistics'>{Sup.GetCUstringValue( "Graphs", "YSRMenuText", "Yearly Rain statistics", false )}</option>" );
-                    if ( GraphYearMonthRainStats ) thisBuffer.AppendLine( $"    <option value='YearMonthRainstatistics'>{Sup.GetCUstringValue( "Graphs", "YMSRMenuText", "Yearly Rain statistics per Month", false )}</option>" );
+                    if ( GraphDailyRain )
+                        thisBuffer.AppendLine( $"    <option value='DailyRain' selected>{Sup.GetCUstringValue( "Graphs", "DRMenuText", "Daily Rain", false )}</option>" );
+                    if ( GraphMonthlyRain )
+                        thisBuffer.AppendLine( $"    <option value='MonthlyRain'>{Sup.GetCUstringValue( "Graphs", "MRMenuText", "Monthly Rain", false )}</option>" );
+                    if ( GraphYearRainStats )
+                        thisBuffer.AppendLine( $"    <option value='YearRainstatistics'>{Sup.GetCUstringValue( "Graphs", "YSRMenuText", "Yearly Rain statistics", false )}</option>" );
+                    if ( GraphYearMonthRainStats )
+                        thisBuffer.AppendLine( $"    <option value='YearMonthRainstatistics'>{Sup.GetCUstringValue( "Graphs", "YMSRMenuText", "Yearly Rain statistics per Month", false )}</option>" );
 
                     thisBuffer.AppendLine( " </select>" );
                     thisBuffer.AppendLine( "</p>" );
@@ -286,21 +293,24 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "<script>" );
                     thisBuffer.AppendLine( $"function graph{GraphNr++}()" );
                     thisBuffer.AppendLine( "{" );
-                    if ( GraphDailyRain ) GenDailyRainGraphData( ThisList, thisBuffer );
+                    if ( GraphDailyRain )
+                        GenDailyRainGraphData( ThisList, thisBuffer );
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
 
                     thisBuffer.AppendLine( "<script>" );
                     thisBuffer.AppendLine( $"function graph{GraphNr++}()" );
                     thisBuffer.AppendLine( "{" );
-                    if ( GraphMonthlyRain ) GenMonthlyRainvsNOAAGraphData( ThisList, thisBuffer );
+                    if ( GraphMonthlyRain )
+                        GenMonthlyRainvsNOAAGraphData( ThisList, thisBuffer );
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
 
                     thisBuffer.AppendLine( "<script>" );
                     thisBuffer.AppendLine( $"function graph{GraphNr++}()" );
                     thisBuffer.AppendLine( "{" );
-                    if ( GraphYearRainStats ) GenerateYearRainStatistics( ThisList, thisBuffer );
+                    if ( GraphYearRainStats )
+                        GenerateYearRainStatistics( ThisList, thisBuffer );
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
 
@@ -311,7 +321,8 @@ namespace CumulusUtils
                         thisBuffer.AppendLine( "<script>" );
                         thisBuffer.AppendLine( $"function graph{GraphNr}{thisMonth}()" );
                         thisBuffer.AppendLine( "{" );
-                        if ( GraphYearMonthRainStats ) GenerateYearMonthRainStatistics( ThisList, (Months) thisMonth, thisBuffer );
+                        if ( GraphYearMonthRainStats )
+                            GenerateYearMonthRainStatistics( ThisList, (Months) thisMonth, thisBuffer );
                         thisBuffer.AppendLine( "}" );
                         thisBuffer.AppendLine( "</script>" );
                     }
@@ -373,7 +384,8 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "  $('[id*=\"YMT\"]').hide(); $('[id^=\"Heatmap\"]').hide();" );
                     thisBuffer.AppendLine( "  var w1 = document.getElementById(\"graph\").value;" );
                     thisBuffer.AppendLine( $"  if (w1 == 'MonthlyTemp') {{ graph{GraphNr++}(); }}" );
-                    thisBuffer.AppendLine( $"  if (w1 == 'YearTempstatistics') {{ graph{GraphNr++}(); }}" ); GraphNrForYearMonthTempStats = GraphNr;
+                    thisBuffer.AppendLine( $"  if (w1 == 'YearTempstatistics') {{ graph{GraphNr++}(); }}" );
+                    GraphNrForYearMonthTempStats = GraphNr;
                     thisBuffer.AppendLine( $"  if (w1 == 'YearMonthTempstatistics') {{ $('[id*=\"YMT\"]').show(); graph{GraphNr++}{CMXutils.RunStarted.Month}(); }}" );
                     thisBuffer.AppendLine( $"  if (w1 == 'WarmerDays') {{ graph{GraphNr++}(); }}" );
                     thisBuffer.AppendLine( $"  if (w1 == 'Heatmap') {{ $('[id*=\"Heatmap\"]').show(); graph{GraphNr++}(); }}" );
@@ -394,11 +406,16 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "<p>" );
                     thisBuffer.AppendLine( "  <select id='graph'>" );
 
-                    if ( GraphMonthlyTemperature ) thisBuffer.AppendLine( $"    <option value='MonthlyTemp' selected>{Sup.GetCUstringValue( "Graphs", "MTMenuText", "Monthly Temperatures", false )}</option>" );
-                    if ( GraphYearTempStats ) thisBuffer.AppendLine( $"    <option value='YearTempstatistics'>{Sup.GetCUstringValue( "Graphs", "YSTMenuText", "Yearly Temperature statistics", false )}</option>" );
-                    if ( GraphYearMonthTempStats ) thisBuffer.AppendLine( $"    <option value='YearMonthTempstatistics'>{Sup.GetCUstringValue( "Graphs", "YMSTMenuText", "Yearly Temperature statistics per Month", false )}</option>" );
-                    if ( GraphWarmerDays ) thisBuffer.AppendLine( $"    <option value='WarmerDays'>{Sup.GetCUstringValue( "Graphs", "WDMenuText", "Warmer Days", false )}</option>" );
-                    if ( GraphHeatmap ) thisBuffer.AppendLine( $"    <option value='Heatmap'>{Sup.GetCUstringValue( "Graphs", "HMMenuText", "Heat Map", false )}</option>" );
+                    if ( GraphMonthlyTemperature )
+                        thisBuffer.AppendLine( $"    <option value='MonthlyTemp' selected>{Sup.GetCUstringValue( "Graphs", "MTMenuText", "Monthly Temperatures", false )}</option>" );
+                    if ( GraphYearTempStats )
+                        thisBuffer.AppendLine( $"    <option value='YearTempstatistics'>{Sup.GetCUstringValue( "Graphs", "YSTMenuText", "Yearly Temperature statistics", false )}</option>" );
+                    if ( GraphYearMonthTempStats )
+                        thisBuffer.AppendLine( $"    <option value='YearMonthTempstatistics'>{Sup.GetCUstringValue( "Graphs", "YMSTMenuText", "Yearly Temperature statistics per Month", false )}</option>" );
+                    if ( GraphWarmerDays )
+                        thisBuffer.AppendLine( $"    <option value='WarmerDays'>{Sup.GetCUstringValue( "Graphs", "WDMenuText", "Warmer Days", false )}</option>" );
+                    if ( GraphHeatmap )
+                        thisBuffer.AppendLine( $"    <option value='Heatmap'>{Sup.GetCUstringValue( "Graphs", "HMMenuText", "Heat Map", false )}</option>" );
 
                     thisBuffer.AppendLine( " </select>" );
                     thisBuffer.AppendLine( "</p>" );
@@ -432,14 +449,16 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "<script>" );
                     thisBuffer.AppendLine( $"function graph{GraphNr++}()" );
                     thisBuffer.AppendLine( "{" );
-                    if ( GraphMonthlyTemperature ) GenMonthlyTempvsNOAAGraphData( ThisList, thisBuffer );
+                    if ( GraphMonthlyTemperature )
+                        GenMonthlyTempvsNOAAGraphData( ThisList, thisBuffer );
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
 
                     thisBuffer.AppendLine( "<script>" );
                     thisBuffer.AppendLine( $"function graph{GraphNr++}()" );
                     thisBuffer.AppendLine( "{" );
-                    if ( GraphYearTempStats ) GenerateYearTempStatistics( ThisList, thisBuffer );
+                    if ( GraphYearTempStats )
+                        GenerateYearTempStatistics( ThisList, thisBuffer );
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
 
@@ -450,7 +469,8 @@ namespace CumulusUtils
                         thisBuffer.AppendLine( "<script>" );
                         thisBuffer.AppendLine( $"function graph{GraphNr}{thisMonth}()" );
                         thisBuffer.AppendLine( "{" );
-                        if ( GraphYearMonthTempStats ) GenerateYearMonthTempStatistics( ThisList, (Months) thisMonth, thisBuffer );
+                        if ( GraphYearMonthTempStats )
+                            GenerateYearMonthTempStatistics( ThisList, (Months) thisMonth, thisBuffer );
                         thisBuffer.AppendLine( "}" );
                         thisBuffer.AppendLine( "</script>" );
                     }
@@ -460,7 +480,8 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "<script>" );
                     thisBuffer.AppendLine( $"function graph{GraphNr++}()" );
                     thisBuffer.AppendLine( "{" );
-                    if ( GraphWarmerDays ) GenStackedWarmDaysGraphData( ThisList, thisBuffer );
+                    if ( GraphWarmerDays )
+                        GenStackedWarmDaysGraphData( ThisList, thisBuffer );
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
 
@@ -496,7 +517,8 @@ namespace CumulusUtils
 
                     thisBuffer.AppendLine( $"function graph{GraphNr++}()" );
                     thisBuffer.AppendLine( "{" );
-                    if ( GraphHeatmap ) GenerateHeatMap( ThisList, thisBuffer );
+                    if ( GraphHeatmap )
+                        GenerateHeatMap( ThisList, thisBuffer );
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
 
@@ -588,8 +610,10 @@ namespace CumulusUtils
                     //thisBuffer.AppendLine( "<p style='text-align:center;'> " );
                     thisBuffer.AppendLine( "  <select id='graph'>" );
 
-                    if ( GraphWindRose ) thisBuffer.AppendLine( $"    <option value='WindRose' selected>{Sup.GetCUstringValue( "Graphs", "WindRoseMenuText", "WindRose", false )}</option>" );
-                    if ( GraphWindrun ) thisBuffer.AppendLine( $"    <option value='Windrun' {( GraphWindRose ? "" : "selected" )}>{Sup.GetCUstringValue( "Graphs", "WindRunMenuText", "Windrun", false )}</option>" );
+                    if ( GraphWindRose )
+                        thisBuffer.AppendLine( $"    <option value='WindRose' selected>{Sup.GetCUstringValue( "Graphs", "WindRoseMenuText", "WindRose", false )}</option>" );
+                    if ( GraphWindrun )
+                        thisBuffer.AppendLine( $"    <option value='Windrun' {( GraphWindRose ? "" : "selected" )}>{Sup.GetCUstringValue( "Graphs", "WindRunMenuText", "Windrun", false )}</option>" );
 
                     thisBuffer.AppendLine( "  </select>" );
                     //thisBuffer.AppendLine( "</p>" );
@@ -659,7 +683,8 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "<script>" );
                     thisBuffer.AppendLine( $"function graphAllYears()" );
                     thisBuffer.AppendLine( "{" );
-                    if ( GraphWindrun ) GenerateWindrunStatistics( ThisList, thisBuffer, 0 );
+                    if ( GraphWindrun )
+                        GenerateWindrunStatistics( ThisList, thisBuffer, 0 );
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
 
@@ -668,7 +693,8 @@ namespace CumulusUtils
                         thisBuffer.AppendLine( "<script>" );
                         thisBuffer.AppendLine( $"function graph{i}()" );
                         thisBuffer.AppendLine( "{" );
-                        if ( GraphWindrun ) GenerateWindrunStatistics( ThisList, thisBuffer, i );
+                        if ( GraphWindrun )
+                            GenerateWindrunStatistics( ThisList, thisBuffer, i );
                         thisBuffer.AppendLine( "}" );
                         thisBuffer.AppendLine( "</script>" );
                     }
@@ -740,9 +766,11 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "  $('[id*=\"YMSH\"]').hide();" );
                     thisBuffer.AppendLine( "  $('[id*=\"YMSE\"]').hide();" );
                     thisBuffer.AppendLine( "  var w1 = $('#graph option:selected').val();" );
-                    thisBuffer.AppendLine( $"  if (w1 == 'SolarHoursStats') {{ graph{GraphNr++}(); }}" ); GraphNrForYearMonthSolarHoursStats = GraphNr;
+                    thisBuffer.AppendLine( $"  if (w1 == 'SolarHoursStats') {{ graph{GraphNr++}(); }}" );
+                    GraphNrForYearMonthSolarHoursStats = GraphNr;
                     thisBuffer.AppendLine( $"  if (w1 == 'YearMonthSolarHoursStats') {{ $('[id*=\"YMSH\"]').show(); graph{GraphNr++}{CMXutils.RunStarted.Month}(); }}" );
-                    thisBuffer.AppendLine( $"  if (w1 == 'InsolationStats') {{ graph{GraphNr++}(); }}" ); GraphNrForYearMonthSolarEnergyStats = GraphNr;
+                    thisBuffer.AppendLine( $"  if (w1 == 'InsolationStats') {{ graph{GraphNr++}(); }}" );
+                    GraphNrForYearMonthSolarEnergyStats = GraphNr;
                     thisBuffer.AppendLine( $"  if (w1 == 'YearMonthInsolationStats') {{ $('[id*=\"YMSE\"]').show(); graph{GraphNr++}{CMXutils.RunStarted.Month}(); }}" );
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
@@ -760,10 +788,14 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "<p> " );
                     thisBuffer.AppendLine( "  <select id='graph'>" );
 
-                    if ( GraphSolarHours ) thisBuffer.AppendLine( $"    <option value='SolarHoursStats' selected>{Sup.GetCUstringValue( "Graphs", "YSHStatsMenuText", "Solar Hours Statistics", false )}</option>" );
-                    if ( GraphYearMonthSolarHoursStats ) thisBuffer.AppendLine( $"    <option value='YearMonthSolarHoursStats'>{Sup.GetCUstringValue( "Graphs", "YMSHStatsMenuText", "Monthly Solar Hours Statistics per year", false )}</option>" );
-                    if ( GraphSolarEnergy ) thisBuffer.AppendLine( $"    <option value='InsolationStats'>{Sup.GetCUstringValue( "Graphs", "YSEStatsMenuText", "Insolation Statistics", false )}</option>" );
-                    if ( GraphYearMonthSolarEnergyStats ) thisBuffer.AppendLine( $"    <option value='YearMonthInsolationStats'>{Sup.GetCUstringValue( "Graphs", "YMSEStatsMenuText", "Monthly Insolation Statistics per year", false )}</option>" );
+                    if ( GraphSolarHours )
+                        thisBuffer.AppendLine( $"    <option value='SolarHoursStats' selected>{Sup.GetCUstringValue( "Graphs", "YSHStatsMenuText", "Solar Hours Statistics", false )}</option>" );
+                    if ( GraphYearMonthSolarHoursStats )
+                        thisBuffer.AppendLine( $"    <option value='YearMonthSolarHoursStats'>{Sup.GetCUstringValue( "Graphs", "YMSHStatsMenuText", "Monthly Solar Hours Statistics per year", false )}</option>" );
+                    if ( GraphSolarEnergy )
+                        thisBuffer.AppendLine( $"    <option value='InsolationStats'>{Sup.GetCUstringValue( "Graphs", "YSEStatsMenuText", "Insolation Statistics", false )}</option>" );
+                    if ( GraphYearMonthSolarEnergyStats )
+                        thisBuffer.AppendLine( $"    <option value='YearMonthInsolationStats'>{Sup.GetCUstringValue( "Graphs", "YMSEStatsMenuText", "Monthly Insolation Statistics per year", false )}</option>" );
 
                     thisBuffer.AppendLine( "  </select>" );
                     thisBuffer.AppendLine( "</p>" );
@@ -795,7 +827,8 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "<script>" );
                     thisBuffer.AppendLine( $"function graph{GraphNr++}()" );
                     thisBuffer.AppendLine( "{" );
-                    if ( GraphSolarHours ) GenerateYearSolarHoursStatistics( thisBuffer );
+                    if ( GraphSolarHours )
+                        GenerateYearSolarHoursStatistics( thisBuffer );
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
 
@@ -804,7 +837,8 @@ namespace CumulusUtils
                         thisBuffer.AppendLine( "<script>" );
                         thisBuffer.AppendLine( $"function graph{GraphNr}{thisMonth}()" );
                         thisBuffer.AppendLine( "{" );
-                        if ( GraphYearMonthSolarHoursStats ) GenerateYearMonthSolarHoursStatistics( (Months) thisMonth, thisBuffer );
+                        if ( GraphYearMonthSolarHoursStats )
+                            GenerateYearMonthSolarHoursStatistics( (Months) thisMonth, thisBuffer );
                         thisBuffer.AppendLine( "}" );
                         thisBuffer.AppendLine( "</script>" );
                     }
@@ -814,7 +848,8 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "<script>" );
                     thisBuffer.AppendLine( $"function graph{GraphNr++}()" );
                     thisBuffer.AppendLine( "{" );
-                    if ( GraphSolarEnergy ) GenerateYearSolarEnergyStatistics( thisBuffer );
+                    if ( GraphSolarEnergy )
+                        GenerateYearSolarEnergyStatistics( thisBuffer );
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
 
@@ -823,7 +858,8 @@ namespace CumulusUtils
                         thisBuffer.AppendLine( "<script>" );
                         thisBuffer.AppendLine( $"function graph{GraphNr}{thisMonth}()" );
                         thisBuffer.AppendLine( "{" );
-                        if ( GraphYearMonthSolarEnergyStats ) GenerateYearMonthSolarEnergyStatistics( (Months) thisMonth, thisBuffer );
+                        if ( GraphYearMonthSolarEnergyStats )
+                            GenerateYearMonthSolarEnergyStatistics( (Months) thisMonth, thisBuffer );
                         thisBuffer.AppendLine( "}" );
                         thisBuffer.AppendLine( "</script>" );
                     }
@@ -904,12 +940,18 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "<p>" );
                     thisBuffer.AppendLine( "  <select id='graph'>" );
 
-                    if ( GraphTempSum ) thisBuffer.AppendLine( $"    <option value=\"TempSum\">{Sup.GetCUstringValue( "Graphs", "TempSumMenuText", "Temperature Sum", false )}</option>" );
-                    if ( GraphGrowingDegreeDays ) thisBuffer.AppendLine( $"    <option value=\"GrowingDegreeDays\">{Sup.GetCUstringValue( "Graphs", "GrowingdegreedaysMenuText", "Growing Degree Days", false )}</option>" );
-                    if ( GraphSeasons ) thisBuffer.AppendLine( $"    <option value=\"Seasons\">{Sup.GetCUstringValue( "Graphs", "SeasonsMenuText", "Seasons", false )}</option>" );
-                    if ( GraphDailyEVT ) thisBuffer.AppendLine( $"    <option value=\"DailyEVT\">{Sup.GetCUstringValue( "Graphs", "DEVTMenuText", "Daily EVT", false )}</option>" );
-                    if ( GraphMonthlyEVT ) thisBuffer.AppendLine( $"    <option value=\"MonthlyEVT\">{Sup.GetCUstringValue( "Graphs", "MEVTMenuText", "Monthly EVT", false )}</option>" );
-                    if ( GraphAverageClash ) thisBuffer.AppendLine( $"    <option value=\"AverageClash\">{Sup.GetCUstringValue( "Graphs", "ACMenuText", "Clash of Averages", false )}</option>" );
+                    if ( GraphTempSum )
+                        thisBuffer.AppendLine( $"    <option value=\"TempSum\">{Sup.GetCUstringValue( "Graphs", "TempSumMenuText", "Temperature Sum", false )}</option>" );
+                    if ( GraphGrowingDegreeDays )
+                        thisBuffer.AppendLine( $"    <option value=\"GrowingDegreeDays\">{Sup.GetCUstringValue( "Graphs", "GrowingdegreedaysMenuText", "Growing Degree Days", false )}</option>" );
+                    if ( GraphSeasons )
+                        thisBuffer.AppendLine( $"    <option value=\"Seasons\">{Sup.GetCUstringValue( "Graphs", "SeasonsMenuText", "Seasons", false )}</option>" );
+                    if ( GraphDailyEVT )
+                        thisBuffer.AppendLine( $"    <option value=\"DailyEVT\">{Sup.GetCUstringValue( "Graphs", "DEVTMenuText", "Daily EVT", false )}</option>" );
+                    if ( GraphMonthlyEVT )
+                        thisBuffer.AppendLine( $"    <option value=\"MonthlyEVT\">{Sup.GetCUstringValue( "Graphs", "MEVTMenuText", "Monthly EVT", false )}</option>" );
+                    if ( GraphAverageClash )
+                        thisBuffer.AppendLine( $"    <option value=\"AverageClash\">{Sup.GetCUstringValue( "Graphs", "ACMenuText", "Clash of Averages", false )}</option>" );
 
                     thisBuffer.AppendLine( " </select>" );
                     thisBuffer.AppendLine( "</p>" );
@@ -931,42 +973,48 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "<script>" );
                     thisBuffer.AppendLine( $"function graph{GraphNr++}()" );
                     thisBuffer.AppendLine( "{" );
-                    if ( GraphTempSum ) GenTempSum( ThisList, thisBuffer );
+                    if ( GraphTempSum )
+                        GenTempSum( ThisList, thisBuffer );
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
 
                     thisBuffer.AppendLine( "<script>" );
                     thisBuffer.AppendLine( $"function graph{GraphNr++}()" );
                     thisBuffer.AppendLine( "{" );
-                    if ( GraphGrowingDegreeDays ) GenGrowingDegreeDays( ThisList, thisBuffer );
+                    if ( GraphGrowingDegreeDays )
+                        GenGrowingDegreeDays( ThisList, thisBuffer );
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
 
                     thisBuffer.AppendLine( "<script>" );
                     thisBuffer.AppendLine( $"function graph{GraphNr++}()" );
                     thisBuffer.AppendLine( "{" );
-                    if ( GraphSeasons ) YearlySeasons( ThisList, thisBuffer );
+                    if ( GraphSeasons )
+                        YearlySeasons( ThisList, thisBuffer );
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
 
                     thisBuffer.AppendLine( "<script>" );
                     thisBuffer.AppendLine( $"function graph{GraphNr++}()" );
                     thisBuffer.AppendLine( "{" );
-                    if ( GraphDailyEVT ) GenDailyEVTGraphData( ThisList, thisBuffer );
+                    if ( GraphDailyEVT )
+                        GenDailyEVTGraphData( ThisList, thisBuffer );
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
 
                     thisBuffer.AppendLine( "<script>" );
                     thisBuffer.AppendLine( $"function graph{GraphNr++}()" );
                     thisBuffer.AppendLine( "{" );
-                    if ( GraphMonthlyEVT ) GenMonthlyEVTGraphData( ThisList, thisBuffer );
+                    if ( GraphMonthlyEVT )
+                        GenMonthlyEVTGraphData( ThisList, thisBuffer );
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
 
                     thisBuffer.AppendLine( "<script>" );
                     thisBuffer.AppendLine( $"function graph{GraphNr++}()" );
                     thisBuffer.AppendLine( "{" );
-                    if ( GraphAverageClash ) GenerateClashOfAverages( ThisList, thisBuffer );
+                    if ( GraphAverageClash )
+                        GenerateClashOfAverages( ThisList, thisBuffer );
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
 

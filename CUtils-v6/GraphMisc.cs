@@ -132,7 +132,8 @@ namespace CumulusUtils
                 }
 
                 // If not yet reached the period length we have to do something
-                if ( i >= period ) ma.Append( $"[{CuSupport.DateTimeToJS( ThisList[ i ].ThisDate )},{movingAverage.ToString( "F2", NumberFormatInfo.InvariantInfo )}],\n" );
+                if ( i >= period )
+                    ma.Append( $"[{CuSupport.DateTimeToJS( ThisList[ i ].ThisDate )},{movingAverage.ToString( "F2", NumberFormatInfo.InvariantInfo )}],\n" );
 
                 i++;
             }
@@ -140,7 +141,8 @@ namespace CumulusUtils
 
             // get rid of the last commas / newlines
             ds.Remove( ds.Length - 2, 2 );
-            if ( i >= period ) ma.Remove( ma.Length - 2, 2 );  // If no data for the moving average then don't do anything
+            if ( i >= period )
+                ma.Remove( ma.Length - 2, 2 );  // If no data for the moving average then don't do anything
 
             ds.Append( "]}," );
             ma.Append( "]}]\n" );
@@ -253,7 +255,8 @@ namespace CumulusUtils
             counter = 0;
             foreach ( float[] ValuesList in YearValues )
             {
-                if ( counter > 0 ) sb.Append( "},{\n" );
+                if ( counter > 0 )
+                    sb.Append( "},{\n" );
 
                 sb.Append( $"      name: '{years[ counter ].ToString( CultureInfo.InvariantCulture )}', \n" );
 
@@ -264,8 +267,10 @@ namespace CumulusUtils
 
                 for ( int i = 0; i < 12; i++ )
                 {
-                    if ( ValuesList[ i ] == -1 ) sb.Append( "null," );
-                    else sb.Append( $"{ValuesList[ i ].ToString( "F1", NumberFormatInfo.InvariantInfo )}," );
+                    if ( ValuesList[ i ] == -1 )
+                        sb.Append( "null," );
+                    else
+                        sb.Append( $"{ValuesList[ i ].ToString( "F1", NumberFormatInfo.InvariantInfo )}," );
                 }
 
                 sb.Remove( sb.Length - 1, 1 ); //remove last comma
@@ -352,7 +357,8 @@ namespace CumulusUtils
                 }
 
                 // Do data  exist on the startdate of the first year? If not than skip this season
-                if ( ThisList[ 0 ].ThisDate > StartDate ) continue;
+                if ( ThisList[ 0 ].ThisDate > StartDate )
+                    continue;
 
                 List<DayfileValue> yearList = new List<DayfileValue>();
                 yearList = ThisList.Where( x => x.ThisDate >= StartDate && x.ThisDate < EndDate ).ToList();
@@ -483,7 +489,8 @@ namespace CumulusUtils
                 }
 
                 // Do data  exist on the startdate of the first year? If not than skip thios season
-                if ( ThisList[ 0 ].ThisDate > StartDate ) continue;
+                if ( ThisList[ 0 ].ThisDate > StartDate )
+                    continue;
 
                 List<DayfileValue> yearList = new List<DayfileValue>();
                 yearList = ThisList.Where( x => x.ThisDate >= StartDate && x.ThisDate < EndDate ).ToList();
@@ -584,12 +591,14 @@ namespace CumulusUtils
                 }
 
                 // Do data  exist on the startdate of the first year? If not than skip this season
-                if ( ThisList[ 0 ].ThisDate > StartDate ) continue;
+                if ( ThisList[ 0 ].ThisDate > StartDate )
+                    continue;
 
                 List<DayfileValue> yearList = new List<DayfileValue>();
                 yearList = ThisList.Where( x => x.ThisDate >= StartDate && x.ThisDate < EndDate ).ToList();
 
-                if ( yearList.Count == 0 ) continue;
+                if ( yearList.Count == 0 )
+                    continue;
 
                 YearSeasons thisYearSeasonList = new YearSeasons();
 
@@ -604,7 +613,8 @@ namespace CumulusUtils
                 {
                     if ( WinterSOY )
                     {
-                        if ( yearList[ i ].AverageTempThisDay >= WinterToSpringTemperatureLimit ) possibleChange = true;
+                        if ( yearList[ i ].AverageTempThisDay >= WinterToSpringTemperatureLimit )
+                            possibleChange = true;
                         else { possibleChange = false; changeCounter = 0; }
 
                         if ( possibleChange )
@@ -623,7 +633,8 @@ namespace CumulusUtils
                     }
                     else if ( Spring )
                     {
-                        if ( yearList[ i ].AverageTempThisDay >= SpringToSummerTemperatureLimit ) possibleChange = true;
+                        if ( yearList[ i ].AverageTempThisDay >= SpringToSummerTemperatureLimit )
+                            possibleChange = true;
                         else { possibleChange = false; changeCounter = 0; }
 
                         if ( possibleChange )
@@ -642,7 +653,8 @@ namespace CumulusUtils
                     }
                     else if ( Summer )
                     {
-                        if ( yearList[ i ].AverageTempThisDay <= SpringToSummerTemperatureLimit ) possibleChange = true;
+                        if ( yearList[ i ].AverageTempThisDay <= SpringToSummerTemperatureLimit )
+                            possibleChange = true;
                         else { possibleChange = false; changeCounter = 0; }
 
                         if ( possibleChange )
@@ -661,7 +673,8 @@ namespace CumulusUtils
                     }
                     else if ( Autumn )
                     {
-                        if ( yearList[ i ].AverageTempThisDay <= WinterToSpringTemperatureLimit ) possibleChange = true;
+                        if ( yearList[ i ].AverageTempThisDay <= WinterToSpringTemperatureLimit )
+                            possibleChange = true;
                         else { possibleChange = false; changeCounter = 0; }
 
                         if ( possibleChange )
@@ -680,7 +693,8 @@ namespace CumulusUtils
                     }
                     else if ( WinterEOY )
                     {
-                        thisYearSeasonList.Winter2 = yearList.Count - thisYearSeasonList.Autumn - thisYearSeasonList.Summer - thisYearSeasonList.Spring - thisYearSeasonList.Winter1; ;
+                        thisYearSeasonList.Winter2 = yearList.Count - thisYearSeasonList.Autumn - thisYearSeasonList.Summer - thisYearSeasonList.Spring - thisYearSeasonList.Winter1;
+                        ;
                         break;
                     }
                 } while ( ++i < yearList.Count );
@@ -716,8 +730,10 @@ namespace CumulusUtils
 
             StringBuilder ma = new StringBuilder( "" );
             ma.Append( "categories:[" );
-            foreach ( YearSeasons seasonEntry in SeasonList ) ma.Append( $"'{seasonEntry.year}'," );
-            if ( SeasonList.Any() ) ma.Remove( ma.Length - 1, 1 );
+            foreach ( YearSeasons seasonEntry in SeasonList )
+                ma.Append( $"'{seasonEntry.year}'," );
+            if ( SeasonList.Any() )
+                ma.Remove( ma.Length - 1, 1 );
             ma.Append( "]," );
 
             thisBuffer.AppendLine( ma.ToString() );

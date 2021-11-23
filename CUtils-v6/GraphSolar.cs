@@ -238,7 +238,8 @@ namespace CumulusUtils
 
         void GenerateYearMonthSolarHoursStatistics( Months thisMonth, StringBuilder thisBuffer )
         {
-            StringBuilder sb = new StringBuilder(); ;
+            StringBuilder sb = new StringBuilder();
+            ;
 
             List<int> years = new List<int>();
             List<float> average = new List<float>();
@@ -553,7 +554,8 @@ namespace CumulusUtils
 
         void GenerateYearMonthSolarEnergyStatistics( Months thisMonth, StringBuilder thisBuffer )
         {
-            StringBuilder sb = new StringBuilder(); ;
+            StringBuilder sb = new StringBuilder();
+            ;
 
             List<int> years = new List<int>();
             List<float> average = new List<float>();

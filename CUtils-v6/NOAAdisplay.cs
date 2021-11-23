@@ -174,7 +174,8 @@ namespace CumulusUtils
                 // Write the disabled months for AllYears
                 string tmp = "";
                 of.WriteLine( "  if ( tmpValue == 'AllYears') {" );
-                for ( int i = 0; i < MonthsNotPresentAllYears.Length; i++ ) tmp += $"#{MonthsNotPresentAllYears[ i ]:D2}, ";
+                for ( int i = 0; i < MonthsNotPresentAllYears.Length; i++ )
+                    tmp += $"#{MonthsNotPresentAllYears[ i ]:D2}, ";
                 if ( !string.IsNullOrEmpty( tmp ) )
                 {
                     tmp = tmp.Remove( tmp.Length - 2 );
@@ -184,7 +185,8 @@ namespace CumulusUtils
                 // Write the disabled months for YearMin
                 tmp = "";
                 of.WriteLine( $"  }} else if ( tmpValue == {YearMin}) {{" );
-                for ( int i = 0; i < MonthsNotPresentYearMin.Length; i++ ) tmp += $"#{MonthsNotPresentYearMin[ i ]:D2}, ";
+                for ( int i = 0; i < MonthsNotPresentYearMin.Length; i++ )
+                    tmp += $"#{MonthsNotPresentYearMin[ i ]:D2}, ";
                 if ( !string.IsNullOrEmpty( tmp ) )
                 {
                     tmp = tmp.Remove( tmp.Length - 2 );
@@ -194,7 +196,8 @@ namespace CumulusUtils
                 // Write the disablked months for YearMax
                 tmp = "";
                 of.WriteLine( $"  }} else if ( tmpValue == {YearMax}) {{" );
-                for ( int i = 0; i < MonthsNotPresentYearMax.Length; i++ ) tmp += $"#{MonthsNotPresentYearMax[ i ]:D2}, ";
+                for ( int i = 0; i < MonthsNotPresentYearMax.Length; i++ )
+                    tmp += $"#{MonthsNotPresentYearMax[ i ]:D2}, ";
                 if ( !string.IsNullOrEmpty( tmp ) )
                 {
                     tmp = tmp.Remove( tmp.Length - 2 );
@@ -241,8 +244,10 @@ namespace CumulusUtils
 
                 for ( int i = YearMin; i <= YearMax; i++ )
                 {
-                    if ( i < YearMax ) of.WriteLine( $"<option value='{i}'>{i}</option>" );
-                    else of.WriteLine( $"<option value='{i}' selected>{i}</option>" );
+                    if ( i < YearMax )
+                        of.WriteLine( $"<option value='{i}'>{i}</option>" );
+                    else
+                        of.WriteLine( $"<option value='{i}' selected>{i}</option>" );
                 }
 
                 of.WriteLine( "</select>" );
@@ -251,7 +256,8 @@ namespace CumulusUtils
                 of.WriteLine( $"<option value=''>---</option>" );
 
                 DateTime noaaDate = CMXutils.RunStarted;
-                if ( noaaDate.Day == 1 ) noaaDate = noaaDate.AddDays( -1 );
+                if ( noaaDate.Day == 1 )
+                    noaaDate = noaaDate.AddDays( -1 );
 
                 for ( int i = 1; i <= 12; i++ )
                     of.WriteLine( $"<option value='{i:00}' id='{i:00}' {( i == noaaDate.Month ? "selected" : "" )}>" +

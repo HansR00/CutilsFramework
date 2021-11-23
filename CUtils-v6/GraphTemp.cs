@@ -60,13 +60,15 @@ namespace CumulusUtils
                 {
                     string iniKeyName = "NOAATempNorm" + Enum.GetNames( typeof( Months ) )[ i - 1 ];
                     string iniResult = Sup.GetCumulusIniValue( "NOAA", iniKeyName, "0.0" );
-                    if ( iniResult.IndexOf( ',' ) > 0 ) iniResult = iniResult.Replace( ',', '.' );
+                    if ( iniResult.IndexOf( ',' ) > 0 )
+                        iniResult = iniResult.Replace( ',', '.' );
                     NOAATempNorm[ i - 1 ] = (float) Convert.ToDouble( iniResult, CultureInfo.InvariantCulture );
 
                     Sup.LogTraceInfoMessage( $" Normal values: {iniKeyName} -> {NOAATempNorm[ i - 1 ].ToString( "F1", CultureInfo.InvariantCulture )}" );
                 }
             }
-            else StationNormal = false;
+            else
+                StationNormal = false;
 
             // Use station Average
             if ( NormalUsage.Equals( "StationAverage", StringComparison.OrdinalIgnoreCase ) || NormalUsage.Equals( "Both", StringComparison.OrdinalIgnoreCase ) )
@@ -86,7 +88,8 @@ namespace CumulusUtils
                     Sup.LogTraceInfoMessage( $" Station Average values: {Enum.GetNames( typeof( Months ) )[ i - 1 ]} -> {NOAATempStationAv[ i - 1 ].ToString( "F1", CultureInfo.InvariantCulture )}" );
                 }
             }
-            else StationAverage = false;
+            else
+                StationAverage = false;
 
             Sup.LogTraceInfoMessage( "GenMonthlyTempvsNOAAGraphData : start loop over DayfileValues" );
 
@@ -184,7 +187,8 @@ namespace CumulusUtils
 
             if ( StationAverage )
             {
-                if ( StationNormal ) sb.Append( "},{\n" );
+                if ( StationNormal )
+                    sb.Append( "},{\n" );
 
                 //Do the Station Average serie
                 sb.Append( $"       name : '{Sup.GetCUstringValue( "Graphs", "MTStationAverage", "Station average", true )}', color: 'grey', visible:true, zIndex:-2,\n" +
@@ -212,14 +216,17 @@ namespace CumulusUtils
             }
 
             bool PrintFirstAccolades = false;
-            if ( StationNormal || StationAverage ) PrintFirstAccolades = true;
+            if ( StationNormal || StationAverage )
+                PrintFirstAccolades = true;
 
             // Now build the data series
             counter = 0;
             foreach ( float[] ValuesList in YearValues )
             {
-                if ( PrintFirstAccolades ) sb.Append( "},{\n" );
-                else PrintFirstAccolades = true;
+                if ( PrintFirstAccolades )
+                    sb.Append( "},{\n" );
+                else
+                    PrintFirstAccolades = true;
 
                 sb.Append( $"      name: '{years[ counter ].ToString( CultureInfo.CurrentCulture )}',\n" );
 
@@ -231,8 +238,10 @@ namespace CumulusUtils
 
                 for ( int i = 0; i < 12; i++ )
                 {
-                    if ( ValuesList[ i ] == -1 ) sb.Append( "null," );
-                    else sb.Append( $"{ValuesList[ i ].ToString( "F1", NumberFormatInfo.InvariantInfo )}," );
+                    if ( ValuesList[ i ] == -1 )
+                        sb.Append( "null," );
+                    else
+                        sb.Append( $"{ValuesList[ i ].ToString( "F1", NumberFormatInfo.InvariantInfo )}," );
                 }
 
                 sb.Remove( sb.Length - 1, 1 ); //remove last comma
@@ -395,7 +404,8 @@ namespace CumulusUtils
 
         private void GenerateHeatMap( List<DayfileValue> Thislist, StringBuilder thisBuffer )
         {
-            StringBuilder sb = new StringBuilder(); ;
+            StringBuilder sb = new StringBuilder();
+            ;
 
             Sup.LogDebugMessage( "Generate Heat Map Start" );
 
@@ -505,7 +515,8 @@ namespace CumulusUtils
 
         private void GenerateYearTempStatistics( List<DayfileValue> Thislist, StringBuilder thisBuffer )
         {
-            StringBuilder sb = new StringBuilder(); ;
+            StringBuilder sb = new StringBuilder();
+            ;
 
             List<int> years = new List<int>();
             List<float> average = new List<float>();
@@ -519,7 +530,8 @@ namespace CumulusUtils
             {
                 List<DayfileValue> yearlist = Thislist.Where( x => x.ThisDate.Year == i ).ToList();
 
-                if ( yearlist.Count == 0 ) continue;
+                if ( yearlist.Count == 0 )
+                    continue;
 
                 Sup.LogTraceInfoMessage( $"Generating Year Temp Statistics, doing year {i}" );
 
@@ -647,7 +659,8 @@ namespace CumulusUtils
 
         private void GenerateYearMonthTempStatistics( List<DayfileValue> Thislist, Months thisMonth, StringBuilder thisBuffer )
         {
-            StringBuilder sb = new StringBuilder(); ;
+            StringBuilder sb = new StringBuilder();
+            ;
 
             List<int> years = new List<int>();
             List<float> average = new List<float>();

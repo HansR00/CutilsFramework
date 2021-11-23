@@ -53,11 +53,15 @@ namespace CumulusUtils
         public double Convert( TempDim t, double val )
         {
             if ( Dim == TempDim.fahrenheit )
-                if ( t == TempDim.fahrenheit ) return val;
-                else return ( ( val - 32 ) / 1.8 );
+                if ( t == TempDim.fahrenheit )
+                    return val;
+                else
+                    return ( ( val - 32 ) / 1.8 );
             else // Dim must be celsius
-              if ( t == TempDim.celsius ) return val;
-            else return ( val * 1.8 + 32 );
+              if ( t == TempDim.celsius )
+                return val;
+            else
+                return ( val * 1.8 + 32 );
         }
     }
 

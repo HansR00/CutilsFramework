@@ -62,7 +62,8 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( " GenerateStationMap: start" );
 
-            if ( !CMXutils.HasStationMapMenu ) return; // Don't generate, ignore everything, just get back.
+            if ( !CMXutils.HasStationMapMenu )
+                return; // Don't generate, ignore everything, just get back.
 
             Latitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Latitude", "" ), CultureInfo.InvariantCulture );
             Longitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Longitude", "" ), CultureInfo.InvariantCulture );

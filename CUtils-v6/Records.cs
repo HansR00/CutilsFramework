@@ -78,7 +78,8 @@ namespace CumulusUtils
             MonthsNotPresentAllYears = tmpIntArray.Except( Thislist.Select( x => x.ThisDate.Month ).Distinct() ).ToArray();
 
             GenerateYearlyRecords( YearMin, Thislist );
-            if ( !CMXutils.Thrifty || CMXutils.ThriftyRecordsDirty ) GenerateHTMLRecords( YearMin, YearMax );
+            if ( !CMXutils.Thrifty || CMXutils.ThriftyRecordsDirty )
+                GenerateHTMLRecords( YearMin, YearMax );
 
             return;
         }
@@ -104,34 +105,51 @@ namespace CumulusUtils
                 RecordsArray = new DayfileValue[ Enum.GetNames( typeof( MeasurementRecords ) ).Length ];
                 YearRecords[ count ] = RecordsArray;
 
-                if ( count == 0 ) yearlist = Thislist;
+                if ( count == 0 )
+                    yearlist = Thislist;
                 else
                 {
                     // NOTE: yearlist (and monthlist further down) change actively when the thisyear variable changes, no need to define
                     //       the query again. Same for i in the monthlist. For performance gain, just the if statement is made!
                     thisYear++;
-                    if ( count == 1 ) yearlist = Thislist.Where( x => x.ThisDate.Year == thisYear );
+                    if ( count == 1 )
+                        yearlist = Thislist.Where( x => x.ThisDate.Year == thisYear );
                 }
 
-                if ( yearlist.Count() == 0 ) continue;
+                if ( yearlist.Count() == 0 )
+                    continue;
 
-                if ( count == 0 ) Sup.LogTraceInfoMessage( $"Generate Records for AllTime" );
-                else Sup.LogTraceInfoMessage( $"Generate Records for {thisYear}" );
+                if ( count == 0 )
+                    Sup.LogTraceInfoMessage( $"Generate Records for AllTime" );
+                else
+                    Sup.LogTraceInfoMessage( $"Generate Records for {thisYear}" );
 
                 //watch = Stopwatch.StartNew();
 
-                tmp = yearlist.Max( y => y.MaxTemp ); RecordsArray[ (int) MeasurementRecords.Tmax ] = yearlist.Where( x => x.MaxTemp == tmp ).First(); //Thislist.Max(x => x.MaxTemp);
-                tmp = yearlist.Min( y => y.MinTemp ); RecordsArray[ (int) MeasurementRecords.Tmin ] = yearlist.Where( x => x.MinTemp == tmp ).First();
-                tmp = yearlist.Max( y => y.TotalRainThisDay ); RecordsArray[ (int) MeasurementRecords.Rday ] = yearlist.Where( x => x.TotalRainThisDay == tmp ).First();
-                tmp = yearlist.Max( y => y.MaxRainRate ); RecordsArray[ (int) MeasurementRecords.Rrate ] = yearlist.Where( x => x.MaxRainRate == tmp ).First();
-                tmp = yearlist.Max( y => y.HighHourlyRain ); RecordsArray[ (int) MeasurementRecords.Rhour ] = yearlist.Where( x => x.HighHourlyRain == tmp ).First();
-                tmp = yearlist.Max( y => y.MonthlyRain ); RecordsArray[ (int) MeasurementRecords.Rmonth ] = yearlist.Where( x => x.MonthlyRain == tmp ).First();
-                tmp = yearlist.Max( y => y.YearToDateRain ); RecordsArray[ (int) MeasurementRecords.Ryear ] = yearlist.OrderByDescending( x => x.YearToDateRain ).Where( x => x.YearToDateRain == tmp ).First();
-                tmp = yearlist.Max( y => y.HighAverageWindSpeed ); RecordsArray[ (int) MeasurementRecords.Waverage ] = yearlist.Where( x => x.HighAverageWindSpeed == tmp ).First();
-                tmp = yearlist.Max( y => y.HighWindGust ); RecordsArray[ (int) MeasurementRecords.Wgust ] = yearlist.Where( x => x.HighWindGust == tmp ).First();
-                tmp = yearlist.Max( y => y.TotalWindRun ); RecordsArray[ (int) MeasurementRecords.Wrun ] = yearlist.Where( x => x.TotalWindRun == tmp ).First();
-                tmp = yearlist.Max( y => y.MaxBarometer ); RecordsArray[ (int) MeasurementRecords.Phigh ] = yearlist.Where( x => x.MaxBarometer == tmp ).First();
-                tmp = yearlist.Min( y => y.MinBarometer ); RecordsArray[ (int) MeasurementRecords.Plow ] = yearlist.Where( x => x.MinBarometer == tmp ).First();
+                tmp = yearlist.Max( y => y.MaxTemp );
+                RecordsArray[ (int) MeasurementRecords.Tmax ] = yearlist.Where( x => x.MaxTemp == tmp ).First(); //Thislist.Max(x => x.MaxTemp);
+                tmp = yearlist.Min( y => y.MinTemp );
+                RecordsArray[ (int) MeasurementRecords.Tmin ] = yearlist.Where( x => x.MinTemp == tmp ).First();
+                tmp = yearlist.Max( y => y.TotalRainThisDay );
+                RecordsArray[ (int) MeasurementRecords.Rday ] = yearlist.Where( x => x.TotalRainThisDay == tmp ).First();
+                tmp = yearlist.Max( y => y.MaxRainRate );
+                RecordsArray[ (int) MeasurementRecords.Rrate ] = yearlist.Where( x => x.MaxRainRate == tmp ).First();
+                tmp = yearlist.Max( y => y.HighHourlyRain );
+                RecordsArray[ (int) MeasurementRecords.Rhour ] = yearlist.Where( x => x.HighHourlyRain == tmp ).First();
+                tmp = yearlist.Max( y => y.MonthlyRain );
+                RecordsArray[ (int) MeasurementRecords.Rmonth ] = yearlist.Where( x => x.MonthlyRain == tmp ).First();
+                tmp = yearlist.Max( y => y.YearToDateRain );
+                RecordsArray[ (int) MeasurementRecords.Ryear ] = yearlist.OrderByDescending( x => x.YearToDateRain ).Where( x => x.YearToDateRain == tmp ).First();
+                tmp = yearlist.Max( y => y.HighAverageWindSpeed );
+                RecordsArray[ (int) MeasurementRecords.Waverage ] = yearlist.Where( x => x.HighAverageWindSpeed == tmp ).First();
+                tmp = yearlist.Max( y => y.HighWindGust );
+                RecordsArray[ (int) MeasurementRecords.Wgust ] = yearlist.Where( x => x.HighWindGust == tmp ).First();
+                tmp = yearlist.Max( y => y.TotalWindRun );
+                RecordsArray[ (int) MeasurementRecords.Wrun ] = yearlist.Where( x => x.TotalWindRun == tmp ).First();
+                tmp = yearlist.Max( y => y.MaxBarometer );
+                RecordsArray[ (int) MeasurementRecords.Phigh ] = yearlist.Where( x => x.MaxBarometer == tmp ).First();
+                tmp = yearlist.Min( y => y.MinBarometer );
+                RecordsArray[ (int) MeasurementRecords.Plow ] = yearlist.Where( x => x.MinBarometer == tmp ).First();
 
                 if ( CMXutils.Thrifty && ( count == 0 || CMXutils.RunStarted.Year == thisYear ) ) // Check for alltime record or the current record 
                 {
@@ -158,27 +176,43 @@ namespace CumulusUtils
                     MonthlyRecords[ i + count * 12 ] = RecordsArray;
 
                     // See NOTE above for the yearlist!!
-                    if ( i == 0 ) monthlist = yearlist.Where( x => x.ThisDate.Month == ( i + 1 ) );
+                    if ( i == 0 )
+                        monthlist = yearlist.Where( x => x.ThisDate.Month == ( i + 1 ) );
 
-                    if ( monthlist.Count() == 0 ) continue;
+                    if ( monthlist.Count() == 0 )
+                        continue;
 
-                    if ( count == 0 ) Sup.LogTraceInfoMessage( $"Generate Records for AllTime/month: {i + 1}" );
-                    else Sup.LogTraceInfoMessage( $"Generate Records for {thisYear}/month: {i + 1}" );
+                    if ( count == 0 )
+                        Sup.LogTraceInfoMessage( $"Generate Records for AllTime/month: {i + 1}" );
+                    else
+                        Sup.LogTraceInfoMessage( $"Generate Records for {thisYear}/month: {i + 1}" );
 
                     if ( monthlist.Any() )
                     {
-                        tmp = monthlist.Max( y => y.MaxTemp ); RecordsArray[ (int) MeasurementRecords.Tmax ] = monthlist.Where( x => x.MaxTemp == tmp ).First(); //Thislist.Max(x => x.MaxTemp);
-                        tmp = monthlist.Min( y => y.MinTemp ); RecordsArray[ (int) MeasurementRecords.Tmin ] = monthlist.Where( x => x.MinTemp == tmp ).First();
-                        tmp = monthlist.Max( y => y.TotalRainThisDay ); RecordsArray[ (int) MeasurementRecords.Rday ] = monthlist.Where( x => x.TotalRainThisDay == tmp ).First();
-                        tmp = monthlist.Max( y => y.MaxRainRate ); RecordsArray[ (int) MeasurementRecords.Rrate ] = monthlist.Where( x => x.MaxRainRate == tmp ).First();
-                        tmp = monthlist.Max( y => y.HighHourlyRain ); RecordsArray[ (int) MeasurementRecords.Rhour ] = monthlist.Where( x => x.HighHourlyRain == tmp ).First();
-                        tmp = monthlist.Max( y => y.MonthlyRain ); RecordsArray[ (int) MeasurementRecords.Rmonth ] = monthlist.Where( x => x.MonthlyRain == tmp ).First();
-                        tmp = monthlist.Max( y => y.YearToDateRain ); RecordsArray[ (int) MeasurementRecords.Ryear ] = monthlist.OrderByDescending( x => x.YearToDateRain ).Where( x => x.YearToDateRain == tmp ).First();
-                        tmp = monthlist.Max( y => y.HighAverageWindSpeed ); RecordsArray[ (int) MeasurementRecords.Waverage ] = monthlist.Where( x => x.HighAverageWindSpeed == tmp ).First();
-                        tmp = monthlist.Max( y => y.HighWindGust ); RecordsArray[ (int) MeasurementRecords.Wgust ] = monthlist.Where( x => x.HighWindGust == tmp ).First();
-                        tmp = monthlist.Max( y => y.TotalWindRun ); RecordsArray[ (int) MeasurementRecords.Wrun ] = monthlist.Where( x => x.TotalWindRun == tmp ).First();
-                        tmp = monthlist.Max( y => y.MaxBarometer ); RecordsArray[ (int) MeasurementRecords.Phigh ] = monthlist.Where( x => x.MaxBarometer == tmp ).First();
-                        tmp = monthlist.Min( y => y.MinBarometer ); RecordsArray[ (int) MeasurementRecords.Plow ] = monthlist.Where( x => x.MinBarometer == tmp ).First();
+                        tmp = monthlist.Max( y => y.MaxTemp );
+                        RecordsArray[ (int) MeasurementRecords.Tmax ] = monthlist.Where( x => x.MaxTemp == tmp ).First(); //Thislist.Max(x => x.MaxTemp);
+                        tmp = monthlist.Min( y => y.MinTemp );
+                        RecordsArray[ (int) MeasurementRecords.Tmin ] = monthlist.Where( x => x.MinTemp == tmp ).First();
+                        tmp = monthlist.Max( y => y.TotalRainThisDay );
+                        RecordsArray[ (int) MeasurementRecords.Rday ] = monthlist.Where( x => x.TotalRainThisDay == tmp ).First();
+                        tmp = monthlist.Max( y => y.MaxRainRate );
+                        RecordsArray[ (int) MeasurementRecords.Rrate ] = monthlist.Where( x => x.MaxRainRate == tmp ).First();
+                        tmp = monthlist.Max( y => y.HighHourlyRain );
+                        RecordsArray[ (int) MeasurementRecords.Rhour ] = monthlist.Where( x => x.HighHourlyRain == tmp ).First();
+                        tmp = monthlist.Max( y => y.MonthlyRain );
+                        RecordsArray[ (int) MeasurementRecords.Rmonth ] = monthlist.Where( x => x.MonthlyRain == tmp ).First();
+                        tmp = monthlist.Max( y => y.YearToDateRain );
+                        RecordsArray[ (int) MeasurementRecords.Ryear ] = monthlist.OrderByDescending( x => x.YearToDateRain ).Where( x => x.YearToDateRain == tmp ).First();
+                        tmp = monthlist.Max( y => y.HighAverageWindSpeed );
+                        RecordsArray[ (int) MeasurementRecords.Waverage ] = monthlist.Where( x => x.HighAverageWindSpeed == tmp ).First();
+                        tmp = monthlist.Max( y => y.HighWindGust );
+                        RecordsArray[ (int) MeasurementRecords.Wgust ] = monthlist.Where( x => x.HighWindGust == tmp ).First();
+                        tmp = monthlist.Max( y => y.TotalWindRun );
+                        RecordsArray[ (int) MeasurementRecords.Wrun ] = monthlist.Where( x => x.TotalWindRun == tmp ).First();
+                        tmp = monthlist.Max( y => y.MaxBarometer );
+                        RecordsArray[ (int) MeasurementRecords.Phigh ] = monthlist.Where( x => x.MaxBarometer == tmp ).First();
+                        tmp = monthlist.Min( y => y.MinBarometer );
+                        RecordsArray[ (int) MeasurementRecords.Plow ] = monthlist.Where( x => x.MinBarometer == tmp ).First();
 
                         if ( CMXutils.Thrifty && ( count == 0 || CMXutils.RunStarted.Year == thisYear ) ) // Check for alltime record or a thisyear record 
                         {
@@ -407,16 +441,20 @@ namespace CumulusUtils
 
                 for ( int j = 0; j <= NrOfYears; j++ )
                 {
-                    if ( j == 0 ) tmp = "jqueryOptions " + "AllYears" + "AllMonths";
-                    else tmp = $"jqueryOptions {YearMin + j - 1}AllMonths";
+                    if ( j == 0 )
+                        tmp = "jqueryOptions " + "AllYears" + "AllMonths";
+                    else
+                        tmp = $"jqueryOptions {YearMin + j - 1}AllMonths";
 
                     DateTime now = DateTime.Now;
 
                     of.WriteLine( $"<div class='{tmp}'>" );
                     of.WriteLine( $"<table class='CUtable'><thead>" );
                     of.WriteLine( $"<tr style='color:{RecordsTxtHeaderColor}'>" );
-                    if ( j == 0 ) of.WriteLine( $"<th colspan='3' style='text-align:center;'>{Sup.GetCUstringValue( "General", "AllTime", "All Time", false )}</th>" );
-                    else of.WriteLine( $"<th colspan='3' style='text-align:center'>{YearMin + j - 1}</th>" );
+                    if ( j == 0 )
+                        of.WriteLine( $"<th colspan='3' style='text-align:center;'>{Sup.GetCUstringValue( "General", "AllTime", "All Time", false )}</th>" );
+                    else
+                        of.WriteLine( $"<th colspan='3' style='text-align:center'>{YearMin + j - 1}</th>" );
                     of.WriteLine( $"</tr>" );
 
                     of.WriteLine( $"<tr style='color:{RecordsTxtHeaderColor}'>" );
@@ -514,15 +552,19 @@ namespace CumulusUtils
 
                         if ( MonthlyRecords[ i ] != null )
                         {
-                            if ( j == 0 ) tmp = $"jqueryOptions AllYears{m[ month ]}";
-                            else tmp = $"jqueryOptions {YearMin + j - 1}{m[ month ]}";
+                            if ( j == 0 )
+                                tmp = $"jqueryOptions AllYears{m[ month ]}";
+                            else
+                                tmp = $"jqueryOptions {YearMin + j - 1}{m[ month ]}";
 
                             of.WriteLine( $"<div class='{tmp}'>" );
                             of.WriteLine( $"<table class='CUtable'><thead>" );
 
                             of.WriteLine( $"<tr style='color:{RecordsTxtHeaderColor}'>" );
-                            if ( j == 0 ) of.WriteLine( $"<th colspan='3' style='text-align:center'>{Sup.GetCUstringValue( "General", "AllTime", "All Time", false )} {CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( month + 1 )}</th>" );
-                            else of.WriteLine( $"<th colspan='3' style='text-align:center'>{YearMin + j - 1} {CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( month + 1 )}</th>" );
+                            if ( j == 0 )
+                                of.WriteLine( $"<th colspan='3' style='text-align:center'>{Sup.GetCUstringValue( "General", "AllTime", "All Time", false )} {CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( month + 1 )}</th>" );
+                            else
+                                of.WriteLine( $"<th colspan='3' style='text-align:center'>{YearMin + j - 1} {CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( month + 1 )}</th>" );
                             of.WriteLine( $"</tr>" );
 
                             of.WriteLine( $"<tr style='color:{RecordsTxtHeaderColor}'>" );

@@ -39,7 +39,8 @@ namespace CumulusUtils
         {
             Sup.LogDebugMessage( "MeteoCam: start" );
 
-            if ( !CMXutils.HasMeteoCamMenu ) return; // Don't generate, ignore everything, just get back.
+            if ( !CMXutils.HasMeteoCamMenu )
+                return; // Don't generate, ignore everything, just get back.
 
             //string MeteoCamName = Sup.GetUtilsIniValue( "MeteoCam", "MeteoCamName", "" );
 

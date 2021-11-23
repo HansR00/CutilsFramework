@@ -459,9 +459,11 @@ namespace CumulusUtils
             // Init the Compiler section in language file for the keywords just to  make sure they are there
             // Even if it is the millionth time or more... Certainly when adding more keywords later on.
             foreach ( string k in PlotvarKeywordRECENT )
-                if ( !string.IsNullOrEmpty( k ) ) Sup.GetCUstringValue( "Compiler", k, k, false );
+                if ( !string.IsNullOrEmpty( k ) )
+                    Sup.GetCUstringValue( "Compiler", k, k, false );
             foreach ( string k in PlotvarKeywordALL )
-                if ( !string.IsNullOrEmpty( k ) ) Sup.GetCUstringValue( "Compiler", k, k, false );
+                if ( !string.IsNullOrEmpty( k ) )
+                    Sup.GetCUstringValue( "Compiler", k, k, false );
 
             try
             {
