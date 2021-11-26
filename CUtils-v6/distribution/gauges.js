@@ -14,18 +14,20 @@
  * Note that the original distribution has remained in tact but the only modifications are made
  * in gauges.js which has become part of the CumulusUtils distribution together with the language file. 
  *
- * Version 1.1.0 (based on Marks gauges.js v 2.7.3) - Updated: 17 april March 2020
- * Version 1.2.0 (based on Marks gauges.js v 2.7.3) - Updated: 29 april March 2020 / (Went with CU 3.7.3)
- * Version 1.3.0 (based on Marks gauges.js v 2.7.3) - Updated: 14 June 2020 / (Went with CU 3.8.3) 
+ * Version 1.1.0 HR (based on Marks gauges.js v 2.7.3) - Updated: 17 april March 2020
+ * Version 1.2.0 HR (based on Marks gauges.js v 2.7.3) - Updated: 29 april March 2020 / (Went with CU 3.7.3)
+ * Version 1.3.0 HR (based on Marks gauges.js v 2.7.3) - Updated: 14 June 2020 / (Went with CU 3.8.3) 
  *   - Set ledVisible to false (and removed it from the CU set of parameters)
- * Version 1.4.0 (based on Marks gauges.js v 2.7.3) - Updated: 20 June 2020 / (Went with CU 3.9.0)
+ * Version 1.4.0 HR (based on Marks gauges.js v 2.7.3) - Updated: 20 June 2020 / (Went with CU 3.9.0)
  *   - Overhauled dashboard switching (Pause() and Restart() removed)
  *   - Alarms / Led / Threshold are now possible
- * Version 1.5.0 (based on Marks gauges.js v 2.7.3) - Updated: 31 July 2021 / (Went with CU 6.0.1)
+ * Version 1.5.0 HR (based on Marks gauges.js v 2.7.3) - Updated: 31 July 2021 / (Went with CU 6.0.1)
  *   - Added Feels Like possibility in Dew-Gauge
  * Version 1.5.1 HR (based on Marks gauges.js v 2.7.3) - Updated: 31 July 2021 / (Went with CU 6.5.1)
  *   - Added a console.log confirmationn after Init, this should give a hook in case of debugging
  *   - Added HR to the version as distinction between Marks original
+ * Version 1.6.0 HR (based on Marks gauges.js v 2.7.3) - Updated: 24 November 2021 / (Went with CU 6.7.7)
+ *   - Removed the initialisation of the gauges to have it executed in CumulusUtils.js after the GaugeSettings
  *
  */
 
@@ -51,7 +53,7 @@ gauges = (function () {
   var strings = LANG.EN,         // Set to your default language. Store all the strings in one object
     config = {
       // Script configuration parameters you may want to 'tweak'
-      scriptVer: '1.5.1 HR',
+      scriptVer: '1.6.0',
       weatherProgram: 0,                      // Set 0=Cumulus, (the rest is skipped => 1=Weather Display, 2=VWS, 3=WeatherCat, 4=Meteobridge, 5=WView, 6=WeeWX, 7=WLCOM)
       realtimeInterval: 15,                     // *** Download data interval, set to your realtime data update interval in seconds
       gaugeMobileScaling: 0.85,                   // scaling factor to apply when displaying the gauges mobile devices, set to 1 to disable (default 0.85)
@@ -331,6 +333,7 @@ gauges = (function () {
         1000);
 
       console.log('Gauges Init Done...');
+
     },// End of init function
 
     //
@@ -3720,7 +3723,7 @@ gauges = (function () {
     //
     $(document).ready(function () {
       // Kick it all off - false for web page, true for dashboard
-      init(config.dashboardMode);
+      // init(config.dashboardMode);
     });
   }
 
@@ -3731,7 +3734,7 @@ gauges = (function () {
     config: config,
     gaugeGlobals: gaugeGlobals,
     commonParams: commonParams,
-//    init: init,
+    init: init,
 
     SetFrameAppearance: SetFrameAppearance,
     SetBackground: SetBackground,

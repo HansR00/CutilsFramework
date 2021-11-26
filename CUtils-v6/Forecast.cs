@@ -141,7 +141,7 @@ namespace CumulusUtils
                 using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.ForecastOutputFilename}", false, Encoding.UTF8 ) )
                 {
                     // moved width='1000' height='650' to style
-                    of.WriteLine( $"<iframe src='{NorwayPredictionURL}external_box_hour_by_hour.html' frameborder='0' style='margin: 10px 0 10px 0; width:1000px; height:700px' scrolling='no'></iframe>" );
+                    of.WriteLine( $"<iframe src='{NorwayPredictionURL}' frameborder='0' style='margin: 10px 0 10px 0; width:1000px; height:700px' scrolling='no'></iframe>" );
                 }
                 return;
             }

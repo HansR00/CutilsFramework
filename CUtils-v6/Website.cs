@@ -57,7 +57,7 @@ namespace CumulusUtils
     {
         readonly private string[] Package = new string[] {"index.html", "cumulusutils.js","cumuluscharts.txt","gauges.js","HighchartsDefaults.js","HighchartsLanguage.js",
                                      "suncalc.js","tween.min.js", "steelseries.min.js","RGraph.rose.js","RGraph.common.core.js","language.js",
-                                     "gauges-ss.css", "CUsermenu.txt", "CUserAbout.txt"};
+                                     "gauges-ss.css"};
 
         private readonly string[] PanelsConfiguration;
 
@@ -727,7 +727,6 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "  $('#Dashboard').show();" +
                   "  $('#Gauges').hide();" +
                   "  $('#ExtraSensors').hide();" +
-                  //"  ToggleDashboard();" +  // Initiaslisation of the dashboard because the Wind Gauges code need to be moved there
                   "  Promise.allSettled([ $.getScript('lib/gauges.js'), LoadCUsermenu('CUsermenu.txt'), LoadCUserAbout('CUserAbout.txt'), LoadUtilsReport('cumuluscharts.txt', true)])" +
                   "    .then(() => { " +
                   "      loadRealtimeTxt();" +
@@ -738,7 +737,8 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "      CreateMoon();" +
                   "      MinuteFunctions();" +
                   "      HourFunctions();" +
-                  "      console.log('Document Ready function done;\nPromise.AllSettled fullfilled');" + // Show we're alive
+                  "      console.log('Promise.AllSettled fullfilled...');" +
+                  "      console.log('Document Ready function done');" + // Show we're alive
                   "    });" +
                   "});" +
                   // Seconds timer
@@ -1585,6 +1585,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 CUlibFile.Append( $"  gauges.SetForegroundType(steelseries.ForegroundType.{SteelseriesForegroundType});" );
                 CUlibFile.Append( $"  gauges.SetKnobType(steelseries.KnobType.{SteelseriesKnobType});" );
                 CUlibFile.Append( $"  gauges.SetKnobStyle(steelseries.KnobStyle.{SteelseriesKnobStyle});" );
+                CUlibFile.Append( $"  gauges.init(false);" ); // The false is to indicate the CumulusMX dashboard mode
                 CUlibFile.Append( '}' );
 
 #if !RELEASE
