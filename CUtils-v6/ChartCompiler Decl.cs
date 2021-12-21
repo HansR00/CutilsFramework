@@ -86,23 +86,23 @@ namespace CumulusUtils
     // The structure 
     internal struct Plotvar
     {
-        internal string Keyword;    // The actual keyword to use in the graph and make it understandable
-        internal string PlotVar;    // like 'Temp', 'wdir' etc... : the id in the JSON
-        internal string Equation;   // Any equation the user puts in the EVAL string, checked and translated to javascript
+        internal string Keyword;            // The actual keyword to use in the graph and make it understandable
+        internal string PlotVar;            // like 'Temp', 'wdir' etc... : the id in the JSON
+        internal string Equation;           // Any equation the user puts in the EVAL string, checked and translated to javascript
         internal List<AllVarInfo> EqAllVarList;
-        internal PlotvarRangeType PlotvarRange;
-        // So is it a Recent, Extra, Daily or All range
+        internal PlotvarRangeType PlotvarRange; // So is it a Recent, Extra, Daily or All range
 
-        internal string Unit;       // Required knowledge about the parameters unit is stored in an array
-        internal string Datafile;   // the actual datafile where the data can be found
-        internal string Color;      // the c olour as defined 
-        internal int LineWidth;     // The LineWidth
-        internal double Opacity;    // The LineWidth
-        internal string GraphType;  // like 'line', spline etc...
-        internal AxisType Axis;     // For fast access to the type needed
-        internal string AxisId;     // For fast access to the type needed
-        internal int zIndex;        // the zIndex plane for the plotorder (e.g. to get a  line before an area so it can be seen)
-        internal bool IsStats;      // Remember it is a stats var and needs to be linked to the original which must be in the same chart
+
+        internal string Unit;               // Required knowledge about the parameters unit is stored in an array
+        internal string Datafile;           // the actual datafile where the data can be found
+        internal string Color;              // the c olour as defined 
+        internal int LineWidth;             // The LineWidth
+        internal double Opacity;            // The LineWidth
+        internal string GraphType;          // like 'line', spline etc...
+        internal AxisType Axis;             // For fast access to the type needed
+        internal string AxisId;             // For fast access to the type needed
+        internal int zIndex;                // the zIndex plane for the plotorder (e.g. to get a  line before an area so it can be seen)
+        internal bool IsStats;              // Remember it is a stats var and needs to be linked to the original which must be in the same chart
     }
 
     internal struct AllVarInfo
@@ -180,7 +180,7 @@ namespace CumulusUtils
         static internal readonly string[] PlotvarTypesEXTRA = {
             "Temp1","Temp2","Temp3","Temp4","Temp5","Temp6","Temp7","Temp8","Temp9","Temp10",
             "Humidity1","Humidity2","Humidity3","Humidity4","Humidity5","Humidity6","Humidity7","Humidity8","Humidity9","Humidity10",
-            "Dewpoint1","Dewpoint2","Dewpoint3","Dewpoint4","Dewpoint5","Dewpoint6","Dewpoint7","Dewpoint8","Dewpoint9","ExtraDPSensor10",
+            "Dewpoint1","Dewpoint2","Dewpoint3","Dewpoint4","Dewpoint5","Dewpoint6","Dewpoint7","Dewpoint8","Dewpoint9","Dewpoint10",
             "SoilTemp1","SoilTemp2","SoilTemp3","SoilTemp4","SoilTemp5","SoilTemp6","SoilTemp7","SoilTemp8","SoilTemp9","SoilTemp10","SoilTemp11","SoilTemp12","SoilTemp13","SoilTemp14","SoilTemp15","SoilTemp16",
             "SoilMoisture1","SoilMoisture2","SoilMoisture3","SoilMoisture4","SoilMoisture5","SoilMoisture6","SoilMoisture7","SoilMoisture8","SoilMoisture9","SoilMoisture10","SoilMoisture11","SoilMoisture12","SoilMoisture13","SoilMoisture14","SoilMoisture15","SoilMoisture16",
             "AirQuality1","AirQuality2","AirQuality3","AirQuality4",
@@ -229,7 +229,7 @@ namespace CumulusUtils
           "InsideTemp", "Dewpoint", "ApparentTemp", "FeelsLike", "WindChill", "HeatIndex", "Temperature", "Humidex",
           "WindGust", "WindSpeed",
           "Bearing", "AverageBearing",
-          "UV", "SolarRadiation", "TheoreticalSolarMax",
+          "UV", /*"SolarRadiation",*/ "CurrentSolarRad", "TheoreticalSolarMax",
           "RainFall", "RainRate",
           "Pressure",
           "Humidity", "InsideHumidity",

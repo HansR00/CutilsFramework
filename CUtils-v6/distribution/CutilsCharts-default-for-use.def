@@ -27,7 +27,7 @@ Chart Overview Title Overview of the  current weather status ConnectsTo 2 4 15 2
   PLOT DewPoint Colour #50B432 zindex 80
   PLOT pressure Colour red zindex 70
   Plot Humidity Colour #64E572 zindex 60
-	Plot SolarRadiation As Area Opacity 0.2 Colour Orange zindex 20
+  Plot CurrentSolarRad As Area Opacity 0.2 Colour Orange zindex 20
   Plot RainFall As Area colour #33B4FF opacity 0.2 zindex 10
 EndChart
 
@@ -60,7 +60,7 @@ EndChart
 
 Chart Solar Title (Max) Radiation en UV ConnectsTo 12 23 24
 	Plot	UV	zIndex 100
-	Plot 	SolarRadiation As Area Opacity 0.4 Colour Orange zIndex 50 
+	Plot 	CurrentSolarRad As Area Opacity 0.4 Colour Orange zIndex 50 
 	Plot	TheoreticalSolarMax As Area Colour Gold zIndex 10 Opacity 0.2
 EndChart
 

@@ -466,7 +466,8 @@ namespace CumulusUtils
 
                                 if ( string.IsNullOrEmpty( thisPlotvar.Equation ) )
                                 {
-                                    Sup.LogTraceWarningMessage( $"Parsing User Charts '{thisChart.Id}' : AXIS definition ignored in absence of correct EVAL equation for {thisPlotvar.Keyword}" );
+                                    Sup.LogTraceWarningMessage( $"Parsing User Charts '{thisChart.Id}' : AXIS specification ignored in absence of (correct) EVAL equation for {thisPlotvar.Keyword}" );
+                                    Sup.LogTraceWarningMessage( $"Parsing User Charts '{thisChart.Id}' : Axis specification only relevant for Equations, conitnuing..." );
                                     CurrPosition++; // this  one gets us on the next KeyWord
                                 }
                                 else
@@ -504,10 +505,21 @@ namespace CumulusUtils
                                     Keywords[ CurrPosition ].Equals( "Axis", cmp ) ||
                                     Keywords[ CurrPosition ].Equals( "LineWidth", cmp ) );
 
-                        thisChart.PlotVars.Add( thisPlotvar );
-
                         if ( thisPlotvar.GraphType == "scatter" )
                             thisChart.HasScatter = true;
+
+                        if ( !string.IsNullOrEmpty( thisPlotvar.Equation ) ) // Check for an Axis
+                        {
+                            Sup.LogTraceWarningMessage( $"User Charts '{thisChart.Id}/{thisPlotvar.Keyword}': No Axis was specified or in error. Axistype is set to FREE." );
+                            if ( thisPlotvar.Axis == AxisType.None )
+                            {
+                                thisPlotvar.AxisId = "Free";
+                                thisPlotvar.Axis = AxisType.Free;
+                                thisChart.Axis |= thisPlotvar.Axis;
+                            }
+                        }
+
+                        thisChart.PlotVars.Add( thisPlotvar );
 
                     } while ( Keywords[ CurrPosition ].Equals( "Plot", cmp ) || Keywords[ CurrPosition ].Equals( "Stats", cmp ) );  // End while if PLOT keyword
 

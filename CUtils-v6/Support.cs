@@ -52,7 +52,7 @@ namespace CumulusUtils
     public class CuSupport : IDisposable
     {
         // Is it a version number beta shown at users?
-        const string beta = "";
+        const string beta = " patch 3";
 
         #region declarations
         public Wind StationWind { get; set; }
@@ -586,6 +586,11 @@ namespace CumulusUtils
 
             //Console.WriteLine($"CountFlags result 2 {c}");
             return c;
+        }
+
+        public static bool Contains( this string source, string toCheck, StringComparison comp )
+        {
+            return source?.IndexOf( toCheck, comp ) >= 0;
         }
     }
 

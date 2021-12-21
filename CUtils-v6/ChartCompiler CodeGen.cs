@@ -288,7 +288,7 @@ namespace CumulusUtils
                                 tmpEquation = tmp.Insert( startSum, "sumResult[i][1]" );
 
                                 foreach ( AllVarInfo avi in thisPlotvar.EqAllVarList )
-                                    if ( sumExpr.Contains( avi.KeywordName ) )
+                                    if ( sumExpr.Contains( avi.KeywordName, cmp ) )
                                         sumExpr = sumExpr.Replace( avi.KeywordName, $"{avi.KeywordName}[i][1]" );
 
                                 GenerateSumFunction( GenericJavascript );
@@ -310,7 +310,7 @@ namespace CumulusUtils
                             if ( thisPlotvar.EqAllVarList.Count > 0 )
                             {
                                 foreach ( AllVarInfo avi in thisPlotvar.EqAllVarList )
-                                    if ( tmpEquation.Contains( avi.KeywordName ) )
+                                    if ( tmpEquation.Contains( avi.KeywordName, cmp ) )
                                         tmpEquation = tmpEquation.Replace( avi.KeywordName, $"{avi.KeywordName}[i][1]" );
 
                                 // Now write out the values in the array at runtime.
@@ -814,7 +814,7 @@ namespace CumulusUtils
                     {
                         foreach ( AllVarInfo avi in AllVars )
                         {
-                            if ( p.Keyword.Equals( avi.KeywordName ) )
+                            if ( p.Keyword.Equals( avi.KeywordName, cmp ) )
                             {
                                 found = true;
                                 break;
@@ -828,6 +828,8 @@ namespace CumulusUtils
                         tmpVarInfo.TypeName = p.PlotVar;
                         tmpVarInfo.Datafile = p.Datafile;
                         AllVars.Add( tmpVarInfo );
+
+                        Sup.LogTraceInfoMessage( $"CeckAllVariablesInThisSetOfCharts: Keyword: {tmpVarInfo.KeywordName}; Plotvar: {tmpVarInfo.TypeName}; Datafile: {tmpVarInfo.Datafile}" );
                     }
                     else
                         found = false;
@@ -841,23 +843,27 @@ namespace CumulusUtils
                     {
                         if ( p.GraphType == "columnrange" )
                         {
+                            Sup.LogTraceInfoMessage( $"CeckAllVariablesInThisSetOfCharts: ColumnRange var {p.Keyword}" );
                             string pvSuffix = p.PlotVar.Substring( 3 );
 
                             tmpVarInfo.Datafile = p.Datafile;
                             tmpVarInfo.KeywordName = $"min{pvSuffix}";
                             tmpVarInfo.TypeName = $"min{pvSuffix}";
                             AllVars.Add( tmpVarInfo );
+                            Sup.LogTraceInfoMessage( $"CeckAllVariablesInThisSetOfCharts: Keyword: {tmpVarInfo.KeywordName}; Plotvar: {tmpVarInfo.TypeName}; Datafile: {tmpVarInfo.Datafile}" );
 
                             tmpVarInfo.Datafile = p.Datafile;
                             tmpVarInfo.KeywordName = $"max{pvSuffix}";
                             tmpVarInfo.TypeName = $"max{pvSuffix}";
                             AllVars.Add( tmpVarInfo );
+                            Sup.LogTraceInfoMessage( $"CeckAllVariablesInThisSetOfCharts: Keyword: {tmpVarInfo.KeywordName}; Plotvar: {tmpVarInfo.TypeName}; Datafile: {tmpVarInfo.Datafile}" );
                         }
                         else
                             continue;
                     }
                     else
                     {
+                        Sup.LogTraceInfoMessage( $"CeckAllVariablesInThisSetOfCharts: Equation var {p.Keyword}" );
                         // In case of an equation with its own var name some info needs to be set for codegen to function correctly
                         //
                         if ( p.PlotvarRange == PlotvarRangeType.All || p.PlotvarRange == PlotvarRangeType.Daily )
@@ -878,10 +884,12 @@ namespace CumulusUtils
                             string pk = PlotvarKeyword[ Array.FindIndex( PlotvarTypes, word => word.Equals( pt, cmp ) ) ];
                             string df = Datafiles[ Array.FindIndex( PlotvarTypes, word => word.Equals( pt, cmp ) ) ];
 
-                            if ( p.Equation.Contains( pk ) )
+                            if ( p.Equation.Contains( pk, cmp ) )
                             {
+                                found = false;
+
                                 foreach ( AllVarInfo a in AllVars )
-                                    if ( a.KeywordName.Equals( pk ) )
+                                    if ( a.KeywordName.Equals( pk, cmp ) )
                                     {
                                         tmpVarInfo = a;
                                         found = true;
@@ -897,6 +905,8 @@ namespace CumulusUtils
                                 }
                                 else
                                     found = false;
+
+                                Sup.LogTraceInfoMessage( $"CeckAllVariablesInThisSetOfCharts (found: {found}): Keyword: {tmpVarInfo.KeywordName}; Plotvar: {tmpVarInfo.TypeName}; Datafile: {tmpVarInfo.Datafile}" );
 
                                 p.EqAllVarList.Add( tmpVarInfo );
                             }

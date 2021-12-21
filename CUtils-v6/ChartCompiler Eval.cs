@@ -289,7 +289,10 @@ namespace CumulusUtils
                             if ( !Equationblock )
                             {
                                 if ( Array.Exists( PlotvarKeyword, word => word.Equals( tmpWord, cmp ) ) )
-                                    tmp += tmpWord;
+                                {
+                                    int index = Array.FindIndex( PlotvarKeyword, word => word.Equals( tmpWord, cmp ) );
+                                    tmp += PlotvarKeyword[ index ];
+                                }
                                 else
                                 {
                                     bool EqExists = false;

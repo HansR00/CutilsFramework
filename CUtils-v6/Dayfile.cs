@@ -456,7 +456,7 @@ namespace CumulusUtils
                 //handle exception
                 Sup.LogTraceErrorMessage( $"{m} fail: " + e.Message );
                 Sup.LogTraceErrorMessage( $"{m}: in field nr {FieldInUse} ({enumFieldTypeNames[ FieldInUse ]})" );
-                Sup.LogTraceErrorMessage( $"{m}: line is: '{line}')" );
+                Sup.LogTraceErrorMessage( $"{m}: line is: {line}" );
 
                 Console.WriteLine( $"{m} fail: " + e.Message );
                 Console.WriteLine( $"{m}: in field nr {FieldInUse} ({enumFieldTypeNames[ FieldInUse ]})" );
