@@ -156,7 +156,7 @@ namespace CumulusUtils
                 sb.AppendLine( $"  $('#ExtraSensors').show();" );
                 sb.AppendLine( "  loadExtraSensorsRealtime();" );
                 sb.AppendLine( "  if (ExtraSensorTimer == null) ExtraSensorTimer = setInterval(loadExtraSensorsRealtime, 60 * 1000);" );
-                sb.AppendLine( $"  LoadUtilsReport( '{Sup.ExtraSensorsCharts}', false );" );
+                sb.AppendLine( $"  LoadUtilsReport( '{Sup.ExtraSensorsCharts}', true );" );
                 sb.AppendLine( "});" );
                 sb.AppendLine( "" );
                 sb.AppendLine( "function loadExtraSensorsRealtime() {" );
@@ -618,7 +618,7 @@ namespace CumulusUtils
                             sb.Append( $"<#UserTemp{++UserTemp} rc=y> " );
                             break;
                         case (int) ExtraSensorType.LeafTemp:
-                            sb.Append( $"<#LeafWetness{++LeafTemp} rc=y> " );
+                            sb.Append( $"<#LeafTemp{++LeafTemp} rc=y> " );
                             break;
                         case (int) ExtraSensorType.LeafWetness:
                             sb.Append( $"<#LeafWetness{++LeafWetness} rc=y> " );

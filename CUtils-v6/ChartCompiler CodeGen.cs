@@ -100,10 +100,9 @@ namespace CumulusUtils
                 GenericJavascript.AppendLine( "var chart, config, freezing;" );
 
                 // Change defaults of the Charts Page / Home button in the Document Init function but only if NOT website
-                if ( !CMXutils.DoWebsite || UniqueOutputId > 0 )
-                {
-                    GenericJavascript.AppendLine( "$( function(){ InitCumulusCharts() } );" );
-                }
+                GenericJavascript.Append( "$( function(){  " );
+                if ( !CMXutils.DoWebsite && (CMXutils.DojQueryInclude || CMXutils.DoLibraryIncludes) ) GenericJavascript.Append( "InitCumulusCharts();" );
+                GenericJavascript.AppendLine( " } );" );
 
                 // Generate InitCumulusCharts
                 GenericJavascript.Append( "function InitCumulusCharts() {" );
@@ -149,7 +148,7 @@ namespace CumulusUtils
                    $"      document.getElementById( 'graph{UniqueOutputId}' ).value = CurrentChart{UniqueOutputId};" +
                     "})" ); // End .done()
                 GenericJavascript.AppendLine( "    .fail(function ( xhr, textStatus, errorThrown) {" +
-                    "      console.log('graphconfig.json ' + textStatus + ' : ' + 'errorThrown');" +
+                    "      console.log('graphconfig.json ' + textStatus + ' : ' + errorThrown);" +
                     "});" ); // End $.ajax
                 GenericJavascript.AppendLine( "}" ); // End GraphconfigAjax
 
@@ -178,7 +177,7 @@ namespace CumulusUtils
 
                         AjaxJavascript.AppendLine( $"    cache: false, datatype: 'json'" );
                         AjaxJavascript.AppendLine( "    })" );
-                        AjaxJavascript.AppendLine( $"    .fail( function (xhr, textStatus, errorThrown) {{ console.log( '{df} ' + textStatus + ' : ' + 'errorThrown' ); }})" );
+                        AjaxJavascript.AppendLine( $"    .fail( function (xhr, textStatus, errorThrown) {{ console.log( '{df} ' + textStatus + ' : ' + errorThrown ); }})" );
                         AjaxJavascript.AppendLine( "    .done( function(resp) {" );      // Add the series
 
                         foreach ( AllVarInfo avi in AllVars )

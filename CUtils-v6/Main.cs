@@ -150,6 +150,7 @@ namespace CumulusUtils
 
         static public bool DoWebsite { get; private set; }
         static public bool DoLibraryIncludes { get; private set; }
+        static public bool DojQueryInclude { get; private set; }
         static public bool MapParticipant { get; private set; }
         static public bool HasRainGraphMenu { get; set; }
         static public bool HasTempGraphMenu { get; set; }
@@ -267,6 +268,7 @@ namespace CumulusUtils
                 MapParticipant = Sup.GetUtilsIniValue( "Maps", "Participant", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
                 HasSolar = Sup.GetUtilsIniValue( "Website", "ShowSolar", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase ); // Is an indirect determination set by the user only in  cutils
                 DoLibraryIncludes = Sup.GetUtilsIniValue( "General", "DoLibraryIncludes", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase ); // Do we need the libs??
+                DojQueryInclude = Sup.GetUtilsIniValue( "General", "GeneratejQueryInclude", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
 
                 bool AirLinkIn = Sup.GetCumulusIniValue( "AirLink", "In-Enabled", "0" ).Equals( "1" );
                 bool AirLinkOut = Sup.GetCumulusIniValue( "AirLink", "Out-Enabled", "0" ).Equals( "1" );

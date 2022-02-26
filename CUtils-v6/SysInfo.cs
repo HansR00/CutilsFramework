@@ -171,8 +171,6 @@ namespace CumulusUtils
 
         private void DoingUnix( StreamWriter of )
         {
-            int i;
-
             Sup.LogTraceInfoMessage( "SystemStatus : DoingUnix Start" );
 
             of.WriteLine( "Linux/Unix" );
@@ -220,13 +218,9 @@ namespace CumulusUtils
                 of.WriteLine( $"OS: {returnValues[ 0 ]}" );
 
                 StartProcess( "lsb_release", "-a" );
-                foreach ( string s in returnValues )
-                {
-                    if ( s.StartsWith( "Description", StringComparison.OrdinalIgnoreCase ) )
-                    {
-                        of.WriteLine( Sup.StringRemoveWhiteSpace( s ) );
-                    }
-                }
+                foreach ( string line in returnValues )
+                    if ( line.StartsWith( "Description", StringComparison.OrdinalIgnoreCase ) )
+                        of.WriteLine( Sup.StringRemoveWhiteSpace( line ) );
             }
             catch ( Exception e )
             {
@@ -248,13 +242,9 @@ namespace CumulusUtils
 
             try
             {
-                StartProcess( "cat", "/proc/meminfo" );
+                StartProcess( "free", "-m" );
                 of.WriteLine( "Memory info:" );
-                for ( i = 0; i < 3; i++ )
-                {
-                    if ( !String.IsNullOrEmpty( returnValues[ i ] ) )
-                        of.WriteLine( $"{returnValues[ i ]}" );
-                }
+                foreach(string line in returnValues) of.WriteLine( line );
             }
             catch ( Exception e )
             {
@@ -267,10 +257,7 @@ namespace CumulusUtils
             try
             {
                 StartProcess( "df", "-T -text4 -tvfat -h" );
-                foreach ( string str in returnValues )
-                {
-                    of.WriteLine( $"{str}" );
-                }
+                foreach ( string line in returnValues ) of.WriteLine( line );
             }
             catch ( Exception e )
             {

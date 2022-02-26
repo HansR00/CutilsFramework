@@ -119,7 +119,9 @@ namespace CumulusUtils
             Sup.LogTraceInfoMessage( "WindRose : Start writing the javascript data arrays." );
 
             // The lookup hashing makes it 35% faster!!
+            // ILookup<int, MonthfileValue> YearLookup = thisList.ToLookup( x => x.ThisDate.Year, x => x );
             var YearLookup = thisList.ToLookup( x => x.ThisDate.Year );
+
 
             for ( int year = YearMin; year <= YearMax; year++ )
             {

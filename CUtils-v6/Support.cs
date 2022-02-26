@@ -52,7 +52,7 @@ namespace CumulusUtils
     public class CuSupport : IDisposable
     {
         // Is it a version number beta shown at users?
-        const string beta = " patch 3";
+        const string beta = "";
 
         #region declarations
         public Wind StationWind { get; set; }
@@ -367,7 +367,7 @@ namespace CumulusUtils
 
         public static string Copyright() => "&copy; Hans Rottier";
 
-        public string GenjQueryIncludestring() => ( GetUtilsIniValue( "General", "GeneratejQueryInclude", "true" ).Equals( "true" ) && !CMXutils.DoWebsite ) ?
+        public string GenjQueryIncludestring() => (  CMXutils.DojQueryInclude && !CMXutils.DoWebsite ) ?
                                                   "<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js\" type=\"text/javascript\"></script>" :
                                                   "";
 
