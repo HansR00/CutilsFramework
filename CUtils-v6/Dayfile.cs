@@ -341,7 +341,7 @@ namespace CumulusUtils
                 ThisValue.TotalRainThisDay = Convert.ToSingle( lineSplit[ FieldInUse ], provider );
 
                 // Special handling of the rain periods, finished after the caller gets control back;
-                if ( ThisValue.TotalRainThisDay > 0 ) { ThisValue.DryPeriod = 0; ThisValue.WetPeriod = 1; }
+                if ( ThisValue.TotalRainThisDay >= 0.2 ) { ThisValue.DryPeriod = 0; ThisValue.WetPeriod = 1; }
                 else { ThisValue.DryPeriod = 1; ThisValue.WetPeriod = 0; }
 
                 ThisValue.MonthlyRain = ThisValue.TotalRainThisDay;     // do the actual work in SetExtraValues
@@ -523,7 +523,7 @@ namespace CumulusUtils
                 tmpValue.YearToDateRain += values[ lastEntry - 1 ].YearToDateRain;
             }
 
-            if ( values[ lastEntry ].TotalRainThisDay > 0 )
+            if ( values[ lastEntry ].TotalRainThisDay >= 0.2 )  // Dew is not counted in the .1 mm registering equipment (e.g. Ecowitt)
                 tmpValue.WetPeriod += values[ lastEntry - 1 ].WetPeriod;
             else
                 tmpValue.DryPeriod += values[ lastEntry - 1 ].DryPeriod;

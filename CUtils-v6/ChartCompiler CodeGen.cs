@@ -101,7 +101,17 @@ namespace CumulusUtils
 
                 // Change defaults of the Charts Page / Home button in the Document Init function but only if NOT website
                 GenericJavascript.Append( "$( function(){  " );
-                if ( !CMXutils.DoWebsite && (CMXutils.DojQueryInclude || CMXutils.DoLibraryIncludes) ) GenericJavascript.Append( "InitCumulusCharts();" );
+
+                // This complex conditional must make sure the initialisation of the chart is done and is done only once.
+                //   1) !website means we are doing compileonly (modular) but that maybe for use in the CUtils website or really for another website
+                //   2) CMXutils.DojQueryInclude || CMXutils.DoLibraryIncludes is used to determine compileonly is used for another website
+                //   3) If UniqueOutputId > 0 the Init is not called by the runtime system and needs to be done here
+                //   4) If the condition is true, the chart needs the initialisation on itself
+                //      --- this must be a rewrite: initialisation should always be done from the runtime such that we know what the last chart is and that the timer can 
+                //      refresh whatever chart is loaded
+                if ( ( !CMXutils.DoWebsite && ( CMXutils.DojQueryInclude || CMXutils.DoLibraryIncludes ) ) || UniqueOutputId > 0 )
+                    GenericJavascript.Append( "InitCumulusCharts();" );
+
                 GenericJavascript.AppendLine( " } );" );
 
                 // Generate InitCumulusCharts

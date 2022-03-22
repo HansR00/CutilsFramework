@@ -157,7 +157,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "tooltip:" );
             thisBuffer.AppendLine( "{" );
-            thisBuffer.AppendLine( $"  valueSuffix: '{Sup.GetCUstringValue( "General", "Hours", "Hours", true )}'" );
+            thisBuffer.AppendLine( $"  valueSuffix: ' {Sup.GetCUstringValue( "General", "Hours", "Hours", true )}'" );
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "plotOptions:" );
             thisBuffer.AppendLine( "{" );
@@ -168,7 +168,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "    dataLabels:" );
             thisBuffer.AppendLine( "    {" );
             thisBuffer.AppendLine( "      enabled: false," );
-            thisBuffer.AppendLine( $"      format: '{{y}}{Sup.GetCUstringValue( "General", "Hours", "Hours", true )}'" );
+            thisBuffer.AppendLine( $"      format: '{{y}} {Sup.GetCUstringValue( "General", "Hours", "Hours", true )}'" );
             thisBuffer.AppendLine( "    }" );
             thisBuffer.AppendLine( "  }" );
             thisBuffer.AppendLine( "}," );
@@ -311,7 +311,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "tooltip:" );
             thisBuffer.AppendLine( "{" );
-            thisBuffer.AppendLine( $"  valueSuffix: '{Sup.GetCUstringValue( "General", "Hours", "Hours", true )}'" );
+            thisBuffer.AppendLine( $"  valueSuffix: ' {Sup.GetCUstringValue( "General", "Hours", "Hours", true )}'" );
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "plotOptions:" );
             thisBuffer.AppendLine( "{" );
@@ -322,7 +322,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "    dataLabels:" );
             thisBuffer.AppendLine( "    {" );
             thisBuffer.AppendLine( "      enabled: false," );
-            thisBuffer.AppendLine( $"      format: '{{y}}{Sup.GetCUstringValue( "General", "Hours", "Hours", true )}'" );
+            thisBuffer.AppendLine( $"      format: '{{y}} {Sup.GetCUstringValue( "General", "Hours", "Hours", true )}'" );
             thisBuffer.AppendLine( "    }" );
             thisBuffer.AppendLine( "  }" );
             thisBuffer.AppendLine( "}," );
@@ -473,7 +473,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "tooltip:" );
             thisBuffer.AppendLine( "{" );
-            thisBuffer.AppendLine( $"  valueSuffix: '{Sup.GetCUstringValue( "General", "kWh", "kWh", true )}'" );
+            thisBuffer.AppendLine( $"  valueSuffix: ' {Sup.GetCUstringValue( "General", "kWh", "kWh", true )}'" );
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "plotOptions:" );
             thisBuffer.AppendLine( "{" );
@@ -484,7 +484,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "    dataLabels:" );
             thisBuffer.AppendLine( "    {" );
             thisBuffer.AppendLine( "      enabled: false," );
-            thisBuffer.AppendLine( $"      format: '{{y}}{Sup.GetCUstringValue( "General", "kWh", "kWh", true )}'" );
+            thisBuffer.AppendLine( $"      format: '{{y}} {Sup.GetCUstringValue( "General", "kWh", "kWh", true )}'" );
             thisBuffer.AppendLine( "    }" );
             thisBuffer.AppendLine( "  }" );
             thisBuffer.AppendLine( "}," );
@@ -627,7 +627,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "tooltip:" );
             thisBuffer.AppendLine( "{" );
-            thisBuffer.AppendLine( $"  valueSuffix: '{Sup.GetCUstringValue( "General", "kWh", "kWh", true )}'" );
+            thisBuffer.AppendLine( $"  valueSuffix: ' {Sup.GetCUstringValue( "General", "kWh", "kWh", true )}'" );
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "plotOptions:" );
             thisBuffer.AppendLine( "{" );
@@ -638,7 +638,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "    dataLabels:" );
             thisBuffer.AppendLine( "    {" );
             thisBuffer.AppendLine( "      enabled: false," );
-            thisBuffer.AppendLine( $"      format: '{{y}}{Sup.GetCUstringValue( "General", "kWh", "kWh", true )}'" );
+            thisBuffer.AppendLine( $"      format: '{{y}} {Sup.GetCUstringValue( "General", "kWh", "kWh", true )}'" );
             thisBuffer.AppendLine( "    }" );
             thisBuffer.AppendLine( "  }" );
             thisBuffer.AppendLine( "}," );
@@ -762,9 +762,10 @@ namespace CumulusUtils
                     // So this day has values, rework them to day averages with statistics in the graphing function
                     // W(interval)/M2, 60 is nr of seconds in the minute, so Energy in Ws
                     // SolarHours is determined in minutes (the total sum of interval minutes, at the end reworked to hours
-                    tmp.SolarHours += entry.SolarRad / entry.SolarTheoreticalMax >= SunThreshold ? IntervalInMinutes : 0;
+                    tmp.SolarHours += ( ( (float) entry.SolarRad / entry.SolarTheoreticalMax ) >= SunThreshold ) ? IntervalInMinutes : 0;
                     tmp.SolarEnergy += entry.SolarRad * IntervalInMinutes * 60;
                     tmp.SunUpTimeInMinutes += IntervalInMinutes;
+
                 }
 
                 tmp.SolarHours /= 60;             // The total time where the energy is larger than the threshold from minutes to hrs

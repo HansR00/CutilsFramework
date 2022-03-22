@@ -156,7 +156,7 @@ namespace CumulusUtils
                 sb.AppendLine( $"  $('#ExtraSensors').show();" );
                 sb.AppendLine( "  loadExtraSensorsRealtime();" );
                 sb.AppendLine( "  if (ExtraSensorTimer == null) ExtraSensorTimer = setInterval(loadExtraSensorsRealtime, 60 * 1000);" );
-                sb.AppendLine( $"  LoadUtilsReport( '{Sup.ExtraSensorsCharts}', true );" );
+                sb.AppendLine( $"  LoadUtilsReport( '{Sup.ExtraSensorsCharts}', false );" );
                 sb.AppendLine( "});" );
                 sb.AppendLine( "" );
                 sb.AppendLine( "function loadExtraSensorsRealtime() {" );
