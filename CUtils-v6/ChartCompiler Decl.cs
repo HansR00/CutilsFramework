@@ -27,6 +27,7 @@
  *              
  */
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -177,7 +178,7 @@ namespace CumulusUtils
         };
 
         // Static because needed in ExtraSensors
-        static internal readonly string[] PlotvarTypesEXTRA = {
+        static internal string[] PlotvarTypesEXTRA = {
             "Temp1","Temp2","Temp3","Temp4","Temp5","Temp6","Temp7","Temp8","Temp9","Temp10",
             "Humidity1","Humidity2","Humidity3","Humidity4","Humidity5","Humidity6","Humidity7","Humidity8","Humidity9","Humidity10",
             "Dewpoint1","Dewpoint2","Dewpoint3","Dewpoint4","Dewpoint5","Dewpoint6","Dewpoint7","Dewpoint8","Dewpoint9","Dewpoint10",
@@ -246,7 +247,7 @@ namespace CumulusUtils
           "HeatingDegreeDays","CoolingDegreeDays","EvapoTranspiration"
         };
 
-        static internal readonly string[] PlotvarKeywordEXTRA = {
+        static internal string[] PlotvarKeywordEXTRA = {
             "Temp1","Temp2","Temp3","Temp4","Temp5","Temp6","Temp7","Temp8","Temp9","Temp10",
             "Humidity1","Humidity2","Humidity3","Humidity4","Humidity5","Humidity6","Humidity7","Humidity8","Humidity9","Humidity10",
             "Dewpoint1","Dewpoint2","Dewpoint3","Dewpoint4","Dewpoint5","Dewpoint6","Dewpoint7","Dewpoint8","Dewpoint9","Dewpoint10",
@@ -265,11 +266,11 @@ namespace CumulusUtils
               "MinHumidity", "MaxHumidity"
             };
 
-        internal AxisType[] PlotvarAxis;
-        internal string[] PlotvarUnits;
-        internal string[] PlotvarTypes;
-        internal string[] PlotvarKeyword;
-        internal string[] Datafiles;
+        internal AxisType[] PlotvarAxis, extendedPlotvarAxisEXTRA;
+        internal string[] PlotvarUnits, extendedPlotvarUnitsEXTRA;
+        internal string[] PlotvarTypes, extendedPlotvarTypesEXTRA;
+        internal string[] PlotvarKeyword, extendedPlotvarKeywordEXTRA;
+        internal string[] Datafiles, extendedDatafilesEXTRA;
 
         internal readonly string[] PlotvarUnitsRECENT, PlotvarUnitsALL, PlotvarUnitsEXTRA;     // Init in constructor
         internal readonly string[] LinetypeKeywords = { "Line", "SpLine", "Area", "Column", "Scatter", "ColumnRange" };
@@ -477,6 +478,45 @@ namespace CumulusUtils
                   $"{MinPressure}/{MaxPressure}" +
                   $"{Sup.GetAlltimeRecordValue( "Pressure", "highpressurevalue", "" )}/{Sup.GetAlltimeRecordValue( "Pressure", "lowpressurevalue", "" )}" );
             }
+
+            // Prepare for possible ExternalExtraSensors!
+            string[] ExternalExtraSensors = Sup.GetUtilsIniValue( "ExtraSensors", "ExternalExtraSensors", "" ).Split( ',' );
+
+            if ( !string.IsNullOrEmpty( ExternalExtraSensors[ 0 ] ) )
+            {
+
+                foreach ( string thisExternal in ExternalExtraSensors )
+                {
+                    List<string> tmpStr;
+
+                    List<AxisType> tmp = PlotvarAxisEXTRA.ToList();
+                    tmp.Add( AxisType.Free );
+                    PlotvarAxisEXTRA = tmp.ToArray();
+
+                    tmpStr = PlotvarUnitsEXTRA.ToList();
+                    tmpStr.Add( "" );
+                    PlotvarUnitsEXTRA = tmpStr.ToArray();
+
+                    tmpStr = PlotvarTypesEXTRA.ToList();
+                    tmpStr.Add( thisExternal );
+                    PlotvarTypesEXTRA = tmpStr.ToArray();
+
+                    tmpStr = PlotvarKeywordEXTRA.ToList();
+                    tmpStr.Add( thisExternal );
+                    PlotvarKeywordEXTRA = tmpStr.ToArray();
+
+                    tmpStr = DatafilesEXTRA.ToList();
+                    tmpStr.Add( "extrasensorsdata.json" );
+                    DatafilesEXTRA = tmpStr.ToArray();
+                }
+            }
+
+            extendedPlotvarAxisEXTRA = PlotvarAxisEXTRA;
+            extendedPlotvarUnitsEXTRA = PlotvarUnitsEXTRA;
+            extendedPlotvarTypesEXTRA = PlotvarTypesEXTRA;
+            extendedPlotvarKeywordEXTRA = PlotvarKeywordEXTRA;
+            extendedDatafilesEXTRA = DatafilesEXTRA;
+            // End of preparation for ExternalExtraSensors
         } // ChartsCompiler Constructor End
 
         #endregion

@@ -284,11 +284,11 @@ namespace CumulusUtils
                             }
                             else if ( Keywords[ CurrPosition ].Equals( "Extra", cmp ) )
                             {
-                                PlotvarAxis = PlotvarAxisEXTRA;
-                                PlotvarTypes = PlotvarTypesEXTRA;
-                                PlotvarKeyword = PlotvarKeywordEXTRA;
-                                Datafiles = DatafilesEXTRA;
-                                PlotvarUnits = PlotvarUnitsEXTRA;
+                                PlotvarAxis = extendedPlotvarAxisEXTRA; //PlotvarAxisEXTRA;
+                                PlotvarTypes = extendedPlotvarTypesEXTRA;
+                                PlotvarKeyword = extendedPlotvarKeywordEXTRA;
+                                Datafiles = extendedDatafilesEXTRA;
+                                PlotvarUnits = extendedPlotvarUnitsEXTRA;
 
                                 thisPlotvar.PlotvarRange = PlotvarRangeType.Extra;
                                 CurrPosition++;

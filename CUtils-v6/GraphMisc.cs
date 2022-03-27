@@ -356,12 +356,11 @@ namespace CumulusUtils
                     EndDate = new DateTime( year + 1, 7, 1 );
                 }
 
-                // Do data  exist on the startdate of the first year? If not than skip this season
-                if ( ThisList[ 0 ].ThisDate > StartDate )
-                    continue;
-
                 List<DayfileValue> yearList = new List<DayfileValue>();
                 yearList = ThisList.Where( x => x.ThisDate >= StartDate && x.ThisDate < EndDate ).ToList();
+
+                // Do data  exist on the startdate of the first year? If not than skip thios season
+                if ( ThisList[ 0 ].ThisDate > StartDate || !yearList.Any() ) continue;
 
                 int i = 0;
                 TempSum = 0;
@@ -488,12 +487,11 @@ namespace CumulusUtils
                     EndDate = new DateTime( year + 1, 7, 1 );
                 }
 
-                // Do data  exist on the startdate of the first year? If not than skip thios season
-                if ( ThisList[ 0 ].ThisDate > StartDate )
-                    continue;
-
                 List<DayfileValue> yearList = new List<DayfileValue>();
                 yearList = ThisList.Where( x => x.ThisDate >= StartDate && x.ThisDate < EndDate ).ToList();
+
+                // Do data  exist on the startdate of the first year? If not than skip thios season
+                if ( ThisList[ 0 ].ThisDate > StartDate || !yearList.Any() ) continue;
 
                 int i = 0;
                 TempSum = 0;
@@ -590,15 +588,11 @@ namespace CumulusUtils
                     EndDate = new DateTime( year + 1, 7, 1 );
                 }
 
-                // Do data  exist on the startdate of the first year? If not than skip this season
-                if ( ThisList[ 0 ].ThisDate > StartDate )
-                    continue;
-
                 List<DayfileValue> yearList = new List<DayfileValue>();
                 yearList = ThisList.Where( x => x.ThisDate >= StartDate && x.ThisDate < EndDate ).ToList();
 
-                if ( yearList.Count == 0 )
-                    continue;
+                // Do data  exist on the startdate of the first year? If not than skip thios season
+                if ( ThisList[ 0 ].ThisDate > StartDate || !yearList.Any() ) continue;
 
                 YearSeasons thisYearSeasonList = new YearSeasons();
 

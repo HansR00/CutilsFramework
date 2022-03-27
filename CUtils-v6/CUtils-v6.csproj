@@ -64,6 +64,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExternalExtraSensorslog.cs" />
     <Compile Include="ExtraSensorslog.cs" />
     <Compile Include="ExtraSensors.cs" />
     <Compile Include="Airlinklog.cs" />
