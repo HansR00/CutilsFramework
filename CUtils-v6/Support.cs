@@ -100,6 +100,8 @@ namespace CumulusUtils
         private readonly IniFile MyIni;         // that is: cumulusutils.ini
         private readonly IniFile CUstringIni;   // that is: CUstrings.ini
 
+        private bool LoggingOn;
+
         public string Language { get; private set; }
         public string Country { get; private set; }
         public string Locale { get; private set; }
@@ -413,10 +415,6 @@ namespace CumulusUtils
 
         public void InitLogging()
         {
-            ThisListener = new TextWriterTraceListener( $"utils/utilslog/{DateTime.Now.ToString( "yyMMddHHmm", CultureInfo.InvariantCulture )}cumulusutils.log" );
-            Trace.Listeners.Add( ThisListener );  // Used for messages under the conditions of the Switch: None, Error, Warning, Information, Verbose
-            Trace.AutoFlush = true;
-
             //Console.OutputEncoding = System.Text.Encoding.UTF8;
 
             CUTraceSwitch = new TraceSwitch( "CUTraceSwitch", "Tracing switch for CumulusUtils" )
@@ -426,6 +424,7 @@ namespace CumulusUtils
 
             LogTraceInfoMessage( $"Initial {CUTraceSwitch} => Error: {CUTraceSwitch.TraceError}, Warning: {CUTraceSwitch.TraceWarning}, Info: {CUTraceSwitch.TraceInfo}, Verbose: {CUTraceSwitch.TraceInfo}" );
 
+            LoggingOn = GetUtilsIniValue( "General", "LoggingOn", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
             NormalMessageToConsole = GetUtilsIniValue( "General", "NormalMessageToConsole", "true" ).Equals( "true" );
             string thisTrace = GetUtilsIniValue( "General", "TraceInfoLevel", "Info" );     // Verbose, Information, Warning, Error, Off
 
@@ -440,14 +439,20 @@ namespace CumulusUtils
                 CUTraceSwitch.Level = TraceLevel.Warning;
             }
 
+            if ( LoggingOn )
+            {
+                ThisListener = new TextWriterTraceListener( $"utils/utilslog/{DateTime.Now.ToString( "yyMMddHHmm", CultureInfo.InvariantCulture )}cumulusutils.log" );
+                Trace.Listeners.Add( ThisListener );  // Used for messages under the conditions of the Switch: None, Error, Warning, Information, Verbose
+                Trace.AutoFlush = true;
+            }
+
             LogTraceInfoMessage( $"According to Inifile {thisTrace} => Error: {CUTraceSwitch.TraceError}, Warning: {CUTraceSwitch.TraceWarning}, Info: {CUTraceSwitch.TraceInfo}, Verbose: {CUTraceSwitch.TraceVerbose}, " );
         }
 
         public void LogDebugMessage( string message )
         {
-            if ( NormalMessageToConsole )
-                Console.WriteLine( DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + message );
-            Debug.WriteLine( DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + message );
+            if ( NormalMessageToConsole ) Console.WriteLine( DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + message );
+            if ( LoggingOn ) Debug.WriteLine( DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + message );
         }
 
         public void LogTraceErrorMessage( string message ) => Trace.WriteLineIf( CUTraceSwitch.TraceError, DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + "Error " + message );
@@ -485,7 +490,7 @@ namespace CumulusUtils
                 if ( File.Exists( filenameCopy ) )
                     File.Delete( filenameCopy );
 
-                ThisListener.Dispose();
+                if ( LoggingOn ) ThisListener.Dispose();
 
                 disposedValue = true;
             }

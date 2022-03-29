@@ -509,34 +509,34 @@ namespace CumulusUtils
 
             sb.AppendLine( "{" );
 
+            List<ExtraSensorslogValue> thisList;
+            string VariableName;
+
+            ExtraSensorslog Esl = new ExtraSensorslog( Sup );
+            thisList = Esl.ReadExtraSensorslog();
+
             foreach ( ExtraSensor thisSensor in ExtraSensorList )  // Loop over the sensors in use
             {
                 if ( thisSensor.Type == ExtraSensorType.External )
                 {
-                    List<ExternalExtraSensorslogValue> thisList;
+                    List<ExternalExtraSensorslogValue> thisExternalList;
 
-                    ExternalExtraSensorslog Esl = new ExternalExtraSensorslog( Sup, thisSensor.Name );
-                    thisList = Esl.ReadExternalExtraSensorslog();
+                    ExternalExtraSensorslog EEsl = new ExternalExtraSensorslog( Sup, thisSensor.Name );
+                    thisExternalList = EEsl.ReadExternalExtraSensorslog();
 
                     sb.Append( $"\"{thisSensor.Name}\":[" );
 
-                    foreach ( ExternalExtraSensorslogValue entry in thisList )
+                    foreach ( ExternalExtraSensorslogValue entry in thisExternalList )
                         sb.Append( $"[{CuSupport.DateTimeToJS( entry.ThisDate )},{entry.Value.ToString( "F2", inv )}]," );
 
                     sb.Remove( sb.Length - 1, 1 );
                     sb.Append( $"]," );
 
-                    Esl.Dispose();
+                    EEsl.Dispose();
 
                 }
                 else
                 {
-                    List<ExtraSensorslogValue> thisList;
-                    string VariableName;
-
-                    ExtraSensorslog Esl = new ExtraSensorslog( Sup );
-                    thisList = Esl.ReadExtraSensorslog();
-
                     PropertyInfo Field;
 
                     VariableName = ChartsCompiler.PlotvarTypesEXTRA[ thisSensor.PlotvarIndex ];
@@ -578,14 +578,13 @@ namespace CumulusUtils
                             }
                         }
                     }
-
-                    Esl.Dispose();
-
                 }
             }
 
             sb.Remove( sb.Length - 1, 1 );
             sb.Append( "}" );
+
+            Esl.Dispose();
 
             using ( StreamWriter thisJSON = new StreamWriter( $"{Sup.PathUtils}{Sup.ExtraSensorsJSON}", false, Encoding.UTF8 ) )
             {

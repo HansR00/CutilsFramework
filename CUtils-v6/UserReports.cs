@@ -59,6 +59,14 @@ namespace CumulusUtils
 
                 // Prepare and call
                 FileContents = File.ReadAllText( file );
+
+                // For any CU webtags defined (currently only version) replace the webtag by its value
+                if ( FileContents.Contains( "<#CUversion>" ) )
+                {
+                    FileContents = FileContents.Replace( "<#CUversion>", CuSupport.UnformattedVersion() );
+                }
+
+                // Do the CMX webtag replacement
                 ContentsWithWebtagReplacements = await thisIPC.ReplaceWebtagsPostAsync( FileContents );
 
                 Sup.LogTraceInfoMessage( $"USerReports: After the async call" );

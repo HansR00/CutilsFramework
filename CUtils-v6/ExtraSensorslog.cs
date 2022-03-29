@@ -256,7 +256,7 @@ namespace CumulusUtils
         {
             // Get the list of values starting datetime to Now - period by user definition GraphHours in section Graphs in Cumulus.ini
             //
-            Sup.LogDebugMessage( $"ExtraSensorslog: start." );
+            Sup.LogTraceInfoMessage( $"ExtraSensorslog: start." );
 
             Stopwatch watch = Stopwatch.StartNew();
 
@@ -283,7 +283,7 @@ namespace CumulusUtils
             DateTime timeEnd = Now.AddMinutes( -Now.Minute % Math.Max( FTPIntervalInMinutes, LogIntervalInMinutes ) );
             DateTime timeStart = timeEnd.AddHours( -HoursInGraph );
 
-            Sup.LogDebugMessage( $"ExtraSensorslog: timeStart = {timeStart}; timeEnd = {timeEnd}" );
+            Sup.LogTraceInfoMessage( $"ExtraSensorslog: timeStart = {timeStart}; timeEnd = {timeEnd}" );
 
             ExtraSensorslogValue tmp;
             MainExtraSensorsValuesList = new List<ExtraSensorslogValue>();
@@ -291,11 +291,11 @@ namespace CumulusUtils
             Filename = $"data/ExtraLog{timeStart:yyyy}{timeStart:MM}.txt";
             if ( !File.Exists( Filename ) )
             {
-                Sup.LogDebugMessage( $"ExtraSensorslog: Require {Filename} to start but it does not exist, aborting ExtraSensorsLog" );
+                Sup.LogTraceInfoMessage( $"ExtraSensorslog: Require {Filename} to start but it does not exist, aborting ExtraSensorsLog" );
                 return MainExtraSensorsValuesList;
             }
 
-            Sup.LogDebugMessage( $"ExtraSensorslog: Require {Filename} to start" );
+            Sup.LogTraceInfoMessage( $"ExtraSensorslog: Require {Filename} to start" );
 
             while ( !PeriodComplete )
             {
@@ -326,13 +326,13 @@ namespace CumulusUtils
 
                 if ( tmp.ThisDate.Month == timeEnd.Month )
                 {
-                    Sup.LogDebugMessage( $"ExtraSensorslog: Finished reading the log at {tmp.ThisDate}" );
+                    Sup.LogTraceInfoMessage( $"ExtraSensorslog: Finished reading the log at {tmp.ThisDate}" );
                     PeriodComplete = true;
                 }
                 else
                 {
                     Filename = $"data/ExtraLog{timeEnd:yyyy}{timeEnd:MM}.txt";  // Take care of a period passing month boundary
-                    Sup.LogDebugMessage( $"ExtraSensorslog: Require the  next logfile: {Filename}" );
+                    Sup.LogTraceInfoMessage( $"ExtraSensorslog: Require the  next logfile: {Filename}" );
                 }
             }
 
