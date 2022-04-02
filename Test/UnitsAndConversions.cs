@@ -22,7 +22,7 @@
  *              
  */
 
-namespace CumulusUtils
+namespace Test
 {
     /*
      * These classes contain the units and the correspponding texts and provide the conversiones between the different units 

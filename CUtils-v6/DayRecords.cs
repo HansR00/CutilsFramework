@@ -245,7 +245,7 @@ namespace CumulusUtils
                                   : "";
                                 of.WriteLine( $"<td class=\"reportttl\"><table class=\"CUtable\">" );
                                 ;
-                                of.WriteLine( $"<tr><td {HighlightFormat}>{thisEntry.MaxTemp:F1} ({thisEntry.ThisDate.Year})</td></tr>" );
+                                of.WriteLine( $"<tr><td {HighlightFormat}>{Sup.StationTemp.Format( thisEntry.MaxTemp )} ({thisEntry.ThisDate.Year})</td></tr>" );
 
                                 // Do LowHighTemp
                                 tmp = DayList.Select( x => x.MaxTemp ).Min();
@@ -260,7 +260,7 @@ namespace CumulusUtils
                                 HighlightFormat = CMXutils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CMXutils.StartOfObservations.AddYears( 1 )
                                   ? "style=\"color: blue\""
                                   : "";
-                                of.WriteLine( $"<tr><td {HighlightFormat}>{thisEntry.MaxTemp:F1} ({thisEntry.ThisDate.Year})</td></tr>" );
+                                of.WriteLine( $"<tr><td {HighlightFormat}>{Sup.StationTemp.Format( thisEntry.MaxTemp )} ({thisEntry.ThisDate.Year})</td></tr>" );
                                 of.WriteLine( "</table></td>" );
 
                                 // Do HighLowTemp
@@ -277,7 +277,7 @@ namespace CumulusUtils
                                   ? "style=\"color: Red\""
                                   : "";
                                 of.WriteLine( $"<td class=\"reportttl\"><table class=\"CUtable\">" );
-                                of.WriteLine( $"<tr><td {HighlightFormat}>{thisEntry.MinTemp:F1} ({thisEntry.ThisDate.Year})</td></tr>" );
+                                of.WriteLine( $"<tr><td {HighlightFormat}>{Sup.StationTemp.Format( thisEntry.MinTemp )} ({thisEntry.ThisDate.Year})</td></tr>" );
 
                                 // Do LowLowTemp
                                 tmp = DayList.Select( x => x.MinTemp ).Min();
@@ -292,7 +292,7 @@ namespace CumulusUtils
                                 HighlightFormat = CMXutils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CMXutils.StartOfObservations.AddYears( 1 )
                                   ? "style=\"color: blue\""
                                   : "";
-                                of.WriteLine( $"<tr><td {HighlightFormat}>{thisEntry.MinTemp:F1} ({thisEntry.ThisDate.Year})</td></tr>" );
+                                of.WriteLine( $"<tr><td {HighlightFormat}>{Sup.StationTemp.Format( thisEntry.MinTemp )} ({thisEntry.ThisDate.Year})</td></tr>" );
                                 of.WriteLine( "</table></td>" );
 
                                 tmp = DayList.Select( x => x.TotalRainThisDay ).Max();
@@ -307,7 +307,7 @@ namespace CumulusUtils
                                 HighlightFormat = CMXutils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CMXutils.StartOfObservations.AddYears( 1 )
                                   ? "style=\"color: DeepSkyBlue\""
                                   : "";
-                                of.WriteLine( $"<td class=\"reportttl\" {HighlightFormat}>{thisEntry.TotalRainThisDay:F1} ({thisEntry.ThisDate.Year})</td>" );
+                                of.WriteLine( $"<td class=\"reportttl\" {HighlightFormat}>{Sup.StationRain.Format( thisEntry.TotalRainThisDay )} ({thisEntry.ThisDate.Year})</td>" );
 
                                 tmp = DayList.Select( x => x.MonthlyRain ).Max();
                                 thisEntry = DayList.Where( x => x.MonthlyRain == tmp ).First();
@@ -321,7 +321,7 @@ namespace CumulusUtils
                                 HighlightFormat = CMXutils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CMXutils.StartOfObservations.AddYears( 1 )
                                   ? "style=\"color: DeepSkyBlue\""
                                   : "";
-                                of.WriteLine( $"<td class=\"reportttl\" {HighlightFormat}>{thisEntry.MonthlyRain:F1} ({thisEntry.ThisDate.Year})</td>" );
+                                of.WriteLine( $"<td class=\"reportttl\" {HighlightFormat}>{Sup.StationRain.Format( thisEntry.MonthlyRain )} ({thisEntry.ThisDate.Year})</td>" );
 
                                 tmp = DayList.Select( x => x.YearToDateRain ).Max();
                                 thisEntry = DayList.Where( x => x.YearToDateRain == tmp ).First();
@@ -335,7 +335,7 @@ namespace CumulusUtils
                                 HighlightFormat = CMXutils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CMXutils.StartOfObservations.AddYears( 1 )
                                   ? "style=\"color: DeepSkyBlue\""
                                   : "";
-                                of.WriteLine( $"<td class=\"reportttl\" {HighlightFormat}>{thisEntry.YearToDateRain:F1} ({thisEntry.ThisDate.Year})</td>" );
+                                of.WriteLine( $"<td class=\"reportttl\" {HighlightFormat}>{Sup.StationRain.Format( thisEntry.YearToDateRain )} ({thisEntry.ThisDate.Year})</td>" );
 
                                 tmp = DayList.Select( x => x.HighAverageWindSpeed ).Max();
                                 thisEntry = DayList.Where( x => x.HighAverageWindSpeed == tmp ).First();
@@ -349,7 +349,7 @@ namespace CumulusUtils
                                 HighlightFormat = CMXutils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CMXutils.StartOfObservations.AddYears( 1 )
                                   ? "style=\"color: MediumSeaGreen\""
                                   : "";
-                                of.WriteLine( $"<td class=\"reportttl\" {HighlightFormat}>{thisEntry.HighAverageWindSpeed:F1} ({thisEntry.ThisDate.Year})</td>" );
+                                of.WriteLine( $"<td class=\"reportttl\" {HighlightFormat}>{Sup.StationWind.Format( thisEntry.HighAverageWindSpeed )} ({thisEntry.ThisDate.Year})</td>" );
 
                                 tmp = DayList.Select( x => x.HighWindGust ).Max();
                                 thisEntry = DayList.Where( x => x.HighWindGust == tmp ).First();
@@ -363,7 +363,7 @@ namespace CumulusUtils
                                 HighlightFormat = CMXutils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CMXutils.StartOfObservations.AddYears( 1 )
                                   ? "style=\"color: green\""
                                   : "";
-                                of.WriteLine( $"<td class=\"reportttl\" {HighlightFormat}>{thisEntry.HighWindGust:F1} ({thisEntry.ThisDate.Year})</td>" );
+                                of.WriteLine( $"<td class=\"reportttl\" {HighlightFormat}>{Sup.StationWind.Format( thisEntry.HighWindGust )} ({thisEntry.ThisDate.Year})</td>" );
 
                                 of.WriteLine( $"</tr>" );
                             } // else no day (e.g. a gap in the first month) so skip nonexisting days

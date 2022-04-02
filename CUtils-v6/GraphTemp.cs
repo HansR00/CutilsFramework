@@ -268,12 +268,10 @@ namespace CumulusUtils
 
             if ( Sup.StationTemp.Dim == TempDim.fahrenheit ) // Fahrenheit
             {
-                Temp t = new Temp( TempDim.celsius );
-
-                Limit25C = (int) t.Convert( TempDim.fahrenheit, 25.0 );   //(25 * 1.8 + 32);
-                Limit30C = (int) t.Convert( TempDim.fahrenheit, 30.0 );   //(30 * 1.8 + 32);
-                Limit35C = (int) t.Convert( TempDim.fahrenheit, 35.0 );   //(35 * 1.8 + 32);
-                Limit40C = (int) t.Convert( TempDim.fahrenheit, 40.0 );   //(40 * 1.8 + 32);
+                Limit25C = (int) Sup.StationTemp.Convert( TempDim.celsius, TempDim.fahrenheit, 25.0 );   //(25 * 1.8 + 32);
+                Limit30C = (int) Sup.StationTemp.Convert( TempDim.celsius, TempDim.fahrenheit, 30.0 );   //(30 * 1.8 + 32);
+                Limit35C = (int) Sup.StationTemp.Convert( TempDim.celsius, TempDim.fahrenheit, 35.0 );   //(35 * 1.8 + 32);
+                Limit40C = (int) Sup.StationTemp.Convert( TempDim.celsius, TempDim.fahrenheit, 40.0 );   //(40 * 1.8 + 32);
             }
 
             AllYears = new List<List<int>>();

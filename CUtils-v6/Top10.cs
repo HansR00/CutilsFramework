@@ -51,8 +51,9 @@ namespace CumulusUtils
         private readonly List<string> TypesUnits;
         private readonly List<string> TypesHeaders;
         private readonly List<DayfileValue>[] Top10List;
-        private Top10Format Top10TableFormat;
+        private readonly IFormatProvider inv = CultureInfo.InvariantCulture;
 
+        private Top10Format Top10TableFormat;
         private int MonthlyRainNrOfMonths; // to memorise the nr of months actually in top10 ist. May be <10 for a young system
 
         private readonly CuSupport Sup;
@@ -334,6 +335,7 @@ namespace CumulusUtils
             {
                 Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
                   $"{Top10List[ i ][ j ].TimeMinTemp:dd/MM/yyyy HH:mm} {Top10List[ i ][ j ].MinTemp:F2}" );
+
                 if ( Top10List[ i ][ j ].TimeMinTemp.Date == Yesterday.Date )
                 {
                     CMXutils.ThriftyTop10RecordsDirty = true;
@@ -347,6 +349,7 @@ namespace CumulusUtils
             {
                 Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
                   $"{Top10List[ i ][ j ].TimeLowHumidity:dd/MM/yyyy HH:mm} {Top10List[ i ][ j ].LowHumidity:F2}" );
+
                 if ( Top10List[ i ][ j ].TimeLowHumidity.Date == Yesterday.Date )
                 {
                     CMXutils.ThriftyTop10RecordsDirty = true;
@@ -444,6 +447,7 @@ namespace CumulusUtils
             {
                 Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
                   $"{Top10List[ i ][ j ].TimeHighHourlyRain:dd/MM/yyyy HH:mm} {Top10List[ i ][ j ].HighHourlyRain:F2}" );
+
                 if ( Top10List[ i ][ j ].TimeHighHourlyRain.Date == Yesterday.Date )
                 {
                     CMXutils.ThriftyTop10RecordsDirty = true;
@@ -607,65 +611,65 @@ namespace CumulusUtils
                             switch ( i + k )
                             {
                                 case (int) Top10Types.maxTemp:
-                                    timebuf = String.Format( CultureInfo.InvariantCulture, "{0:dd/MM/yyyy HH:mm}", Top10List[ i + k ][ j ].TimeMaxTemp );
-                                    of.WriteLine( "<td {0}>{1} : <b>{2:F1}</b></td>", buf, timebuf, Top10List[ i + k ][ j ].MaxTemp );
+                                    timebuf = string.Format( inv, $"{Top10List[ i + k ][ j ].TimeMaxTemp:dd/MM/yyyy HH:mm}" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Sup.StationTemp.Format( Top10List[ i + k ][ j ].MaxTemp )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.minTemp:
-                                    timebuf = String.Format( CultureInfo.InvariantCulture, "{0:dd/MM/yyyy HH:mm}", Top10List[ i + k ][ j ].TimeMinTemp );
-                                    of.WriteLine( "<td {0}>{1} : <b>{2:F1}</b></td>", buf, timebuf, Top10List[ i + k ][ j ].MinTemp );
+                                    timebuf = string.Format( inv, $"{Top10List[ i + k ][ j ].TimeMinTemp:dd/MM/yyyy HH:mm}" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Sup.StationTemp.Format( Top10List[ i + k ][ j ].MinTemp )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.minHumidity:
-                                    timebuf = String.Format( CultureInfo.InvariantCulture, "{0:dd/MM/yyyy HH:mm}", Top10List[ i + k ][ j ].TimeLowHumidity );
-                                    of.WriteLine( "<td {0}>{1} : <b>{2,3:D}</b></td>", buf, timebuf, (int) Top10List[ i + k ][ j ].LowHumidity );
+                                    timebuf = string.Format( inv, $"{Top10List[ i + k ][ j ].TimeLowHumidity:dd/MM/yyyy HH:mm}" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{(int) Top10List[ i + k ][ j ].LowHumidity:D}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.highPressure:
-                                    timebuf = String.Format( CultureInfo.InvariantCulture, "{0:dd/MM/yyyy HH:mm}", Top10List[ i + k ][ j ].TimeMaxBarometer );
-                                    of.WriteLine( "<td {0}>{1} : <b>{2:F1}</b></td>", buf, timebuf, Top10List[ i + k ][ j ].MaxBarometer );
+                                    timebuf = string.Format( inv, $"{Top10List[ i + k ][ j ].TimeMaxBarometer:dd/MM/yyyy HH:mm}" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Sup.StationPressure.Format( Top10List[ i + k ][ j ].MaxBarometer )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.lowPressure:
-                                    timebuf = String.Format( CultureInfo.InvariantCulture, "{0:dd/MM/yyyy HH:mm}", Top10List[ i + k ][ j ].TimeMinBarometer );
-                                    of.WriteLine( "<td {0}>{1} : <b>{2:F1}</b></td>", buf, timebuf, Top10List[ i + k ][ j ].MinBarometer );
+                                    timebuf = string.Format( inv, $"{Top10List[ i + k ][ j ].TimeMinBarometer:dd/MM/yyyy HH:mm}" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Sup.StationPressure.Format( Top10List[ i + k ][ j ].MinBarometer )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.highWind:
-                                    timebuf = String.Format( CultureInfo.InvariantCulture, "{0:dd/MM/yyyy HH:mm}", Top10List[ i + k ][ j ].TimeHighAverageWindSpeed );
-                                    of.WriteLine( "<td {0}>{1} : <b>{2:F1}</b></td>", buf, timebuf, Top10List[ i + k ][ j ].HighAverageWindSpeed );
+                                    timebuf = string.Format( inv, $"{Top10List[ i + k ][ j ].TimeHighAverageWindSpeed:dd/MM/yyyy HH:mm}" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Sup.StationWind.Format( Top10List[ i + k ][ j ].HighAverageWindSpeed )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.highGust:
-                                    timebuf = String.Format( CultureInfo.InvariantCulture, "{0:dd/MM/yyyy HH:mm}", Top10List[ i + k ][ j ].TimeHighWindGust );
-                                    of.WriteLine( "<td {0}>{1} : <b>{2:F1}</b></td>", buf, timebuf, Top10List[ i + k ][ j ].HighWindGust );
+                                    timebuf = string.Format( inv, $"{Top10List[ i + k ][ j ].TimeHighWindGust:dd/MM/yyyy HH:mm}" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Sup.StationWind.Format( Top10List[ i + k ][ j ].HighWindGust )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.totalWindrun:
-                                    timebuf = String.Format( CultureInfo.InvariantCulture, "{0:dd/MM/yyyy}", Top10List[ i + k ][ j ].ThisDate );
-                                    of.WriteLine( "<td {0}>{1} : <b>{2:F1}</b></td>", buf, timebuf, Top10List[ i + k ][ j ].TotalWindRun );
+                                    timebuf = string.Format( inv, $"{Top10List[ i + k ][ j ].ThisDate:dd/MM/yyyy}" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Sup.StationDistance.Format( Top10List[ i + k ][ j ].TotalWindRun )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.highRainRate:
-                                    timebuf = String.Format( CultureInfo.InvariantCulture, "{0:dd/MM/yyyy HH:mm}", Top10List[ i + k ][ j ].TimeMaxRainRate );
-                                    of.WriteLine( "<td {0}>{1} : <b>{2:F1}</b></td>", buf, timebuf, Top10List[ i + k ][ j ].MaxRainRate );
+                                    timebuf = string.Format( inv, $"{Top10List[ i + k ][ j ].TimeMaxRainRate:dd/MM/yyyy HH:mm}" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Sup.StationRain.Format( Top10List[ i + k ][ j ].MaxRainRate )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.highHourlyRain:
-                                    timebuf = String.Format( CultureInfo.InvariantCulture, "{0:dd/MM/yyyy HH:mm}", Top10List[ i + k ][ j ].TimeHighHourlyRain );
-                                    of.WriteLine( "<td {0}>{1} : <b>{2:F1}</b></td>", buf, timebuf, Top10List[ i + k ][ j ].HighHourlyRain );
+                                    timebuf = string.Format( inv, $"{Top10List[ i + k ][ j ].TimeHighHourlyRain:dd/MM/yyyy HH:mm}" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Sup.StationRain.Format( Top10List[ i + k ][ j ].HighHourlyRain )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.highDailyRain:
-                                    timebuf = String.Format( CultureInfo.InvariantCulture, "{0:dd/MM/yyyy}", Top10List[ i + k ][ j ].ThisDate );
-                                    of.WriteLine( "<td {0}>{1} : <b>{2:F1}</b></td>", buf, timebuf, Top10List[ i + k ][ j ].TotalRainThisDay );
+                                    timebuf = string.Format( inv, $"{Top10List[ i + k ][ j ].ThisDate:dd/MM/yyyy}" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Sup.StationRain.Format( Top10List[ i + k ][ j ].TotalRainThisDay )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.highestMonthlyRain:
                                     if ( j < MonthlyRainNrOfMonths )
                                     {
-                                        timebuf = String.Format( CultureInfo.InvariantCulture, "{0:MMM yyyy}", Top10List[ i + k ][ j ].ThisDate );
-                                        of.WriteLine( "<td {0}>{1} : <b>{2:F1}</b></td>", buf, timebuf, Top10List[ i + k ][ j ].MonthlyRain );
+                                        timebuf = string.Format( inv, $"{Top10List[ i + k ][ j ].ThisDate:MMM yyyy}" );
+                                        of.WriteLine( $"<td {buf}>{timebuf} : <b>{Sup.StationRain.Format( Top10List[ i + k ][ j ].MonthlyRain )}</b></td>" );
                                     }
                                     else
                                     {
@@ -675,15 +679,13 @@ namespace CumulusUtils
                                     break;
 
                                 case (int) Top10Types.longestDryPeriod:
-                                    //if ( Top10List[ i + k ] == null ) break;
-                                    timebuf = String.Format( CultureInfo.InvariantCulture, "{0:dd/MM/yyyy}", Top10List[ i + k ][ j ].ThisDate );
-                                    of.WriteLine( "<td {0}>{1} : <b>{2,3:D}</b></td>", buf, timebuf, Top10List[ i + k ][ j ].DryPeriod );
+                                    timebuf = string.Format( inv, $"{Top10List[ i + k ][ j ].ThisDate:dd/MM/yyyy}" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Top10List[ i + k ][ j ].DryPeriod:D}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.longestWetPeriod:
-                                    //if ( Top10List[ i + k ] == null ) break;
-                                    timebuf = String.Format( CultureInfo.InvariantCulture, "{0:dd/MM/yyyy}", Top10List[ i + k ][ j ].ThisDate );
-                                    of.WriteLine( "<td {0}>{1} : <b>{2,3:D}</b></td>", buf, timebuf, Top10List[ i + k ][ j ].WetPeriod );
+                                    timebuf = string.Format( inv, $"{Top10List[ i + k ][ j ].ThisDate:dd/MM/yyyy}" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Top10List[ i + k ][ j ].WetPeriod:D}</b></td>" );
                                     break;
 
                                 default:

@@ -210,10 +210,10 @@ namespace CumulusUtils
                     double A, B, C;
 
                     localFWI.Date = ThisList[ i ].ThisDate.ToString( "dd/MM/yy", CultureInfo.InvariantCulture );
-                    localFWI.T = Sup.StationTemp.Convert( TempDim.celsius, ThisList[ i ].MaxTemp );                 // if Temp is in F, convert it to C. Otherwise it remains in C
-                    localFWI.RH = ThisList[ i ].LowHumidity / 100;                                                // always percentage
-                    localFWI.Wind = Sup.StationWind.Convert( WindDim.kmh, ThisList[ i ].HighAverageWindSpeed );     // if Wind other than km/h convert it otherwise it remains in km/h
-                    localFWI.Rain = Sup.StationRain.Convert( RainDim.millimeter, ThisList[ i ].TotalRainThisDay );  // if Rain other than mm convert it otherwise it remains in mm
+                    localFWI.T = Sup.StationTemp.Convert( Sup.StationTemp.Dim, TempDim.celsius, ThisList[ i ].MaxTemp );                // if Temp is in F, convert it to C. Otherwise it remains in C
+                    localFWI.RH = ThisList[ i ].LowHumidity / 100;                                                                      // always percentage
+                    localFWI.Wind = Sup.StationWind.Convert( Sup.StationWind.Dim, WindDim.kmh, ThisList[ i ].HighAverageWindSpeed );    // if Wind other than km/h convert it otherwise it remains in km/h
+                    localFWI.Rain = Sup.StationRain.Convert( Sup.StationRain.Dim, RainDim.millimeter, ThisList[ i ].TotalRainThisDay ); // if Rain other than mm convert it otherwise it remains in mm
 
                     if ( localFWI.T >= 0 )
                     {
@@ -998,9 +998,9 @@ namespace CumulusUtils
                         Wind w = new Wind( WindDim.kmh );
                         Rain r = new Rain( RainDim.millimeter );
 
-                        ThisValue.MaxTemp = (float) t.Convert( Sup.StationTemp.Dim, Convert.ToSingle( el.Element( "tempmax" ).Attribute( "value" ).Value, CultureInfo.InvariantCulture ) );
-                        ThisValue.HighAverageWindSpeed = (float) w.Convert( Sup.StationWind.Dim, Convert.ToSingle( el.Element( "wind" ).Attribute( "value" ).Value, CultureInfo.InvariantCulture ) );
-                        ThisValue.TotalRainThisDay = (float) r.Convert( Sup.StationRain.Dim, Convert.ToSingle( el.Element( "rain" ).Attribute( "value" ).Value, CultureInfo.InvariantCulture ) );
+                        ThisValue.MaxTemp = (float) Sup.StationTemp.Convert( TempDim.celsius, Sup.StationTemp.Dim, Convert.ToSingle( el.Element( "tempmax" ).Attribute( "value" ).Value, CultureInfo.InvariantCulture ) );
+                        ThisValue.HighAverageWindSpeed = (float) Sup.StationWind.Convert( WindDim.kmh, Sup.StationWind.Dim, Convert.ToSingle( el.Element( "wind" ).Attribute( "value" ).Value, CultureInfo.InvariantCulture ) );
+                        ThisValue.TotalRainThisDay = (float) Sup.StationRain.Convert( RainDim.millimeter, Sup.StationRain.Dim, Convert.ToSingle( el.Element( "rain" ).Attribute( "value" ).Value, CultureInfo.InvariantCulture ) );
 
                         Sup.LogTraceInfoMessage( "XML AddPrediction - The data:" );
                         Sup.LogTraceInfoMessage( $"ThisValue converted date: {ThisValue.ThisDate:dd-MM-yyyy}" );

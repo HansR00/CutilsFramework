@@ -244,7 +244,7 @@ namespace CumulusUtils
             {
                 StartProcess( "free", "-m" );
                 of.WriteLine( "Memory info:" );
-                foreach(string line in returnValues) of.WriteLine( line );
+                foreach ( string line in returnValues ) of.WriteLine( line );
             }
             catch ( Exception e )
             {

@@ -442,7 +442,7 @@ namespace CumulusUtils
 
             thisBuffer.AppendLine( "  title:" );
             thisBuffer.AppendLine( "  {" );
-            thisBuffer.AppendLine( $"    text: '{Sup.GetCUstringValue( "Graphs", "GrowingDegreeDaysTitle", "Growing Degree Days", true )} - Reference value: {TempReference:F0} °C'" );
+            thisBuffer.AppendLine( $"    text: '{Sup.GetCUstringValue( "Graphs", "GrowingDegreeDaysTitle", "Growing Degree Days", true )} - Reference value: {Sup.StationTemp.Format( TempReference )} °C'" );
             thisBuffer.AppendLine( "  }," );
             thisBuffer.AppendLine( "  subtitle:" );
             thisBuffer.AppendLine( "  {" );

@@ -98,15 +98,15 @@ namespace CumulusUtils
                 if ( i == 1 )
                 {
                     thisBuffer.AppendLine( $"      {{ 'name': '{Sup.GetCUstringValue( "Graphs", "ZeroWind", "Zero Wind", true )} ' + ZeroWind + ' %'}}," );
-                    thisBuffer.AppendLine( $"      {{ 'name': '&lt; {i * SpeedForRoseInterval:F1} {Sup.StationWind.Text()}', 'data': data{i} }}," );
+                    thisBuffer.AppendLine( $"      {{ 'name': '&lt; {Sup.StationWind.Format( i * SpeedForRoseInterval )} {Sup.StationWind.Text()}', 'data': data{i} }}," );
                 }
                 else if ( i == NrOfWindforceClasses )
                 {
-                    thisBuffer.AppendLine( $"      {{ 'name': '&gt; {( NrOfWindforceClasses - 1 ) * SpeedForRoseInterval:F1} {Sup.StationWind.Text()}', 'data': data{i} }}," );
+                    thisBuffer.AppendLine( $"      {{ 'name': '&gt; {Sup.StationWind.Format( ( NrOfWindforceClasses - 1 ) * SpeedForRoseInterval )} {Sup.StationWind.Text()}', 'data': data{i} }}," );
                 }
                 else
                 {
-                    thisBuffer.AppendLine( $"      {{ 'name': '{( i - 1 ) * SpeedForRoseInterval:F1} - {i * SpeedForRoseInterval:F1} {Sup.StationWind.Text()}', 'data': data{i} }}," );
+                    thisBuffer.AppendLine( $"      {{ 'name': '{Sup.StationWind.Format( ( i - 1 ) * SpeedForRoseInterval )} - {Sup.StationWind.Format( i * SpeedForRoseInterval )} {Sup.StationWind.Text()}', 'data': data{i} }}," );
                 }
             }
             thisBuffer.AppendLine( "          ]" );

@@ -607,7 +607,7 @@ namespace CumulusUtils
             // At least it is different and therefore educational :D
             if ( WantToSeeWind )
             {
-                of.AppendLine( $"function convertToMs(data){{data.map(s => {{s[1] = s[1] * {Sup.StationWind.Convert( WindDim.ms, 1 ).ToString( "F5", CultureInfo.InvariantCulture )} }}); " +
+                of.AppendLine( $"function convertToMs(data){{data.map(s => {{s[1] = s[1] * {Sup.StationWind.Convert( Sup.StationWind.Dim, WindDim.ms, 1 ).ToString( "F5", CultureInfo.InvariantCulture )} }}); " +
                     $"return data}};" );
             }
 

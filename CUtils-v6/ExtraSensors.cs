@@ -430,8 +430,8 @@ namespace CumulusUtils
             for ( i = 0; i < ExtraSensorList.Count; )
             {
                 string thisKeyword;
-                
-                if ( ExtraSensorList[ i ].Type == ExtraSensorType.External)
+
+                if ( ExtraSensorList[ i ].Type == ExtraSensorType.External )
                 {
                     thisKeyword = ExtraSensorList[ i ].Name;
                     currentType = ExtraSensorType.External;
@@ -450,7 +450,7 @@ namespace CumulusUtils
                 while ( i < ExtraSensorList.Count && ( ExtraSensorList[ i ].Type == currentType || thisKeyword.Substring( 0, 3 ).Equals( "CO2" ) ) )
                 {
                     if ( ExtraSensorList[ i ].Type == ExtraSensorType.External )
-                        thisKeyword = ExtraSensorList[i].Name;
+                        thisKeyword = ExtraSensorList[ i ].Name;
                     else
                         thisKeyword = ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ];
 
@@ -963,7 +963,7 @@ namespace CumulusUtils
                 {
                     string[] ExternalExtraSensors = Sup.GetUtilsIniValue( "ExtraSensors", "ExternalExtraSensors", "" ).Split( ',' );
 
-                    if ( !string.IsNullOrEmpty( ExternalExtraSensors[0] ) )
+                    if ( !string.IsNullOrEmpty( ExternalExtraSensors[ 0 ] ) )
                     {
                         foreach ( string thisExternal in ExternalExtraSensors )
                         {
