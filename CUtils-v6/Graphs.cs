@@ -57,6 +57,7 @@ namespace CumulusUtils
             GraphAverageClash;
 
         private bool StationNormal, StationAverage;
+        private CultureInfo inv = CultureInfo.InvariantCulture;
 
         static public bool UseHighchartsBoostModule;
 
@@ -145,15 +146,15 @@ namespace CumulusUtils
             CMXutils.HasMiscGraphMenu = GraphTempSum || GraphGrowingDegreeDays || GraphSeasons || GraphDailyEVT || GraphMonthlyEVT || GraphAverageClash;
 
             // For windrose
-            NrOfCompassSectors = Convert.ToInt32( Sup.GetCumulusIniValue( "Display", "NumWindRosePoints", "" ), CultureInfo.InvariantCulture );
+            NrOfCompassSectors = Convert.ToInt32( Sup.GetCumulusIniValue( "Display", "NumWindRosePoints", "" ), inv );
             CompassSector = (float) ( 360.0 / (float) NrOfCompassSectors );
             HalfCompassSector = (float) ( CompassSector / 2.0 );
 
-            NrOfWindforceClasses = Convert.ToSingle( Sup.GetUtilsIniValue( "Graphs", "WindRoseNrOfWindforceClasses", "6" ), CultureInfo.InvariantCulture );
-            SpeedForRoseInterval = Convert.ToSingle( Sup.GetUtilsIniValue( "Graphs", "WindRoseMaxWindSpeed", "60" ), CultureInfo.InvariantCulture ) / NrOfWindforceClasses;
+            NrOfWindforceClasses = Convert.ToSingle( Sup.GetUtilsIniValue( "Graphs", "WindRoseNrOfWindforceClasses", "6" ), inv );
+            SpeedForRoseInterval = Convert.ToSingle( Sup.GetUtilsIniValue( "Graphs", "WindRoseMaxWindSpeed", "60" ), inv ) / NrOfWindforceClasses;
 
             // For WindRun
-            WindrunClassWidth = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "WindrunClassWidth", "75" ), CultureInfo.InvariantCulture );
+            WindrunClassWidth = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "WindrunClassWidth", "75" ), inv );
             MaxWindrun = (int) thisList.Select( x => x.TotalWindRun ).Max();
             NrofWindrunClasses = MaxWindrun / WindrunClassWidth + 1;
             WindrunClasses = new int[ NrofWindrunClasses ];   // { 100, 200, 300, 400, 500, 600, 700}; // in km, other unist need conversion
@@ -186,9 +187,9 @@ namespace CumulusUtils
             maxRain = ThisList.Select( x => x.TotalRainThisDay ).Max();
             // minRain = ThisList.Select(x => x.TotalRainThisDay).Min();  // not being used
 
-            maxNrOfSeriesVisibleInGraph = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "MaxNrOfSeriesVisibileInGraph", "2" ), CultureInfo.InvariantCulture );
+            maxNrOfSeriesVisibleInGraph = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "MaxNrOfSeriesVisibileInGraph", "2" ), inv );
 
-            HeatmapNrOfYearsPerPage = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "HeatmapNumberOfYearsPerPage", "10" ), CultureInfo.InvariantCulture );
+            HeatmapNrOfYearsPerPage = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "HeatmapNumberOfYearsPerPage", "10" ), inv );
             SplitHeatmapPages = ( YearMax - YearMin + 1 ) > HeatmapNrOfYearsPerPage;
 
             StringBuilder thisBuffer = new StringBuilder();

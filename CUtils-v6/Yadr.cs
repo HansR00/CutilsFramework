@@ -1356,8 +1356,8 @@ $"{Sup.GetCUstringValue( "Yadr", "LowShortText", "Lo", false )}</th>" );
         string GetRainColourFormat( float thisValue )
         {
             try
-            {
-                if ( thisValue < 0.2 )
+            {                
+                if ( thisValue < (float) Sup.StationRain.Convert( RainDim.millimeter, Sup.StationRain.Dim, 0.2 ) )
                     return "class=\"reportday\"";
                 else
                     for ( int i = 0; i < 13; i++ )

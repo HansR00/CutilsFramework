@@ -82,6 +82,7 @@ namespace CumulusUtils
         public string StationMapOutputFilename { get; } = "stationmap.txt";
         public string MeteoCamOutputFilename { get; } = "meteocam.txt";
         public string AirLinkOutputFilename { get; } = "airlink.txt";
+        public string AirLinkStandaloneOutputFilename { get; } = "airlink.html";
         public string AirLinkRealtimeFilename { get; } = "airlinkrealtime.txt";
         public string AirlinkJSONpart { get; } = "airlinkdata";
         public string ExtraSensorsOutputFilename { get; } = "extrasensors.txt";

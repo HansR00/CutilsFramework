@@ -963,6 +963,9 @@ namespace CumulusUtils
                       from el in localWeather.Descendants( "day" )
                       select el;
 
+                    // Required to use the SetExtraValues procedure
+                    Dayfile tmpDayfile = new Dayfile( Sup );
+
                     foreach ( XElement el in de ) // loop over the days in  the prediction
                     {
                         float lowHum = 0;
@@ -1015,9 +1018,11 @@ namespace CumulusUtils
                         else { ThisValue.DryPeriod = 1; ThisValue.WetPeriod = 0; }
 
                         ThisList.Add( ThisValue );
-                        Dayfile.SetExtraValues( ThisList );
+
+                        tmpDayfile.SetExtraValues( ThisList );
                     }
 
+                    tmpDayfile.Dispose();
                     retval = true; //success, we have a go for prediction.
                 }
                 catch ( Exception e )

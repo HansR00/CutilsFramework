@@ -100,7 +100,6 @@ namespace CumulusUtils
         readonly string[] Description;
 
         readonly int ReferenceNrOfClasses;
-        // readonly string[] ReferenceColours;
         readonly double[] ReferenceConcentrations2p5, ReferenceConcentrations10;
 
         // Defined in Cumulus.ini telling me which sensors are present
@@ -114,6 +113,7 @@ namespace CumulusUtils
         private readonly bool AirLinkIn;
         private readonly bool AirLinkOut;
         private readonly bool TwoSensors;
+        private readonly bool StandAloneModule;
         readonly string Message;
 
         #region Constructor
@@ -330,6 +330,8 @@ namespace CumulusUtils
 
             TwoSensors = AirLinkIn & AirLinkOut;
 
+            StandAloneModule = Sup.GetUtilsIniValue( "AirLink", "StandAloneModule", "false" ).Equals( "true" );
+
             Sup.LogTraceInfoMessage( "AirLink Contructor: stop" );
 
             return;
@@ -413,6 +415,30 @@ namespace CumulusUtils
             // We don't support live switching as we don't support that for anything.
             // Generate the start of the realtime script
             //
+
+            if (StandAloneModule)
+            {
+                of.AppendLine( "<head>" );
+                of.AppendLine( " <meta charset=\"UTF-8\">" );
+                of.AppendLine( " <meta name=\"description\" content=\"Cumulus standard Website, part of CumulusUtils by( c )Hans Rottier\" />" );   
+                of.AppendLine( " <meta name=\"keywords\" content=\"Cumulus, weather, data, weather station, CumulusUtils\" />" );
+                of.AppendLine( " <meta name=\"robots\" content=\"index, noarchive, follow, noimageindex, noimageclick\" />" );
+                of.AppendLine( " <link rel=\"shortcut icon\" href=\"favicon.ico\" type=\"image/x-icon\" />" );    
+                of.AppendLine( " <meta name=\"theme-color\" content=\"#ffffff\" />" );    
+                of.AppendLine( " <title>AirLink Standalone - CumulusUtils</title>" );    
+                of.AppendLine( " <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"> " );
+                //of.AppendLine( "<Style>" );
+                //of.AppendLine( ".CUTable { text-align: center; margin: auto; }" );
+                //of.AppendLine( ".CUTable a { color: #E87510; text-decoration: underline; }" );
+                //of.AppendLine( ".CUTable a:hover {color: OrangeRed;}" );
+                //of.AppendLine( "</Style>" );
+
+
+CMXutils.DojQueryInclude = true;
+                CMXutils.DoLibraryIncludes = true;
+                CMXutils.DoWebsite = false;
+            }
+
 
             of.AppendLine( $"{Sup.GenjQueryIncludestring()}" );
 
@@ -800,12 +826,16 @@ namespace CumulusUtils
                 of.AppendLine( $"<input type='button' class=buttonSlim value='{Sup.GetCUstringValue( "AirQuality", "GraphView", "Graph View", false )} {InOut}' onclick='SetGraphView{j}()'>" );
             }
 
-            of.AppendLine( $"<input type='submit' class=buttonSlim value='{Sup.GetCUstringValue( "AirQuality", "Help", "Help", false )}' action='class='nav-link' data-toggle='modal' data-target='#Help'>" );
+            if ( !StandAloneModule )
+            {
+                of.AppendLine( $"<input type='submit' class=buttonSlim value='{Sup.GetCUstringValue( "AirQuality", "Help", "Help", false )}' action='class='nav-link' data-toggle='modal' data-target='#Help'>" );
+            }
             of.AppendLine( "</div>" );
+
             of.AppendLine( $"<div><b>{Sup.GetCUstringValue( "AirQuality", "AirQuality", "Air Quality", false )} / {Sup.GetCUstringValue( "AirQuality", "NormativeCountry", "Normative country selected", true )}: {CountrySelected}</b>" +
                          $"&nbsp;-&nbsp;<b>{Sup.GetCumulusIniValue( "Station", "LocName", "" )}</b></div><br/>" );
 
-            if ( CMXutils.DoWebsite )
+            if ( CMXutils.DoWebsite && !StandAloneModule)
             {
                 // The Help info
                 of.AppendLine( "<div class='modal fade' id='Help' tabindex='-1' role='dialog' aria-hidden='true'>" );
@@ -854,7 +884,7 @@ namespace CumulusUtils
                 int thisNrOfClasses = NrOfClassesInCountry + 4;
                 int ColumnWidth = 100 / thisNrOfClasses;
 
-                of.AppendLine( "<table style='width:100%;margin:auto'>" );
+                of.AppendLine( "<table style='width:100%;margin:auto;text-align:center;'>" );
                 of.AppendLine( $"<thead>" );
                 of.AppendLine( $"<tr><td colspan='{NrOfClassesInCountry + 4}' style='padding:20px'>" +
                   $"<b><span>{Sup.GetCUstringValue( "AirQuality", "Sensor", "Sensor", false )} {InOut}: {Sup.GetCUstringValue( "AirQuality", "Temperature", "Temperature", false )}: </span><span id='ajxTemp{InOut}'></span> / " +
@@ -1017,14 +1047,21 @@ namespace CumulusUtils
 
             // Here we are at the end of the generation, now time to write evereything to the output file
 
-            using ( StreamWriter thisFile = new StreamWriter( $"{Sup.PathUtils}{Sup.AirLinkOutputFilename}", false, Encoding.UTF8 ) )
-            {
+            if (StandAloneModule)
+                using ( StreamWriter thisFile = new StreamWriter( $"{Sup.PathUtils}{Sup.AirLinkStandaloneOutputFilename}", false, Encoding.UTF8 ) )
+                {
+                    thisFile.WriteLine( of );
+                } // End Using the AirLink module
+            else
+                using ( StreamWriter thisFile = new StreamWriter( $"{Sup.PathUtils}{Sup.AirLinkOutputFilename}", false, Encoding.UTF8 ) )
+                {
 #if !RELEASE
-                thisFile.WriteLine( of );
+                    thisFile.WriteLine( of );
 #else
-                thisFile.WriteLine( Sup.StringRemoveWhiteSpace( of.ToString() ) );
+                    thisFile.WriteLine( Sup.StringRemoveWhiteSpace( of.ToString() ) );
 #endif
-            } // End Using the AirLink module
+                } // End Using the AirLink module
+
 
             Sup.LogTraceInfoMessage( "DoAirLinkModule - End" );
         } // GenAirLinkModule

@@ -246,7 +246,11 @@ namespace CumulusUtils
 
             // Immediately return if something was wrong at contructor time
             if ( !FTPvalid )
+            {
+                // No reason to do the whole procedure if we can't upload
+                Sup.LogTraceErrorMessage( $"UploadFile: Nothing uploaded because of connection error." ); 
                 return false;
+            }
 
             string URL = "";
             string Dir = "";
@@ -256,13 +260,13 @@ namespace CumulusUtils
             if ( string.IsNullOrEmpty( remotefile ) || string.IsNullOrEmpty( localfile ) ) { Sup.LogTraceErrorMessage( $"UploadFile: Nothing uploaded either in or outfile are empty." ); return false; }           // No reason to upload if there is  no file or destination
 
             Upload = Sup.GetUtilsIniValue( "FTP site", "DoUploadFTP", "false" ).ToLower() == "true";
-            if ( !Upload ) { Sup.LogTraceInfoMessage( $"UploadFile: DoUploadFTP configured false => No Upload." ); return false; }      // No reason to do the whole procedure if we don't have to upload
-            if ( !FTPvalid ) { Sup.LogTraceErrorMessage( $"UploadFile: Nothing uploaded because of connection error." ); return false; }  // No reason to do the whole procedure if we can't upload
 
+            // Make sure the UploadDir is in the inifile early
             string CumulusURL = Sup.GetCumulusIniValue( "FTP site", "Host", "" );
             string CumulusDir = Sup.GetCumulusIniValue( "FTP site", "Directory", "" );
-
             string CumulusUtilsDir = Sup.GetUtilsIniValue( "FTP site", "UploadDir", "" );
+
+            if ( !Upload ) { Sup.LogTraceInfoMessage( $"UploadFile: DoUploadFTP configured false => No Upload." ); return false; }      // No reason to do the whole procedure if we don't have to upload
 
             // Check for URL in CumulusIni
             if ( string.IsNullOrEmpty( CumulusURL ) )

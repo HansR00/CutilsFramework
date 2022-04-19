@@ -148,9 +148,9 @@ namespace CumulusUtils
         static public bool ThriftyMiscGraphsDirty { get; set; }
         static public int ThriftyMiscGraphsPeriod { get; private set; }
 
-        static public bool DoWebsite { get; private set; }
-        static public bool DoLibraryIncludes { get; private set; }
-        static public bool DojQueryInclude { get; private set; }
+        static public bool DoWebsite { get; set; }
+        static public bool DoLibraryIncludes { get; set; }
+        static public bool DojQueryInclude { get; set; }
         static public bool MapParticipant { get; private set; }
         static public bool HasRainGraphMenu { get; set; }
         static public bool HasTempGraphMenu { get; set; }
@@ -267,8 +267,8 @@ namespace CumulusUtils
                 ParticipatesSensorCommunity = Sup.GetUtilsIniValue( "ExtraSensors", "ParticipatesSensorCommunity", "false" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
                 MapParticipant = Sup.GetUtilsIniValue( "Maps", "Participant", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
                 HasSolar = Sup.GetUtilsIniValue( "Website", "ShowSolar", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase ); // Is an indirect determination set by the user only in  cutils
-                DoLibraryIncludes = Sup.GetUtilsIniValue( "General", "DoLibraryIncludes", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase ); // Do we need the libs??
-                DojQueryInclude = Sup.GetUtilsIniValue( "General", "GeneratejQueryInclude", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
+                DoLibraryIncludes = Sup.GetUtilsIniValue( "General", "DoLibraryIncludes", "false" ).Equals( "true", StringComparison.OrdinalIgnoreCase ); // Do we need the libs??
+                DojQueryInclude = Sup.GetUtilsIniValue( "General", "GeneratejQueryInclude", "false" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
 
                 bool AirLinkIn = Sup.GetCumulusIniValue( "AirLink", "In-Enabled", "0" ).Equals( "1" );
                 bool AirLinkOut = Sup.GetCumulusIniValue( "AirLink", "Out-Enabled", "0" ).Equals( "1" );
