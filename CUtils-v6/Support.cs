@@ -315,7 +315,10 @@ namespace CumulusUtils
 
         public void SetCUstringValue( string section, string key, string def ) => CUstringIni.SetValue( section, key, def );
 
-        public string StringRemoveWhiteSpace( string thisString ) => Regex.Replace( thisString, @"\s+", " " );
+
+        // Replace white space with either nothing (empty replacement string) or with whatever you want (mostly single space)
+        private static readonly Regex sWhitespace = new Regex( @"\s+" );
+        public static string StringRemoveWhiteSpace( string InputWithSpaces, string ReplacementOfSpaces ) => sWhitespace.Replace( InputWithSpaces, ReplacementOfSpaces );
 
         public static string StationInUse( int i )
         {
@@ -563,7 +566,6 @@ namespace CumulusUtils
         // https://stackoverflow.com/questions/677204/counting-the-number-of-flags-set-on-an-enumeration
         // https://en.wikipedia.org/wiki/Hamming_weight
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Style", "IDE0054:Use compound assignment", Justification = "HAd some trouble with overflow, would like to keep like it is" )]
         internal static UInt64 CountFlags( this AxisType axis )
         {
             UInt32 c;

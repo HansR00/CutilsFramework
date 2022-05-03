@@ -1058,7 +1058,7 @@ CMXutils.DojQueryInclude = true;
 #if !RELEASE
                     thisFile.WriteLine( of );
 #else
-                    thisFile.WriteLine( Sup.StringRemoveWhiteSpace( of.ToString() ) );
+                    thisFile.WriteLine( CuSupport.StringRemoveWhiteSpace( of.ToString(), " " ) );
 #endif
                 } // End Using the AirLink module
 

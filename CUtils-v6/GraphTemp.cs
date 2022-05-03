@@ -133,8 +133,6 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "    {" );
             thisBuffer.AppendLine( $"     text: \"{Sup.GetCumulusIniValue( "Station", "LocDesc", "Unknown Station" )}\"" );
             thisBuffer.AppendLine( "    }," );
-
-            //      thisBuffer.AppendLine("      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']");
             thisBuffer.AppendLine( "    xAxis:" );
             thisBuffer.AppendLine( "    {" );
 

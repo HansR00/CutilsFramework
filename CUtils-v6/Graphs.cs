@@ -57,7 +57,7 @@ namespace CumulusUtils
             GraphAverageClash;
 
         private bool StationNormal, StationAverage;
-        private CultureInfo inv = CultureInfo.InvariantCulture;
+        private readonly CultureInfo inv = CultureInfo.InvariantCulture;
 
         static public bool UseHighchartsBoostModule;
 
@@ -334,7 +334,7 @@ namespace CumulusUtils
 #if !RELEASE
                     of.WriteLine( thisBuffer );
 #else
-                    of.WriteLine( Sup.StringRemoveWhiteSpace( thisBuffer.ToString() ) );
+                    of.WriteLine( CuSupport.StringRemoveWhiteSpace( thisBuffer.ToString()," " ) );
 #endif
 
                 } // Using RainGraphsOutputFile
@@ -529,7 +529,7 @@ namespace CumulusUtils
 #if !RELEASE
                     of.WriteLine( thisBuffer );
 #else
-                    of.WriteLine( Sup.StringRemoveWhiteSpace( thisBuffer.ToString() ) );
+                    of.WriteLine( CuSupport.StringRemoveWhiteSpace( thisBuffer.ToString(), " " ) );
 #endif
 
                 } // Using TempGraphsOutputFile
@@ -706,7 +706,7 @@ namespace CumulusUtils
 #if !RELEASE
                     of.WriteLine( thisBuffer );
 #else
-                    of.WriteLine( Sup.StringRemoveWhiteSpace( thisBuffer.ToString() ) );
+                    of.WriteLine( CuSupport.StringRemoveWhiteSpace( thisBuffer.ToString(), " " ) );
 #endif
 
                 }
@@ -871,7 +871,7 @@ namespace CumulusUtils
 #if !RELEASE
                     of.WriteLine( thisBuffer );
 #else
-                    of.WriteLine( Sup.StringRemoveWhiteSpace( thisBuffer.ToString() ) );
+                    of.WriteLine( CuSupport.StringRemoveWhiteSpace( thisBuffer.ToString(), " " ) );
 #endif
 
                 }
@@ -1026,7 +1026,7 @@ namespace CumulusUtils
 #if !RELEASE
                     of.WriteLine( thisBuffer );
 #else
-                    of.WriteLine( Sup.StringRemoveWhiteSpace( thisBuffer.ToString() ) );
+                    of.WriteLine( CuSupport.StringRemoveWhiteSpace( thisBuffer.ToString(), " " ) );
 #endif
 
                 } // Using MiscGraphsOutputFile

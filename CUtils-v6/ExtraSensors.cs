@@ -373,7 +373,7 @@ namespace CumulusUtils
 #if !RELEASE
                 of.WriteLine( sb );
 #else
-                of.WriteLine( Sup.StringRemoveWhiteSpace( sb.ToString() ) );
+                of.WriteLine( CuSupport.StringRemoveWhiteSpace( sb.ToString(), " " ) );
 #endif
 
                 #endregion

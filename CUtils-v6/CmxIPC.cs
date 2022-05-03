@@ -46,8 +46,8 @@ namespace CumulusUtils
 {
     public class InfoFromCMX
     {
-        public string version { get; set; }
-        public string build { get; set; }
+        public string Version { get; set; }
+        public string Build { get; set; }
         public string ProgramUpTime { get; set; }
         public string NewBuildAvailable { get; set; }  // gives 0 or 1
         public string NewBuildNumber { get; set; }  // gives 0 or 1
@@ -55,26 +55,9 @@ namespace CumulusUtils
         public string CpuTemp { get; set; }
     }
 
-    public class DavisInfoFromCMX
-    {
-        public string DavisTotalPacketsReceived { get; set; }
-        public string DavisTotalPacketsMissed { get; set; }
-        public string DavisMaxInARow { get; set; }
-        public string DavisNumCRCerrors { get; set; }
-        public string DavisFirmwareVersion { get; set; }
-        public string DavisNumberOfResynchs { get; set; }
-        public string battery { get; set; }
-        public string txbattery { get; set; }
-    }
-
     public class CmxIPC
     {
-#if RELEASE
-        static public string CmxBaseURL { get; } = "http://localhost:8998/api/tags/";
-#else
-        static public string CmxBaseURL { get; } = "http://localhost:8998/api/tags/";
-        //static public string CmxBaseURL { get; } = "http://192.168.178.6:8998/api/tags/";
-#endif
+        public string CmxBaseURL { get; }
 
         readonly CuSupport Sup;
         readonly InetSupport Isup;
@@ -83,30 +66,15 @@ namespace CumulusUtils
         {
             Sup = s;
             Isup = i;
-        }
 
-        public async Task<DavisInfoFromCMX> GetDavisInfoAsync()
-        {
-            DavisInfoFromCMX thisInfo;
+            string CMXport = Sup.GetUtilsIniValue( "SysInfo", "CMXport", "8998" );
 
-            string DavisinfoURL = $"{CmxBaseURL}process.json?DavisTotalPacketsReceived&DavisTotalPacketsMissed&DavisMaxInARow&DavisNumCRCerrors&DavisFirmwareVersion&DavisNumberOfResynchs&battery&txbattery";
-            string JSONstring = await Isup.GetUrlDataAsync( new Uri( DavisinfoURL ) );
-
-            if ( string.IsNullOrEmpty( JSONstring ) )
-                thisInfo = new DavisInfoFromCMX();
-            else
-                thisInfo = JsonSerializer.DeserializeFromString<DavisInfoFromCMX>( JSONstring );
-
-            Sup.LogTraceVerboseMessage( $"DavisInfoFromCMX API : DavisTotalPacketsReceived: {thisInfo.DavisTotalPacketsReceived}" );
-            Sup.LogTraceVerboseMessage( $"DavisInfoFromCMX API : DavisTotalPacketsMissed: {thisInfo.DavisTotalPacketsMissed}" );
-            Sup.LogTraceVerboseMessage( $"DavisInfoFromCMX API : DavisMaxInARow: {thisInfo.DavisMaxInARow}" );
-            Sup.LogTraceVerboseMessage( $"DavisInfoFromCMX API : DavisNumCRCerrors: {thisInfo.DavisNumCRCerrors}" );
-            Sup.LogTraceVerboseMessage( $"DavisInfoFromCMX API : DavisFirmwareVersion: {thisInfo.DavisFirmwareVersion}" );
-            Sup.LogTraceVerboseMessage( $"DavisInfoFromCMX API : DavisNumberOfResynchs: {thisInfo.DavisNumberOfResynchs}" );
-            Sup.LogTraceVerboseMessage( $"DavisInfoFromCMX API : battery: {thisInfo.battery}" );
-            Sup.LogTraceVerboseMessage( $"DavisInfoFromCMX API : txbattery: {thisInfo.txbattery}" );
-
-            return thisInfo;
+#if RELEASE
+            CmxBaseURL = $"http://localhost:{CMXport}/api/tags/";
+#else
+            CmxBaseURL = $"http://localhost:{CMXport}/api/tags/";
+            //CmxBaseURL = $"http://192.168.178.144:{CMXport}/api/tags/";
+#endif
         }
 
         public async Task<InfoFromCMX> GetCMXInfoAsync()
@@ -121,8 +89,8 @@ namespace CumulusUtils
             else
                 thisInfo = JsonSerializer.DeserializeFromString<InfoFromCMX>( JSONstring );
 
-            Sup.LogTraceVerboseMessage( $"GetCMXInfo API : version: {thisInfo.version}" );
-            Sup.LogTraceVerboseMessage( $"GetCMXInfo API : build: {thisInfo.build}" );
+            Sup.LogTraceVerboseMessage( $"GetCMXInfo API : version: {thisInfo.Version}" );
+            Sup.LogTraceVerboseMessage( $"GetCMXInfo API : build: {thisInfo.Build}" );
             Sup.LogTraceVerboseMessage( $"GetCMXInfo API : ProgramUpTime: {thisInfo.ProgramUpTime}" );
             Sup.LogTraceVerboseMessage( $"GetCMXInfo API : NewBuildAvailable: {thisInfo.NewBuildAvailable}" );
             Sup.LogTraceVerboseMessage( $"GetCMXInfo API : NewBuildNumber: {thisInfo.NewBuildNumber}" );
@@ -205,7 +173,7 @@ namespace CumulusUtils
         {
             string retval;
 
-            Sup.LogDebugMessage( $"ReplaceWebtagsPostAsync start:" );
+            Sup.LogTraceInfoMessage( $"ReplaceWebtagsPostAsync start:" );
 
             string MultipleWebtagURL = $"{CmxBaseURL}process.txt";
             retval = await Isup.PostUrlDataAsync( new Uri( MultipleWebtagURL ), content );

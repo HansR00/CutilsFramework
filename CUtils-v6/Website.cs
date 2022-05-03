@@ -620,7 +620,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "<div class='col-sm-12 CUFooter'>" +
                   "  <table style='width:100%; margin:auto'><tr>" +
                   "    <td style='text-align: left; font-size: smaller'>Powered by <a href='https://cumulus.hosiene.co.uk/index.php'>Cumulus[MX]</a>&nbsp;" +
-                  $"         <span id=programVersion>&nbsp;{thisCMXInfo.version}&nbsp;(build:&nbsp;{thisCMXInfo.build})</span>" +
+                  $"         <span id=programVersion>&nbsp;{thisCMXInfo.Version}&nbsp;(build:&nbsp;{thisCMXInfo.Build})</span>" +
                   $"         &nbsp;{( NewVersionAvailable ? "[New version available:&nbsp;build: " + thisCMXInfo.NewBuildNumber + "]" : "" )}<br/>" +
                    "      Gauges based on work by Mark Crossley. See further under <a data-toggle='modal' href='#CUabout'>About</a> / <a data-toggle='modal' href='#CUlicense'>Licenses</a>.</td>" +
                   $"   <td style='text-align: right; font-size: smaller'>{CuSupport.FormattedVersion()} - {CuSupport.Copyright()}</td>" +
@@ -634,9 +634,11 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     "<script defer  src='https://code.highcharts.com/stock/highstock.js'></script>" +
                     "<script defer  src=\"https://code.highcharts.com/stock/highcharts-more.js\"></script>" +
                     "<script defer src=\"https://code.highcharts.com/stock/indicators/indicators.js\"></script>" +
-                    "<script defer  src=\"https://code.highcharts.com/stock/modules/exporting.js\" ></script>" +
                     "<script defer  src=\"https://code.highcharts.com/stock/modules/heatmap.js\"></script>" +
                     "<script defer  src='https://code.highcharts.com/stock/modules/windbarb.js'></script>" +
+                    "<script defer src='https://code.highcharts.com/modules/exporting.js'></script>" +
+                    "<script defer src='https://code.highcharts.com/modules/export-data.js'></script>" +
+                    "<script defer src=''https://code.highcharts.com/modules/accessibility.js'></script>" +
                     "" );
 
                 if ( Graphx.UseHighchartsBoostModule )
@@ -672,7 +674,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 #if !RELEASE
                 of.WriteLine( indexFile );
 #else
-                of.WriteLine( Sup.StringRemoveWhiteSpace( indexFile.ToString() ) );
+                of.WriteLine( CuSupport.StringRemoveWhiteSpace( indexFile.ToString(), " " ) );
 #endif
             }
 
@@ -709,7 +711,6 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
                 // Moved DST to index.html.
                 CUlibFile.Append(
-                  "var first = true;" +
                  $"var TZ = {TZ.BaseUtcOffset.Hours};" +
                   "var localTime = new Date();" +
                   "var TZdiffBrowser2UTC = -localTime.getTimezoneOffset()/60;" +
@@ -927,8 +928,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "function DoRealtime(input) {" +
                   "let tmpInput = input;" );
 
-                if ( ReplaceDecimalSeparator )
-                    CUlibFile.Append( $"  tmpInput = tmpInput.replace(/\\./g, '{DecimalSeparator}');" );
+                if ( ReplaceDecimalSeparator ) CUlibFile.Append( $"  tmpInput = tmpInput.replace(/\\./g, '{DecimalSeparator}');" );
 
                 CUlibFile.Append( "" +
                           "  let realtime = tmpInput.split(' '); " +
@@ -944,78 +944,77 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                           $"                                     realtime[{(int) RealtimeFields.hum}], realtime[{(int) RealtimeFields.rfall}] );" +
                           "  if (DoWebCam) UpdateWebCam();" +
 
-                          $"  if ( first || (oldobs[{(int) RealtimeFields.temp}] != realtime[{(int) RealtimeFields.temp}]) ) {{" +
-                          $"    $('#ajxCurTemp').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
+                          $"  if ( oldobs[{(int) RealtimeFields.temp}] != realtime[{(int) RealtimeFields.temp}] ) {{" +
                           $"    oldobs[{(int) RealtimeFields.temp}] = realtime[{(int) RealtimeFields.temp}];" +
                           $"    tmp = realtime[{(int) RealtimeFields.temp}] + '&nbsp;' + UnitDegree;" +
-                          "    $('#ajxCurTemp').html(tmp);" +
+                          $"    $('#ajxCurTemp').html(tmp);" +
+                          $"    $('#ajxCurTemp').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
                           "  }" +
-                          $"  if (first || (oldobs[{(int) RealtimeFields.temptrend}] != realtime[{(int) RealtimeFields.temptrend}])) {{" +
-                          $"    $('#ajxTempChange').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
+                          $"  if (oldobs[{(int) RealtimeFields.temptrend}] != realtime[{(int) RealtimeFields.temptrend}]) {{" +
                           $"    oldobs[{(int) RealtimeFields.temptrend}] = realtime[{(int) RealtimeFields.temptrend}];" +
                           $"    tmp = realtime[{(int) RealtimeFields.temptrend}] + '&nbsp;' + UnitDegree + '/hr';" +
-                          "    $('#ajxTempChange').html(tmp);" +
+                          $"    $('#ajxTempChange').html(tmp);" +
+                          $"    $('#ajxTempChange').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
                           "  }" +
                           $"  tmp = realtime[{(int) RealtimeFields.temptrend}][0] == '+' ? '<b style=\"color:{Sup.GetUtilsIniValue( "Website", "ColorDashboardUpIndicator", "Chartreuse" )}\"> \\u25B2 </b>' : '<b style=\"color:{Sup.GetUtilsIniValue( "Website", "ColorDashboardDownIndicator", "Red" )}\"> \\u25BC </b>';" +
-                          "  $('#ajxTempChangeIndicator').html(tmp);" +
-                          $"  if (first || (oldobs[{(int) RealtimeFields.tempTH}] != realtime[{(int) RealtimeFields.tempTH}])) {{" +
-                          $"    $('#ajxTempMax').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
+                          $"  $('#ajxTempChangeIndicator').html(tmp);" +
+                          $"  if (oldobs[{(int) RealtimeFields.tempTH}] != realtime[{(int) RealtimeFields.tempTH}]) {{" +
                           $"    oldobs[{(int) RealtimeFields.tempTH}] = realtime[{(int) RealtimeFields.tempTH}];" +
                           $"    tmp = '{Sup.GetCUstringValue( "Website", "MaxToday", "Max today", true )}: ' + realtime[{(int) RealtimeFields.tempTH}] + '&nbsp;' + UnitDegree;" +
-                          "    $('#ajxTempMax').html(tmp);" +
+                          $"    $('#ajxTempMax').html(tmp);" +
+                          $"    $('#ajxTempMax').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
                           "  }" +
-                          $"  tmp = '@ ' + realtime[{(int) RealtimeFields.TtempTH}];" +
-                          "  $('#ajxTimeTempMax').html(tmp);" +
-                          $"  if (first || (oldobs[{(int) RealtimeFields.tempTL}] != realtime[{(int) RealtimeFields.tempTL}])) {{" +
-                          $"    $('#ajxTempMin').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
+                          $"  tmp = '@ ' + realtime[{(int) RealtimeFields.TtempTH}]; $('#ajxTimeTempMax').html(tmp);" +
+                          $"  if (oldobs[{(int) RealtimeFields.tempTL}] != realtime[{(int) RealtimeFields.tempTL}]) {{" +
                           $"    oldobs[28] = realtime[{(int) RealtimeFields.tempTL}];" +
                           $"    tmp = '{Sup.GetCUstringValue( "Website", "MinToday", "Min today", true )}: ' + realtime[{(int) RealtimeFields.tempTL}] + '&nbsp;' + UnitDegree;" +
-                          "    $('#ajxTempMin').html(tmp);" +
+                          $"    $('#ajxTempMin').html(tmp);" +
+                          $"    $('#ajxTempMin').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
                           "  }" +
-                          $"  tmp = '@ ' + realtime[{(int) RealtimeFields.TtempTL}];" +
-                          "  $('#ajxTimeTempMin').html(tmp);" +
-                          $"  if (first || (oldobs[{(int) RealtimeFields.press}] != realtime[{(int) RealtimeFields.press}])) {{" +
-                          $"    $('#ajxCurPression').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
+                          $"  tmp = '@ ' + realtime[{(int) RealtimeFields.TtempTL}]; $('#ajxTimeTempMin').html(tmp);" +
+                          $"  if (oldobs[{(int) RealtimeFields.press}] != realtime[{(int) RealtimeFields.press}]) {{" +
                           $"    oldobs[{(int) RealtimeFields.press}] = realtime[{(int) RealtimeFields.press}];" +
-                          $"    tmp = realtime[{(int) RealtimeFields.press}] + '&nbsp;' + UnitPress;" +
-                          "    $('#ajxCurPression').html(tmp);" +
+                          $"    tmp = realtime[{(int) RealtimeFields.press}] + '&nbsp;' + UnitPress; " +
+                          $"    $('#ajxCurPression').html(tmp);" +
+                          $"    $('#ajxCurPression').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
                           "  }" +
-                          $"  if (first || (oldobs[{(int) RealtimeFields.presstrendval}] != realtime[{(int) RealtimeFields.presstrendval}])) {{" +
-                          $"    $('#ajxBarChange').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
+                          $"  if (oldobs[{(int) RealtimeFields.presstrendval}] != realtime[{(int) RealtimeFields.presstrendval}]) {{" +
                           $"    oldobs[{(int) RealtimeFields.presstrendval}] = realtime[{(int) RealtimeFields.presstrendval}];" +
                           $"    tmp = realtime[{(int) RealtimeFields.presstrendval}] + '&nbsp;' + UnitPress + '/hr';" +
-                          "    $('#ajxBarChange').html(tmp);" +
+                          $"    $('#ajxBarChange').html(tmp);" +
+                          $"    $('#ajxBarChange').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
                           "  }" +
                           $"  tmp = realtime[{(int) RealtimeFields.presstrendval}][0] == '+' ? '<b style=\"color:{Sup.GetUtilsIniValue( "Website", "ColorDashboardUpIndicator", "Chartreuse" )}\"> \\u25B2 </b>' : ' <b style=\"color:{Sup.GetUtilsIniValue( "Website", "ColorDashboardDownIndicator", "Red" )}\"> \\u25BC </b>';" +
                           "  $('#ajxBarChangeIndicator').html(tmp);" +
-                          $"  if (first || (oldobs[{(int) RealtimeFields.pressTH}] != realtime[{(int) RealtimeFields.pressTH}])) {{" +
-                          $"    $('#ajxBarMax').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
+                          $"  if (oldobs[{(int) RealtimeFields.pressTH}] != realtime[{(int) RealtimeFields.pressTH}]) {{" +
                           $"    oldobs[{(int) RealtimeFields.pressTH}] = realtime[{(int) RealtimeFields.pressTH}];" +
                           $"    tmp = '{Sup.GetCUstringValue( "Website", "MaxToday", "Max today", true )}: ' + realtime[{(int) RealtimeFields.pressTH}] + '&nbsp;' + UnitPress;" +
-                          "    $('#ajxBarMax').html(tmp);" +
+                          $"    $('#ajxBarMax').html(tmp);" +
+                          $"    $('#ajxBarMax').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
                           "  }" +
                           $"  tmp = '@&nbsp;' + realtime[{(int) RealtimeFields.TpressTH}];" +
-                          "  $('#ajxTimeBarMax').html(tmp);" +
-                          $"  if (first || (oldobs[{(int) RealtimeFields.pressTL}] != realtime[{(int) RealtimeFields.pressTL}])) {{" +
-                          $"    $('#ajxBarMin').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
+                          $"  $('#ajxTimeBarMax').html(tmp);" +
+                          $"  if (oldobs[{(int) RealtimeFields.pressTL}] != realtime[{(int) RealtimeFields.pressTL}]) {{" +
                           $"    oldobs[{(int) RealtimeFields.pressTL}] = realtime[{(int) RealtimeFields.pressTL}];" +
                           $"    tmp = '{Sup.GetCUstringValue( "Website", "MinToday", "Min today", true )}: ' + realtime[{(int) RealtimeFields.pressTL}] + '&nbsp;' + UnitPress;" +
-                          "    $('#ajxBarMin').html(tmp);" +
+                          $"    $('#ajxBarMin').html(tmp);" +
+                          $"    $('#ajxBarMin').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
                           "  }" +
                           $"  tmp = '@&nbsp;' + realtime[{(int) RealtimeFields.TpressTL}];" +
                           "  $('#ajxTimeBarMin').html(tmp);" +
-                          $"  if (first || (oldobs[{(int) RealtimeFields.rfall}] != realtime[{(int) RealtimeFields.rfall}])) {{" +
-                          $"    $('#ajxRainToday').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
+                          $"  if (oldobs[{(int) RealtimeFields.rfall}] != realtime[{(int) RealtimeFields.rfall}]) {{" +
                           $"    oldobs[{(int) RealtimeFields.rfall}] = realtime[{(int) RealtimeFields.rfall}];" +
                           $"    tmp = realtime[{(int) RealtimeFields.rfall}] + '&nbsp;' + UnitRain;" +
-                          "    $('#ajxRainToday').html(tmp);" +
+                          $"    $('#ajxRainToday').html(tmp);" +
+                          $"    $('#ajxRainToday').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
                           "  }" +
-                          $"  if (first || (oldobs[{(int) RealtimeFields.rrate}] != realtime[{(int) RealtimeFields.rrate}])) {{" +
-                          $"    $('#ajxRainRateNow').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
+                          $"  if (oldobs[{(int) RealtimeFields.rrate}] != realtime[{(int) RealtimeFields.rrate}]) {{" +
                           $"    oldobs[{(int) RealtimeFields.rrate}] = realtime[{(int) RealtimeFields.rrate}];" +
                           $"    tmp = '{Sup.GetCUstringValue( "Website", "Rainrate", "Rain Rate", true )}: ' + realtime[{(int) RealtimeFields.rrate}] + '&nbsp;' + UnitRain + '/hr';" +
-                          "    $('#ajxRainRateNow').html(tmp);" +
+                          $"    $('#ajxRainRateNow').html(tmp);" +
+                          $"    $('#ajxRainRateNow').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
                           "  }" +
+
                           $"  tmp = '{Sup.GetCUstringValue( "Website", "Yesterday", "Yesterday", true )}: ' + realtime[{(int) RealtimeFields.rfallY}] + '&nbsp;' + UnitRain;" +
                           "  $('#ajxRainYesterday').html(tmp);" +
                           $"  tmp = '{Sup.GetCUstringValue( "General", "Month", "Month", true )}: ' + realtime[{(int) RealtimeFields.rmonth}] + '&nbsp;' + UnitRain;" +
@@ -1023,85 +1022,95 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                           $"  tmp = '{Sup.GetCUstringValue( "General", "Year", "Year", true )}: ' + realtime[{(int) RealtimeFields.ryear}] + '&nbsp;' + UnitRain;" +
                           "  $('#ajxRainYear').html(tmp);" +
 
-                          $"  if (first || (oldobs[{(int) RealtimeFields.wlatest}] != realtime[{(int) RealtimeFields.wlatest}])) {{" +
-                          $"    $('#ajxCurWind').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
+                          $"  if (oldobs[{(int) RealtimeFields.wlatest}] != realtime[{(int) RealtimeFields.wlatest}]) {{" +
                           $"    oldobs[{(int) RealtimeFields.wlatest}] = realtime[{(int) RealtimeFields.wlatest}];" +
                           $"    tmp = realtime[{(int) RealtimeFields.wlatest}] + '&nbsp;' + UnitWind;" +
-                          "    $('#ajxCurWind').html(tmp);" +
+                          $"    $('#ajxCurWind').html(tmp);" +
+                          $"    $('#ajxCurWind').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
                           "  }" +
-                          $"  if (first || (oldobs[{(int) RealtimeFields.wspeed}] != realtime[{(int) RealtimeFields.wspeed}])) {{" +
-                          $"    $('#ajxAverageWind').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
+                          $"  if (oldobs[{(int) RealtimeFields.wspeed}] != realtime[{(int) RealtimeFields.wspeed}]) {{" +
                           $"    oldobs[{(int) RealtimeFields.wspeed}] = realtime[{(int) RealtimeFields.wspeed}];" +
                           $"    tmp = realtime[{(int) RealtimeFields.wspeed}] + '&nbsp;' + UnitWind;" +
-                          "    $('#ajxAverageWind').html(tmp);" +
+                          $"    $('#ajxAverageWind').html(tmp);" +
+                          $"    $('#ajxAverageWind').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
+
                           $"    tmp = '&nbsp;' + realtime[{(int) RealtimeFields.beaufortnumber}] + '&nbsp;Bf&nbsp;';" +
-                          "    $('#ajxCurWindBf').html(tmp);" +
+                          $"    $('#ajxCurWindBf').html(tmp);" +
                           $"    $('#ajxCurWindBf').css('background-color', BeaufortColour[parseInt(realtime[{(int) RealtimeFields.beaufortnumber}])] ); " +
                           "  }" +
-                          "  if (first || (oldobs[30] != realtime[30])) {" +
+                          $"  if (oldobs[{(int) RealtimeFields.windTM}] != realtime[{(int) RealtimeFields.windTM}]) {{" +
+                          $"    oldobs[{(int) RealtimeFields.windTM}] = realtime[{(int) RealtimeFields.windTM}];" +
+                          $"    tmp = '{Sup.GetCUstringValue( "Website", "HighAverage", "High Average", true )}: ' + realtime[{(int) RealtimeFields.windTM}] + '&nbsp;' + UnitWind;" +
+                          $"    $('#ajxHighAverage').html(tmp);" +
                           $"    $('#ajxHighAverage').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
-                          "    oldobs[30] = realtime[30];" +
-                          $"    tmp = '{Sup.GetCUstringValue( "Website", "HighAverage", "High Average", true )}: ' + realtime[30] + '&nbsp;' + UnitWind;" +
-                          "    $('#ajxHighAverage').html(tmp);" +
                           "  }" +
+
                           $"  tmp = '@&nbsp;' + realtime[{(int) RealtimeFields.TwindTM}];" +
-                          "  $('#ajxTimeHighAverage').html(tmp);" +
-                          $"  if (first || (oldobs[{(int) RealtimeFields.wgustTM}] != realtime[{(int) RealtimeFields.wgustTM}])) {{" +
-                          $"    $('#ajxHighGust').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
+                          $"  $('#ajxTimeHighAverage').html(tmp);" +
+
+                          $"  if (oldobs[{(int) RealtimeFields.wgustTM}] != realtime[{(int) RealtimeFields.wgustTM}]) {{" +
                           $"    oldobs[{(int) RealtimeFields.wgustTM}] = realtime[{(int) RealtimeFields.wgustTM}];" +
                           $"    tmp = '{Sup.GetCUstringValue( "Website", "HighGust", "High Gust", true )}: ' + realtime[{(int) RealtimeFields.wgustTM}] + '&nbsp;' + UnitWind;" +
-                          "    $('#ajxHighGust').html(tmp);" +
+                          $"    $('#ajxHighGust').html(tmp);" +
+                          $"    $('#ajxHighGust').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
                           "  }" +
+
                           $"  tmp = '@&nbsp;' + realtime[{(int) RealtimeFields.TwgustTM}];" +
-                          "  $('#ajxTimeHighGust').html(tmp);" +
-                          $"  if (first || (oldobs[{(int) RealtimeFields.hum}] != realtime[{(int) RealtimeFields.hum}])) {{" +
-                          $"    $('#ajxCurHumidity').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
+                          $"  $('#ajxTimeHighGust').html(tmp);" +
+
+                          $"  if (oldobs[{(int) RealtimeFields.hum}] != realtime[{(int) RealtimeFields.hum}]) {{" +
                           $"    oldobs[3] = realtime[{(int) RealtimeFields.hum}];" +
                           $"    tmp = realtime[{(int) RealtimeFields.hum}] + '&nbsp;%';" +
-                          "    $('#ajxCurHumidity').html(tmp);" +
+                          $"    $('#ajxCurHumidity').html(tmp);" +
+                          $"    $('#ajxCurHumidity').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
                           "  }" +
-                          $"  if (first || (oldobs[{(int) RealtimeFields.dew}] != realtime[{(int) RealtimeFields.dew}])) {{" +
-                          $"    $('#ajxDewpoint').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
+                          $"  if (oldobs[{(int) RealtimeFields.dew}] != realtime[{(int) RealtimeFields.dew}]) {{" +
                           $"    oldobs[{(int) RealtimeFields.dew}] = realtime[{(int) RealtimeFields.dew}];" +
                           $"    tmp = realtime[{(int) RealtimeFields.dew}] + '&nbsp;' + UnitDegree;" +
-                          "    $('#ajxDewpoint').html(tmp);" +
+                          $"    $('#ajxDewpoint').html(tmp);" +
+                          $"    $('#ajxDewpoint').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
                           "  }" +
-                          $"  if (first || (oldobs[{(int) RealtimeFields.SolarRad}] != realtime[{(int) RealtimeFields.SolarRad}])) {{" +
-                          $"    $('#ajxCurSolar').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
+                          $"  if (oldobs[{(int) RealtimeFields.SolarRad}] != realtime[{(int) RealtimeFields.SolarRad}]) {{" +
                           $"    oldobs[{(int) RealtimeFields.SolarRad}] = realtime[{(int) RealtimeFields.SolarRad}];" +
                           $"    tmp = realtime[{(int) RealtimeFields.SolarRad}] + '&nbsp;W/m2';" +
-                          "    $('#ajxCurSolar').html(tmp);" +
+                          $"    $('#ajxCurSolar').html(tmp);" +
+                          $"    $('#ajxCurSolar').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
                           "  }" +
-                          $"  if (first || (oldobs[{(int) RealtimeFields.CurrentSolarMax}] != realtime[{(int) RealtimeFields.CurrentSolarMax}])) {{" +
-                          $"    $('#ajxCurSolarMax').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
+                          $"  if (oldobs[{(int) RealtimeFields.CurrentSolarMax}] != realtime[{(int) RealtimeFields.CurrentSolarMax}]) {{" +
                           $"    oldobs[{(int) RealtimeFields.CurrentSolarMax}] = realtime[{(int) RealtimeFields.CurrentSolarMax}];" +
                           $"    tmp = realtime[{(int) RealtimeFields.CurrentSolarMax}] + '&nbsp;W/m2';" +
-                          "    $('#ajxCurSolarMax').html(tmp);" +
+                          $"    $('#ajxCurSolarMax').html(tmp);" +
+                          $"    $('#ajxCurSolarMax').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
                           "  }" +
-                          $"  if (first || (oldobs[{(int) RealtimeFields.SunshineHours}] != realtime[{(int) RealtimeFields.SunshineHours}])) {{" +
-                          $"    $('#ajxSolarHours').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
+                          $"  if (oldobs[{(int) RealtimeFields.SunshineHours}] != realtime[{(int) RealtimeFields.SunshineHours}]) {{" +
                           $"    oldobs[{(int) RealtimeFields.SunshineHours}] = realtime[{(int) RealtimeFields.SunshineHours}];" +
                           $"    tmp = realtime[{(int) RealtimeFields.SunshineHours}] + '&nbsp;hrs';" +
-                          "    $('#ajxSolarHours').html(tmp);" +
+                          $"    $('#ajxSolarHours').html(tmp);" +
+                          $"    $('#ajxSolarHours').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
                           "  }" +
-                          $"  if (first || (oldobs[{(int) RealtimeFields.UV}] != realtime[{(int) RealtimeFields.UV}])) {{" +
-                          $"    $('#ajxCurUVindex').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
+                          $"  if (oldobs[{(int) RealtimeFields.UV}] != realtime[{(int) RealtimeFields.UV}]) {{" +
                           $"    oldobs[43] = realtime[{(int) RealtimeFields.UV}];" +
                           $"    tmp = realtime[{(int) RealtimeFields.UV}];" +
-                          "    $('#ajxCurUVindex').html(tmp);" +
+                          $"    $('#ajxCurUVindex').html(tmp);" +
+                          $"    $('#ajxCurUVindex').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
                           "  }" +
+
                           $"  tmp = '{Sup.GetCUstringValue( "Website", "LastUpdate", "Last Update", true )}: ' + realtime[{(int) RealtimeFields.timehhmmss}];" +
-                          "  $('#ajxTimeUpdate').html(tmp);" +
+                          $"  $('#ajxTimeUpdate').html(tmp);" +
+
                           $"  tmp = '{Sup.GetCUstringValue( "Website", "Date", "Date", true )}: ' + realtime[{(int) RealtimeFields.date}];" +
-                          "  $('#ajxDateUpdate').html(tmp);" +
-                          "  first = false;" +
+                          $"  $('#ajxDateUpdate').html(tmp);" +
                           "  setTimeout('ClearChangeIndicator()', 3000);" +
-                          "}" +
+                          "}" );
+
+                // Do the SUN procedure
+
+                CUlibFile.Append( "" +
                          $"var Latitude = {Latitude.ToString( "F4", CultureInfo.InvariantCulture )};" +
                          $"var Longitude = {Longitude.ToString( "F4", CultureInfo.InvariantCulture )};" +
                           "var Radius = 60;" +
+                          "var ST, STT;" +
                           "function CreateSun() {" +
-                          "  var ST, STT;" +
                           "  var basedata = [];" +
                           "  var StartAngle;" +
                           "  var thisDate = new Date();" +
@@ -1212,7 +1221,33 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                           "    .attr('x1', 0).attr('y1', 0).attr('x2', 0).attr('y2', Radius)" +
                           "    .attr('stroke', 'red')" +
                           "    .attr('stroke-width', '2');" +
-                          "}" +
+                          "}" );
+
+                string backgroundImageDay = Sup.GetUtilsIniValue( "Website", "ColorTitleBackGroundImage", "" );
+
+                string backgroundImageCivil = Sup.GetUtilsIniValue( "Website", "ColorTitleBackGroundImageCivil", "" );
+                if ( string.IsNullOrEmpty( backgroundImageCivil ) ) backgroundImageCivil = backgroundImageDay;
+
+                string backgroundImageNautical = Sup.GetUtilsIniValue( "Website", "ColorTitleBackGroundImageNautical", "" );
+                if ( string.IsNullOrEmpty( backgroundImageNautical ) ) backgroundImageNautical = backgroundImageCivil;
+
+                string backgroundImageAstronomical = Sup.GetUtilsIniValue( "Website", "ColorTitleBackGroundImageAstronomical", "" );
+                if ( string.IsNullOrEmpty( backgroundImageAstronomical ) ) backgroundImageAstronomical = backgroundImageNautical;
+
+                string backgroundImageNight = Sup.GetUtilsIniValue( "Website", "ColorTitleBackGroundImageNight", "" );
+                if ( string.IsNullOrEmpty( backgroundImageNight ) ) backgroundImageNight = backgroundImageAstronomical;
+
+                CUlibFile.Append( "const DayPhase = Object.freeze({" +
+                    "DAY: Symbol( 'day' )," +
+                    "CIVIL: Symbol( 'civil' )," +
+                    "NAUTICAL: Symbol( 'nautical' )," +
+                    "ASTRONOMICAL: Symbol( 'astronomical' )," +
+                    "NIGHT: Symbol( 'night' )}); " +
+                    "" +
+                    "var phase;" +
+                    "" );
+
+                CUlibFile.Append( "" +
                           "function MoveSunPosition() {" +
                           "  date = new Date();" +
                           "  hours = date.getHours() + TZ + DST - TZdiffBrowser2UTC;" +
@@ -1220,7 +1255,48 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                           "  angle = (hours + minutes / 60) / 24 * 360;" +
                           "  const line = d3.select('#HandOfClock')" +
                           "     .attr('transform', 'rotate(' + angle + ')');" +
-                          "}" );
+                          "" +
+                          "  if (date > ST.sunrise && date < ST.sunset) { if (phase != DayPhase.DAY) {phase = DayPhase.DAY; phasechange = true;} else {phasechange =  false;} }" +
+                          "  if ((date > ST.sunset && date < ST.dusk) || (date < ST.sunrise && date > ST.dawn) ) { if (phase != DayPhase.CIVIL) {phase = DayPhase.CIVIL; phasechange = true;} else {phasechange =  false;} }" +
+                          "  if ((date > ST.dusk && date < ST.nauticalDusk) || (date < ST.dawn && date > ST.nauticalDawn)) { if (phase != DayPhase.NAUTICAL) {phase = DayPhase.NAUTICAL; phasechange = true;} else {phasechange =  false;} }" +
+                          "  if ((date > ST.nauticalDusk && date < ST.night) || (date < ST.nauticalDawn && date > ST.nightEnd) ) { if (phase != DayPhase.ASTRONOMICAL) {phase = DayPhase.ASTRONOMICAL; phasechange = true;} else {phasechange =  false;} }" +
+                          "  if ((date > ST.night && date < STT.nightEnd) ) { if (phase != DayPhase.NIGHT) {phase = DayPhase.NIGHT; phasechange = true;} else {phasechange =  false;} }" +
+                          "" );
+
+                CUlibFile.Append( "" +
+                      "  if (phasechange && phase == DayPhase.DAY) { " +
+                      "    console.log('Setting Day headerimage'); " +
+                      $"   $('#CUTitle').css('background-image', 'url({backgroundImageDay})' );" +
+                      "  }" );
+
+                CUlibFile.Append( "" +
+                      "  if (phasechange && phase == DayPhase.CIVIL) { " +
+                      "    console.log('Setting Civil dusk/dawn headerimage'); " +
+                      $"   $('#CUTitle').css('background-image', 'url({backgroundImageCivil})' );" +
+                      "  }" );
+
+                CUlibFile.Append( "" +
+                      "  if (phasechange && phase == DayPhase.NAUTICAL) { " +
+                      "    console.log('Setting Nautical dusk/dawn headerimage'); " +
+                      $"   $('#CUTitle').css('background-image', 'url({backgroundImageNautical})' );" +
+                      "  }" );
+
+                CUlibFile.Append( "" +
+                      "  if (phasechange && phase == DayPhase.ASTRONOMICAL) { " +
+                      "    console.log('Setting Astronomical dusk/dawn headerimage'); " +
+                      $"   $('#CUTitle').css('background-image', 'url({backgroundImageAstronomical})' );" +
+                      "  }" );
+
+                CUlibFile.Append( "" +
+                      "  if (phasechange && phase == DayPhase.NIGHT) { " +
+                      "    console.log('Setting night headerimage'); " +
+                      $"   $('#CUTitle').css('background-image', 'url({backgroundImageNight})' );" +
+                      "  }" );
+
+                // Close the MoveSunPosition function
+                CUlibFile.Append( '}' );
+
+                // Do the MOON procedure
 
                 if ( UseCMXMoonImage )
                 {
@@ -1591,7 +1667,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 #if !RELEASE
                 of.WriteLine( CUlibFile );
 #else
-                of.WriteLine( Sup.StringRemoveWhiteSpace( CUlibFile.ToString() ) );
+                of.WriteLine( CuSupport.StringRemoveWhiteSpace( CUlibFile.ToString(), " " ) );
 #endif
             }
 
@@ -2298,7 +2374,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 #if !RELEASE
                     of.WriteLine( CumulusCharts );
 #else
-                    of.WriteLine( Sup.StringRemoveWhiteSpace( CumulusCharts.ToString() ) );
+                    of.WriteLine( CuSupport.StringRemoveWhiteSpace( CumulusCharts.ToString(), " " ) );
 #endif
 
                     return;

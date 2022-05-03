@@ -72,7 +72,7 @@ namespace CumulusUtils
 
                 Sup.LogTraceInfoMessage( $" MapsOn: Adding Station: {Name}" );
 
-                if ( !string.IsNullOrEmpty( Name ) && !string.IsNullOrEmpty( Website ) && !string.IsNullOrEmpty( Latitude ) && !string.IsNullOrEmpty( Longitude ) )
+                if ( !string.IsNullOrEmpty( Name ) && /* !string.IsNullOrEmpty( Website ) && */ !string.IsNullOrEmpty( Latitude ) && !string.IsNullOrEmpty( Longitude ) )
                 {
                     try
                     {
@@ -120,9 +120,14 @@ namespace CumulusUtils
             // Note: The check on the date is done at the end of MapsOn because we also need to determine the existence of content
             //       for the fields Name, Website, Latitude and Longitude.
             //
-            DateTime.TryParse( Sup.GetUtilsIniValue( "Maps", "DoneToday", $"{DateTime.Now.AddDays( -1 ):dd/MM/yy}" ), out DateTime DoneToday );
-            bool DoMapsOn = !Sup.DateIsToday( DoneToday );
+            bool DoMapsOn;
             string retval;
+
+            if ( DateTime.TryParse( Sup.GetUtilsIniValue( "Maps", "DoneToday", $"{DateTime.Now.AddDays( -1 ):dd/MM/yy}" ), out DateTime DoneToday ) )
+            {
+                DoMapsOn = !Sup.DateIsToday( DoneToday );
+            }
+            else DoMapsOn = true;
 
             if ( DoMapsOn )
             {
@@ -134,11 +139,9 @@ namespace CumulusUtils
                 retval = await CMXutils.Isup.PostUrlDataAsync( new Uri( "https://meteo-wagenborgen.nl/cgi-bin/receive.pl" ), thisContent );
                 Sup.LogTraceInfoMessage( $"MapsOn : Success" );
             }
-            else
-                retval = $"MapsOn: Must NOT send signature, has been done already : {DoneToday:dd/MM/yy}";
+            else retval = $"MapsOn: Must NOT send signature, has been done already : {DoneToday:dd/MM/yy}";
 
-            if ( File.Exists( $"{Sup.PathUtils}{FileToSend}" ) )
-                File.Delete( $"{Sup.PathUtils}{FileToSend}" );
+            if ( File.Exists( $"{Sup.PathUtils}{FileToSend}" ) ) File.Delete( $"{Sup.PathUtils}{FileToSend}" );
 
             return retval;
         }
@@ -146,7 +149,7 @@ namespace CumulusUtils
         #endregion
 
         #region MapsOff
-
+/*
         public void MapsOff()
         {
             // Note MapsOff is actually no longer being used. If everything works fine, let's remove it and  only rely on the timeout
@@ -168,7 +171,7 @@ namespace CumulusUtils
             if ( File.Exists( $"{Sup.PathUtils}{FileToSend}" ) )
                 File.Delete( $"{Sup.PathUtils}{FileToSend}" );
         }
-
+*/
         #endregion
 
         #region CreateMap
@@ -374,8 +377,7 @@ namespace CumulusUtils
 
                     // Remove an existing entry (only one, if more than the old one will disappear eventually by timing out
                     tmp = root.Descendants( "Station" ).Where( x => x.Element( "Name" ).Value.Equals( thisName ) ).FirstOrDefault();
-                    if ( tmp != null )
-                        tmp.Remove();
+                    if ( tmp != null ) tmp.Remove();
 
                     root.Add( thisStation );
                 }

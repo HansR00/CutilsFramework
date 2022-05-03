@@ -9,11 +9,11 @@ namespace Test
     internal class Program
     {
         
-        static void Main( string[] args )
+        static void Main( )
         {
             Distance TestDistance = new Distance(DistanceDim.kilometer);
             Temp TestTemp = new Temp(TempDim.celsius);
-            Wind TestWind = new Wind( WindDim.kmh );
+            //Wind TestWind = new Wind( WindDim.kmh );
             Rain TestRain = new Rain( RainDim.millimeter );
             Pressure TestPress = new Pressure( PressureDim.inchHg);
 

@@ -41,7 +41,6 @@ namespace CumulusUtils
         private List<string> returnValues;
 
         private InfoFromCMX thisInfo;
-        private DavisInfoFromCMX thisDavisInfo;
 
         public SysInfo( CuSupport s, InetSupport i )
         {
@@ -58,35 +57,92 @@ namespace CumulusUtils
             Sup.LogDebugMessage( "SystemStatus : starting" );
 
             thisInfo = await thisIPC.GetCMXInfoAsync();
-            Sup.LogDebugMessage( $"CumulusMX Version: {thisInfo.version} build {thisInfo.build}" );
+            Sup.LogDebugMessage( $"CumulusMX Version: {thisInfo.Version} build {thisInfo.Build}" );
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.SysInfoOutputFilename}", false, Encoding.UTF8 ) )
             {
+                StringBuilder DeviceInfo = new StringBuilder();
+                string tmp;
+
                 DeviceType = Convert.ToInt32( Sup.GetCumulusIniValue( "Station", "Type", "1" ), CultureInfo.InvariantCulture );
+                //DeviceType = 11;
                 Sup.LogTraceInfoMessage( $" SystemStatus: Found device {DeviceType} {CuSupport.StationInUse( DeviceType )}" );
 
                 of.WriteLine( $"<div style='margin:auto; text-align:left; width:{Sup.GetUtilsIniValue( "SysInfo", "ReportWidth", "700" )}px'><pre>" );
 
                 // Just for recognition of where we are : start of Station Info
-                of.WriteLine( $"Cumulus version: {thisInfo.version} (build: {thisInfo.build})" );
+                of.WriteLine( $"Cumulus version: {thisInfo.Version} (build: {thisInfo.Build})" );
                 of.WriteLine( $"Cumulus uptime: {thisInfo.ProgramUpTime}" );
                 of.WriteLine( $"Weather station: {CuSupport.StationInUse( DeviceType )}" );
                 of.WriteLine( "" );
 
-                if ( DeviceType == 1 )
+                switch ( DeviceType )
                 {
-                    thisDavisInfo = await thisIPC.GetDavisInfoAsync();
+                    case 0:
+                    case 1: // Vantage Pro or Pro2
 
-                    of.WriteLine( $"Total number of data packets received: {thisDavisInfo.DavisTotalPacketsReceived}" );
-                    of.WriteLine( $"Number of missed data packets: {thisDavisInfo.DavisTotalPacketsMissed}" );
-                    of.WriteLine( $"Number of times the console resynchronised with the transmitter: {thisDavisInfo.DavisNumberOfResynchs}" );
-                    of.WriteLine( $"Longest streak of consecutive packets received: {thisDavisInfo.DavisMaxInARow}" );
-                    of.WriteLine( $"Number of packets received with CRC errors: {thisDavisInfo.DavisNumCRCerrors}" );
-                    of.WriteLine( $"The console firmware version: {thisDavisInfo.DavisFirmwareVersion}" );
-                    of.WriteLine( $"The console battery condition in volts: {thisDavisInfo.battery} V" );
-                    of.WriteLine( $"The transmitter battery condition: {thisDavisInfo.txbattery}" );
-                    of.WriteLine( "" );
-                }
+                        DeviceInfo.AppendLine( "Total number of data packets received: <#DavisTotalPacketsReceived>" );
+                        DeviceInfo.AppendLine( "Number of missed data packets: <#DavisTotalPacketsMissed>" );
+                        DeviceInfo.AppendLine( "Number of times the console resynchronised with the transmitter: <#DavisNumberOfResynchs>" );
+                        DeviceInfo.AppendLine( "Longest streak of consecutive packets received: <#DavisMaxInARow>" );
+                        DeviceInfo.AppendLine( "Number of packets received with CRC errors: <#DavisNumCRCerrors>" );
+                        DeviceInfo.AppendLine( "The console firmware version: <#DavisFirmwareVersion>" );
+                        DeviceInfo.AppendLine( "The console battery condition in volts: <#battery> V" );
+                        DeviceInfo.AppendLine( "The transmitter battery condition: <#txbattery>" );
+                        DeviceInfo.AppendLine( "" );
+
+                        //using( StreamWriter rt = new StreamWriter( $"TagsToReplace.txt", false, Encoding.UTF8 ) )
+                        //{
+                        //    rt.WriteLine( thisIPC.CmxBaseURL + "\n" );
+                        //    rt.WriteLine( DeviceInfo.ToString() );
+                        //    rt.WriteLine("---------------");
+                            tmp = await thisIPC.ReplaceWebtagsPostAsync( DeviceInfo.ToString() );
+                        //    rt.WriteLine( tmp );
+                        //}
+
+                        of.WriteLine( tmp );
+                        break;
+
+                    case 11: // WLL
+
+                        string TxUsed = Sup.GetUtilsIniValue( "SysInfo", "Tx", "" );    // Comma separated string
+                        TxUsed = CuSupport.StringRemoveWhiteSpace( TxUsed, "" );        // Replace any space with nothing (empty string)
+                        string[] TxUsedArray = TxUsed.Split( ',' );
+
+                        DeviceInfo.AppendLine( "The WLL firmware version: <#DavisFirmwareVersion>" );
+                        DeviceInfo.AppendLine( "The WLL battery condition in volts: <#battery> V" );
+                        DeviceInfo.AppendLine( "WLL WifiRssi: <#DavisTxRssi tx=0>" );
+                        DeviceInfo.AppendLine( "" );
+
+                        foreach ( string Tx in TxUsedArray)
+                        {
+                            DeviceInfo.AppendLine( $"WLL Stats for channel {Tx}:" );
+                            DeviceInfo.AppendLine( $"  WLL DavisReceptionPercent: <#DavisReceptionPercent tx={Tx}>" );
+                            DeviceInfo.AppendLine( $"  WLL TxRssi: <#DavisTxRssi  tx={Tx}>" );
+                            DeviceInfo.AppendLine( $"  Number of missed data packets: <#DavisTotalPacketsMissed tx={Tx}>" );
+                            DeviceInfo.AppendLine( $"  Number of times the console resynchronised with the transmitter: <#DavisNumberOfResynchs tx={Tx}>" );
+                            DeviceInfo.AppendLine( $"  Longest streak of consecutive packets received: <#DavisMaxInARow tx={Tx}>" );
+                            DeviceInfo.AppendLine( $"  Number of packets received with CRC errors: <#DavisNumCRCerrors tx={Tx}>" );
+                            DeviceInfo.AppendLine( $"  The transmitter battery condition: <#txbattery channel={Tx}>" );
+                            DeviceInfo.AppendLine( "" );
+                        }
+
+                        //using ( StreamWriter rt = new StreamWriter( $"TagsToReplace.txt", false, Encoding.UTF8 ) )
+                        //{
+                        //    rt.WriteLine( thisIPC.CmxBaseURL + "\n");
+                        //    rt.WriteLine( DeviceInfo.ToString() );
+                        //    rt.WriteLine( "---------------" );
+                            tmp = await thisIPC.ReplaceWebtagsPostAsync( DeviceInfo.ToString() );
+                        //    rt.WriteLine( tmp );
+                        //}
+
+                        of.WriteLine( tmp );
+                        break;
+
+                    default:
+                        of.WriteLine( $"Extra Station Info: {Sup.GetUtilsIniValue( "SysInfo", "ExtraStationInfo", "" )}" );
+                        break;
+                } // End Switch for device stats if any
 
                 // Now do the OS dependent stuff
                 //
@@ -220,7 +276,7 @@ namespace CumulusUtils
                 StartProcess( "lsb_release", "-a" );
                 foreach ( string line in returnValues )
                     if ( line.StartsWith( "Description", StringComparison.OrdinalIgnoreCase ) )
-                        of.WriteLine( Sup.StringRemoveWhiteSpace( line ) );
+                        of.WriteLine( CuSupport.StringRemoveWhiteSpace( line, " " ) );
             }
             catch ( Exception e )
             {

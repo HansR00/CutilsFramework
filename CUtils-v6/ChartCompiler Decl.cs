@@ -274,7 +274,7 @@ namespace CumulusUtils
 
         internal readonly string[] PlotvarUnitsRECENT, PlotvarUnitsALL, PlotvarUnitsEXTRA;     // Init in constructor
         internal readonly string[] LinetypeKeywords = { "Line", "SpLine", "Area", "Column", "Scatter", "ColumnRange" };
-        internal readonly string[] AxisKeywords = { "Temp", "Wind", "Distance", "Hours", "Solar", "UV", "Rain", "Rrate", "Pressure", "Humidity", "DegreeDays", "EVT", "Free", "AQ" };
+        internal readonly string[] AxisKeywords = { "Temp", "Wind", "Distance", "Hours", "Solar", "UV", "Rain", "Rrate", "Pressure", "Humidity", "DegreeDays", "EVT", "Free", "AQ", "ppm" };
         internal readonly string[] StatsTypeKeywords = { "SMA" };
 
         readonly CuSupport Sup;

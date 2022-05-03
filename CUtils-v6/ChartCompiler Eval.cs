@@ -353,7 +353,7 @@ namespace CumulusUtils
             string tmp = "";
             List<string> rawExp = new List<string>();
 
-            rawExpression = Sup.StringRemoveWhiteSpace( rawExpression );
+            rawExpression = CuSupport.StringRemoveWhiteSpace( rawExpression, " " );
 
             for ( int i = 0; i < rawExpression.Length; i++ )
                 if ( Array.Exists( Operators, word => word.Equals( "" + rawExpression[ i ] ) ) ||

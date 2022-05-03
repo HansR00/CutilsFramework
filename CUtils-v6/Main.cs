@@ -323,6 +323,30 @@ namespace CumulusUtils
 
             // Here we start the actual program Handle commandline arguments
             CommandLineArgs( args );
+
+            if ( !DoPwsFWI && !DoTop10 && !DoSystemChk && !DoGraphs && !DoCreateMap && !DoYadr && !DoRecords && !DoCompileOnly && !DoUserAskedData &&
+                !DoNOAA && !DoDayRecords && !DoCheckOnly && !DoWebsite && !DoForecast && !DoUserReports && !DoStationMap && !DoMeteoCam && !DoAirLink && !DoExtraSensors )
+            {
+                Sup.LogTraceErrorMessage( "CumulusUtils : No Arguments, nothing to do. Exiting." );
+                Sup.LogTraceErrorMessage( "CumulusUtils : Exiting Main" );
+
+                Console.WriteLine( "\nCumulusUtils : No Arguments nothing to do. Exiting. See Manual.\n" );
+                Console.WriteLine( "CumulusUtils Usage : utils/bin/cumulusutils.exe [args] (args case independent):\n" );
+                Console.WriteLine( "  utils/bin/cumulusutils.exe \n" +
+                                  "      [SysInfo][Forecast][StationMap][UserReports][MeteoCam]\n" +
+                                  "      [pwsFWI][Top10][Graphs][Yadr][Records][UserAskedData]\n" +
+                                  "      [NOAA][DayRecords][AirLink][CompileOnly][ExtraSensors]\n" +
+                                  "      | [Thrifty] All\n" +
+                                  "      | CheckOnly" );
+                Console.WriteLine( "" );
+                Console.WriteLine( "OR (in case you use the website generator):\n" );
+                Console.WriteLine( "  utils/bin/cumulusutils.exe [Thrifty] Website\n" );
+
+                Environment.Exit( 0 );
+            }
+
+            // Now we're going
+            //
             DoAirLink &= HasAirLink;
 
             ThisDayfile = new Dayfile( Sup );
@@ -346,27 +370,6 @@ namespace CumulusUtils
                 Sup.LogTraceInfoMessage( "Main CmulusUtils: Exiting!" );
 
                 return;
-            }
-
-            if ( !DoPwsFWI && !DoTop10 && !DoSystemChk && !DoGraphs && !DoCreateMap && !DoYadr && !DoRecords && !DoCompileOnly && !DoUserAskedData &&
-                !DoNOAA && !DoDayRecords && !DoCheckOnly && !DoWebsite && !DoForecast && !DoUserReports && !DoStationMap && !DoMeteoCam && !DoAirLink && !DoExtraSensors )
-            {
-                Sup.LogTraceErrorMessage( "CumulusUtils : No Arguments, nothing to do. Exiting." );
-                Sup.LogTraceErrorMessage( "CumulusUtils : Exiting Main" );
-
-                Console.WriteLine( "\nCumulusUtils : No Arguments nothing to do. Exiting. See Manual.\n" );
-                Console.WriteLine( "CumulusUtils Usage : utils/bin/cumulusutils.exe [args] (args case independent):\n" );
-                Console.WriteLine( "  utils/bin/cumulusutils.exe \n" +
-                                  "      [SysInfo][Forecast][StationMap][UserReports][MeteoCam]\n" +
-                                  "      [pwsFWI][Top10][Graphs][Yadr][Records][UserAskedData]\n" +
-                                  "      [NOAA][DayRecords][AirLink][CompileOnly][ExtraSensors]\n" +
-                                  "      | [Thrifty] All\n" +
-                                  "      | CheckOnly" );
-                Console.WriteLine( "" );
-                Console.WriteLine( "OR (in case you use the website generator):\n" );
-                Console.WriteLine( "  utils/bin/cumulusutils.exe [Thrifty] Website\n" );
-
-                Environment.Exit( 0 );
             }
 
             if ( DoSystemChk )

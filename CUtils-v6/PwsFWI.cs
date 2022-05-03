@@ -38,6 +38,7 @@ namespace CumulusUtils
     {
         public double ActualVaporPressure { get; set; }
         public string Date { get; set; }
+
         public double dayFWI { get; set; }
         public int DryPeriod { get; set; }
         public double Psat { get; set; }
@@ -763,6 +764,7 @@ namespace CumulusUtils
                     of.WriteLine( "        clear: both;" );
                     of.WriteLine( "      }" );
                     of.WriteLine( "#fwi_data tbody {" );
+                    of.WriteLine( "    scrollbar-width: thin;" );
                     of.WriteLine( "    height: 500px;" ); /* this is the height of the scrollable table content */
                     of.WriteLine( "    -webkit-overflow-scrolling: touch;" ); /* Lets it scroll lazy HAR: Like this best */
                     //          of.WriteLine("    -webkit-overflow-scrolling: auto; /* Stops scrolling immediately */");

@@ -134,7 +134,7 @@ namespace CumulusUtils
             }
 
             // The string has already been made and maybe been edited by the user so use these monthnames
-            Sup.StringRemoveWhiteSpace( temp );
+            CuSupport.StringRemoveWhiteSpace( temp, " " );
             DaysOfMiracleAndWonder = temp.Split( ',' );
 
             // Get the list of monthly logfile in the datadirectory and check what type of delimeters we have

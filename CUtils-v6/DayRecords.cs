@@ -117,6 +117,20 @@ namespace CumulusUtils
                 of.WriteLine( "   margin: auto;" );
                 of.WriteLine( "}" );
 
+                if ( Sup.GetUtilsIniValue( "General", "UseScrollableTables", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase ) )
+                {
+                    of.WriteLine( ".CUtable{" );
+                    of.WriteLine( "  scrollbar-width: thin;" );
+                    of.WriteLine( "  display: block;" );
+                    of.WriteLine( "  table-layout: fixed;" );
+                    of.WriteLine( "  max-height: 65vh;" );
+                    of.WriteLine( "  overflow : auto;" );
+                    of.WriteLine( "}" );
+
+                    of.WriteLine( ".CUtable thead { position: sticky; top:0; z-index: 1; }" );
+                    of.WriteLine( ".CUtable td { width: 4%; }" );
+                }
+
                 of.WriteLine( "#report .labels {" );
                 of.WriteLine( "  background-color: #d0d0d0;" );
                 of.WriteLine( "  border: 1px solid #b0b0b0;" );

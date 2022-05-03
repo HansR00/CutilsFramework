@@ -414,7 +414,7 @@ namespace CumulusUtils
 #if !RELEASE
                 of.WriteLine( Html );
 #else
-                of.WriteLine( Sup.StringRemoveWhiteSpace( Html.ToString() ) );
+                of.WriteLine( CuSupport.StringRemoveWhiteSpace( Html.ToString(), " " ) );
 #endif
 
                 of.WriteLine( "</script>" );
@@ -483,7 +483,7 @@ namespace CumulusUtils
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Rain", "Rain", true )} ({thisPlotvar.Unit})'}}," );
                     buf.Append( $"opposite: { opposite.ToString().ToLowerInvariant()}," );
-                    buf.Append( $"softMax: 1,min: 0," );
+                    buf.Append( $"endOnTick: false,softMax: 1,min: 0," );
                     buf.Append( "allowDecimals: false," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}," : "labels:{align: 'right',x: -5, y: -2}" )}" );
                     AxisSet |= AxisType.Rain;
@@ -492,7 +492,7 @@ namespace CumulusUtils
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Rainrate", "Rain Rate", true )} ({thisPlotvar.Unit})'}}," );
                     buf.Append( $"opposite: { opposite.ToString().ToLowerInvariant()}," );
-                    buf.Append( $"softMax: 1,min: 0," );
+                    buf.Append( $"endOnTick: false,softMax: 1,min: 0," );
                     buf.Append( "allowDecimals: false," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}" );
                     AxisSet |= AxisType.Rrate;
