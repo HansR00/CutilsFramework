@@ -236,6 +236,7 @@ namespace CumulusUtils
             // This is also shared with the ChartsCompiler -> make some shared function for start and endtime related to the intervals.
             //
             DateTime Now = DateTime.Now;
+            Now = new DateTime( Now.Year, Now.Month, Now.Day, Now.Hour, Now.Minute, 0 );
             DateTime timeEnd = Now.AddMinutes( -Now.Minute % Math.Max( FTPIntervalInMinutes, LogIntervalInMinutes ) );
             DateTime timeStart = timeEnd.AddHours( -HoursInGraph );
 
@@ -277,10 +278,11 @@ namespace CumulusUtils
                     } while ( !string.IsNullOrEmpty( line ) );
                 } // End Using the AirLink Log to Read
 
-                if ( File.Exists( filenameCopy ) )
-                    File.Delete( filenameCopy );
+                //if ( File.Exists( filenameCopy ) )
+                //    File.Delete( filenameCopy );
 
-                if ( tmp.ThisDate.Month == timeEnd.Month )
+                //if ( tmp.ThisDate.Month == timeEnd.Month )
+                if ( tmp.ThisDate >= timeEnd )
                 {
                     Sup.LogDebugMessage( $"AirLinklog: Finished reading the log at {tmp.ThisDate}" );
                     PeriodComplete = true;

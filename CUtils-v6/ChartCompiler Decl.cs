@@ -238,13 +238,13 @@ namespace CumulusUtils
         };
 
         internal readonly string[] PlotvarKeywordALL = {
-          "MinTemp", "MaxTemp", "AverageTemp", "WindChill", "MaxDewpoint", "MinDewpoint", "MaxFeelsLike", "MinFeelsLike",
-          "MaxGust", "WindRun", "HighAvgWindSpeed",
+          "MinTemp", "MaxTemp", "AverageTemp", "AvgWindChill", /*"WindChill",*/ "MaxDewpoint", "MinDewpoint", "MaxFeelsLike", "MinFeelsLike",
+          "MaxGust", "WindRun", "HighAvgWindSpeed", /* "WindSpeed",*/
           "SunHours", "SolarRadiation", "UVIndex",
-          "RainFall", "MaxRainRate",
+          /*"RainFall",*/ "DayRain", "MaxRainRate",
           "MinBarometer", "MaxBarometer",
           "MinHumidity", "MaxHumidity",
-          "HeatingDegreeDays","CoolingDegreeDays","EvapoTranspiration"
+          "HeatingDegreeDays","CoolingDegreeDays","DayEVT" /*"EvapoTranspiration"*/
         };
 
         static internal string[] PlotvarKeywordEXTRA = {

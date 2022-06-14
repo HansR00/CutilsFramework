@@ -57,7 +57,7 @@ namespace CumulusUtils
 
             int HoursInGraph = Convert.ToInt32( Sup.GetCumulusIniValue( "Graphs", "GraphHours", "" ), ci );
 
-            List<AllVarInfo> AllVars = CeckAllVariablesInThisSetOfCharts( theseCharts );
+            List<AllVarInfo> AllVars = CheckAllVariablesInThisSetOfCharts( theseCharts );
             GenerateSeriesVariables( GenericJavascript, AllVars );
 
             List<string> theseDatafiles = AllVars.Where( p => p.Datafile != "" ).Select( p => p.Datafile ).Distinct().ToList();
@@ -443,6 +443,42 @@ namespace CumulusUtils
             if ( AxisSet.Equals( AxisType.None ) )
                 NoClosingAddAxis = true;
 
+            // Check if Rain/RainRate are the only Plotvars in this chart in which case the horizontal gridlines will be set for that axis
+            // If any other Plotvar is present, the horizontal gridlines will be invisible (width = 0)
+            // The reason of this detail is that the rain value for the inches is so small that the max value of 1 for the axis can not be done automatically
+            // and the "endOnTick: false, showLastLabel: true," have to be used. This confuses the gridlines such that they have to be turned off UNLESS these are the only axis
+            // in the chart **SIGH, what a world**
+            // If there will be more of this type of shit I will have to move it to a dedicated function with the strings as in/out parameters
+            bool RainInChart = false, RRateInChart = false;
+            string RainGridLinesVisble = "", RRateGridLinesVisible = "";
+
+            foreach ( Plotvar thisPlotvar in thisChart.PlotVars )
+            {
+                if ( !thisPlotvar.Axis.HasFlag( AxisType.Rain ) && !thisPlotvar.Axis.HasFlag( AxisType.Rrate ) )
+                {
+                    RainGridLinesVisble = "gridLineWidth:0, minorGridLineWidth:0";
+                    RRateGridLinesVisible = "gridLineWidth:0, minorGridLineWidth:0";
+                    RainInChart = RRateInChart = false;
+
+                    break;
+                }
+                else if ( thisPlotvar.Axis.HasFlag( AxisType.Rain ) ) { RainInChart = true; }
+                else if ( thisPlotvar.Axis.HasFlag( AxisType.Rrate ) ) { RRateInChart = true; }
+            }
+
+            // We only have rain data in the chart either Rain or RRate
+            if ( RainInChart || RRateInChart )
+            {
+                if ( RainInChart && RRateInChart )                                                          // Both Rain and RRate
+                {
+                    RainGridLinesVisble = "gridLineWidth:1, minorGridLineWidth:1";
+                    RRateGridLinesVisible = "gridLineWidth:0, minorGridLineWidth:0";
+                }
+                else if ( RainInChart ) RainGridLinesVisble = "gridLineWidth:1, minorGridLineWidth:1";     // Just Rain in the chart
+                else if ( RRateInChart ) RRateGridLinesVisible = "gridLineWidth:1, minorGridLineWidth:1";  // Just RRate in the chart
+            }
+
+            // Now do  the actual Axis settings
             foreach ( Plotvar thisPlotvar in thisChart.PlotVars )
             {
                 if ( AxisSet.HasFlag( thisPlotvar.Axis ) ) { i++; continue; }
@@ -483,7 +519,7 @@ namespace CumulusUtils
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Rain", "Rain", true )} ({thisPlotvar.Unit})'}}," );
                     buf.Append( $"opposite: { opposite.ToString().ToLowerInvariant()}," );
-                    buf.Append( $"endOnTick: false,softMax: 1,min: 0," );
+                    buf.Append( $"endOnTick: false, showLastLabel: true, {RainGridLinesVisble}, softMax: 1,min: 0," );
                     buf.Append( "allowDecimals: false," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}," : "labels:{align: 'right',x: -5, y: -2}" )}" );
                     AxisSet |= AxisType.Rain;
@@ -492,7 +528,7 @@ namespace CumulusUtils
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Rainrate", "Rain Rate", true )} ({thisPlotvar.Unit})'}}," );
                     buf.Append( $"opposite: { opposite.ToString().ToLowerInvariant()}," );
-                    buf.Append( $"endOnTick: false,softMax: 1,min: 0," );
+                    buf.Append( $"endOnTick: false, showLastLabel: true, {RRateGridLinesVisible}, softMax: 1,min: 0," );
                     buf.Append( "allowDecimals: false," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}" );
                     AxisSet |= AxisType.Rrate;
@@ -808,7 +844,7 @@ namespace CumulusUtils
         #endregion
 
         #region Additional generating functions
-        List<AllVarInfo> CeckAllVariablesInThisSetOfCharts( List<ChartDef> theseCharts )
+        List<AllVarInfo> CheckAllVariablesInThisSetOfCharts( List<ChartDef> theseCharts )
         {
             List<AllVarInfo> AllVars = new List<AllVarInfo>();
             AllVarInfo tmpVarInfo = new AllVarInfo();

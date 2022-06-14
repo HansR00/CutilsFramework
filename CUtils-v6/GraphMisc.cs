@@ -661,7 +661,7 @@ namespace CumulusUtils
                                 Autumn = true;
                                 changeCounter = 0;
                                 thisYearSeasonList.Summer = i - 10 - thisYearSeasonList.Spring - thisYearSeasonList.Winter1;
-                                Sup.LogDebugMessage( $"YearlySeasons : {year} Automn starting on day {i - 10}" );
+                                Sup.LogDebugMessage( $"YearlySeasons : {year} Autumn starting on day {i - 10}" );
                             }
                         }
                     }

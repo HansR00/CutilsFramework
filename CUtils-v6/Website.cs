@@ -753,10 +753,10 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "function MinuteFunctions() {" +
                   "  if (ChartsLoaded) {" +
                   "    GRAPHS_timer-- ;" +
-                  "    if (GRAPHS_timer <= 0) {" +
+                  "    if (GRAPHS_timer < 0) {" +
                   "      InitCumulusCharts();" +
 #if TRUE
-          "      console.log('GRAPHS_Timer <= 0 -> Reinitialize the charts: InitCumulusCharts()');" +
+          "      console.log('GRAPHS_Timer < 0 -> Reinitialize the charts: InitCumulusCharts()');" +
 #endif
           $"     GRAPHS_timer = {Sup.GetCumulusIniValue( "FTP site", "UpdateInterval", "10" )};" + // Reset the update interval
 #if !RELEASE
@@ -1110,6 +1110,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                          $"var Longitude = {Longitude.ToString( "F4", CultureInfo.InvariantCulture )};" +
                           "var Radius = 60;" +
                           "var ST, STT;" +
+                          "var haveDay, haveCivil, haveNautical, haveAstronomical, haveNight, NorthernLight, SouthernLight;" +
                           "function CreateSun() {" +
                           "  var basedata = [];" +
                           "  var StartAngle;" +
@@ -1124,6 +1125,8 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                           "  haveCivil = !isNaN(ST.sunset) && !isNaN(ST.dusk);" +
                           "  haveNautical = !isNaN(ST.dusk) && !isNaN(ST.nauticalDusk);" +
                           "  haveAstronomical = !isNaN(ST.nauticalDusk) && !isNaN(ST.night);" +
+                          "  haveNight = !isNaN(ST.night) && !isNaN(STT.nightEnd);" +
+                          "  NorthernLight = false; SouthernLight = false;" +
                           "  if (!haveDay && !haveCivil && !haveNautical && !haveAstronomical) {" +
                           "    if (Latitude > 66) {" +
                           "      if (localTime > Date.parse('21 March ' + localTime.getFullYear()) && localTime < Date.parse('21 September ' + localTime.getFullYear())) {" +
@@ -1242,59 +1245,46 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     "CIVIL: Symbol( 'civil' )," +
                     "NAUTICAL: Symbol( 'nautical' )," +
                     "ASTRONOMICAL: Symbol( 'astronomical' )," +
-                    "NIGHT: Symbol( 'night' )}); " +
-                    "" +
-                    "var phase;" +
-                    "" );
+                    "NIGHT: Symbol( 'night' )}); " );
 
-                CUlibFile.Append( "" +
-                          "function MoveSunPosition() {" +
-                          "  date = new Date();" +
-                          "  hours = date.getHours() + TZ + DST - TZdiffBrowser2UTC;" +
-                          "  minutes = date.getMinutes();" +
-                          "  angle = (hours + minutes / 60) / 24 * 360;" +
-                          "  const line = d3.select('#HandOfClock')" +
-                          "     .attr('transform', 'rotate(' + angle + ')');" +
-                          "" +
-                          "  if (date > ST.sunrise && date < ST.sunset) { if (phase != DayPhase.DAY) {phase = DayPhase.DAY; phasechange = true;} else {phasechange =  false;} }" +
-                          "  if ((date > ST.sunset && date < ST.dusk) || (date < ST.sunrise && date > ST.dawn) ) { if (phase != DayPhase.CIVIL) {phase = DayPhase.CIVIL; phasechange = true;} else {phasechange =  false;} }" +
-                          "  if ((date > ST.dusk && date < ST.nauticalDusk) || (date < ST.dawn && date > ST.nauticalDawn)) { if (phase != DayPhase.NAUTICAL) {phase = DayPhase.NAUTICAL; phasechange = true;} else {phasechange =  false;} }" +
-                          "  if ((date > ST.nauticalDusk && date < ST.night) || (date < ST.nauticalDawn && date > ST.nightEnd) ) { if (phase != DayPhase.ASTRONOMICAL) {phase = DayPhase.ASTRONOMICAL; phasechange = true;} else {phasechange =  false;} }" +
-                          "  if ((date > ST.night && date < STT.nightEnd) ) { if (phase != DayPhase.NIGHT) {phase = DayPhase.NIGHT; phasechange = true;} else {phasechange =  false;} }" +
-                          "" );
+                CUlibFile.Append( "function isValidDate( d ) {" +
+                    "return d instanceof Date && !isNaN( d );" +
+                "}" );
 
-                CUlibFile.Append( "" +
-                      "  if (phasechange && phase == DayPhase.DAY) { " +
-                      "    console.log('Setting Day headerimage'); " +
-                      $"   $('#CUTitle').css('background-image', 'url({backgroundImageDay})' );" +
-                      "  }" );
+                //I will use isValidDate which I found  here: https://stackoverflow.com/questions/1353684/detecting-an-invalid-date-date-instance-in-javascript
 
-                CUlibFile.Append( "" +
-                      "  if (phasechange && phase == DayPhase.CIVIL) { " +
-                      "    console.log('Setting Civil dusk/dawn headerimage'); " +
-                      $"   $('#CUTitle').css('background-image', 'url({backgroundImageCivil})' );" +
-                      "  }" );
+                CUlibFile.Append( "var nowImage, prevImage;" );
 
-                CUlibFile.Append( "" +
-                      "  if (phasechange && phase == DayPhase.NAUTICAL) { " +
-                      "    console.log('Setting Nautical dusk/dawn headerimage'); " +
-                      $"   $('#CUTitle').css('background-image', 'url({backgroundImageNautical})' );" +
-                      "  }" );
+                CUlibFile.Append( "function MoveSunPosition() {" +
+                    "  date = new Date();" +
 
-                CUlibFile.Append( "" +
-                      "  if (phasechange && phase == DayPhase.ASTRONOMICAL) { " +
-                      "    console.log('Setting Astronomical dusk/dawn headerimage'); " +
-                      $"   $('#CUTitle').css('background-image', 'url({backgroundImageAstronomical})' );" +
-                      "  }" );
+                    "  hours = date.getHours() + TZ + DST - TZdiffBrowser2UTC;" +
+                    "  minutes = date.getMinutes();" +
+                    "  angle = (hours + minutes / 60) / 24 * 360;" +
+                    "  const line = d3.select('#HandOfClock')" +
+                    "     .attr('transform', 'rotate(' + angle + ')');" +
 
-                CUlibFile.Append( "" +
-                      "  if (phasechange && phase == DayPhase.NIGHT) { " +
-                      "    console.log('Setting night headerimage'); " +
-                      $"   $('#CUTitle').css('background-image', 'url({backgroundImageNight})' );" +
-                      "  }" );
-
-                // Close the MoveSunPosition function
-                CUlibFile.Append( '}' );
+                    "  if ( NorthernLight || SouthernLight ) {" +
+                    $"    if ( NorthernLight && Latitude > 66 ) {{ nowImage = '{backgroundImageDay}'; }}" +
+                    $"    else if ( SouthernLight && Latitude < 66 ) {{ nowImage = '{backgroundImageDay}'; }}" +
+                    $"    else {{ nowImage = '{backgroundImageNight}'; }}" +
+                    "  }" +
+                    "  else {" +
+                    $"    if ( date > ST.night ) {{ nowImage = '{backgroundImageNight}'; }}" +
+                    $"    if ( date > ST.nightEnd ) {{ nowImage = '{backgroundImageAstronomical}'; }}" +
+                    $"    if ( date > ST.nauticalDawn ) {{ nowImage = '{backgroundImageNautical}'; }}" +
+                    $"    if ( date > ST.dawn ) {{ nowImage = '{backgroundImageCivil}'; }}" +
+                    $"    if ( date > ST.sunrise ) {{ nowImage = '{backgroundImageDay}'; }}" +
+                    $"    if ( date > ST.sunset ) {{ nowImage = '{backgroundImageCivil}'; }}" +
+                    $"    if ( date > ST.dusk ) {{ nowImage = '{backgroundImageNautical}'; }}" +
+                    $"    if ( date > ST.nauticalDusk ) {{ nowImage = '{backgroundImageAstronomical}'; }}" +
+                    "  }" +
+                    "  if (nowImage != prevImage){" +
+                    "    console.log( 'Setting header image ' + nowImage + ' at ' + date );" +
+                    "    $( '.CUTitle' ).css( 'background-image', 'url(' + nowImage + ')' );" +
+                    "    prevImage = nowImage;" +
+                    "  }" +
+                    "}" );
 
                 // Do the MOON procedure
 
@@ -1447,9 +1437,10 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                           "    }" +
                           "  }" +
                           "}" +
-                        "function ClickExtraSensor(Type) {" +
-                        "  " +  // Do something to handle events in the ExtraSensor module
-                        "}" );
+                        //"function ClickExtraSensor(Type) {" +
+                        //"  " +  // Do something to handle events in the ExtraSensor module
+                        //"}" +
+                        "" );
 
                 // Now, do all checks on the individual steelseries parameters which are used 
                 // This is a tiresome process, adding a parameter is awkward. Unfortunately, no check are made in the gauges or steelseries software

@@ -467,7 +467,7 @@ namespace CumulusUtils
                                 if ( string.IsNullOrEmpty( thisPlotvar.Equation ) )
                                 {
                                     Sup.LogTraceWarningMessage( $"Parsing User Charts '{thisChart.Id}' : AXIS specification ignored in absence of (correct) EVAL equation for {thisPlotvar.Keyword}" );
-                                    Sup.LogTraceWarningMessage( $"Parsing User Charts '{thisChart.Id}' : Axis specification only relevant for Equations, conitnuing..." );
+                                    Sup.LogTraceWarningMessage( $"Parsing User Charts '{thisChart.Id}' : Axis specification only relevant for Equations, continuing..." );
                                     CurrPosition++; // this  one gets us on the next KeyWord
                                 }
                                 else

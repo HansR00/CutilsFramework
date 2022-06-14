@@ -463,7 +463,8 @@ namespace CumulusUtils
 
                         of.WriteLine( $"  marker.bindPopup(\"<b>{Name}</b><br/>{Description}<br/>" +
                                       $"Lat: {Latitude} / Lon: {Longitude}<br/>" +
-                                      $"<a href='{Website}' target='_blank'>Website</a><br/>" +
+                                      $"{( Website != "" ? "<a href='" + Website + "' target='_blank'>Website</a><br/>" : "Website: No link supplied<br/>" )}" +
+                                      //$"<a href='{Website}' target='_blank'>Website</a><br/>" +
                                       $"Last alive (UTC): {Date}\");" );
 
                         of.WriteLine( $"  var circle = L.circle([{Latitude.ToString( "F4", CultureInfo.InvariantCulture )}, {Longitude.ToString( "F4", CultureInfo.InvariantCulture )}], {{" );

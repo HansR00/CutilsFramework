@@ -136,7 +136,7 @@ namespace CumulusUtils
 
             MyIni = new IniFile( "cumulusutils.ini", this );
 
-            // Get AllTtimeRecords ready for the possible Axis ranges of the graphs
+            // Get AlltimeRecords ready for the possible Axis ranges of the graphs
             if ( File.Exists( "data/alltime.ini" ) )
             {
                 AtrIni = new IniFile( "data/alltime.ini", this );
@@ -419,18 +419,16 @@ namespace CumulusUtils
 
         public void InitLogging()
         {
-            //Console.OutputEncoding = System.Text.Encoding.UTF8;
-
             CUTraceSwitch = new TraceSwitch( "CUTraceSwitch", "Tracing switch for CumulusUtils" )
             {
                 Level = TraceLevel.Verbose
             };
 
-            LogTraceInfoMessage( $"Initial {CUTraceSwitch} => Error: {CUTraceSwitch.TraceError}, Warning: {CUTraceSwitch.TraceWarning}, Info: {CUTraceSwitch.TraceInfo}, Verbose: {CUTraceSwitch.TraceInfo}" );
-
             LoggingOn = GetUtilsIniValue( "General", "LoggingOn", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
             NormalMessageToConsole = GetUtilsIniValue( "General", "NormalMessageToConsole", "true" ).Equals( "true" );
             string thisTrace = GetUtilsIniValue( "General", "TraceInfoLevel", "Info" );     // Verbose, Information, Warning, Error, Off
+
+            LogTraceInfoMessage( $"Initial {CUTraceSwitch} => Error: {CUTraceSwitch.TraceError}, Warning: {CUTraceSwitch.TraceWarning}, Info: {CUTraceSwitch.TraceInfo}, Verbose: {CUTraceSwitch.TraceInfo}" );
 
             try
             {
@@ -451,6 +449,13 @@ namespace CumulusUtils
             }
 
             LogTraceInfoMessage( $"According to Inifile {thisTrace} => Error: {CUTraceSwitch.TraceError}, Warning: {CUTraceSwitch.TraceWarning}, Info: {CUTraceSwitch.TraceInfo}, Verbose: {CUTraceSwitch.TraceVerbose}, " );
+
+            if ( Environment.OSVersion.Platform.Equals( PlatformID.Unix ) )
+            {
+                // Shut up the default listener
+                LogDebugMessage( "CumulusUtils Initial: Shutting down the default listener" );
+                Trace.Listeners.RemoveAt( 0 );
+            }
         }
 
         public void LogDebugMessage( string message )
