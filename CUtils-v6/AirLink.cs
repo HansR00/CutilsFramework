@@ -434,7 +434,7 @@ namespace CumulusUtils
                 //of.AppendLine( "</Style>" );
 
 
-CMXutils.DojQueryInclude = true;
+                CMXutils.DojQueryInclude = true;
                 CMXutils.DoLibraryIncludes = true;
                 CMXutils.DoWebsite = false;
             }

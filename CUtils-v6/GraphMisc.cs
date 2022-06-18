@@ -840,8 +840,8 @@ namespace CumulusUtils
             thisBuffer.AppendLine( $"    text: '{Sup.GetCUstringValue( "Graphs", "ClashAvTempAverage", "Average Temperature", true )} ({Sup.StationTemp.Text()})', opposite: false," );
             thisBuffer.AppendLine( "    }" );
             thisBuffer.AppendLine( "  },{" );
-            thisBuffer.AppendLine( $"    min: -3," );
-            thisBuffer.AppendLine( $"    max: 3," );
+            thisBuffer.AppendLine( $"    softMin: -3," );
+            thisBuffer.AppendLine( $"    softMax: 3," );
             thisBuffer.AppendLine( "    title:" );
             thisBuffer.AppendLine( "    {" );
             thisBuffer.AppendLine( $"    text: '{Sup.GetCUstringValue( "Graphs", "ClashAvDiffAverage", "Average Difference", true )} ({Sup.StationTemp.Text()})', opposite: false," );

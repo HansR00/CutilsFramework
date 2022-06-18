@@ -516,6 +516,7 @@ namespace CumulusUtils
                 // MemoryStream keystrm = new MemoryStream( Encoding.ASCII.GetBytes( thisPK ) );
                 pskFile = new PrivateKeyFile( keyFileName );
 
+                // Don't need precaution for ECDSA Ciphers, if required anyway then look at InetSupport
                 connectionInfo = new ConnectionInfo( domain, 22, decryptun, new PrivateKeyAuthenticationMethod( decryptun, pskFile ) );
                 Sup.LogTraceInfoMessage( $"Map SFTP: Connecting using PSK authentication" );
 

@@ -747,9 +747,6 @@ namespace CumulusUtils
             List<MonthfileValue> MonthlyListToWriteOut = RoughList.Where( b => b.ThisDate <= timeEnd ).Where( a => a.ThisDate >= timeStart ).ToList();
             thisMonthlist.Dispose();
 
-            // Make the partial DayfileList
-            //List<DayfileValue> DailyListToWriteOut = CMXutils.MainList.Where( a => a.ThisDate > Now.AddDays( -DaysInGraph ) ).ToList();
-
             // Do the ALL/DAILY only once a day
 
             DateTime.TryParse( Sup.GetUtilsIniValue( "Compiler", "DoneToday", $"{Now.AddDays( -1 ):dd/MM/yy}" ), out DateTime DoneToday );
@@ -793,15 +790,15 @@ namespace CumulusUtils
 
                                 All.Append( $"\"{thisVar.PlotVar}\":[" );
 
-                                if ( thisVar.Keyword.Equals( "HeatingDegreeDays" ) )
+                                if ( thisVar.PlotVar.Equals( "heatingdegreedays" ) )
                                     foreach ( DayfileValue entry in CMXutils.MainList )
                                         All.Append( $"[{CuSupport.DateTimeToJS( entry.ThisDate )},{entry.HeatingDegreeDays.ToString( "F1", ci )}]," );
 
-                                else if ( thisVar.Keyword.Equals( "CoolingDegreeDays" ) )
+                                else if ( thisVar.PlotVar.Equals( "coolingdegreedays" ) )
                                     foreach ( DayfileValue entry in CMXutils.MainList )
                                         All.Append( $"[{CuSupport.DateTimeToJS( entry.ThisDate )},{entry.CoolingDegreeDays.ToString( "F1", ci )}]," );
 
-                                else if ( thisVar.Keyword.Equals( "EvapoTranspiration" ) )
+                                else if ( thisVar.PlotVar.Equals( "evapotranspiration" ) )
                                     foreach ( DayfileValue entry in CMXutils.MainList )
                                         All.Append( $"[{CuSupport.DateTimeToJS( entry.ThisDate )},{entry.EvapoTranspiration.ToString( "F1", ci )}]," );
 

@@ -34,6 +34,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Security.Authentication;
 using System.Text;
@@ -201,6 +202,22 @@ namespace CumulusUtils
                         return;
                     }
 
+                    // From CMX, take care of ECDSA ciphers not implemented in mono
+                    try
+                    {
+                        using ( var ecdsa = new System.Security.Cryptography.ECDsaCng() )
+#pragma warning disable CS0642 // Possible mistaken empty statement
+                            ;
+#pragma warning restore CS0642 // Possible mistaken empty statement
+                    }
+                    catch ( NotImplementedException )
+                    {
+                        Sup.LogTraceInfoMessage( $"Upload SFTP: ECDSA Cipher not implemented." );
+                        var algsToRemove = connectionInfo.HostKeyAlgorithms.Keys.Where( algName => algName.StartsWith( "ecdsa" ) ).ToArray();
+                        foreach ( var algName in algsToRemove )
+                            connectionInfo.HostKeyAlgorithms.Remove( algName );
+                    }
+
                     clientRenci = new SftpClient( connectionInfo );
                     clientRenci.ConnectionInfo.Timeout = TimeSpan.FromSeconds( 300 );
 
@@ -359,6 +376,22 @@ namespace CumulusUtils
                                     Sup.LogTraceInfoMessage( $"InetSupport SFTP: Invalid SshftpAuthentication specified [{SshftpAuthentication}]" );
                                     FTPvalid = false;
                                     return false;
+                                }
+
+                                // From CMX, take care of ECDSA ciphers not implemented in mono
+                                try
+                                {
+                                    using ( var ecdsa = new System.Security.Cryptography.ECDsaCng() )
+#pragma warning disable CS0642 // Possible mistaken empty statement
+                                        ;
+#pragma warning restore CS0642 // Possible mistaken empty statement
+                                }
+                                catch ( NotImplementedException )
+                                {
+                                    Sup.LogTraceInfoMessage( $"Upload SFTP: ECDSA Cipher not implemented." );
+                                    var algsToRemove = connectionInfo.HostKeyAlgorithms.Keys.Where( algName => algName.StartsWith( "ecdsa" ) ).ToArray();
+                                    foreach ( var algName in algsToRemove )
+                                        connectionInfo.HostKeyAlgorithms.Remove( algName );
                                 }
 
                                 clientRenci = new SftpClient( connectionInfo );
