@@ -66,6 +66,8 @@ namespace CumulusUtils
             Title = thisTitle;
             Axis = AxisType.None;
             HasScatter = false;
+            HasWindBarbs = false;
+            WindBarbsBelow = true;
             ConnectsToDashboardPanel = new List<int>();
         }
         internal PlotvarRangeType Range { get; set; }
@@ -74,6 +76,8 @@ namespace CumulusUtils
         internal string Id { get; set; }
         internal string Title { get; set; }
         internal bool HasScatter { get; set; }
+        internal bool HasWindBarbs { get; set; }
+        internal bool WindBarbsBelow { get; set; }
         internal List<int> ConnectsToDashboardPanel { get; set; }
     }
 

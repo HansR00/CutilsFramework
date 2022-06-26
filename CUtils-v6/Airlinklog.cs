@@ -216,6 +216,8 @@ namespace CumulusUtils
 
             Stopwatch watch = Stopwatch.StartNew();
 
+            string line;
+            bool NextFileTried = false;
             bool PeriodComplete = false;
 
             string Filename;
@@ -257,13 +259,12 @@ namespace CumulusUtils
             while ( !PeriodComplete )
             {
                 filenameCopy = "data/" + "copy_" + Path.GetFileName( Filename );
-                if ( File.Exists( filenameCopy ) )
-                    File.Delete( filenameCopy );
+                if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
                 File.Copy( Filename, filenameCopy );
 
                 using ( StreamReader af = new StreamReader( filenameCopy ) )
                 {
-                    string line = ReadLine( af, SanityCheck: true );
+                    line = ReadLine( af, SanityCheck: true );
 
                     // Loop over all lines in file
                     do
@@ -278,19 +279,27 @@ namespace CumulusUtils
                     } while ( !string.IsNullOrEmpty( line ) );
                 } // End Using the AirLink Log to Read
 
-                //if ( File.Exists( filenameCopy ) )
-                //    File.Delete( filenameCopy );
+                if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
 
-                //if ( tmp.ThisDate.Month == timeEnd.Month )
-                if ( tmp.ThisDate >= timeEnd )
+                // && RollOverAtMidnight && string.IsNullOrEmpty( line )
+                //if ( tmp.ThisDate.Month == timeEnd.Month  )  // regular end of data
+
+                if ( tmp.ThisDate >= timeEnd || NextFileTried )
                 {
                     Sup.LogDebugMessage( $"AirLinklog: Finished reading the log at {tmp.ThisDate}" );
                     PeriodComplete = true;
                 }
                 else
                 {
+                    NextFileTried = true;
                     Filename = $"data/AirLink{timeEnd:yyyy}{timeEnd:MM}log.txt";  // Take care of a period passing month boundary
                     Sup.LogDebugMessage( $"AirLinklog: Require the  next logfile: {Filename}" );
+
+                    if ( !File.Exists( Filename ) ) 
+                    {
+                        Sup.LogDebugMessage( $"AirLinklog: {Filename} Does not exist so we need to stop reading" );
+                        PeriodComplete = true;
+                    }
                 }
             } // Loop over all files in AirlinkfileList
 

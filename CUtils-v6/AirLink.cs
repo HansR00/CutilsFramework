@@ -674,7 +674,7 @@ namespace CumulusUtils
                                  $"{Sup.GetCUstringValue( "AirQuality", "for", "for", true )} PM{thisConc}', margin: 35}}," );
                     of.AppendLine( "  credits: { enabled: true}," );
                     of.AppendLine( "  xAxis: [{ type: 'datetime', ordinal: false, dateTimeLabelFormats: { day: '%e %b',week: '%e %b %y',month: '%b %y',year: '%Y'} }," );
-                    of.AppendLine( "    {opposite: true, labels: {enabled: false}, gridLineWidth:0  }]," );  // required to get the barbs on top
+                    of.AppendLine( "          {linkedTo: 0, opposite: true, labels: {enabled: false}, gridLineWidth:0  }]," );  // required to get the barbs on top
                     of.AppendLine( "  yAxis:" );
                     of.AppendLine( "    [{" );
                     of.AppendLine( $"      title: {{ text: '{Sup.GetCUstringValue( "AirQuality", "AirQuality", "Air Quality", true )} (μg/m3)'}}," );
@@ -755,11 +755,6 @@ namespace CumulusUtils
                     {
                         of.AppendLine( "        if (idx == 'wind') {" );
                         of.AppendLine( "           let convertedWindbarbData = convertToMs(resp[idx]);" );
-
-                        //of.AppendLine( "          chart.addSeries({name: titles[idx], xAxis: 1, color: 'black', type: 'windbarb', visible: true, " +
-                        //$"tooltip: {{valueSuffix: ' {Sup.StationWind.Text()}', formatter: function() {{return titles[idx] + ' : <b>' + this.y + '</b>';}} }}, " +
-                        //"data: convertedWindbarbData }, false);" );
-                        //formatter: function() {return 'this.x + ' : <b>' + this.y + '</b>';}
                         of.AppendLine( $"          chart.addSeries({{name: titles[idx], xAxis: 1, color: 'black', type: 'windbarb', visible: true, tooltip: {{valueSuffix: ' m/s'}}, data: convertedWindbarbData }}, false);" );
                         of.AppendLine( "        }" );
                         of.AppendLine( "        else {" );

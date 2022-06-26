@@ -822,7 +822,7 @@ namespace CumulusUtils
             if ( DoForecast ) { Isup.UploadFile( $"{Sup.ForecastOutputFilename}", $"{Sup.PathUtils}{Sup.ForecastOutputFilename}" ); }
 
             if ( DoStationMap && ( !Thrifty || RunStarted.DayOfYear == 2 ) ) { Isup.UploadFile( $"{Sup.StationMapOutputFilename}", $"{Sup.PathUtils}{Sup.StationMapOutputFilename}" ); }
-            if ( DoMeteoCam && ( !Thrifty || RunStarted.DayOfYear == 2 ) ) { Isup.UploadFile( $"{Sup.MeteoCamOutputFilename}", $"{Sup.PathUtils}{Sup.MeteoCamOutputFilename}" ); }
+            if ( DoMeteoCam && HasMeteoCamMenu && ( !Thrifty || RunStarted.DayOfYear == 2 ) ) { Isup.UploadFile( $"{Sup.MeteoCamOutputFilename}", $"{Sup.PathUtils}{Sup.MeteoCamOutputFilename}" ); }
 
             if ( DoAirLink && !Thrifty )
             {

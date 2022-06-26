@@ -61,6 +61,7 @@ namespace CumulusUtils
             GenerateSeriesVariables( GenericJavascript, AllVars );
 
             List<string> theseDatafiles = AllVars.Where( p => p.Datafile != "" ).Select( p => p.Datafile ).Distinct().ToList();
+            bool TheseChartsUseWindBarbs = theseCharts.Where( p =>p.HasWindBarbs ).Any();
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{filename}", false, Encoding.UTF8 ) )
             {
@@ -140,8 +141,18 @@ namespace CumulusUtils
                         GenericJavascript.AppendLine( $", {df.Substring( 0, df.IndexOf( '.' ) )}Ajax()" );
                 }
 
-                GenericJavascript.AppendLine( $"]).then( () => $( '#graph{UniqueOutputId}' ).trigger( 'change' ) ) ) " );
+                // Add the WindBarbs line
+                if ( TheseChartsUseWindBarbs ) GenericJavascript.AppendLine( $", WindBarbsAjax()" );
+
+                GenericJavascript.AppendLine( $"])).then( () => $( '#graph{UniqueOutputId}' ).trigger( 'change' ) ) " );
                 GenericJavascript.AppendLine( "}" );
+
+                if ( TheseChartsUseWindBarbs )
+                    GenericJavascript.Append( "function convertToMs(data) {" +
+                        "  data.map( " +
+                       $"  s => {{s[ 1 ] = s[ 1 ] * {Sup.StationWind.Convert( Sup.StationWind.Dim, WindDim.ms, 1 ).ToString( "F5", CultureInfo.InvariantCulture )} }} );" +
+                        "  return" +
+                        "}\n" );
 
                 GenericJavascript.AppendLine( "var compassP = function (deg) {" );
                 GenericJavascript.AppendLine( "  var a = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];" );
@@ -201,6 +212,31 @@ namespace CumulusUtils
                     }
                 }
 
+                // Add the WindBarbsAjax() function when needed
+                if ( TheseChartsUseWindBarbs )
+                {
+                    AjaxJavascript.AppendLine( "function WindBarbsAjax() {" );
+                    AjaxJavascript.AppendLine( "  WindBarbData.length = 0;" );
+                    AjaxJavascript.AppendLine( "  return $.when( " );
+                    AjaxJavascript.AppendLine( "  $.ajax({" );
+                    AjaxJavascript.AppendLine( "    url: 'winddata.json'," );
+                    AjaxJavascript.AppendLine( "    cache: false," );
+                    AjaxJavascript.AppendLine( "    datatype: 'json' }), " );
+                    AjaxJavascript.AppendLine( "  $.ajax({" );
+                    AjaxJavascript.AppendLine( "    url: 'wdirdata.json'," );
+                    AjaxJavascript.AppendLine( "    cache: false," );
+                    AjaxJavascript.AppendLine( "    datatype: 'json' })" );
+                    AjaxJavascript.AppendLine( "  ).then( " );
+                    AjaxJavascript.AppendLine( "    function( resp1, resp2 ) { " +
+                        "  for ( var i = 0; i < resp1[0].wspeed.length; i++ ) " +
+                        "    WindBarbData.push([ resp1[0].wspeed[ i ][ 0 ], resp1[0].wspeed[ i ][ 1 ], resp2[0].avgbearing[ i ][ 1 ] ]); " +
+                        "  convertToMs( WindBarbData );" +
+                        "}," );
+                    AjaxJavascript.AppendLine( "    function(){ console.log( 'FAIL reading WindBarb Data...' )}" );
+                    AjaxJavascript.AppendLine( "  );" );
+                    AjaxJavascript.AppendLine( "}" );
+                }
+
                 Sup.LogTraceInfoMessage( $"Compiler - CodeGen: {filename} Written the Ajax calls" );
 
                 foreach ( ChartDef thisChart in theseCharts )
@@ -212,12 +248,19 @@ namespace CumulusUtils
 
                     // AlignTicks must be true!! (is the default of HighCharts) this also makes softMax superfluous
                     TheCharts.AppendLine( $"function do{thisChart.Id}() {{" );
-#if !RELEASE
                     TheCharts.AppendLine( $"  console.log('Creating chart: {thisChart.Title}');" );
-#endif
-                    TheCharts.AppendLine( "  chart = Highcharts.StockChart('chartcontainer', {" );
-                    TheCharts.AppendLine( "      credits:{enabled: true}," );
-                    TheCharts.AppendLine( "      xAxis:{type: 'datetime', crosshair: true, ordinal: false,dateTimeLabelFormats:{day: '%e %b',week: '%e %b %y',month: '%b %y',year: '%Y'}}," );
+
+                    TheCharts.AppendLine( "  chart = Highcharts.StockChart('chartcontainer', { title: {" );
+                    TheCharts.Append( $" text: '{thisChart.Title}'" );
+                    if ( thisChart.HasWindBarbs && !thisChart.WindBarbsBelow ) TheCharts.Append( ", margin: 35" );
+                    TheCharts.AppendLine("},");
+
+                    TheCharts.Append( "      xAxis:" );
+                    if ( thisChart.HasWindBarbs && !thisChart.WindBarbsBelow ) TheCharts.Append( "[" );
+
+                    TheCharts.AppendLine( "      {type: 'datetime', crosshair: true, ordinal: false,dateTimeLabelFormats:{day: '%e %b',week: '%e %b %y',month: '%b %y',year: '%Y'}}," );
+                    if ( thisChart.HasWindBarbs && !thisChart.WindBarbsBelow ) 
+                        TheCharts.AppendLine( "       {linkedTo:0, opposite: true,labels: {enabled: false},gridLineWidth: 0}]," );
 
                     TheCharts.AppendLine( "      yAxis:{" );
                     CreateAxis( thisChart, TheCharts, ref AxisSet );
@@ -226,21 +269,25 @@ namespace CumulusUtils
                     TheCharts.AppendLine( "      legend:{enabled: true}," );
 
                     if ( thisChart.HasScatter )
-                        TheCharts.AppendLine( "      plotOptions: {scatter: {cursor: 'pointer',enableMouseTracking: false,boostThreshold: 200,marker:{states:{hover:{enabled: false},select:{enabled: false},normal:{enabled: false}}}," +
+                        TheCharts.AppendLine( "      plotOptions: { scatter: {cursor: 'pointer',enableMouseTracking: false,boostThreshold: 200,marker:{states:{hover:{enabled: false},select:{enabled: false},normal:{enabled: false}}}," +
                           "shadow: false,label:{enabled: false}}}," );
                     else
-                        TheCharts.AppendLine( "      plotOptions: { series: {states: { hover: { halo: { size: 5,opacity: 0.25} } },marker: { enabled: false, states: { hover: { enabled: true, radius: 0.1} } } }, }," );
+                        TheCharts.AppendLine( "      plotOptions: { series: {turboThreshold: 0, states: { hover: { halo: { size: 5,opacity: 0.25} } },marker: { enabled: false, states: { hover: { enabled: true, radius: 0.1} } } }, }," );
 
                     TheCharts.AppendLine( "      tooltip: {shared: true,split: true, valueDecimals: 1, xDateFormat: '%A, %b %e, %H:%M'}," );
                     TheCharts.AppendLine( "      series:[]," );
 
                     if ( thisChart.Range == PlotvarRangeType.Recent || thisChart.Range == PlotvarRangeType.Extra )
                     {
-                        TheCharts.AppendLine( "      rangeSelector:{buttons:[{" );
-                        TheCharts.AppendLine( $"         count: {HoursInGraph / 4},type: 'hour',text: '{HoursInGraph / 4}h'}}, {{" );
-                        TheCharts.AppendLine( $"         count: {HoursInGraph / 2},type: 'hour',text: '{HoursInGraph / 2}h'}}, {{" );
-                        TheCharts.AppendLine( "          type: 'all',text: 'All'}]," );
-                        TheCharts.AppendLine( "       inputEnabled: false}" );
+                        TheCharts.AppendLine( "      rangeSelector:{" );
+
+                        if ( thisChart.HasWindBarbs && !thisChart.WindBarbsBelow ) TheCharts.AppendLine( "    floating: true, y: -50," );
+
+                        TheCharts.AppendLine( "      buttons:[{" );
+                        TheCharts.AppendLine( $"       count: {HoursInGraph / 4},type: 'hour',text: '{HoursInGraph / 4}h'}}, {{" );
+                        TheCharts.AppendLine( $"       count: {HoursInGraph / 2},type: 'hour',text: '{HoursInGraph / 2}h'}}, {{" );
+                        TheCharts.AppendLine( "        type: 'all',text: 'All'}]," );
+                        TheCharts.AppendLine( "      inputEnabled: false}" );
                     }
                     else
                     {
@@ -252,13 +299,14 @@ namespace CumulusUtils
 
                     TheCharts.AppendLine( "  });" );
                     TheCharts.AppendLine( "  chart.showLoading();" );
-                    TheCharts.AppendLine( $"  chart.setTitle({{text:'{thisChart.Title}'}});" );
+                    //TheCharts.AppendLine( $"  chart.setTitle();" );
 
                     CreateAxis( thisChart, TheCharts, ref AxisSet );
 
                     TheCharts.AppendLine( $"  Promise.all([" );
                     TheCharts.AppendLine( "]).then(() => {" );
                     TheCharts.AppendLine( $"  {thisChart.Id}AddSeries(chart);" );
+
                     TheCharts.AppendLine( "  chart.hideLoading();" );
                     TheCharts.AppendLine( "  chart.redraw();});" );
                     TheCharts.AppendLine( "}" );
@@ -385,6 +433,24 @@ namespace CumulusUtils
                         Sup.LogTraceInfoMessage( $"Compiler - CodeGen: {filename} Written the Series {thisPlotvar.Keyword}" );
 
                     } // Loop over all plotvars within the chart
+
+                    if ( thisChart.HasWindBarbs )
+                    {
+                        AddSeriesJavascript.AppendLine( "  thisChart.addSeries({ " );
+                        AddSeriesJavascript.AppendLine( "    name: 'WindBarbs'," );
+
+                        if ( thisChart.WindBarbsBelow ) AddSeriesJavascript.AppendLine( "    xAxis: 0," );
+                        else AddSeriesJavascript.AppendLine( "    xAxis: 1," );
+
+                        AddSeriesJavascript.AppendLine( "    color: 'black'," );
+
+                        AddSeriesJavascript.AppendLine( "    type: 'windbarb'," );
+                        AddSeriesJavascript.AppendLine( "    visible: true," );
+
+                        AddSeriesJavascript.AppendLine( "    tooltip:{valueSuffix: ' m/s'}," );
+                        AddSeriesJavascript.AppendLine( "    data: WindBarbData" );
+                        AddSeriesJavascript.AppendLine( "  }, false);" );
+                    }
 
                     AddSeriesJavascript.AppendLine( "  }" );
 
@@ -668,6 +734,8 @@ namespace CumulusUtils
         {
             Sup.LogTraceVerboseMessage( $"Compiler - Creating Runtime Series Variables" );
 
+            // Even if we don't need these we just generate this to make life easier: we do not have to search for it
+            buf.AppendLine( $"var WindBarbData = [];" );
             buf.AppendLine( $"var sumResult = [];" );
 
             foreach ( AllVarInfo avi in AllVars )

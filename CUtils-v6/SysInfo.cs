@@ -141,6 +141,7 @@ namespace CumulusUtils
 
                     default:
                         of.WriteLine( $"Extra Station Info: {Sup.GetUtilsIniValue( "SysInfo", "ExtraStationInfo", "" )}" );
+                        of.WriteLine( "" );
                         break;
                 } // End Switch for device stats if any
 

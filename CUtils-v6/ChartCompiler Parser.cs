@@ -80,7 +80,7 @@ namespace CumulusUtils
 
                 DefContents = Regex.Replace( DefContents, @"\s+", " " );
 
-                // The wehere clause takes care of (trailing) empty lines. 
+                // The where clause takes care of (trailing) empty lines. 
                 // Have to review this I don't understand why they don't just get replaced by space.
                 Keywords = DefContents.Split( ' ' ).Where( s => !string.IsNullOrWhiteSpace( s ) ).ToList();
             }
@@ -132,7 +132,8 @@ namespace CumulusUtils
                     {
                         thisChart.Title = Keywords[ CurrPosition++ ];
 
-                        while ( !Keywords[ CurrPosition ].Equals( "Plot", cmp ) && !Keywords[ CurrPosition ].Equals( "ConnectsTo", cmp ) )
+                        while ( !Keywords[ CurrPosition ].Equals( "Plot", cmp ) && !Keywords[ CurrPosition ].Equals( "ConnectsTo", cmp ) &&
+                                                                                   !Keywords[ CurrPosition ].Equals( "Has", cmp ) )
                         {
                             thisChart.Title += " " + Keywords[ CurrPosition++ ];
                         }
@@ -160,6 +161,40 @@ namespace CumulusUtils
 
                             thisChart.ConnectsToDashboardPanel.Add( DasboardPanelNr );
                             ClickEvents[ DasboardPanelNr - 1 ] = thisChart.Id;
+                        }
+                    }
+
+                    if ( Keywords[ CurrPosition ].Equals( "Has", cmp ) )
+                    {
+                        CurrPosition++;
+
+                        if ( Keywords[ CurrPosition ].Equals( "WindBarbs", cmp ) )
+                        {
+                            CurrPosition++;
+                            thisChart.HasWindBarbs = true;
+
+                            if ( Keywords[ CurrPosition ].Equals( "Above", cmp ) )
+                            {
+                                CurrPosition++;
+                                thisChart.WindBarbsBelow = false;
+                            }
+                            else if ( Keywords[ CurrPosition ].Equals( "Below", cmp ) )
+                            {
+                                CurrPosition++;
+                                thisChart.WindBarbsBelow = true;
+                            }
+                            else
+                            {
+                                // Error condition
+                                Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' : Missing BELOW or ABOVE Keyword" );
+                                return null;
+                            }
+                        }
+                        else 
+                        {
+                            // Error condition
+                            Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' : Missing WindBarbs Keyword" );
+                            return null;
                         }
                     }
 
