@@ -189,6 +189,13 @@ namespace CumulusUtils
                                 Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' : Missing BELOW or ABOVE Keyword" );
                                 return null;
                             }
+
+                            if ( Keywords[ CurrPosition ].Equals( "Colour", cmp ) )
+                            {
+                                CurrPosition++;
+
+                                thisChart.WindBarbColor = Keywords[ CurrPosition++ ];
+                            }
                         }
                         else 
                         {
@@ -545,9 +552,10 @@ namespace CumulusUtils
 
                         if ( !string.IsNullOrEmpty( thisPlotvar.Equation ) ) // Check for an Axis
                         {
-                            Sup.LogTraceWarningMessage( $"User Charts '{thisChart.Id}/{thisPlotvar.Keyword}': No Axis was specified or in error. Axistype is set to FREE." );
                             if ( thisPlotvar.Axis == AxisType.None )
                             {
+                                Sup.LogTraceWarningMessage( $"User Charts '{thisChart.Id}/{thisPlotvar.Keyword}': No Axis was specified or in error. Axistype is set to FREE." );
+
                                 thisPlotvar.AxisId = "Free";
                                 thisPlotvar.Axis = AxisType.Free;
                                 thisChart.Axis |= thisPlotvar.Axis;

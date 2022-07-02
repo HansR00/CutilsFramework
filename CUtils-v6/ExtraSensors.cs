@@ -247,7 +247,7 @@ namespace CumulusUtils
                             sb.AppendLine( $" $('#LeafWetness{++LeafWetness}').html(ExtraSensorRT[ {i++} ]);" );
                             break;
                         case (int) ExtraSensorType.External:
-                            sb.AppendLine( $" $('#{tmp.Name}').html(ExtraSensorRT[ {i++} ]);" );
+                            //sb.AppendLine( $" $('#{tmp.Name}').html(ExtraSensorRT[ {i++} ]);" );
                             break;
                         default:
                             Sup.LogTraceErrorMessage( $"GenerateExtraSensorsModule: At impossible Switch default assigning realtime values" );
@@ -357,7 +357,8 @@ namespace CumulusUtils
                             buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='LeafWetness{++LeafWetness}'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.External:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Name}();'><td {thisPadding()}>{tmp.Name}</td><td id='{tmp.Name}'></td></tr>" );
+                            //buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Name}();'><td {thisPadding()}>{tmp.Name}</td><td id='{tmp.Name}'></td></tr>" );
+                            Sup.LogTraceErrorMessage( $"GenerateExtraSensorsModule: External realtime not implemented." );
                             break;
                         default:
                             Sup.LogTraceErrorMessage( $"GenerateExtraSensorsModule: At impossible Switch default generating the table" );
@@ -663,11 +664,11 @@ namespace CumulusUtils
                         case (int) ExtraSensorType.LeafWetness:
                             sb.Append( $"<#LeafWetness{++LeafWetness} rc=y> " );
                             break;
-                        case (int) ExtraSensorType.External:
-                            sb.Append( $"<#{tmp.Name} rc=y> " );
-                            break;
+                        //case (int) ExtraSensorType.External:
+                        //    sb.Append( $"<#{tmp.Name} rc=y> " );
+                        //    break;
                         default:
-                            Sup.LogTraceErrorMessage( $"DoExtraSensorsWork: Writing ExtraSensorsRealtimeFile at impossible default position" );
+                            Sup.LogTraceErrorMessage( $"DoExtraSensorsWork: Not ExtraSensorsRealTime for {tmp.Name} ({tmp.Type}) - has no realtime value." );
                             break;
                     }
                 }

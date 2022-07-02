@@ -171,7 +171,7 @@ namespace CumulusUtils
         // *** Flush local cache content ***
         internal void Flush()
         {
-            Sup.LogDebugMessage( $" Ini Flush cache modif:{m_CacheModified}, {m_FileName}" );
+            //Sup.LogDebugMessage( $" Ini Flush cache modif:{m_CacheModified}, {m_FileName}" );
 
             lock ( m_Lock )
             {
@@ -200,7 +200,7 @@ namespace CumulusUtils
                         // *** Cycle on all key+value pairs in the section ***
                         foreach ( KeyValuePair<string, string> ValuePair in Section )
                         {
-                            Sup.LogTraceVerboseMessage( $" Ini Flush writing => {SectionPair.Key}: {ValuePair.Key}/{ValuePair.Value}" );
+                            //Sup.LogTraceVerboseMessage( $" Ini Flush writing => {SectionPair.Key}: {ValuePair.Key}/{ValuePair.Value}" );
                             // *** Write the key+value pair ***
                             sw.Write( ValuePair.Key );
                             sw.Write( '=' );

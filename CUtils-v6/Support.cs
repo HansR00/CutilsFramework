@@ -52,7 +52,7 @@ namespace CumulusUtils
     public class CuSupport : IDisposable
     {
         // Is it a version number beta shown at users?
-        const string beta = "";
+        const string beta = "patch 1";
 
         #region declarations
         public Wind StationWind { get; set; }
@@ -494,12 +494,14 @@ namespace CumulusUtils
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
                 // TODO: set large fields to null.
                 EndMyIniFile();
+                //Console.WriteLine( "After EndMyIniFile" );
 
                 string filenameCopy = "copy_Cumulus.ini";
                 if ( File.Exists( filenameCopy ) )
                     File.Delete( filenameCopy );
 
                 if ( LoggingOn ) ThisListener.Dispose();
+                //Console.WriteLine( "After Disposing ThisListener" );
 
                 disposedValue = true;
             }

@@ -336,7 +336,7 @@ namespace CumulusUtils
                                   "      [SysInfo][Forecast][StationMap][UserReports][MeteoCam]\n" +
                                   "      [pwsFWI][Top10][Graphs][Yadr][Records][UserAskedData]\n" +
                                   "      [NOAA][DayRecords][AirLink][CompileOnly][ExtraSensors]\n" +
-                                  "      | [Thrifty] All\n" +
+                                  //"      | [Thrifty] All\n" +
                                   "      | CheckOnly" );
                 Console.WriteLine( "" );
                 Console.WriteLine( "OR (in case you use the website generator):\n" );
@@ -928,26 +928,26 @@ namespace CumulusUtils
 
                     break;
                 }
-                else if ( s.Equals( "All", StringComparison.OrdinalIgnoreCase ) )
-                {
-                    DoSystemChk = true;
-                    DoTop10 = true;
-                    DoPwsFWI = true;
-                    DoGraphs = true;
-                    DoYadr = true;
-                    DoRecords = true;
-                    DoNOAA = true;
-                    DoDayRecords = true;
-                    DoForecast = true;
-                    DoUserReports = true;
-                    DoStationMap = true;
-                    DoMeteoCam = true;
-                    DoAirLink = true;
-                    DoCompileOnly = true;
-                    DoExtraSensors = true;
+                //else if ( s.Equals( "All", StringComparison.OrdinalIgnoreCase ) )
+                //{
+                //    DoSystemChk = true;
+                //    DoTop10 = true;
+                //    DoPwsFWI = true;
+                //    DoGraphs = true;
+                //    DoYadr = true;
+                //    DoRecords = true;
+                //    DoNOAA = true;
+                //    DoDayRecords = true;
+                //    DoForecast = true;
+                //    DoUserReports = true;
+                //    DoStationMap = true;
+                //    DoMeteoCam = true;
+                //    DoAirLink = true;
+                //    DoCompileOnly = true;
+                //    DoExtraSensors = true;
 
-                    break;
-                }
+                //    break;
+                //}
                 else
                 {
                     if ( s.Equals( "Thrifty", StringComparison.OrdinalIgnoreCase ) )

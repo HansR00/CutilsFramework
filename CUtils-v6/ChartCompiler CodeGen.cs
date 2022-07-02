@@ -219,11 +219,11 @@ namespace CumulusUtils
                     AjaxJavascript.AppendLine( "  WindBarbData.length = 0;" );
                     AjaxJavascript.AppendLine( "  return $.when( " );
                     AjaxJavascript.AppendLine( "  $.ajax({" );
-                    AjaxJavascript.AppendLine( "    url: 'winddata.json'," );
+                    AjaxJavascript.AppendLine( $"    url: '{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}winddata.json'," );
                     AjaxJavascript.AppendLine( "    cache: false," );
                     AjaxJavascript.AppendLine( "    datatype: 'json' }), " );
                     AjaxJavascript.AppendLine( "  $.ajax({" );
-                    AjaxJavascript.AppendLine( "    url: 'wdirdata.json'," );
+                    AjaxJavascript.AppendLine( $"    url: '{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}wdirdata.json'," );
                     AjaxJavascript.AppendLine( "    cache: false," );
                     AjaxJavascript.AppendLine( "    datatype: 'json' })" );
                     AjaxJavascript.AppendLine( "  ).then( " );
@@ -256,12 +256,18 @@ namespace CumulusUtils
                     TheCharts.AppendLine("},");
 
                     TheCharts.Append( "      xAxis:" );
-                    if ( thisChart.HasWindBarbs && !thisChart.WindBarbsBelow ) TheCharts.Append( "[" );
+                    if ( thisChart.HasWindBarbs ) TheCharts.Append( "[" );
 
                     TheCharts.AppendLine( "      {type: 'datetime', crosshair: true, ordinal: false,dateTimeLabelFormats:{day: '%e %b',week: '%e %b %y',month: '%b %y',year: '%Y'}}," );
-                    if ( thisChart.HasWindBarbs && !thisChart.WindBarbsBelow ) 
-                        TheCharts.AppendLine( "       {linkedTo:0, opposite: true,labels: {enabled: false},gridLineWidth: 0}]," );
+                    if ( thisChart.HasWindBarbs )
+                    {
+                        if ( thisChart.WindBarbsBelow )
+                            TheCharts.AppendLine( "{linkedTo:0, labels: {enabled: false}, offset: 0}" );
+                        else
+                            TheCharts.AppendLine( "{linkedTo:0, opposite: true, labels: {enabled: false} }" );
 
+                        TheCharts.AppendLine( "]," );
+                    }
                     TheCharts.AppendLine( "      yAxis:{" );
                     CreateAxis( thisChart, TheCharts, ref AxisSet );
                     TheCharts.AppendLine( "      }," );
@@ -438,15 +444,10 @@ namespace CumulusUtils
                     {
                         AddSeriesJavascript.AppendLine( "  thisChart.addSeries({ " );
                         AddSeriesJavascript.AppendLine( "    name: 'WindBarbs'," );
-
-                        if ( thisChart.WindBarbsBelow ) AddSeriesJavascript.AppendLine( "    xAxis: 0," );
-                        else AddSeriesJavascript.AppendLine( "    xAxis: 1," );
-
-                        AddSeriesJavascript.AppendLine( "    color: 'black'," );
-
+                        AddSeriesJavascript.AppendLine( "    xAxis: 1," );
+                        AddSeriesJavascript.AppendLine( $"    color: '{thisChart.WindBarbColor}'," );
                         AddSeriesJavascript.AppendLine( "    type: 'windbarb'," );
                         AddSeriesJavascript.AppendLine( "    visible: true," );
-
                         AddSeriesJavascript.AppendLine( "    tooltip:{valueSuffix: ' m/s'}," );
                         AddSeriesJavascript.AppendLine( "    data: WindBarbData" );
                         AddSeriesJavascript.AppendLine( "  }, false);" );
@@ -982,11 +983,22 @@ namespace CumulusUtils
                             PlotvarKeyword = PlotvarKeywordALL;
                             Datafiles = DatafilesALL;
                         }
-                        else // rangetype is RECENT
+                        else if ( p.PlotvarRange == PlotvarRangeType.Recent ) // rangetype is RECENT
                         {
                             PlotvarTypes = PlotvarTypesRECENT;
                             PlotvarKeyword = PlotvarKeywordRECENT;
                             Datafiles = DatafilesRECENT;
+                        }
+                        else if ( p.PlotvarRange == PlotvarRangeType.Extra ) // rangetype is EXTRA
+                        {
+                            PlotvarTypes = PlotvarTypesEXTRA;
+                            PlotvarKeyword = PlotvarKeywordEXTRA;
+                            Datafiles = DatafilesEXTRA;
+                        }
+                        else
+                        {
+                            Sup.LogTraceInfoMessage( $"Error PlovarRangeType for {p.Keyword}: {p.PlotvarRange}" );
+                            return null;
                         }
 
                         foreach ( string pt in PlotvarTypes )

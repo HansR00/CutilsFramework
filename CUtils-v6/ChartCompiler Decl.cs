@@ -68,6 +68,7 @@ namespace CumulusUtils
             HasScatter = false;
             HasWindBarbs = false;
             WindBarbsBelow = true;
+            WindBarbColor = "black";
             ConnectsToDashboardPanel = new List<int>();
         }
         internal PlotvarRangeType Range { get; set; }
@@ -78,6 +79,7 @@ namespace CumulusUtils
         internal bool HasScatter { get; set; }
         internal bool HasWindBarbs { get; set; }
         internal bool WindBarbsBelow { get; set; }
+        internal string WindBarbColor { get; set; }
         internal List<int> ConnectsToDashboardPanel { get; set; }
     }
 
