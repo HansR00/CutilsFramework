@@ -791,7 +791,6 @@ namespace CumulusUtils
             of.AppendLine( "  border-spacing: 0;" );
             of.AppendLine( "  border: 1px solid #b0b0b0;" );
             of.AppendLine( "}" );
-            of.AppendLine( ".buttonSlim {border-radius: 4px;}" );
 
             for ( int j = 0; j < NrOfSensors; j++ )
             {
@@ -799,9 +798,16 @@ namespace CumulusUtils
 
                 foreach ( string thisConc in Concentrations )
                     of.AppendLine( $"#chartcontainer{InOut}{thisConc} " +
-                        $"{{min-height:{Convert.ToInt32( Sup.GetUtilsIniValue( "General", "ChartContainerHeight", "650" ) )}px;margin-top: 10px;margin-bottom: 5px;}}" );
+                            $"{{min-height:{Convert.ToInt32( Sup.GetUtilsIniValue( "General", "ChartContainerHeight", "650" ) )}px;margin-top: 10px;margin-bottom: 5px;}}" );
+
+                foreach ( string thisConc in Concentrations )
+                    // The optional parameters one and two accommodate the AirLink module which charts the In/Out (one) and pm2p5/pm10 (two) combinations
+                    // All other calls to AllowHighchartsBackgroundImage will be without parameters.
+                    of.AppendLine( Sup.AllowHighchartsBackgroundImage(InOut, thisConc) );
+
             }
 
+            of.AppendLine( ".buttonSlim {border-radius: 4px;}" );
             of.AppendLine( "</style>" );
 
             #endregion

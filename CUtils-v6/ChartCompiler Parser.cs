@@ -245,6 +245,17 @@ namespace CumulusUtils
 
                                 CurrPosition++;
                             }
+                            else if ( Keywords[ CurrPosition ].Equals( "Extra", cmp ) )
+                            {
+                                PlotvarAxis = PlotvarAxisEXTRA;
+                                PlotvarTypes = PlotvarTypesEXTRA;
+                                PlotvarKeyword = PlotvarKeywordEXTRA;
+                                Datafiles = DatafilesEXTRA;
+                                PlotvarUnits = PlotvarUnitsEXTRA;
+                                thisPlotvar.PlotvarRange = PlotvarRangeType.Extra;
+
+                                CurrPosition++;
+                            }
                             else
                             {
                                 // No Range specification so: use default : Recent
@@ -326,11 +337,11 @@ namespace CumulusUtils
                             }
                             else if ( Keywords[ CurrPosition ].Equals( "Extra", cmp ) )
                             {
-                                PlotvarAxis = extendedPlotvarAxisEXTRA; //PlotvarAxisEXTRA;
-                                PlotvarTypes = extendedPlotvarTypesEXTRA;
-                                PlotvarKeyword = extendedPlotvarKeywordEXTRA;
-                                Datafiles = extendedDatafilesEXTRA;
-                                PlotvarUnits = extendedPlotvarUnitsEXTRA;
+                                PlotvarAxis = PlotvarAxisEXTRA; //PlotvarAxisEXTRA;
+                                PlotvarTypes = PlotvarTypesEXTRA;
+                                PlotvarKeyword = PlotvarKeywordEXTRA;
+                                Datafiles = DatafilesEXTRA;
+                                PlotvarUnits = PlotvarUnitsEXTRA;
 
                                 thisPlotvar.PlotvarRange = PlotvarRangeType.Extra;
                                 CurrPosition++;
@@ -568,18 +579,18 @@ namespace CumulusUtils
 
                     if ( Keywords[ CurrPosition++ ].Equals( "EndChart", cmp ) )
                     {
-                        if ( thisChart.HasScatter )
-                        {
-                            foreach ( Plotvar pv in thisChart.PlotVars )
-                            {
-                                if ( pv.GraphType != "scatter" )
-                                {
-                                    // Error condition
-                                    Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : A Scatter graph has other Plotvar Types '{pv.Keyword}' as '{pv.GraphType}'" );
-                                    return null;
-                                }
-                            }
-                        }
+                        //if ( thisChart.HasScatter )
+                        //{
+                        //    foreach ( Plotvar pv in thisChart.PlotVars )
+                        //    {
+                        //        if ( pv.GraphType != "scatter" )
+                        //        {
+                        //            // Error condition
+                        //            Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : A Scatter graph has other Plotvar Types '{pv.Keyword}' as '{pv.GraphType}'" );
+                        //            return null;
+                        //        }
+                        //    }
+                        //}
 
                         // Do the possible(!) output
                         if ( CurrPosition < Keywords.Count - 1 && Keywords[ CurrPosition ].Equals( "Output", cmp ) )

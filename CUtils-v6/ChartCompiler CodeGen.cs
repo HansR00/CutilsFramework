@@ -89,6 +89,7 @@ namespace CumulusUtils
                 Html.AppendLine( "  border-spacing: 0;" );
                 Html.AppendLine( "  border: 1px solid #b0b0b0;" );
                 Html.AppendLine( "}" );
+                Html.AppendLine( Sup.AllowHighchartsBackgroundImage() );
                 Html.AppendLine( "</style>" );
 
                 Html.AppendLine( "<div><p style='text-align:center;'>" );
@@ -414,12 +415,11 @@ namespace CumulusUtils
                         {
                             if ( thisPlotvar.PlotvarRange == PlotvarRangeType.Extra )
                             {
-                                string tmp = Sup.GetCUstringValue( "Compiler", thisPlotvar.Keyword, "", true );
-                                AddSeriesJavascript.AppendLine( $"    name:'{Sup.GetCUstringValue( "Compiler", thisPlotvar.Keyword, thisPlotvar.Keyword, true )}'," );
+                                _ = Sup.GetCUstringValue( "Compiler", thisPlotvar.Keyword, "", true );
+                                //AddSeriesJavascript.AppendLine( $"    name:'{Sup.GetCUstringValue( "Compiler", thisPlotvar.Keyword, thisPlotvar.Keyword, true )}'," );
                             }
-                            else
-                                AddSeriesJavascript.AppendLine( $"    name:'{Sup.GetCUstringValue( "Compiler", thisPlotvar.Keyword, thisPlotvar.Keyword, true )}'," );
 
+                            AddSeriesJavascript.AppendLine( $"    name:'{Sup.GetCUstringValue( "Compiler", thisPlotvar.Keyword, thisPlotvar.Keyword, true )}'," );
                             AddSeriesJavascript.AppendLine( $"    id:'{thisPlotvar.Keyword}'," );
                             AddSeriesJavascript.AppendLine( $"    data: {thisPlotvar.Keyword}," );
                         }
@@ -676,7 +676,6 @@ namespace CumulusUtils
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Compiler", $"{thisChart.Id}Dimensionless", "Dimensionless", true )}'}}," );
                     buf.Append( $"opposite: { opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( $"softMax: 10,softMin: 0," );
-                    //buf.Append( "allowDecimals: false," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}," : "labels:{align: 'right',x: -5, y: -2}" )}" );
                     AxisSet |= AxisType.Free;
                 }
@@ -685,7 +684,6 @@ namespace CumulusUtils
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Compiler", "ParticulateMatter", "Particulate Matter", true )} (μg/m3)'}}," );
                     buf.Append( $"opposite: { opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( $"softMax: 30,softMin: 0," );
-                    //buf.Append( "allowDecimals: false," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}," : "labels:{align: 'right',x: -5, y: -2}" )}" );
                     AxisSet |= AxisType.AQ;
                 }
@@ -694,7 +692,6 @@ namespace CumulusUtils
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Compiler", "PartsPerMillion", "Parts Per Million", true )} (ppm)'}}," );
                     buf.Append( $"opposite: { opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( $"softMax: 500,softMin: 0," );
-                    //buf.Append( "allowDecimals: false," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}," : "labels:{align: 'right',x: -5, y: -2}" )}" );
                     AxisSet |= AxisType.ppm;
                 }
@@ -1034,13 +1031,6 @@ namespace CumulusUtils
                             }
                         }
                     }
-
-            //foreach ( AllVarInfo v in AllVars )
-            //{
-            //    Sup.LogTraceInfoMessage( $"AllVars KeywordName: {v.KeywordName}" );
-            //    Sup.LogTraceInfoMessage( $"AllVars TypeName: {v.TypeName}" );
-            //    Sup.LogTraceInfoMessage( $"AllVars Datafile: {v.Datafile}" );
-            //}
 
             return AllVars;
         }

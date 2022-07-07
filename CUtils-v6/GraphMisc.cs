@@ -103,13 +103,11 @@ namespace CumulusUtils
             StringBuilder ds = new StringBuilder( "  series: [{\n" ); // ds: DataString
             ds.Append( "    type: 'column',\n" );
             ds.Append( $"    name: '{Sup.GetCUstringValue( "Graphs", "EVTSeries1Name", "EVT", true )}',\n" );
-            //      ds.Append("    color: 'blue',\n");
             ds.Append( "    data: [" );
 
             StringBuilder ma = new StringBuilder( "{\n" ); // ma: MovingAverage
             ma.Append( "    type: 'spline',\n" );
             ma.Append( $"    name: '{Sup.GetCUstringValue( "Graphs", "EVTSeries2Name", "Moving Average", true )}',  lineWidth: 1,\n" );
-            //      ma.Append("    color: 'red',\n");
             ma.Append( "    yAxis: 1,\n" );
             ma.Append( "    data: [" );
 
@@ -211,9 +209,6 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "  }," );
             thisBuffer.AppendLine( "  xAxis:" );
             thisBuffer.AppendLine( "  {" );
-
-            // Generate the x-axis with the months accoding to the locale
-            //      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']");
 
             sb = new StringBuilder();
             sb.Append( "    categories: [" );
@@ -319,11 +314,9 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "  }," );
             thisBuffer.AppendLine( "  xAxis:" );
             thisBuffer.AppendLine( "  {" );
-            //thisBuffer.AppendLine( "    type: 'datetime'," );
             thisBuffer.AppendLine( "    crosshair: true" );
             thisBuffer.AppendLine( "  }," );
             thisBuffer.AppendLine( "  yAxis: [{" );
-            //thisBuffer.AppendLine( "    min: 0," );
             thisBuffer.AppendLine( "    title:" );
             thisBuffer.AppendLine( "    {" );
             thisBuffer.AppendLine( $"    text: '{Sup.GetCUstringValue( "Graphs", "TempSum-axisTitle", "Temperature Sum", true )} (Degree Days {Sup.StationTemp.Text()})' }}, opposite: false," );
@@ -874,8 +867,6 @@ namespace CumulusUtils
             di.Append( $"    name: '{Sup.GetCUstringValue( "Graphs", "ClashSeries3Name", "Difference", true )}',\n" );
             di.Append( "    yAxis: 1,\n" );
             di.Append( "    data: [" );
-
-            //      sumCumulusAverage = 0;
 
             foreach ( DayfileValue Day in ThisList )
             {

@@ -185,7 +185,6 @@ namespace CumulusUtils
             minTemp = ThisList.Select( x => x.MinTemp ).Min();
 
             maxRain = ThisList.Select( x => x.TotalRainThisDay ).Max();
-            // minRain = ThisList.Select(x => x.TotalRainThisDay).Min();  // not being used
 
             maxNrOfSeriesVisibleInGraph = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "MaxNrOfSeriesVisibileInGraph", "2" ), inv );
 
@@ -251,7 +250,7 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "  border-spacing: 0;" );
                     thisBuffer.AppendLine( "  border: 1px solid #b0b0b0;" );
                     thisBuffer.AppendLine( "}" );
-                    thisBuffer.AppendLine( $"#chartcontainer {{min-height:{Convert.ToInt32( Sup.GetUtilsIniValue( "General", "ChartContainerHeight", "650" ) )}px;margin-top: 10px;margin-bottom: 5px;}} " );
+                    thisBuffer.AppendLine( $"{Sup.AllowHighchartsBackgroundImage()}" );
                     thisBuffer.AppendLine( "</style>" );
 
                     thisBuffer.AppendLine( "<div>" ); // class=\"content\"
@@ -400,6 +399,7 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "  border-spacing: 0;" );
                     thisBuffer.AppendLine( "  border: 1px solid #b0b0b0;" );
                     thisBuffer.AppendLine( "}" );
+                    thisBuffer.AppendLine( $"{Sup.AllowHighchartsBackgroundImage()}" );
                     thisBuffer.AppendLine( "</style>" );
 
                     thisBuffer.AppendLine( "<div>" ); // class=\"content\"
@@ -578,23 +578,8 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "function handleChange()" );
                     thisBuffer.AppendLine( "{" );
                     thisBuffer.AppendLine( "  var w1 = $('#graph option:selected').val();" );
-
-#if !RELEASE
-                    thisBuffer.AppendLine( "  console.log('HandleChange ' + w1);" );
-#endif
-
-                    thisBuffer.AppendLine( "  if (w1 == 'WindRose') { " +
-#if !RELEASE
-            "console.log('Executing WindRose '); " +
-#endif
-            "$('#WindRun').hide(); $('#WindRose').show(); $('#yearRose').trigger('change');}" );
-
-                    thisBuffer.AppendLine( "  if (w1 == 'Windrun') { " +
-#if !RELEASE
-            "console.log('Executing WindRun '); " +
-#endif
-            "$('#WindRose').hide(); $('#WindRun').show(); $('#yearRun').trigger('change');}" );
-
+                    thisBuffer.AppendLine( "  if (w1 == 'WindRose') { $('#WindRun').hide(); $('#WindRose').show(); $('#yearRose').trigger('change');}" );
+                    thisBuffer.AppendLine( "  if (w1 == 'Windrun') { $('#WindRose').hide(); $('#WindRun').show(); $('#yearRun').trigger('change');}" );
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
                     thisBuffer.AppendLine( "<style>" );
@@ -605,10 +590,10 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "  border-spacing: 0;" );
                     thisBuffer.AppendLine( "  border: 1px solid #b0b0b0;" );
                     thisBuffer.AppendLine( "}" );
+                    thisBuffer.AppendLine( $"{Sup.AllowHighchartsBackgroundImage()}" );
                     thisBuffer.AppendLine( "</style>" );
 
                     thisBuffer.AppendLine( "<div>" ); // class=\"content\"
-                    //thisBuffer.AppendLine( "<p style='text-align:center;'> " );
                     thisBuffer.AppendLine( "  <select id='graph'>" );
 
                     if ( GraphWindRose )
@@ -617,13 +602,11 @@ namespace CumulusUtils
                         thisBuffer.AppendLine( $"    <option value='Windrun' {( GraphWindRose ? "" : "selected" )}>{Sup.GetCUstringValue( "Graphs", "WindRunMenuText", "Windrun", false )}</option>" );
 
                     thisBuffer.AppendLine( "  </select>" );
-                    //thisBuffer.AppendLine( "</p>" );
                     thisBuffer.AppendLine( "</div>" );
 
                     Sup.LogTraceInfoMessage( "Graphs : Start writing HTML Style and Menu." );
 
                     thisBuffer.AppendLine( "<div id='report'>" );
-                    // thisBuffer.AppendLine("<div id='report' style='text-align:center;font-family:arial;border-radius:15px;border-spacing:0;border:1px solid #b0b0b0;'> ");
                     thisBuffer.AppendLine( "<br/>" );
 
                     // do this conditional to prevent issues with WindRun
@@ -678,7 +661,6 @@ namespace CumulusUtils
                     // In this specific case the closing accolade has already been written by the WindRose function because of the data arrays folliwng the function
                     // Maybe I'll put the data arrays before the function to make sure the  generation is consistent over all functions.
 
-                    // thisBuffer.AppendLine("}");
                     thisBuffer.AppendLine( "</script>" );
 
                     thisBuffer.AppendLine( "<script>" );
@@ -783,6 +765,7 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "  border-spacing: 0;" );
                     thisBuffer.AppendLine( "  border: 1px solid #b0b0b0;" );
                     thisBuffer.AppendLine( "}" );
+                    thisBuffer.AppendLine( $"{Sup.AllowHighchartsBackgroundImage()}" );
                     thisBuffer.AppendLine( "</style>" );
 
                     thisBuffer.AppendLine( "<div>" ); // class=\"content\"
@@ -935,6 +918,7 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "  border-spacing: 0;" );
                     thisBuffer.AppendLine( "  border: 1px solid #b0b0b0;" );
                     thisBuffer.AppendLine( "}" );
+                    thisBuffer.AppendLine( $"{Sup.AllowHighchartsBackgroundImage()}" );
                     thisBuffer.AppendLine( "</style>" );
 
                     thisBuffer.AppendLine( "<div>" ); // class=\"content\"

@@ -281,9 +281,6 @@ namespace CumulusUtils
 
                 if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
 
-                // && RollOverAtMidnight && string.IsNullOrEmpty( line )
-                //if ( tmp.ThisDate.Month == timeEnd.Month  )  // regular end of data
-
                 if ( tmp.ThisDate >= timeEnd || NextFileTried )
                 {
                     Sup.LogDebugMessage( $"AirLinklog: Finished reading the log at {tmp.ThisDate}" );
@@ -313,7 +310,6 @@ namespace CumulusUtils
 
         private string ReadLine( StreamReader af, bool SanityCheck )
         {
-            //int i, separatorCount = 0;
             StringBuilder tmpLine = new StringBuilder();
 
             if ( af.EndOfStream )
@@ -369,8 +365,6 @@ namespace CumulusUtils
                     Sup.LogTraceErrorMessage( $"Airlinklog: Illegal part of the code, should never be here, FATAL ERROR!" );
                     Sup.LogTraceErrorMessage( $"Airlinklog: Separator Inconsistency in {filenameCopy.Remove( 0, 5 )} found, FATAL ERROR!" );
                     Sup.LogTraceErrorMessage( $"Airlinklog: Please check {filenameCopy.Remove( 0, 5 )} and the data directory." );
-                    //Dispose();
-                    //Environment.Exit( 0 );
                 }
                 else
                 {
@@ -393,7 +387,6 @@ namespace CumulusUtils
                     }
                     else if ( type == AirlinklogType.SlashSemicolonComma )
                     {
-                        //tmpLine[ 2 ] = '/'; tmpLine[ 5 ] = '/';
                         tmpLine.Replace( ',', '.' );
                         tmpLine.Replace( ';', ',' );
                     }

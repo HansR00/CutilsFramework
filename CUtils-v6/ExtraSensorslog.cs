@@ -423,7 +423,6 @@ namespace CumulusUtils
                     }
                     else if ( type == ExtraSensorslogType.SlashSemicolonComma )
                     {
-                        //tmpLine[ 2 ] = '/'; tmpLine[ 5 ] = '/';
                         tmpLine.Replace( ',', '.' );
                         tmpLine.Replace( ';', ',' );
                     }
@@ -664,8 +663,6 @@ namespace CumulusUtils
                     FieldInUse = (int) ExtraSensorslogFieldName.LeafWetness2;
                     ThisValue.LeafWetness2 = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
 
-                    //LeafTemp1,LeafTemp2,LeafWetness1,LeafWetness2,  dubious: 4 of each webtags exist. Are those not beimng logged or is the header wrong?
-
                     FieldInUse = (int) ExtraSensorslogFieldName.AirQuality1;
                     ThisValue.AirQuality1 = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
 
@@ -767,7 +764,6 @@ namespace CumulusUtils
                     if ( ErrorCount < MaxErrors )
                         Sup.LogTraceErrorMessage( "ExtraSensorslogValue.SetValues : Continuing to read data" );
                     else
-                        // Environment.Exit(0);
                         throw;
             }
             catch ( IndexOutOfRangeException e )

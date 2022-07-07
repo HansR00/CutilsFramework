@@ -274,7 +274,6 @@ namespace CumulusUtils
                 }
                 else if ( type == DayfileType.SlashSemicolonComma )
                 {
-                    //tmpLine[ 2 ] = '/'; tmpLine[ 5 ] = '/';
                     tmpLine.Replace( ',', '.' );
                     tmpLine.Replace( ';', ',' );
                 }

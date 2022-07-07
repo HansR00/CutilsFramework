@@ -90,12 +90,9 @@ namespace CumulusUtils
                         of.WriteLine( "#report .CUtable{border-radius: 15px; text-align: center; border-collapse: collapse; border-spacing: 0; width: 100%; max-width: 1000px; margin: auto;}" );
                         of.WriteLine( "#report th{text-align: left; border: 0px solid #b0b0b0; background-color: #d0d0d0; padding: 0px;}" );
                         of.WriteLine( "#report td{text-align: left; border: 0px solid #b0b0b0; background-color: #f0f0f0; padding: 0px;}" );
-                        //          of.WriteLine(".buttonFat {border-radius: 4px; margin-right:10px; margin-left:10px; }");
-                        //          of.WriteLine(".buttonSlim {border-radius: 4px;}");
                         of.WriteLine( "</style>" );
 
                         of.WriteLine( "<div id='report'>" );
-                        //          of.WriteLine($"<h2 style='padding:10px'>{Sup.GetCumulusIniValue("Station", "LocName", "")}</h2>");
                         of.WriteLine( "<h2>Seven Day Forecast</h2>" );
                         of.WriteLine( "<table class=CUtable><tbody>" );
                         of.WriteLine( "<tr style='border-bottom: 1px'><th>Day</th>" +
@@ -104,9 +101,6 @@ namespace CumulusUtils
                         for ( int i = 0; i < 7; i++ )
                         {
                             StructPrediction tmp = PredictionList[ i ];
-
-                            //            string WeatherIcon = Convert.ToBase64String(File.ReadAllBytes("CUicons/weather/" + tmp.WeatherIcon + ".png"));
-                            //            string WindIcon = Convert.ToBase64String(File.ReadAllBytes("CUicons/wind/" + tmp.WindIcon + ".png"));
 
                             of.WriteLine( $"<tr><td>{tmp.Day}</td>" +
                               $"<td text-align:center;><img src='CUicons/weather/{tmp.WeatherIcon}.png' alt='{tmp.WeatherIcon}.png'/></td>" +

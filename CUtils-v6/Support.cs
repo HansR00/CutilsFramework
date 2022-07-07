@@ -52,7 +52,7 @@ namespace CumulusUtils
     public class CuSupport : IDisposable
     {
         // Is it a version number beta shown at users?
-        const string beta = "patch 1";
+        const string beta = "";
 
         #region declarations
         public Wind StationWind { get; set; }
@@ -315,6 +315,20 @@ namespace CumulusUtils
 
         public void SetCUstringValue( string section, string key, string def ) => CUstringIni.SetValue( section, key, def );
 
+        public string AllowHighchartsBackgroundImage(string one = "", string two = "")
+        {
+            // The optional parameters one and two accommodate the AirLink module which charts the In/Out (one) and pm2p5/pm10 (two) combinations
+            // All other calls to AllowHighchartsBackgroundImage will be without parameters.
+            string s = GetUtilsIniValue( "General", "ChartBackgroundImage", "" );
+
+            if ( !string.IsNullOrEmpty(s) )
+            {
+                s = $"#chartcontainer{one}{two} {{background-image: url(\"{s}\"); }}";
+                s += ".highcharts-background{fill: none;}";
+            }
+
+            return s;
+        }
 
         // Replace white space with either nothing (empty replacement string) or with whatever you want (mostly single space)
         private static readonly Regex sWhitespace = new Regex( @"\s+" );

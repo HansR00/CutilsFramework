@@ -471,9 +471,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "  [" );
             thisBuffer.AppendLine( "    [0, '#0000ff']," );
             thisBuffer.AppendLine( "    [0.2, '#4d4dff']," );
-            //thisBuffer.AppendLine("    [0.3, '#3060cf'],");
             thisBuffer.AppendLine( "    [0.5, '#fffbbc']," );
-            //thisBuffer.AppendLine("    [0.7, '#c4463a'],");
             thisBuffer.AppendLine( "    [0.8, '#ff4d4d']," );
             thisBuffer.AppendLine( "    [1, '#ff0000']" );
             thisBuffer.AppendLine( "  ]," );

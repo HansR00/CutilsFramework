@@ -751,8 +751,6 @@ namespace CumulusUtils
                   $"{DoTop10 && ( !Thrifty || ThriftyTop10RecordsDirty )} | Uploading = {Sup.Top10OutputFilename}" );
                 Isup.UploadFile( $"{ Sup.Top10OutputFilename}", $"{Sup.PathUtils}{Sup.Top10OutputFilename}" );
             }
-            //else Sup.LogTraceInfoMessage($"Thrifty: DoTop10 && (!Thrifty || ThriftyTop10RecordsDirty ) - " +
-            //  $"{DoTop10 && (!Thrifty || ThriftyTop10RecordsDirty)} => Uploading Top10 None");
 
             if ( DoGraphs )
             { // 
@@ -761,35 +759,30 @@ namespace CumulusUtils
                     Sup.LogTraceInfoMessage( $"Thrifty: !Thrifty || ThriftyRainGraphsDirty - {!Thrifty || ThriftyRainGraphsDirty} => Uploading = {Path.GetFileName( Sup.GraphsRainOutputFilename )}" );
                     Isup.UploadFile( Path.GetFileName( Sup.GraphsRainOutputFilename ), Sup.PathUtils + Path.GetFileName( Sup.GraphsRainOutputFilename ) );
                 }
-                //else Sup.LogTraceInfoMessage($"Thrifty: !Thrifty || ThriftyRainGraphsDirty - {!Thrifty || ThriftyRainGraphsDirty} => {Sup.GraphsRainOutputFilename} not uploaded");
 
                 if ( HasTempGraphMenu && ( !Thrifty || ThriftyTempGraphsDirty ) )
                 {
                     Sup.LogTraceInfoMessage( $"Thrifty: !Thrifty || ThriftyTempGraphsDirty - {!Thrifty || ThriftyTempGraphsDirty} => Uploading = {Path.GetFileName( Sup.GraphsTempOutputFilename )}" );
                     Isup.UploadFile( Path.GetFileName( Sup.GraphsTempOutputFilename ), Sup.PathUtils + Path.GetFileName( Sup.GraphsTempOutputFilename ) );
                 }
-                //else Sup.LogTraceInfoMessage($"Thrifty: !Thrifty || ThriftyTempGraphsDirty - {!Thrifty || ThriftyTempGraphsDirty} => {Sup.GraphsTempOutputFilename} not uploaded");
 
                 if ( HasWindGraphMenu && ( !Thrifty || ThriftyWindGraphsDirty ) )
                 {
                     Sup.LogTraceInfoMessage( $"Thrifty: !Thrifty || ThriftyWindGraphsDirty) - {!Thrifty || ThriftyWindGraphsDirty} => Uploading = {Path.GetFileName( Sup.GraphsWindOutputFilename )}" );
                     Isup.UploadFile( Path.GetFileName( Sup.GraphsWindOutputFilename ), Sup.PathUtils + Path.GetFileName( Sup.GraphsWindOutputFilename ) );
                 }
-                //else Sup.LogTraceInfoMessage($"Thrifty: !Thrifty || ThriftyWindGraphsDirty) - {!Thrifty || ThriftyWindGraphsDirty} => {Sup.GraphsWindOutputFilename} not uploaded");
 
                 if ( HasSolarGraphMenu && ( !Thrifty || ThriftySolarGraphsDirty ) )
                 {
                     Sup.LogTraceInfoMessage( $"Thrifty: !Thrifty || ThriftySolarGraphsDirty) - {!Thrifty || ThriftySolarGraphsDirty} => Uploading = {Path.GetFileName( Sup.GraphsSolarOutputFilename )}" );
                     Isup.UploadFile( Path.GetFileName( Sup.GraphsSolarOutputFilename ), Sup.PathUtils + Path.GetFileName( Sup.GraphsSolarOutputFilename ) );
                 }
-                //else Sup.LogTraceInfoMessage($"Thrifty: !Thrifty || ThriftySolarGraphsDirty) - {!Thrifty || ThriftySolarGraphsDirty} => {Sup.GraphsSolarOutputFilename} not uploaded");
 
                 if ( HasMiscGraphMenu && ( !Thrifty || ThriftyMiscGraphsDirty ) )
                 {
                     Sup.LogTraceInfoMessage( $"Thrifty: !Thrifty || ThriftyMiscGraphsDirty - {!Thrifty || ThriftyMiscGraphsDirty} => Uploading = {Path.GetFileName( Sup.GraphsMiscOutputFilename )}" );
                     Isup.UploadFile( Path.GetFileName( Sup.GraphsMiscOutputFilename ), Sup.PathUtils + Path.GetFileName( Sup.GraphsMiscOutputFilename ) );
                 }
-                //else Sup.LogTraceInfoMessage($"Thrifty: !Thrifty || ThriftyMiscGraphsDirty - {!Thrifty || ThriftyMiscGraphsDirty} => {Sup.GraphsMiscOutputFilename} not uploaded");
             }
 
             if ( MapParticipant || DoWebsite )
@@ -803,21 +796,18 @@ namespace CumulusUtils
                 Sup.LogTraceInfoMessage( $"Thrifty: DoRecords && (!Thrifty || ThriftyRecordsDirty) - {DoRecords && ( !Thrifty || ThriftyRecordsDirty )} => Uploading = {Sup.RecordsOutputFilename}" );
                 Isup.UploadFile( $"{Sup.RecordsOutputFilename}", $"{Sup.PathUtils}{Sup.RecordsOutputFilename}" );
             }
-            // else Sup.LogTraceInfoMessage($"Thrifty: DoRecords && (!Thrifty || ThriftyRecordsDirty) - {DoRecords && (!Thrifty || ThriftyRecordsDirty)} => Uploading Records None");
 
             if ( DoNOAA && ( !Thrifty || RunStarted.Day == 2 ) ) // Only useful on second day of month
             {
                 Sup.LogTraceInfoMessage( $"Thrifty: DoNOAA && (!Thrifty || RunStarted.Day == 2) - {!Thrifty || RunStarted.Day == 2} => Uploading = {Sup.NOAAOutputFilename}" );
                 Isup.UploadFile( $"{Sup.NOAAOutputFilename}", $"{Sup.PathUtils}{Sup.NOAAOutputFilename}" );
             }
-            // else Sup.LogTraceInfoMessage($"Thrifty: DoNOAA && (!Thrifty || RunStarted.Day == 2) - {DoNOAA && (!Thrifty || RunStarted.Day == 2)} => Uploading NOAA None");
 
             if ( DoDayRecords && ( !Thrifty || ThriftyDayRecordsDirty ) )
             {
                 Sup.LogTraceInfoMessage( $"Thrifty: DoDayRecords && (!Thrifty || ThriftyDayRecordsDirty) - {DoDayRecords && ( !Thrifty || ThriftyDayRecordsDirty )} => Uploading = {Sup.DayRecordsOutputFilename}" );
                 Isup.UploadFile( $"{Sup.DayRecordsOutputFilename}", $"{Sup.PathUtils}{Sup.DayRecordsOutputFilename}" );
             }
-            // else Sup.LogTraceInfoMessage($"Thrifty: DoDayRecords && (!Thrifty || ThriftyDayRecordsDirty) - {DoDayRecords && (!Thrifty || ThriftyDayRecordsDirty)} => Uploading DayRecords None");
 
             if ( DoForecast ) { Isup.UploadFile( $"{Sup.ForecastOutputFilename}", $"{Sup.PathUtils}{Sup.ForecastOutputFilename}" ); }
 
@@ -923,31 +913,10 @@ namespace CumulusUtils
                     DoStationMap = true;
                     DoMeteoCam = true;
                     DoAirLink = true;
-                    //DoCompileOnly = true; // This is done during website generation so is not required here, would be double work
                     DoExtraSensors = true;
 
                     break;
                 }
-                //else if ( s.Equals( "All", StringComparison.OrdinalIgnoreCase ) )
-                //{
-                //    DoSystemChk = true;
-                //    DoTop10 = true;
-                //    DoPwsFWI = true;
-                //    DoGraphs = true;
-                //    DoYadr = true;
-                //    DoRecords = true;
-                //    DoNOAA = true;
-                //    DoDayRecords = true;
-                //    DoForecast = true;
-                //    DoUserReports = true;
-                //    DoStationMap = true;
-                //    DoMeteoCam = true;
-                //    DoAirLink = true;
-                //    DoCompileOnly = true;
-                //    DoExtraSensors = true;
-
-                //    break;
-                //}
                 else
                 {
                     if ( s.Equals( "Thrifty", StringComparison.OrdinalIgnoreCase ) )

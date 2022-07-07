@@ -58,7 +58,9 @@ namespace CumulusUtils
 
         // *** Local cache modified flag ***
         private bool m_CacheModified;
+#pragma warning disable IDE0052 // Remove unread private members
         readonly CuSupport Sup;
+#pragma warning restore IDE0052 // Remove unread private members
 
         #endregion "Declarations"
 

@@ -42,7 +42,6 @@ namespace CumulusUtils
         Distance = 1024, DegreeDays = 2048, EVT = 4096, Free = 8192, AQ = 16384, ppm = 32768
     };
     internal enum PlotvarRangeType { Recent, Extra, Daily, All };
-    //internal enum StatsType { SMA };
 
     internal struct OutputDef
     {
@@ -87,7 +86,6 @@ namespace CumulusUtils
     {
         internal string Id;
         internal string Equation;
-        // internal List<AllVarInfo> EqAllVarList;
     }
 
     // The structure 
@@ -272,11 +270,11 @@ namespace CumulusUtils
               "MinHumidity", "MaxHumidity"
             };
 
-        internal AxisType[] PlotvarAxis, extendedPlotvarAxisEXTRA;
-        internal string[] PlotvarUnits, extendedPlotvarUnitsEXTRA;
-        internal string[] PlotvarTypes, extendedPlotvarTypesEXTRA;
-        internal string[] PlotvarKeyword, extendedPlotvarKeywordEXTRA;
-        internal string[] Datafiles, extendedDatafilesEXTRA;
+        internal AxisType[] PlotvarAxis;
+        internal string[] PlotvarUnits;
+        internal string[] PlotvarTypes;
+        internal string[] PlotvarKeyword;
+        internal string[] Datafiles;
 
         internal readonly string[] PlotvarUnitsRECENT, PlotvarUnitsALL, PlotvarUnitsEXTRA;     // Init in constructor
         internal readonly string[] LinetypeKeywords = { "Line", "SpLine", "Area", "Column", "Scatter", "ColumnRange" };
@@ -517,12 +515,6 @@ namespace CumulusUtils
                 }
             }
 
-            extendedPlotvarAxisEXTRA = PlotvarAxisEXTRA;
-            extendedPlotvarUnitsEXTRA = PlotvarUnitsEXTRA;
-            extendedPlotvarTypesEXTRA = PlotvarTypesEXTRA;
-            extendedPlotvarKeywordEXTRA = PlotvarKeywordEXTRA;
-            extendedDatafilesEXTRA = DatafilesEXTRA;
-            // End of preparation for ExternalExtraSensors
         } // ChartsCompiler Constructor End
 
         #endregion
