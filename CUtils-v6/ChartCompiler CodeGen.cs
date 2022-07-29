@@ -61,7 +61,7 @@ namespace CumulusUtils
             GenerateSeriesVariables( GenericJavascript, AllVars );
 
             List<string> theseDatafiles = AllVars.Where( p => p.Datafile != "" ).Select( p => p.Datafile ).Distinct().ToList();
-            bool TheseChartsUseWindBarbs = theseCharts.Where( p =>p.HasWindBarbs ).Any();
+            bool TheseChartsUseWindBarbs = theseCharts.Where( p => p.HasWindBarbs ).Any();
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{filename}", false, Encoding.UTF8 ) )
             {
@@ -254,7 +254,7 @@ namespace CumulusUtils
                     TheCharts.AppendLine( "  chart = Highcharts.StockChart('chartcontainer', { title: {" );
                     TheCharts.Append( $" text: '{thisChart.Title}'" );
                     if ( thisChart.HasWindBarbs && !thisChart.WindBarbsBelow ) TheCharts.Append( ", margin: 35" );
-                    TheCharts.AppendLine("},");
+                    TheCharts.AppendLine( "}," );
 
                     TheCharts.Append( "      xAxis:" );
                     if ( thisChart.HasWindBarbs ) TheCharts.Append( "[" );
@@ -566,7 +566,7 @@ namespace CumulusUtils
                 if ( thisPlotvar.Axis.HasFlag( AxisType.Temp ) && !AxisSet.HasFlag( AxisType.Temp ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Temperature", "Temperature", true )} ({Sup.StationTemp.Text()})'}}," );
-                    buf.Append( $"opposite: { opposite.ToString().ToLowerInvariant()}," );
+                    buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( "allowDecimals: false," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2" : "labels:{align: 'right',x: -5, y: -2" )}" +
                       $",formatter: function() {{return '<span style=\"fill: ' + (this.value <= freezing ? 'blue' : 'red') + '; \">' + this.value + '</span>';}} }}," );
@@ -576,7 +576,7 @@ namespace CumulusUtils
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.Pressure ) && !AxisSet.HasFlag( AxisType.Pressure ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Pressure", "Pressure", true )} ({thisPlotvar.Unit})'}}," );
-                    buf.Append( $"opposite: { opposite.ToString().ToLowerInvariant()}," );
+                    buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( "allowDecimals: false," );
                     buf.Append( $"softMin: {MinPressure}, softMax: {MaxPressure}," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}," : "labels:{align: 'right',x: -5, y: -2}" )}" );
@@ -585,7 +585,7 @@ namespace CumulusUtils
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.Rain ) && !AxisSet.HasFlag( AxisType.Rain ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Rain", "Rain", true )} ({thisPlotvar.Unit})'}}," );
-                    buf.Append( $"opposite: { opposite.ToString().ToLowerInvariant()}," );
+                    buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( $"endOnTick: false, showLastLabel: true, {RainGridLinesVisble}, softMax: 1,min: 0," );
                     buf.Append( "allowDecimals: false," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}," : "labels:{align: 'right',x: -5, y: -2}" )}" );
@@ -594,7 +594,7 @@ namespace CumulusUtils
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.Rrate ) && !AxisSet.HasFlag( AxisType.Rrate ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Rainrate", "Rain Rate", true )} ({thisPlotvar.Unit})'}}," );
-                    buf.Append( $"opposite: { opposite.ToString().ToLowerInvariant()}," );
+                    buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( $"endOnTick: false, showLastLabel: true, {RRateGridLinesVisible}, softMax: 1,min: 0," );
                     buf.Append( "allowDecimals: false," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}" );
@@ -603,7 +603,7 @@ namespace CumulusUtils
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.Wind ) && !AxisSet.HasFlag( AxisType.Wind ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Wind", "Wind", true )} ({thisPlotvar.Unit})'}}," );
-                    buf.Append( $"opposite: { opposite.ToString().ToLowerInvariant()}," );
+                    buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( "allowDecimals: false," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}" );
                     AxisSet |= AxisType.Wind;
@@ -611,7 +611,7 @@ namespace CumulusUtils
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.Direction ) && !AxisSet.HasFlag( AxisType.Direction ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Direction", "Direction", true )} (Compass / degrees)'}}," );
-                    buf.Append( $"opposite: { opposite.ToString().ToLowerInvariant()}," );
+                    buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( "min: 0, max: 360," );
                     buf.Append( "tickInterval: 45," ); // align: 'right',x: -5,
                     buf.Append( $"labels: {{ {( opposite ? "align: 'left',x: 5,y: -2" : "align: 'right',x: -5, y: -2" )}, formatter: function() {{return compassP(this.value);}} }}," );
@@ -621,7 +621,7 @@ namespace CumulusUtils
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.UV ) && !AxisSet.HasFlag( AxisType.UV ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "UVindex", "UV index", true )}'}}," );
-                    buf.Append( $"opposite: { opposite.ToString().ToLowerInvariant()}," );
+                    buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( "allowDecimals: false," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}" );
                     AxisSet |= AxisType.UV;
@@ -629,7 +629,7 @@ namespace CumulusUtils
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.Solar ) && !AxisSet.HasFlag( AxisType.Solar ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "SolarRadiation", "Solar Radiation", true )} (W/m²)'}}," );
-                    buf.Append( $"opposite: { opposite.ToString().ToLowerInvariant()}," );
+                    buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( "allowDecimals: false," );
                     buf.Append( $"softMax: {ApproximateSolarMax() + 150},min: 0," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}" );
@@ -638,7 +638,7 @@ namespace CumulusUtils
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.Humidity ) && !AxisSet.HasFlag( AxisType.Humidity ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Humidity", "Humidity", true )} (%)'}}," );
-                    buf.Append( $"opposite: { opposite.ToString().ToLowerInvariant()}," );
+                    buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( "min: 0, max: 100," );
                     buf.Append( "allowDecimals: false," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}" );
@@ -647,7 +647,7 @@ namespace CumulusUtils
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.Hours ) && !AxisSet.HasFlag( AxisType.Hours ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "General", "Hours", "Hours", true )}'}}," );
-                    buf.Append( $"opposite: { opposite.ToString().ToLowerInvariant()}," );
+                    buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( "min: 0," );
                     buf.Append( "allowDecimals: false," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}" );
@@ -656,7 +656,7 @@ namespace CumulusUtils
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.EVT ) && !AxisSet.HasFlag( AxisType.EVT ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Evapotranspiration", "Evapotranspiration", true )} ({thisPlotvar.Unit})'}}," );
-                    buf.Append( $"opposite: { opposite.ToString().ToLowerInvariant()}," );
+                    buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( $"softMax: 1,min: 0," );
                     buf.Append( "allowDecimals: false," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}," : "labels:{align: 'right',x: -5, y: -2}" )}" );
@@ -665,7 +665,7 @@ namespace CumulusUtils
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.DegreeDays ) && !AxisSet.HasFlag( AxisType.DegreeDays ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "DegreeDays", "DegreeDays", true )}'}}," );
-                    buf.Append( $"opposite: { opposite.ToString().ToLowerInvariant()}," );
+                    buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( $"softMax: 10,softMin: 0," );
                     buf.Append( "allowDecimals: false," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}," : "labels:{align: 'right',x: -5, y: -2}" )}" );
@@ -674,7 +674,7 @@ namespace CumulusUtils
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.Free ) && !AxisSet.HasFlag( AxisType.Free ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Compiler", $"{thisChart.Id}Dimensionless", "Dimensionless", true )}'}}," );
-                    buf.Append( $"opposite: { opposite.ToString().ToLowerInvariant()}," );
+                    buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( $"softMax: 10,softMin: 0," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}," : "labels:{align: 'right',x: -5, y: -2}" )}" );
                     AxisSet |= AxisType.Free;
@@ -682,7 +682,7 @@ namespace CumulusUtils
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.AQ ) && !AxisSet.HasFlag( AxisType.AQ ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Compiler", "ParticulateMatter", "Particulate Matter", true )} (μg/m3)'}}," );
-                    buf.Append( $"opposite: { opposite.ToString().ToLowerInvariant()}," );
+                    buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( $"softMax: 30,softMin: 0," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}," : "labels:{align: 'right',x: -5, y: -2}" )}" );
                     AxisSet |= AxisType.AQ;
@@ -690,7 +690,7 @@ namespace CumulusUtils
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.ppm ) && !AxisSet.HasFlag( AxisType.ppm ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Compiler", "PartsPerMillion", "Parts Per Million", true )} (ppm)'}}," );
-                    buf.Append( $"opposite: { opposite.ToString().ToLowerInvariant()}," );
+                    buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( $"softMax: 500,softMin: 0," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}," : "labels:{align: 'right',x: -5, y: -2}" )}" );
                     AxisSet |= AxisType.ppm;

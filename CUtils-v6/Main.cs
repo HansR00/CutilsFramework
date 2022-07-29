@@ -104,7 +104,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FluentFTP;
+using FluentFTP.Helpers;
 
 namespace CumulusUtils
 {
@@ -596,8 +596,7 @@ namespace CumulusUtils
                     retval = await fncs.MapsOn();
                     Sup.LogTraceInfoMessage( retval );
 
-                    if ( DoCreateMap && File.Exists( "paMuCetaerCyaM.txt" ) )
-                        fncs.CreateMap();
+                    if ( DoCreateMap && File.Exists( "paMuCetaerCyaM.txt" ) ) fncs.CreateMap();
                     else if ( !File.Exists( "paMuCetaerCyaM.txt" ) )  // 
                     {
                         Sup.LogTraceInfoMessage( $"Fetch Map: Fetching the generated map" );
@@ -611,7 +610,7 @@ namespace CumulusUtils
                             else
                                 Sup.LogTraceInfoMessage( $"Main: {retval}" );
 
-                            File.WriteAllText( $"{ Sup.PathUtils}{ Sup.MapsOutputFilename}", retval, Encoding.UTF8 );
+                            File.WriteAllText( $"{Sup.PathUtils}{Sup.MapsOutputFilename}", retval, Encoding.UTF8 );
 
                             //The Map is always downloaded without the jQuery include. If required add it here
                             const string tmpMap = "tmpMaps.txt";
@@ -680,7 +679,7 @@ namespace CumulusUtils
                         }
                     }
 
-                    Sup.LogDebugMessage( $"DoAirLink / AirQualitySensor  = { DoAirLink } / {HasAirLink}" );
+                    Sup.LogDebugMessage( $"DoAirLink / AirQualitySensor  = {DoAirLink} / {HasAirLink}" );
                     if ( HasAirLink )
                     {
                         Sup.LogTraceInfoMessage( $"UserAskedData Doing the AirQuality stuff..." );
@@ -749,7 +748,7 @@ namespace CumulusUtils
             {
                 Sup.LogTraceInfoMessage( $"Thrifty: DoTop10 && (!Thrifty || ThriftyTop10RecordsDirty ) - " +
                   $"{DoTop10 && ( !Thrifty || ThriftyTop10RecordsDirty )} | Uploading = {Sup.Top10OutputFilename}" );
-                Isup.UploadFile( $"{ Sup.Top10OutputFilename}", $"{Sup.PathUtils}{Sup.Top10OutputFilename}" );
+                Isup.UploadFile( $"{Sup.Top10OutputFilename}", $"{Sup.PathUtils}{Sup.Top10OutputFilename}" );
             }
 
             if ( DoGraphs )

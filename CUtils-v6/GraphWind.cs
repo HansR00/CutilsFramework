@@ -76,13 +76,13 @@ namespace CumulusUtils
             thisBuffer.AppendLine( $"  subtitle: {{ text: \"{Sup.GetCumulusIniValue( "Station", "LocDesc", "Unknown Station" )}\" }}," );
             thisBuffer.AppendLine( "  pane: { size: '85%' }," );
             thisBuffer.AppendLine( "  legend: {" );
-            thisBuffer.AppendLine( $"    reversed: {Sup.GetUtilsIniValue( "Graphs", "WindRoseInversed", "false" ).ToLowerInvariant() }," );
+            thisBuffer.AppendLine( $"    reversed: {Sup.GetUtilsIniValue( "Graphs", "WindRoseInversed", "false" ).ToLowerInvariant()}," );
             thisBuffer.AppendLine( "    align: 'right', verticalAlign: 'top', y: 100, layout: 'vertical' }," );
             thisBuffer.AppendLine( $"  xAxis: {{ categories: {Sup.GetCUstringValue( "Graphs", "CompassSectors", "[\"N\", \"NNE\", \"NE\", \"ENE\", \"E\", \"ESE\", \"SE\", \"SSE\", \"S\", \"SSW\", \"SW\", \"WSW\", \"W\", \"WNW\", \"NW\", \"NNW\"]", true )} }}," );
             thisBuffer.AppendLine( "  yAxis: { min: 0, endOnTick: false, showLastLabel: true," );
             thisBuffer.AppendLine( $"    title: {{ text: '{Sup.GetCUstringValue( "Graphs", "Frequency", "Frequency", true )} (%)' }}," );
             thisBuffer.AppendLine( "    labels:{ formatter: function() { return this.value + '%'; } }," );
-            thisBuffer.AppendLine( $"     reversedStacks: {Sup.GetUtilsIniValue( "Graphs", "WindRoseInversed", "false" ).ToLowerInvariant() }" );
+            thisBuffer.AppendLine( $"     reversedStacks: {Sup.GetUtilsIniValue( "Graphs", "WindRoseInversed", "false" ).ToLowerInvariant()}" );
             thisBuffer.AppendLine( "  }," );
             thisBuffer.AppendLine( "  tooltip: { valueSuffix: '%', followPointer: true }," );
             thisBuffer.AppendLine( "  plotOptions: { series: { stacking: 'normal', shadow: false, groupPadding: 0, pointPlacement: 'on' } }," );
@@ -281,7 +281,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "  title:" );
             thisBuffer.AppendLine( "  {" );
             thisBuffer.AppendLine( $"    text: '{Sup.GetCUstringValue( "Graphs", "WindRunTitle", "Wind Run", true )} - " +
-              $"{ ( year == 0 ? Sup.GetCUstringValue( "General", "AllTime", "All Time", false ) : year.ToString( "F0", inv ) )} ({Sup.StationDistance.Text()})'" );
+              $"{( year == 0 ? Sup.GetCUstringValue( "General", "AllTime", "All Time", false ) : year.ToString( "F0", inv ) )} ({Sup.StationDistance.Text()})'" );
             thisBuffer.AppendLine( "  }," );
             thisBuffer.AppendLine( "  subtitle:" );
             thisBuffer.AppendLine( "  {" );

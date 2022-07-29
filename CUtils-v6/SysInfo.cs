@@ -96,7 +96,7 @@ namespace CumulusUtils
                         //    rt.WriteLine( thisIPC.CmxBaseURL + "\n" );
                         //    rt.WriteLine( DeviceInfo.ToString() );
                         //    rt.WriteLine("---------------");
-                            tmp = await thisIPC.ReplaceWebtagsPostAsync( DeviceInfo.ToString() );
+                        tmp = await thisIPC.ReplaceWebtagsPostAsync( DeviceInfo.ToString() );
                         //    rt.WriteLine( tmp );
                         //}
 
@@ -114,7 +114,7 @@ namespace CumulusUtils
                         DeviceInfo.AppendLine( "WLL WifiRssi: <#DavisTxRssi tx=0>" );
                         DeviceInfo.AppendLine( "" );
 
-                        foreach ( string Tx in TxUsedArray)
+                        foreach ( string Tx in TxUsedArray )
                         {
                             DeviceInfo.AppendLine( $"WLL Stats for channel {Tx}:" );
                             DeviceInfo.AppendLine( $"  WLL DavisReceptionPercent: <#DavisReceptionPercent tx={Tx}>" );
@@ -132,7 +132,7 @@ namespace CumulusUtils
                         //    rt.WriteLine( thisIPC.CmxBaseURL + "\n");
                         //    rt.WriteLine( DeviceInfo.ToString() );
                         //    rt.WriteLine( "---------------" );
-                            tmp = await thisIPC.ReplaceWebtagsPostAsync( DeviceInfo.ToString() );
+                        tmp = await thisIPC.ReplaceWebtagsPostAsync( DeviceInfo.ToString() );
                         //    rt.WriteLine( tmp );
                         //}
 

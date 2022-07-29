@@ -228,7 +228,7 @@ namespace CumulusUtils
             {
                 float AvMinusStddev = average[ i ] - stddev[ i ];
 
-                sb.Append( $"[{ ( AvMinusStddev < 0.0 ? 0.ToString( "F2", inv ) : AvMinusStddev.ToString( "F2", inv ) )}," +
+                sb.Append( $"[{( AvMinusStddev < 0.0 ? 0.ToString( "F2", inv ) : AvMinusStddev.ToString( "F2", inv ) )}," +
                     $"{( average[ i ] + stddev[ i ] ).ToString( "F2", inv )}]," );
             }
 
@@ -387,7 +387,7 @@ namespace CumulusUtils
             {
                 float AvMinusStddev = average[ i ] - stddev[ i ];
 
-                sb.Append( $"[{ ( AvMinusStddev < 0.0 ? 0.ToString( "F2", inv ) : AvMinusStddev.ToString( "F2", inv ) )}," +
+                sb.Append( $"[{( AvMinusStddev < 0.0 ? 0.ToString( "F2", inv ) : AvMinusStddev.ToString( "F2", inv ) )}," +
                     $"{( average[ i ] + stddev[ i ] ).ToString( "F2", inv )}]," );
             }
 
@@ -554,7 +554,7 @@ namespace CumulusUtils
             {
                 float AvMinusStddev = average[ i ] - stddev[ i ];
 
-                sb.Append( $"[{ ( AvMinusStddev < 0.0 ? 0.ToString( "F2", inv ) : AvMinusStddev.ToString( "F2", inv ) )}," +
+                sb.Append( $"[{( AvMinusStddev < 0.0 ? 0.ToString( "F2", inv ) : AvMinusStddev.ToString( "F2", inv ) )}," +
                     $"{( average[ i ] + stddev[ i ] ).ToString( "F2", inv )}]," );
             }
 
@@ -713,7 +713,7 @@ namespace CumulusUtils
             {
                 float AvMinusStddev = average[ i ] - stddev[ i ];
 
-                sb.Append( $"[{ ( AvMinusStddev < 0.0 ? 0.ToString( "F2", inv ) : AvMinusStddev.ToString( "F2", inv ) )}," +
+                sb.Append( $"[{( AvMinusStddev < 0.0 ? 0.ToString( "F2", inv ) : AvMinusStddev.ToString( "F2", inv ) )}," +
                     $"{( average[ i ] + stddev[ i ] ).ToString( "F2", inv )}]," );
             }
 

@@ -598,7 +598,7 @@ namespace CumulusUtils
 
                         for ( int i = 0; i < NrOfRecords; i += BatchSize )
                         {
-                            command.CommandText = $"SELECT * FROM Monthly LIMIT {BatchSize} OFFSET { i }; ";
+                            command.CommandText = $"SELECT * FROM Monthly LIMIT {BatchSize} OFFSET {i}; ";
 
                             Console.Write( $"{i}\r" );
 

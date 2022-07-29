@@ -457,7 +457,7 @@ namespace CumulusUtils
 
                     Sup.LogTraceInfoMessage( $"GenerateExtraSensorsCharts: Adding Sensor: {thisKeyword}" );
 
-                    CutilsChartsMods.Add( $"  Plot Extra { thisKeyword }" );
+                    CutilsChartsMods.Add( $"  Plot Extra {thisKeyword}" );
                     _ = Sup.GetCUstringValue( "Compiler", thisKeyword, ExtraSensorList[ i ].Name, false );
 
                     i++;

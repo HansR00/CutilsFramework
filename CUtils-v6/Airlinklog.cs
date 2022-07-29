@@ -292,7 +292,7 @@ namespace CumulusUtils
                     Filename = $"data/AirLink{timeEnd:yyyy}{timeEnd:MM}log.txt";  // Take care of a period passing month boundary
                     Sup.LogDebugMessage( $"AirLinklog: Require the  next logfile: {Filename}" );
 
-                    if ( !File.Exists( Filename ) ) 
+                    if ( !File.Exists( Filename ) )
                     {
                         Sup.LogDebugMessage( $"AirLinklog: {Filename} Does not exist so we need to stop reading" );
                         PeriodComplete = true;

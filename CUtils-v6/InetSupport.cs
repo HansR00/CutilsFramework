@@ -33,6 +33,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -40,8 +41,10 @@ using System.Security.Authentication;
 using System.Text;
 using System.Threading.Tasks;
 using FluentFTP;
+using FluentFTP.Helpers;
 using Renci.SshNet;
 using Renci.SshNet.Common;
+using Renci.SshNet.Sftp;
 
 namespace CumulusUtils
 {
@@ -265,7 +268,7 @@ namespace CumulusUtils
             if ( !FTPvalid )
             {
                 // No reason to do the whole procedure if we can't upload
-                Sup.LogTraceErrorMessage( $"UploadFile: Nothing uploaded because of connection error." ); 
+                Sup.LogTraceErrorMessage( $"UploadFile: Nothing uploaded because of connection error." );
                 return false;
             }
 
@@ -439,6 +442,128 @@ namespace CumulusUtils
 
             return true;
         } // EndOf UploadFile
+
+
+        public void DownloadSignatureFiles()
+        {
+            const string localDir = "utils/maps";
+
+            bool Download;
+
+            // Immediately return if something was wrong at contructor time
+            if ( !FTPvalid )
+            {
+                // No reason to do the whole procedure if we can't upload
+                Sup.LogTraceErrorMessage( $"DownloadSignatureFiles: Nothing downloaded because of connection error." );
+                return;
+            }
+
+            Sup.LogDebugMessage( $"DownloadSignatureFiles: Start" );
+
+            // Make sure we are intended to do an FTP operation
+            Download = Sup.GetUtilsIniValue( "FTP site", "DoUploadFTP", "false" ).ToLower() == "true";
+
+            // Make sure the UploadDir is in the inifile early
+            string CumulusURL = Sup.GetCumulusIniValue( "FTP site", "Host", "" );
+            string CumulusDir = Sup.GetCumulusIniValue( "FTP site", "Directory", "" );
+            CumulusDir += "/maps";
+
+            if ( !Download ) { Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: DoUploadFTP configured false => No DownloadSignatureFiles." ); return; }      // No reason to do the whole procedure if we don't have to upload
+
+            if ( Download )
+            {
+                Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: DoUploadFTP: {Download}" );
+                Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: URL: {CumulusURL}" );
+                Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: Dir: {CumulusDir}" );
+
+                // Get the object used to communicate with the server.
+                //string requestname = CumulusDir + "/MapsOn*.xml";
+
+                //Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: Downloading {requestname}" );
+
+                if ( ProtocolUsed == FtpProtocols.FTP || ProtocolUsed == FtpProtocols.FTPS )
+                {
+                    try
+                    {
+                        List<FtpResult> theseFiles = clientFluentFTP.DownloadDirectory( localDir, CumulusDir );    //.UploadFile( localfile, requestname, FtpRemoteExists.Overwrite, false, FtpVerify.Throw );
+                        clientFluentFTP.DeleteDirectory( CumulusDir );
+                        clientFluentFTP.CreateDirectory( CumulusDir );
+                    }
+                    catch ( Exception e ) when ( e is TimeoutException )
+                    {
+                        Sup.LogTraceErrorMessage( $"DownloadSignatureFiles ERROR: Timeout Exception: {e.Message}" );
+                        if ( e.InnerException != null )
+                            Sup.LogTraceErrorMessage( $"DownloadSignatureFiles ERROR: Inner Exception: {e.InnerException}" );
+                        return;
+                    }
+                    catch ( Exception e ) when ( e is FtpAuthenticationException || e is FtpCommandException || e is FtpSecurityNotAvailableException )
+                    {
+                        Sup.LogTraceErrorMessage( $"DownloadSignatureFiles ERROR: Exception: {e.Message}" );
+                        if ( e.InnerException != null )
+                            Sup.LogTraceErrorMessage( $"DownloadSignatureFiles ERROR: Inner Exception: {e.InnerException}" );
+                        return;
+                    }
+                    catch ( Exception e )
+                    {
+                        Sup.LogTraceErrorMessage( $"DownloadSignatureFiles ERROR: General Exception: {e.Message}" );
+                        if ( e.InnerException != null )
+                            Sup.LogTraceErrorMessage( $"DownloadSignatureFiles ERROR: Inner Exception: {e.InnerException}" );
+                        return;
+                    }
+                }
+                else if ( ProtocolUsed == FtpProtocols.SFTP )
+                {
+                    try
+                    {
+                        List<SftpFile> remoteFiles;
+
+                        if ( !clientRenci.IsConnected )
+                        {
+                            //Lost connection so return
+                            Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: FTPSConnection lost; return" );
+                            return;
+                        }
+
+                        remoteFiles = clientRenci.ListDirectory( CumulusDir ).ToList();
+
+                        foreach ( SftpFile thisFile in remoteFiles )
+                        {
+                            if ( thisFile.Name.Contains( "Maps" ) )
+                            {
+                                using ( Stream ostream = new FileStream( $"{localDir}{thisFile.Name}", FileMode.Create, FileAccess.Write, FileShare.ReadWrite ) )
+                                {
+                                    clientRenci.DownloadFile( thisFile.FullName, ostream );
+                                    clientRenci.DeleteFile( thisFile.FullName );
+                                    Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: Signaturefile {thisFile.Name} downloaded" );
+                                }
+                            }
+                        }
+
+                        Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: Signature files successfully Downloaded to {localDir}" );
+                    }
+                    catch ( Exception e )
+                    {
+                        Sup.LogTraceErrorMessage( $"DownloadSignatureFiles: FTP Signature Files failed to Downloaded" );
+                        Sup.LogTraceErrorMessage( $"DownloadSignatureFiles: Could not create Map, using previous one." );
+                        Sup.LogTraceErrorMessage( $"DownloadSignatureFiles: Exception {e.Message}" );
+                        return;
+                    }
+                }
+                else
+                {
+                    Sup.LogTraceErrorMessage( $"DownloadSignatureFiles: internal protocol error" );
+                }
+
+                Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: Done" );
+            }
+            else // Download = false
+            {
+                Sup.LogTraceInfoMessage( $"DownloadSignatureFiles Download=false -> No file(s) Downloaded." );
+            }
+
+            return;
+        } // EndOf DownloadSignatureFiles
+
 
 
         // NOTE: The PostClient and the GetClient are solely used for the IPC with CMX

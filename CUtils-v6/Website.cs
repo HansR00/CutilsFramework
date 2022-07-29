@@ -285,7 +285,7 @@ namespace CumulusUtils
                     $"{Sup.GetUtilsIniValue( "Website", "HeaderLeftText", "" )}</td>" +
                     //$"  <td style='width:20%;text-align:left'>{Sup.GetUtilsIniValue( "Website", "HeaderLeftText", "" )}</td>" +
                     "  <td style='width:60%;text-align:center'>" +
-                   $"  <h2 style = 'padding:10px' >{ Sup.GetCumulusIniValue( "Station", "LocName", "" )} { Sup.GetUtilsIniValue( "Website", "SiteTitleAddition", "" )}</h2 > " +
+                   $"  <h2 style = 'padding:10px' >{Sup.GetCumulusIniValue( "Station", "LocName", "" )} {Sup.GetUtilsIniValue( "Website", "SiteTitleAddition", "" )}</h2 > " +
                    $"   <h5 style='padding:2px'>" +
                    $"     {Sup.GetCUstringValue( "Website", "Latitude", "Latitude", false )}: {Latitude:F4}  " +
                    $"     {Sup.GetCUstringValue( "Website", "Longitude", "Longitude", false )}: {Longitude:F4} " +
@@ -490,58 +490,58 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "    <div class='row'>" +
                   "      <div class='col border rounded-lg CUCellBody' onclick=\"ClickGauge(1);\">" +
                   // Default: TemperatureText
-                  $"       { GeneratePanelCode( PanelsConfiguration[ 0 ] ) }" +
+                  $"       {GeneratePanelCode( PanelsConfiguration[ 0 ] )}" +
                   "      </div>" +
                   "      <div class='col border rounded-lg CUCellBody' onclick=\"ClickGauge(2);\">" +
                   // Default: PressureText
-                  $"       { GeneratePanelCode( PanelsConfiguration[ 1 ] ) }" +
+                  $"       {GeneratePanelCode( PanelsConfiguration[ 1 ] )}" +
                   "      </div>" +
                   "      <div class='col border rounded-lg CUCellBody' onclick=\"ClickGauge(3);\">" +
                   // Default: RainText
-                  $"       { GeneratePanelCode( PanelsConfiguration[ 2 ] ) }" +
+                  $"       {GeneratePanelCode( PanelsConfiguration[ 2 ] )}" +
                   "      </div>" +
                   "      <div class='col border rounded-lg CUCellBody' onclick=\"ClickGauge(4);\">" +
                   // Default: Clocks
-                  $"       { GeneratePanelCode( PanelsConfiguration[ 3 ] ) }" +
+                  $"       {GeneratePanelCode( PanelsConfiguration[ 3 ] )}" +
                   "      </div>" +
                   "    </div>" +
                   "    <div class='row' id='WindRow1'>" +
                   "      <div class='col border rounded-lg CUCellBody' onclick=\"ClickGauge(5);\">" +
                   // Default: WindGauge
-                  $"       { GeneratePanelCode( PanelsConfiguration[ 4 ] ) }" +
+                  $"       {GeneratePanelCode( PanelsConfiguration[ 4 ] )}" +
                   "      </div>" +
                   "      <div class='col border rounded-lg CUCellBody' onclick=\"ClickGauge(6);\">" +
                   // Default: WindDirGauge
-                  $"       { GeneratePanelCode( PanelsConfiguration[ 5 ] ) }" +
+                  $"       {GeneratePanelCode( PanelsConfiguration[ 5 ] )}" +
                   "      </div>" +
                   "      <div class='col border rounded-lg CUCellBody' onclick=\"ClickGauge(7);\">" +
                   // Default: WindRoseGauge
-                  $"       { GeneratePanelCode( PanelsConfiguration[ 6 ] ) }" +
+                  $"       {GeneratePanelCode( PanelsConfiguration[ 6 ] )}" +
                   "      </div>" +
                   "      <div class='col border rounded-lg CUCellBody' onclick=\"ClickGauge(8);\">" +
                   // Default: WindText
-                  $"       { GeneratePanelCode( PanelsConfiguration[ 7 ] ) }" +
+                  $"       {GeneratePanelCode( PanelsConfiguration[ 7 ] )}" +
                   "      </div>" +
                   "    </div>" +
                   "    <div class='row'>" +
                   "      <div class='col border rounded-lg CUCellBody' onclick=\"ClickGauge(9);\">" +
                   // Default: SolarDisc
-                  $"       { GeneratePanelCode( PanelsConfiguration[ 8 ] ) }" +
+                  $"       {GeneratePanelCode( PanelsConfiguration[ 8 ] )}" +
                   "      </div >" +
                   "      <div class='col border rounded-lg CUCellBody' onclick=\"ClickGauge(10);\">" +
                   // Default: LunarDisc
-                  $"       { GeneratePanelCode( PanelsConfiguration[ 9 ] ) }" +
+                  $"       {GeneratePanelCode( PanelsConfiguration[ 9 ] )}" +
                   "      </div>" +
                   "      <div class='col border rounded-lg CUCellBody' onclick=\"ClickGauge(11);\">" +
                   // Default: HumidityText
-                  $"       { GeneratePanelCode( PanelsConfiguration[ 10 ] ) }" +
+                  $"       {GeneratePanelCode( PanelsConfiguration[ 10 ] )}" +
                   "      </div>" );
 
                 if ( ShowSolar || ShowUV )
                 {
                     indexFile.Append( "      <div class='col border rounded-lg CUCellBody' onclick=\"ClickGauge(12);\">" +
                     // Default: SolarText
-                    $"       { GeneratePanelCode( PanelsConfiguration[ 11 ] ) }" +
+                    $"       {GeneratePanelCode( PanelsConfiguration[ 11 ] )}" +
                     "      </div>" );
                 }
 
@@ -551,47 +551,47 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "  <div class='row'>" +
                   "    <div class='col border rounded-lg CUCellBody' onclick=\"ClickGauge(13);\">" +
                   // Default: TemperatureGauge
-                  $"       { GeneratePanelCode( PanelsConfiguration[ 12 ] ) }" +
+                  $"       {GeneratePanelCode( PanelsConfiguration[ 12 ] )}" +
                   "    </div>" +
                   "    <div class='col border rounded-lg CUCellBody' onclick=\"ClickGauge(14);\">" +
                   // Default: OtherTempsGauge
-                  $"       { GeneratePanelCode( PanelsConfiguration[ 13 ] ) }" +
+                  $"       {GeneratePanelCode( PanelsConfiguration[ 13 ] )}" +
                   "    </div>" +
                   "    <div class='col border rounded-lg CUCellBody' onclick=\"ClickGauge(15);\">" +
                   // Default: PressureGauge
-                  $"       { GeneratePanelCode( PanelsConfiguration[ 14 ] ) }" +
+                  $"       {GeneratePanelCode( PanelsConfiguration[ 14 ] )}" +
                   "    </div>" +
                   "    <div class='col border rounded-lg CUCellBody' onclick=\"ClickGauge(16);\">" +
                   // Default: HumidityGauge
-                  $"       { GeneratePanelCode( PanelsConfiguration[ 15 ] ) }" +
+                  $"       {GeneratePanelCode( PanelsConfiguration[ 15 ] )}" +
                   "    </div>" +
                   "  </div>" +
                   "  <div class='row' id='WindRow2'>" +
                   //  This space is filled by the dashboard switch through calls to .prependTo()
                   "      <div class='col border rounded-lg CUCellBody' onclick=\"ClickGauge(17);\">" +
-                  $"       { GeneratePanelCode( PanelsConfiguration[ 16 ] ) }" +
+                  $"       {GeneratePanelCode( PanelsConfiguration[ 16 ] )}" +
                   "      </div>" +
                   "      <div class='col border rounded-lg CUCellBody' onclick=\"ClickGauge(18);\">" +
-                  $"       { GeneratePanelCode( PanelsConfiguration[ 17 ] ) }" +
+                  $"       {GeneratePanelCode( PanelsConfiguration[ 17 ] )}" +
                   "      </div>" +
                   "      <div class='col border rounded-lg CUCellBody' onclick=\"ClickGauge(19);\">" +
-                  $"       { GeneratePanelCode( PanelsConfiguration[ 18 ] ) }" +
+                  $"       {GeneratePanelCode( PanelsConfiguration[ 18 ] )}" +
                   "      </div>" +
                   "    <div class='col border rounded-lg CUCellBody' onclick=\"ClickGauge(20);\">" +
                   //TemperatureText, PressureText, RainText, Clocks, WindGauge1, WindDirGauge1, WindRoseGauge1, WindText, SolarDisc, LunarDisc, HumidityText, SolarText,
                   //TemperatureGauge, OtherTempsGauge, PressureGauge, HumidityGauge, WindGauge2, WindDirGauge2, WindRoseGauge2, CloudBaseGauge, RainGauge, RainSpeedGauge, SolarGauge, UVGauge
                   // Default: CloudBaseGauge
-                  $"       { GeneratePanelCode( PanelsConfiguration[ 19 ] ) }" +
+                  $"       {GeneratePanelCode( PanelsConfiguration[ 19 ] )}" +
                   "    </div>" +
                   "  </div>" +
                   "  <div class='row'>" +
                   "    <div class='col border rounded-lg CUCellBody' onclick=\"ClickGauge(21);\">" +
                   // Default: RainGauge
-                  $"       { GeneratePanelCode( PanelsConfiguration[ 20 ] ) }" +
+                  $"       {GeneratePanelCode( PanelsConfiguration[ 20 ] )}" +
                   "    </div>" +
                   "    <div class='col border rounded-lg CUCellBody' onclick=\"ClickGauge(22);\">" +
                   // Default: RainSpeedGauge
-                  $"       { GeneratePanelCode( PanelsConfiguration[ 21 ] ) }" +
+                  $"       {GeneratePanelCode( PanelsConfiguration[ 21 ] )}" +
                   "    </div>" +
                   "    <div class='col border rounded-lg CUCellBody' onclick=\"ClickGauge(23);\">" );
 
@@ -599,11 +599,11 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 if ( ShowSolar || ShowUV )
                 {
                     // Default: SolarGauge
-                    indexFile.Append( $"       { GeneratePanelCode( PanelsConfiguration[ 22 ] ) }" +
+                    indexFile.Append( $"       {GeneratePanelCode( PanelsConfiguration[ 22 ] )}" +
                   "    </div>" +
                   "    <div class='col border rounded-lg CUCellBody' onclick=\"ClickGauge(24);\">" +
                   // Default: UVGauge
-                  $"       { GeneratePanelCode( PanelsConfiguration[ 23 ] ) }" +
+                  $"       {GeneratePanelCode( PanelsConfiguration[ 23 ] )}" +
                   "    </div>" );
                 }
 
@@ -1292,7 +1292,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 {
                     CUlibFile.Append(
                         "function CreateMoon() {" +
-                       $"    tmpMoon = '<img src=\"{ Sup.GetCumulusIniValue( "Graphs", "MoonImageFtpDest", "" ) }\">';" +
+                       $"    tmpMoon = '<img src=\"{Sup.GetCumulusIniValue( "Graphs", "MoonImageFtpDest", "" )}\">';" +
                         "    $('#d3MoonDisc').html(tmpMoon);" +
                         "}" +
                         "function MoveMoonPosition() {" +
@@ -2057,7 +2057,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                      "  {" +
                     $"    name:'{Sup.GetCUstringValue( "Website", "Rainfall", "Rainfall", true )}'," +
                      "    type:'area'," +
-                    $"    { GetAreaGradientColors( Sup.GetUtilsIniValue( "Website", "HomeGraphRainfallColor1", "#50B432" ), Sup.GetUtilsIniValue( "Website", "HomeGraphRainfallColor2", "" ), Sup.GetUtilsIniValue( "Website", "HomeGraphRainfallColor3", "" ) )}" +
+                    $"    {GetAreaGradientColors( Sup.GetUtilsIniValue( "Website", "HomeGraphRainfallColor1", "#50B432" ), Sup.GetUtilsIniValue( "Website", "HomeGraphRainfallColor2", "" ), Sup.GetUtilsIniValue( "Website", "HomeGraphRainfallColor3", "" ) )}" +
                      "    yAxis:1," +
                      "    tooltip:{valueSuffix:config.rain.units}" +
                      "  }," +
@@ -2179,7 +2179,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                      "  {" +
                     $"    name:'{Sup.GetCUstringValue( "Website", "TheoreticalMax", "Theoretical Max", true )}'," +
                      "    type:'area'," +
-                    $"    { GetAreaGradientColors( Sup.GetUtilsIniValue( "Website", "HomeGraphSolarTheoreticalMaxColor1", "#DDDF00" ), Sup.GetUtilsIniValue( "Website", "HomeGraphSolarTheoreticalMaxColor2", "" ), Sup.GetUtilsIniValue( "Website", "HomeGraphSolarTheoreticalMaxColor3", "" ) )}" +
+                    $"    {GetAreaGradientColors( Sup.GetUtilsIniValue( "Website", "HomeGraphSolarTheoreticalMaxColor1", "#DDDF00" ), Sup.GetUtilsIniValue( "Website", "HomeGraphSolarTheoreticalMaxColor2", "" ), Sup.GetUtilsIniValue( "Website", "HomeGraphSolarTheoreticalMaxColor3", "" ) )}" +
                      "    yAxis:0," +
                      "    valueDecimals:0," +
                      "    tooltip:{valueSuffix:'W/m²'}" +
@@ -2187,7 +2187,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                      "  {" +
                     $"    name:'{Sup.GetCUstringValue( "Website", "SolarRadiation", "Solar Radiation", true )}'," +
                      "    type:'area'," +
-                    $"    { GetAreaGradientColors( Sup.GetUtilsIniValue( "Website", "HomeGraphSolarRadiationColor1", "#FF9655" ), Sup.GetUtilsIniValue( "Website", "HomeGraphSolarRadiationColor2", "" ), Sup.GetUtilsIniValue( "Website", "HomeGraphSolarRadiationColor3", "" ) )} " +
+                    $"    {GetAreaGradientColors( Sup.GetUtilsIniValue( "Website", "HomeGraphSolarRadiationColor1", "#FF9655" ), Sup.GetUtilsIniValue( "Website", "HomeGraphSolarRadiationColor2", "" ), Sup.GetUtilsIniValue( "Website", "HomeGraphSolarRadiationColor3", "" ) )} " +
                      "    yAxis:0," +
                      "    valueDecimals:0," +
                      "    tooltip:{valueSuffix:'W/m²'} " +
@@ -2298,7 +2298,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                      "  {" +
                     $"    name:'{Sup.GetCUstringValue( "Website", "Daily Rainfall", "Daily Rainfall", true )}'," +
                      "    type:'column'," +
-                    $"    color:'{ Sup.GetUtilsIniValue( "Website", "HomeGraphDailyRainColor", "#058DC7" )}'," +
+                    $"    color:'{Sup.GetUtilsIniValue( "Website", "HomeGraphDailyRainColor", "#058DC7" )}'," +
                     "    yAxis:0," +
                      "    valueDecimals:config.rain.decimals," +
                      "    tooltip:{valueSuffix:config.rain.units}" +
@@ -2346,9 +2346,9 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                      "rangeSelector:{enabled:false}," +
                      "series:" +
                      "[" +
-                     $"  {{name:\"{Sup.GetCUstringValue( "Website", "AvgTemp", "Avg Temp", true )}\",color:'{ Sup.GetUtilsIniValue( "Website", "HomeGraphDailyTempAverageColor", "#50B432" )}'}}," +
-                     $"  {{name:\"{Sup.GetCUstringValue( "Website", "MinTemp", "Min Temp", true )}\",color:'{ Sup.GetUtilsIniValue( "Website", "HomeGraphDailyTempMinColor", "#058DC7" )}'}}," +
-                     $"  {{name:\"{Sup.GetCUstringValue( "Website", "MaxTemp", "Max Temp", true )}\",color:'{ Sup.GetUtilsIniValue( "Website", "HomeGraphDailyTempMaxColor", "#ED561B" )}'}} " +
+                     $"  {{name:\"{Sup.GetCUstringValue( "Website", "AvgTemp", "Avg Temp", true )}\",color:'{Sup.GetUtilsIniValue( "Website", "HomeGraphDailyTempAverageColor", "#50B432" )}'}}," +
+                     $"  {{name:\"{Sup.GetCUstringValue( "Website", "MinTemp", "Min Temp", true )}\",color:'{Sup.GetUtilsIniValue( "Website", "HomeGraphDailyTempMinColor", "#058DC7" )}'}}," +
+                     $"  {{name:\"{Sup.GetCUstringValue( "Website", "MaxTemp", "Max Temp", true )}\",color:'{Sup.GetUtilsIniValue( "Website", "HomeGraphDailyTempMaxColor", "#ED561B" )}'}} " +
                      "]};" +
                      "" +
                      "chart=new Highcharts.StockChart(t);chart.showLoading();" +

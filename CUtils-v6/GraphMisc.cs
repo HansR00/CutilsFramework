@@ -374,7 +374,7 @@ namespace CumulusUtils
                         do
                         {
                             TempSum += yearList[ i ].AverageTempThisDay > 0.0 ? yearList[ i ].AverageTempThisDay : 0;
-                            ma.Append( $"[{ i },{ TempSum.ToString( "F1", NumberFormatInfo.InvariantInfo ) }]," );
+                            ma.Append( $"[{i},{TempSum.ToString( "F1", NumberFormatInfo.InvariantInfo )}]," );
                         }
                         while ( ++i < yearList.Count );
                     }
@@ -505,7 +505,7 @@ namespace CumulusUtils
                         do
                         {
                             TempSum += yearList[ i ].AverageTempThisDay - TempReference;
-                            ma.Append( $"[{i},{   TempSum.ToString( "F1", NumberFormatInfo.InvariantInfo )}]," );
+                            ma.Append( $"[{i},{TempSum.ToString( "F1", NumberFormatInfo.InvariantInfo )}]," );
                         }
                         while ( ++i < yearList.Count );
                     }

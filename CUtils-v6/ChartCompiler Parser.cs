@@ -197,7 +197,7 @@ namespace CumulusUtils
                                 thisChart.WindBarbColor = Keywords[ CurrPosition++ ];
                             }
                         }
-                        else 
+                        else
                         {
                             // Error condition
                             Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' : Missing WindBarbs Keyword" );

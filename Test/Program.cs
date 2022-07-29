@@ -1,21 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Test
 {
     internal class Program
     {
-        
-        static void Main( )
+
+        static void Main()
         {
-            Distance TestDistance = new Distance(DistanceDim.kilometer);
-            Temp TestTemp = new Temp(TempDim.celsius);
+            Distance TestDistance = new Distance( DistanceDim.kilometer );
+            Temp TestTemp = new Temp( TempDim.celsius );
             //Wind TestWind = new Wind( WindDim.kmh );
             Rain TestRain = new Rain( RainDim.millimeter );
-            Pressure TestPress = new Pressure( PressureDim.inchHg);
+            Pressure TestPress = new Pressure( PressureDim.inchHg );
 
             Console.WriteLine( $"TestRain: {TestRain.Dim}" );
             Console.WriteLine( $"TestRain Converting from 25.4 mm to inch: {TestRain.Convert( RainDim.millimeter, RainDim.inch, 25.4 ):F4}" );

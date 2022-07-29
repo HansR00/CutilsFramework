@@ -30,9 +30,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
-using Renci.SshNet;
-using Renci.SshNet.Common;
-using Renci.SshNet.Sftp;
 
 namespace CumulusUtils
 {
@@ -149,41 +146,36 @@ namespace CumulusUtils
         #endregion
 
         #region MapsOff
-/*
-        public void MapsOff()
-        {
-            // Note MapsOff is actually no longer being used. If everything works fine, let's remove it and  only rely on the timeout
-            Sup.LogDebugMessage( "MapsOff: Start" );
+        /*
+                public void MapsOff()
+                {
+                    // Note MapsOff is actually no longer being used. If everything works fine, let's remove it and  only rely on the timeout
+                    Sup.LogDebugMessage( "MapsOff: Start" );
 
-            string FileToSend = $"MapsOff-{RandomGenerator.RandomString( 10, true )}.txt";
+                    string FileToSend = $"MapsOff-{RandomGenerator.RandomString( 10, true )}.txt";
 
-            using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{FileToSend}", false, Encoding.UTF8 ) )
-            {
-                string Name = Sup.GetCumulusIniValue( "Station", "LocName", "" );
+                    using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{FileToSend}", false, Encoding.UTF8 ) )
+                    {
+                        string Name = Sup.GetCumulusIniValue( "Station", "LocName", "" );
 
-                Sup.LogTraceInfoMessage( $" MapsOff: Adding Station: {Name}" );
-                of.WriteLine( Name );
-            }
+                        Sup.LogTraceInfoMessage( $" MapsOff: Adding Station: {Name}" );
+                        of.WriteLine( Name );
+                    }
 
-            // This function is not used anymore so could be deleted.
-            // If we find another use then this is where the upload must be.
+                    // This function is not used anymore so could be deleted.
+                    // If we find another use then this is where the upload must be.
 
-            if ( File.Exists( $"{Sup.PathUtils}{FileToSend}" ) )
-                File.Delete( $"{Sup.PathUtils}{FileToSend}" );
-        }
-*/
+                    if ( File.Exists( $"{Sup.PathUtils}{FileToSend}" ) )
+                        File.Delete( $"{Sup.PathUtils}{FileToSend}" );
+                }
+        */
         #endregion
 
         #region CreateMap
 
-        const string RemoteMapPath = "/home/deb132998/domains/meteo-wagenborgen.nl/public_html/maps/";
         const string dbName = "stationswithutils.xml";          // MUST exist (current directory) and be prepared with <Stations></Stations> root element
         const string CuMapTimeformat = "dd-MM-yyyy HH:mm";
         const string CuMapTimeformat_old1 = "dd-MM-yyyy";
-
-        SftpClient ClientRenci;
-
-        bool FTPvalid;                         // Indication whether a connection could be made and filetransfer is possible.
 
         public void CreateMap()
         {
@@ -197,9 +189,6 @@ namespace CumulusUtils
             string[] localFiles;
             XElement root;
 
-            // Start by setting up SFTP
-            FTPvalid = ConnectSftp();
-
             //
             // 1* Read the current database into the XElement root from stationswithutils.xml which only exists locally
             //    and download the contents of the remote maps directory to the utils maps directory
@@ -208,46 +197,9 @@ namespace CumulusUtils
             Sup.LogTraceInfoMessage( $"CreateMap: Start Phase 1" );
 
             root = XElement.Load( dbName );
-
             Sup.LogTraceInfoMessage( $"CreateMap: {dbName} loaded" );
 
-            const string localDir = "utils/maps/";
-
-            try
-            {
-                List<SftpFile> remoteFiles;
-
-                if ( FTPvalid && !ClientRenci.IsConnected )
-                {
-                    //Lost connection so reconnect
-                    FTPvalid = ConnectSftp();
-                    Sup.LogTraceInfoMessage( $"MapsOn: Connection lost, FTP Reconnected" );
-                }
-
-                remoteFiles = ClientRenci.ListDirectory( RemoteMapPath ).ToList();
-
-                foreach ( SftpFile thisFile in remoteFiles )
-                {
-                    if ( thisFile.Name.Contains( "Maps" ) )
-                    {
-                        using ( Stream ostream = new FileStream( $"{localDir}{thisFile.Name}", FileMode.Create, FileAccess.Write, FileShare.ReadWrite ) )
-                        {
-                            ClientRenci.DownloadFile( thisFile.FullName, ostream );
-                            ClientRenci.DeleteFile( thisFile.FullName );
-                            Sup.LogTraceInfoMessage( $"MapsOn: Signaturefile {thisFile.Name} downloaded" );
-                        }
-                    }
-                }
-
-                Sup.LogTraceInfoMessage( $"CreateMap: Signature files successfully Downloaded to {localDir}" );
-            }
-            catch ( Exception e )
-            {
-                Sup.LogTraceInfoMessage( $"CreateMap: FTP Signature Files failed to Downloaded" );
-                Sup.LogTraceInfoMessage( $"CreateMap: Could not create Map, using previous one." );
-                Sup.LogTraceInfoMessage( $"CreateMap: Exception {e.Message}" );
-                return;
-            }
+            CMXutils.Isup.DownloadSignatureFiles();
 
             #endregion
 
@@ -497,60 +449,6 @@ namespace CumulusUtils
 
         #endregion
 
-        #region ConnectSftp
-
-        private bool ConnectSftp()
-        {
-            // https://stackoverflow.com/questions/55378001/renci-sshnet-common-sshexception-invalid-private-key-file-when-loading-ssh-pr
-            // https://stackoverflow.com/questions/65723647/using-openssh-private-key-file-in-string-with-ssh-net-in-c-sharp-fails-with-i?noredirect=1&lq=1
-
-            const string domain = "meteo-wagenborgen.nl";
-            string decryptun = Sup.GetUtilsIniValue( "Maps", "CreateMapUser", "" );
-            string keyFileName = Sup.GetUtilsIniValue( "Maps", "CreateMapKeyFileName", "" );
-
-            try
-            {
-                PrivateKeyFile pskFile;
-                ConnectionInfo connectionInfo;
-
-                // MemoryStream keystrm = new MemoryStream( Encoding.ASCII.GetBytes( thisPK ) );
-                pskFile = new PrivateKeyFile( keyFileName );
-
-                // Don't need precaution for ECDSA Ciphers, if required anyway then look at InetSupport
-                connectionInfo = new ConnectionInfo( domain, 22, decryptun, new PrivateKeyAuthenticationMethod( decryptun, pskFile ) );
-                Sup.LogTraceInfoMessage( $"Map SFTP: Connecting using PSK authentication" );
-
-                ClientRenci = new SftpClient( connectionInfo );
-                ClientRenci.ConnectionInfo.Timeout = TimeSpan.FromSeconds( 300 );
-
-                ClientRenci.Connect();
-                ClientRenci.OperationTimeout = TimeSpan.FromSeconds( 15 );
-                if ( !ClientRenci.IsConnected )
-                {
-                    Sup.LogTraceInfoMessage( $"Map SFTP: Connection error." );
-                    return false;
-                }
-
-                Sup.LogDebugMessage( $" Map: SFTP activated" );
-            }
-            catch ( Exception ex ) when ( ex is SshException )
-            {
-                Sup.LogTraceErrorMessage( $"Map SFTP: Error connecting SFTP - {ex.Message}" );
-                Sup.LogTraceErrorMessage( $"Map SFTP: Failed SFTP connecting. Files will not be transferred" );
-                return false;
-            }
-            catch ( Exception e )
-            {
-                Sup.LogTraceErrorMessage( $"Map SFTP: Unknown Exception on SFTP connecting: {e.Message}" );
-                Sup.LogTraceErrorMessage( $"Map SFTP: Failed SFTP connecting. Files will not be transferred" );
-                return false;
-            }
-
-            return true;
-        }
-
-        #endregion
-
         #region IDisposable CuSupport
         private bool disposedValue; // To detect redundant calls
 
@@ -560,7 +458,6 @@ namespace CumulusUtils
             {
                 if ( disposing )
                 {
-                    ClientRenci?.Dispose();
                 }
 
                 disposedValue = true;

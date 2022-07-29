@@ -73,7 +73,7 @@ namespace CumulusUtils
             CompassRoseType = Convert.ToInt32( Sup.GetUtilsIniValue( "StationMap", "CompassRoseType", "1" ), CultureInfo.InvariantCulture );
             WindArrowType = Convert.ToInt32( Sup.GetUtilsIniValue( "StationMap", "WindArrowType", "1" ), CultureInfo.InvariantCulture );
 
-            StationName = $"{ Sup.GetCumulusIniValue( "Station", "LocName", "" )}";
+            StationName = $"{Sup.GetCumulusIniValue( "Station", "LocName", "" )}";
             StationDesc = $"{Sup.GetCumulusIniValue( "Station", "LocDesc", "" )}";
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.StationMapOutputFilename}", false, Encoding.UTF8 ) )

@@ -96,7 +96,7 @@ namespace CumulusUtils
             for ( i = 0; i < 13; i++ )
                 WindrunRanges[ i ] = Windrunbase + i * Windrunstep; // No conversion as the user supplies this via the inifile (section Graphs)
             for ( i = 0; i < 13; i++ )
-                PressRanges[ i ] = (float) Sup.StationPressure.Convert( PressureDim.hectopascal, Sup.StationPressure.Dim, Pressbase + i * Pressstep ); 
+                PressRanges[ i ] = (float) Sup.StationPressure.Convert( PressureDim.hectopascal, Sup.StationPressure.Dim, Pressbase + i * Pressstep );
 
             for ( i = 0; i < 13; i++ )
                 HumRanges[ i ] = Humbase + i * Humstep;
@@ -1356,7 +1356,7 @@ $"{Sup.GetCUstringValue( "Yadr", "LowShortText", "Lo", false )}</th>" );
         string GetRainColourFormat( float thisValue )
         {
             try
-            {                
+            {
                 if ( thisValue < (float) Sup.StationRain.Convert( RainDim.millimeter, Sup.StationRain.Dim, 0.2 ) )
                     return "class=\"reportday\"";
                 else

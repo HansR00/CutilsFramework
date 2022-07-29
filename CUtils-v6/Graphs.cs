@@ -333,7 +333,7 @@ namespace CumulusUtils
 #if !RELEASE
                     of.WriteLine( thisBuffer );
 #else
-                    of.WriteLine( CuSupport.StringRemoveWhiteSpace( thisBuffer.ToString()," " ) );
+                    of.WriteLine( CuSupport.StringRemoveWhiteSpace( thisBuffer.ToString(), " " ) );
 #endif
 
                 } // Using RainGraphsOutputFile
@@ -571,7 +571,7 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "  $('#graph').change(function() {" );
                     thisBuffer.AppendLine( "    handleChange();" );
                     thisBuffer.AppendLine( "  });" );
-                    thisBuffer.AppendLine( $"  { ( GraphWindRose ? "$('#WindRun').hide(); $('#WindRose').show();" : "$('#WindRun').show(); $('#WindRose').hide();" ) }" );
+                    thisBuffer.AppendLine( $"  {( GraphWindRose ? "$('#WindRun').hide(); $('#WindRose').show();" : "$('#WindRun').show(); $('#WindRose').hide();" )}" );
                     thisBuffer.AppendLine( "  handleChange();" );
                     thisBuffer.AppendLine( "});" );
 
