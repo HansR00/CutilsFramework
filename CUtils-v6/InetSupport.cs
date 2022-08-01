@@ -468,26 +468,28 @@ namespace CumulusUtils
             string CumulusDir = Sup.GetCumulusIniValue( "FTP site", "Directory", "" );
             CumulusDir += "/maps";
 
-            if ( !Download ) { Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: DoUploadFTP configured false => No DownloadSignatureFiles." ); return; }      // No reason to do the whole procedure if we don't have to upload
-
-            if ( Download )
+            if ( !Download ) 
+            { 
+                Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: DoUploadFTP configured false => No DownloadSignatureFiles." );
+                return; 
+            } // No reason to do the whole procedure if we don't have to Download
+            else
             {
                 Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: DoUploadFTP: {Download}" );
                 Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: URL: {CumulusURL}" );
                 Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: Dir: {CumulusDir}" );
 
-                // Get the object used to communicate with the server.
-                //string requestname = CumulusDir + "/MapsOn*.xml";
-
-                //Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: Downloading {requestname}" );
-
                 if ( ProtocolUsed == FtpProtocols.FTP || ProtocolUsed == FtpProtocols.FTPS )
                 {
+                    List<FtpResult> remoteFiles;
+
                     try
                     {
-                        List<FtpResult> theseFiles = clientFluentFTP.DownloadDirectory( localDir, CumulusDir );    //.UploadFile( localfile, requestname, FtpRemoteExists.Overwrite, false, FtpVerify.Throw );
+                        remoteFiles = clientFluentFTP.DownloadDirectory( localDir, CumulusDir );    //.UploadFile( localfile, requestname, FtpRemoteExists.Overwrite, false, FtpVerify.Throw );
                         clientFluentFTP.DeleteDirectory( CumulusDir );
                         clientFluentFTP.CreateDirectory( CumulusDir );
+
+                        Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: {remoteFiles.Count} Signature files successfully Downloaded to {localDir}" );
                     }
                     catch ( Exception e ) when ( e is TimeoutException )
                     {
@@ -513,10 +515,10 @@ namespace CumulusUtils
                 }
                 else if ( ProtocolUsed == FtpProtocols.SFTP )
                 {
+                    List<SftpFile> remoteFiles;
+
                     try
                     {
-                        List<SftpFile> remoteFiles;
-
                         if ( !clientRenci.IsConnected )
                         {
                             //Lost connection so return
@@ -539,11 +541,11 @@ namespace CumulusUtils
                             }
                         }
 
-                        Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: Signature files successfully Downloaded to {localDir}" );
+                        Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: {remoteFiles.Count} Signature files successfully Downloaded to {localDir}" );
                     }
                     catch ( Exception e )
                     {
-                        Sup.LogTraceErrorMessage( $"DownloadSignatureFiles: FTP Signature Files failed to Downloaded" );
+                        Sup.LogTraceErrorMessage( $"DownloadSignatureFiles: SFTP Signature Files failed to Downloaded" );
                         Sup.LogTraceErrorMessage( $"DownloadSignatureFiles: Could not create Map, using previous one." );
                         Sup.LogTraceErrorMessage( $"DownloadSignatureFiles: Exception {e.Message}" );
                         return;
@@ -555,10 +557,6 @@ namespace CumulusUtils
                 }
 
                 Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: Done" );
-            }
-            else // Download = false
-            {
-                Sup.LogTraceInfoMessage( $"DownloadSignatureFiles Download=false -> No file(s) Downloaded." );
             }
 
             return;
@@ -615,12 +613,14 @@ namespace CumulusUtils
             // Prevent issues with OpenSSL so bypass the certificate for the CGI
             // https://stackoverflow.com/questions/52939211/the-ssl-connection-could-not-be-established
 
-            HttpClientHandler clientHandler = new HttpClientHandler
-            {
-                ServerCertificateCustomValidationCallback = ( sender, cert, chain, sslPolicyErrors ) => { return true; }
-            };
+            // This does no longer seem necessary:
+            //HttpClientHandler clientHandler = new HttpClientHandler
+            //{
+            //    ServerCertificateCustomValidationCallback = ( sender, cert, chain, sslPolicyErrors ) => { return true; }
+            //};
 
-            using ( HttpClient PostClient = new HttpClient( clientHandler, true ) )
+            //using ( HttpClient PostClient = new HttpClient( clientHandler, true ) )
+            using ( HttpClient PostClient = new HttpClient( ) )
             {
                 Sup.LogTraceInfoMessage( $"PostUrlData Calling PostAsync" );
 
@@ -633,6 +633,7 @@ namespace CumulusUtils
                             if ( response.IsSuccessStatusCode )
                             {
                                 retval = await response.Content.ReadAsStringAsync();
+                                Sup.LogTraceInfoMessage( $"PostUrlData success response : {response.StatusCode} - {response.ReasonPhrase}" );
                             }
                             else
                             {
