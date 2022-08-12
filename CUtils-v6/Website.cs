@@ -192,25 +192,19 @@ namespace CumulusUtils
                                          $"  var gaProperty = '{Sup.GetUtilsIniValue( "Website", "GoogleStatsId", "" )}';" +
                                          "  var disableStr = 'ga-disable-' + gaProperty;" +
                                          "  if (document.cookie.indexOf(disableStr + '=true') > -1){" +
-#if !RELEASE
-                             "    console.log('Analytics Opt-Out found and set');" +
-#endif
-                             "    window[disableStr] = true;" +
+                                         "    console.log('Analytics Opt-Out found and set');" +
+                                         "    window[disableStr] = true;" +
                                          "  }" +
                                          "  else {" +
-#if !RELEASE
-                             "    console.log('Analytics Opt-Out Fail');" +
-#endif
-                             "  }" );
+                                         "    console.log('Analytics Opt-Out Fail');" +
+                                         "  }" );
                         indexFile.Append( "function gaOptout(){" +
                                          "  document.cookie = disableStr + '=true; " +
                                          "  expires=Thu, 31 Dec 2099 23:59:59 UTC; " +
                                          "  path=/';" +
                                          "  window[disableStr] = true;" +
-#if !RELEASE
-                             "  console.log('Analytics Opt-Out Set');" +
-#endif
-                             "}" +
+                                         "  console.log('Analytics Opt-Out Set');" +
+                                         "}" +
                                          "</script>" );
                     }
                 }
@@ -377,16 +371,6 @@ namespace CumulusUtils
 
                 if ( CMXutils.HasMiscGraphMenu )
                     indexFile.Append( $"          <span class='nav-link' onclick=\"LoadUtilsReport('graphsmisc.txt', false);\">{Sup.GetCUstringValue( "Website", "MiscGraphs", "Misc Graphs", false )}</span>" );
-
-                //{
-                //    bool tmp = Sup.GetCumulusIniValue( "Website", "AddCompilerchartsToChartsMenu", "false" ).Equals("false");
-                //    if ( tmp  )
-                //    {
-                //        while ( Sup.GetCumulusIniValue( "Website", "ExtraChart1", "false" ) )
-                //        indexFile.Append( $"<div class='dropdown-divider'></div>" );
-                //        indexFile.Append( $"<span class='nav-link' onclick=\"LoadUtilsReport( '{tmp}' );\">{}</span>" );
-                //    }
-                //}
 
                 indexFile.Append(
                   "        </div>" +

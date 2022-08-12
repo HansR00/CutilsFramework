@@ -250,7 +250,7 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "  border-spacing: 0;" );
                     thisBuffer.AppendLine( "  border: 1px solid #b0b0b0;" );
                     thisBuffer.AppendLine( "}" );
-                    thisBuffer.AppendLine( $"{Sup.AllowHighchartsBackgroundImage()}" );
+                    thisBuffer.AppendLine( $"{Sup.HighchartsAllowBackgroundImage()}" );
                     thisBuffer.AppendLine( "</style>" );
 
                     thisBuffer.AppendLine( "<div>" ); // class=\"content\"
@@ -399,7 +399,7 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "  border-spacing: 0;" );
                     thisBuffer.AppendLine( "  border: 1px solid #b0b0b0;" );
                     thisBuffer.AppendLine( "}" );
-                    thisBuffer.AppendLine( $"{Sup.AllowHighchartsBackgroundImage()}" );
+                    thisBuffer.AppendLine( $"{Sup.HighchartsAllowBackgroundImage()}" );
                     thisBuffer.AppendLine( "</style>" );
 
                     thisBuffer.AppendLine( "<div>" ); // class=\"content\"
@@ -590,7 +590,7 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "  border-spacing: 0;" );
                     thisBuffer.AppendLine( "  border: 1px solid #b0b0b0;" );
                     thisBuffer.AppendLine( "}" );
-                    thisBuffer.AppendLine( $"{Sup.AllowHighchartsBackgroundImage()}" );
+                    thisBuffer.AppendLine( $"{Sup.HighchartsAllowBackgroundImage()}" );
                     thisBuffer.AppendLine( "</style>" );
 
                     thisBuffer.AppendLine( "<div>" ); // class=\"content\"
@@ -765,7 +765,7 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "  border-spacing: 0;" );
                     thisBuffer.AppendLine( "  border: 1px solid #b0b0b0;" );
                     thisBuffer.AppendLine( "}" );
-                    thisBuffer.AppendLine( $"{Sup.AllowHighchartsBackgroundImage()}" );
+                    thisBuffer.AppendLine( $"{Sup.HighchartsAllowBackgroundImage()}" );
                     thisBuffer.AppendLine( "</style>" );
 
                     thisBuffer.AppendLine( "<div>" ); // class=\"content\"
@@ -918,7 +918,7 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "  border-spacing: 0;" );
                     thisBuffer.AppendLine( "  border: 1px solid #b0b0b0;" );
                     thisBuffer.AppendLine( "}" );
-                    thisBuffer.AppendLine( $"{Sup.AllowHighchartsBackgroundImage()}" );
+                    thisBuffer.AppendLine( $"{Sup.HighchartsAllowBackgroundImage()}" );
                     thisBuffer.AppendLine( "</style>" );
 
                     thisBuffer.AppendLine( "<div>" ); // class=\"content\"

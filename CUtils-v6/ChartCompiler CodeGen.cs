@@ -89,7 +89,7 @@ namespace CumulusUtils
                 Html.AppendLine( "  border-spacing: 0;" );
                 Html.AppendLine( "  border: 1px solid #b0b0b0;" );
                 Html.AppendLine( "}" );
-                Html.AppendLine( Sup.AllowHighchartsBackgroundImage() );
+                Html.AppendLine( Sup.HighchartsAllowBackgroundImage() );
                 Html.AppendLine( "</style>" );
 
                 Html.AppendLine( "<div><p style='text-align:center;'>" );
@@ -448,6 +448,7 @@ namespace CumulusUtils
                         AddSeriesJavascript.AppendLine( $"    color: '{thisChart.WindBarbColor}'," );
                         AddSeriesJavascript.AppendLine( "    type: 'windbarb'," );
                         AddSeriesJavascript.AppendLine( "    visible: true," );
+                        AddSeriesJavascript.AppendLine( $"    dataGrouping: {{enabled: true,units: [ ['hour', [{Sup.HighChartsWindBarbSpacing()}] ] ]}}, " );
                         AddSeriesJavascript.AppendLine( "    tooltip:{valueSuffix: ' m/s'}," );
                         AddSeriesJavascript.AppendLine( "    data: WindBarbData" );
                         AddSeriesJavascript.AppendLine( "  }, false);" );

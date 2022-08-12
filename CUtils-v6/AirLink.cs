@@ -85,8 +85,8 @@ namespace CumulusUtils
     {
         readonly CuSupport Sup;
 
-        enum SupportedCountries : int { US, GB, CA, EU, AU, NL, BE };
-        enum CumulusCountries : int { US, GB, EUAQI, EUCAQI, CA, AU, NL, BE };
+        enum SupportedCountries : int { US, UK, CA, EU, AU, NL, BE };
+        enum CumulusCountries : int { US, UK, CA, EUAQI, EUCAQI, AU, NL, BE };
 
         readonly CultureInfo inv = CultureInfo.InvariantCulture;
         readonly string[] Concentrations = { "2p5", "10" };
@@ -151,8 +151,8 @@ namespace CumulusUtils
                         WrongNormativeCountry = true;
                     break;
 
-                case CumulusCountries.GB:
-                    if ( CountrySelected != SupportedCountries.GB )
+                case CumulusCountries.UK:
+                    if ( CountrySelected != SupportedCountries.UK )
                         WrongNormativeCountry = true;
                     break;
 
@@ -214,7 +214,7 @@ namespace CumulusUtils
                                         $"{Sup.GetCUstringValue("AirQuality", "Hazardous", "Hazardous", false)}" };
                     break;
 
-                case SupportedCountries.GB:
+                case SupportedCountries.UK:
                     NrOfClassesInCountry = 10;
                     Colours = new string[ 10 ] { "#9CFF9C", "#31FF00", "#31CF00", "#FFFF00", "#FFCF00", "#FF9A00", "#FF6464", "#FF0000", "#990000", "#CE30FF" };
                     Description = new string[ 10 ] { $"{Sup.GetCUstringValue("AirQuality", "Low", "Low", false)}",
@@ -603,7 +603,7 @@ namespace CumulusUtils
                 case CumulusCountries.CA:
                 case CumulusCountries.NL:
                 case CumulusCountries.BE:
-                case CumulusCountries.GB:
+                case CumulusCountries.UK:
                 case CumulusCountries.EUAQI:
                     of.AppendLine( "  return parseInt(rawAQI, 10) | 0;" );
                     break;
@@ -755,7 +755,8 @@ namespace CumulusUtils
                     {
                         of.AppendLine( "        if (idx == 'wind') {" );
                         of.AppendLine( "           let convertedWindbarbData = convertToMs(resp[idx]);" );
-                        of.AppendLine( $"          chart.addSeries({{name: titles[idx], xAxis: 1, color: 'black', type: 'windbarb', visible: true, tooltip: {{valueSuffix: ' m/s'}}, data: convertedWindbarbData }}, false);" );
+                        of.AppendLine( $"          chart.addSeries({{name: titles[idx], xAxis: 1, color: 'black', type: 'windbarb', visible: true, " +
+                            $"dataGrouping: {{enabled: true,units: [ ['hour', [{Sup.HighChartsWindBarbSpacing()}] ] ]}}, tooltip: {{valueSuffix: ' m/s'}}, data: convertedWindbarbData }}, false);" );
                         of.AppendLine( "        }" );
                         of.AppendLine( "        else {" );
                     }
@@ -802,8 +803,8 @@ namespace CumulusUtils
 
                 foreach ( string thisConc in Concentrations )
                     // The optional parameters one and two accommodate the AirLink module which charts the In/Out (one) and pm2p5/pm10 (two) combinations
-                    // All other calls to AllowHighchartsBackgroundImage will be without parameters.
-                    of.AppendLine( Sup.AllowHighchartsBackgroundImage( InOut, thisConc ) );
+                    // All other calls to HighchartsAllowBackgroundImage will be without parameters.
+                    of.AppendLine( Sup.HighchartsAllowBackgroundImage( InOut, thisConc ) );
 
             }
 

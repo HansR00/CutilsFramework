@@ -315,10 +315,22 @@ namespace CumulusUtils
 
         public void SetCUstringValue( string section, string key, string def ) => CUstringIni.SetValue( section, key, def );
 
-        public string AllowHighchartsBackgroundImage( string one = "", string two = "" )
+        #region Highcharts
+
+        public int HighChartsWindBarbSpacing()
+        {
+            // Make sure all windbarb charts have an acceptable and correct spacing:
+            //   Note: using illegal unit numbers - like 5 - causes the chart not to display
+            //   See: https://api.highcharts.com/highstock/plotOptions.series.dataGrouping.units
+            //   ['hour',[1, 2, 3, 4, 6, 8, 12] ]
+            int tmp = Convert.ToInt32( GetCumulusIniValue( "Graphs", "GraphHours", "" ) ) / 24;
+            return tmp <= 4 ? tmp : 6;
+        }
+
+        public string HighchartsAllowBackgroundImage( string one = "", string two = "" )
         {
             // The optional parameters one and two accommodate the AirLink module which charts the In/Out (one) and pm2p5/pm10 (two) combinations
-            // All other calls to AllowHighchartsBackgroundImage will be without parameters.
+            // All other calls to HighchartsAllowBackgroundImage will be without parameters.
             string s = GetUtilsIniValue( "General", "ChartBackgroundImage", "" );
 
             if ( !string.IsNullOrEmpty( s ) )
@@ -329,6 +341,8 @@ namespace CumulusUtils
 
             return s;
         }
+
+        #endregion
 
         // Replace white space with either nothing (empty replacement string) or with whatever you want (mostly single space)
         private static readonly Regex sWhitespace = new Regex( @"\s+" );
