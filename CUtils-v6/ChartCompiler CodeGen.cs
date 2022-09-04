@@ -276,8 +276,10 @@ namespace CumulusUtils
                     TheCharts.AppendLine( "      legend:{enabled: true}," );
 
                     if ( thisChart.HasScatter )
-                        TheCharts.AppendLine( "      plotOptions: { scatter: {cursor: 'pointer',enableMouseTracking: false,boostThreshold: 200,marker:{states:{hover:{enabled: false},select:{enabled: false},normal:{enabled: false}}}," +
-                          "shadow: false,label:{enabled: false}}}," );
+                        TheCharts.AppendLine( "      plotOptions: { scatter: {cursor: 'pointer'," +
+                            $"{( Graphx.UseHighchartsBoostModule ? "boostThreshold: 200," : "" )} lineWidth:0," +
+                            $"marker: {{radius: {thisChart.PlotVars.First().LineWidth} }}, " +
+                            "}}," );  //  states:{hover:{enabled: false},select:{enabled: false},normal:{enabled: false}}
                     else
                         TheCharts.AppendLine( "      plotOptions: { series: {turboThreshold: 0, states: { hover: { halo: { size: 5,opacity: 0.25} } },marker: { enabled: false, states: { hover: { enabled: true, radius: 0.1} } } }, }," );
 
@@ -425,13 +427,15 @@ namespace CumulusUtils
                         }
 
                         if ( thisPlotvar.GraphType == "area" )
-                            AddSeriesJavascript.AppendLine( $"    fillOpacity: '{thisPlotvar.Opacity.ToString( "F1", ci )}'," );
+                            AddSeriesJavascript.AppendLine( $"    fillOpacity: {thisPlotvar.Opacity.ToString( "F1", ci )}," );
 
 
                         AddSeriesJavascript.AppendLine( $"    color: '{thisPlotvar.Color}'," );
                         AddSeriesJavascript.AppendLine( $"    yAxis: '{thisPlotvar.AxisId}'," );
                         AddSeriesJavascript.AppendLine( $"    type: '{thisPlotvar.GraphType}'," );
-                        AddSeriesJavascript.AppendLine( $"    lineWidth: {thisPlotvar.LineWidth}," );
+
+                        if ( !thisChart.HasScatter ) AddSeriesJavascript.AppendLine( $"    lineWidth: {thisPlotvar.LineWidth}," );
+
                         AddSeriesJavascript.AppendLine( $"    zIndex: {thisPlotvar.zIndex}," );
                         AddSeriesJavascript.AppendLine( $"    tooltip:{{valueSuffix: ' {thisPlotvar.Unit}'}}" );
                         AddSeriesJavascript.AppendLine( "   }, false);" );

@@ -227,8 +227,8 @@ namespace CumulusUtils
                 indexFile.Append(
                   "<script defer src='https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js'></script>" +
 
-                  "<script defer src='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js' integrity='sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns' crossorigin='anonymous'></script>" +
-                  "<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css' integrity='sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l' crossorigin='anonymous'>" +
+                  "<script defer src='https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js' integrity='sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa' crossorigin='anonymous'></script>" +
+                  "<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css' integrity='sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx' crossorigin='anonymous'>" +
                   "<script src='https://unpkg.com/leaflet@1.5.1/dist/leaflet.js' integrity='sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og==' crossorigin=''></script>" +
                   "<link rel='stylesheet' href='https://unpkg.com/leaflet@1.5.1/dist/leaflet.css' integrity='sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==' crossorigin='' />" +
                   "" );
@@ -236,7 +236,7 @@ namespace CumulusUtils
                 indexFile.Append(
                     "<style>" +
                     $".navbar {{background-color: {Sup.GetUtilsIniValue( "Website", "ColorMenuBackground", "Lightgrey" )}; color:{Sup.GetUtilsIniValue( "Website", "ColorMenuText", "Black" )};}}" +
-                    $".navbar a {{color:{Sup.GetUtilsIniValue( "Website", "ColorMenuText", "Black" )};}}" +
+                    $".navbar a {{color:{Sup.GetUtilsIniValue( "Website", "ColorMenuText", "Black" )}; }}" +
 
                     // Made according to:
                     // https://www.geeksforgeeks.org/how-to-change-hamburger-toggler-color-in-bootstrap/
@@ -244,12 +244,12 @@ namespace CumulusUtils
                     $".custom-toggler .navbar-toggler-icon {{background-image: url(\"data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath " +
                         $"stroke='{Sup.GetUtilsIniValue( "Website", "ColorToggler", "Black" )}' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E\");}}" +
 
-                    $".navbar span {{color:{Sup.GetUtilsIniValue( "Website", "ColorMenuText", "Black" )};}}" +
-                    $".navbar-nav > li > .dropdown-menu {{background-color:{Sup.GetUtilsIniValue( "Website", "ColorDropdownMenuBackground", "Lightgrey" )}; color: {Sup.GetUtilsIniValue( "Website", "ColorDropdownMenuText", "Black" )};}}" +
+                    $".navbar span {{color:{Sup.GetUtilsIniValue( "Website", "ColorMenuText", "Black" )}; cursor: pointer; }}" +
+                    $".navbar-nav > li > .dropdown-menu {{background-color:{Sup.GetUtilsIniValue( "Website", "ColorDropdownMenuBackground", "Lightgrey" )}; cursor: pointer;  color: {Sup.GetUtilsIniValue( "Website", "ColorDropdownMenuText", "Black" )};}}" +
                     $".navbar-nav > li > .dropdown-menu a:hover {{background-color:{Sup.GetUtilsIniValue( "Website", "ColorDropdownMenuHoverBackground", "Silver" )}; color: {Sup.GetUtilsIniValue( "Website", "ColorDropdownMenuHoverText", "Black" )};}}" +
                     $".navbar-nav > li > a:hover {{background-color:{Sup.GetUtilsIniValue( "Website", "ColorDropdownMenuBackground", "Lightgrey" )}; color: {Sup.GetUtilsIniValue( "Website", "ColorDropdownMenuHoverText", "Black" )};}}" +
-                    $".navbar-nav > li > .dropdown-menu span:hover {{background-color:{Sup.GetUtilsIniValue( "Website", "ColorDropdownMenuHoverBackground", "Silver" )}; cursor: pointer;  color: {Sup.GetUtilsIniValue( "Website", "ColorDropdownMenuHoverText", "Black" )};}}" +
-                    $".navbar-nav > li > span:hover {{background-color:{Sup.GetUtilsIniValue( "Website", "ColorDropdownMenuHoverBackground", "Lightgrey" )}; cursor:pointer; color: {Sup.GetUtilsIniValue( "Website", "ColorDropdownMenuHoverText", "Black" )};}}" +
+                    $".navbar-nav > li > .dropdown-menu li:hover {{background-color:{Sup.GetUtilsIniValue( "Website", "ColorDropdownMenuHoverBackground", "Silver" )}; cursor: pointer;  color: {Sup.GetUtilsIniValue( "Website", "ColorDropdownMenuHoverText", "Black" )};}}" +
+                    $".navbar-nav > li > li:hover {{background-color:{Sup.GetUtilsIniValue( "Website", "ColorDropdownMenuHoverBackground", "Lightgrey" )}; cursor:pointer; color: {Sup.GetUtilsIniValue( "Website", "ColorDropdownMenuHoverText", "Black" )};}}" +
                     $".CUTitle {{text-align:center;background-color: {Sup.GetUtilsIniValue( "Website", "ColorTitleBar", "#E87510" )};color:{Sup.GetUtilsIniValue( "Website", "ColorTitleText", "White" )}; " +
                         $"background-image: url('{Sup.GetUtilsIniValue( "Website", "ColorTitleBackGroundImage", "" )}');}} " +
                     $".CUCellTitle {{text-align: center;background-color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarBackground", "#C5C55B" )}; color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarText", "White" )};}} " +
@@ -275,9 +275,8 @@ namespace CumulusUtils
                     "<div class='container-fluid border' style='padding: 5px'>" +
                     "<div class='col-sm-12 CUTitle'>" +
                     "<table style='table-layout:fixed; width:100%; margin:auto' class='CUTable'><tr>" +
-                    $"<td style='width:20%;text-align:left'><span onclick=\"LoadUtilsReport('pwsFWI.txt', false);\">{Sup.GetUtilsIniValue( "pwsFWI", "CurrentPwsFWI", "" )}</span></br>" +
+                    $"<td style='width:20%;text-align:left'><span onclick=\"LoadUtilsReport('pwsFWI.txt', false);\">{Sup.GetUtilsIniValue( "pwsFWI", "CurrentPwsFWI", "" )}</span><br/>" +
                     $"{Sup.GetUtilsIniValue( "Website", "HeaderLeftText", "" )}</td>" +
-                    //$"  <td style='width:20%;text-align:left'>{Sup.GetUtilsIniValue( "Website", "HeaderLeftText", "" )}</td>" +
                     "  <td style='width:60%;text-align:center'>" +
                    $"  <h2 style = 'padding:10px' >{Sup.GetCumulusIniValue( "Station", "LocName", "" )} {Sup.GetUtilsIniValue( "Website", "SiteTitleAddition", "" )}</h2 > " +
                    $"   <h5 style='padding:2px'>" +
@@ -290,8 +289,9 @@ namespace CumulusUtils
                     "</tr></table>" +
                     "</div >" +
                     "<nav class='navbar navbar-default navbar-expand-lg '>" + // navbar-light bg-light
+                    "  <div class='container-fluid'>" +
                     $"  <canvas id='canvas_led' width=30 height=30 style='float:left;'></canvas><span class='navbar-text'>{Sup.GetCUstringValue( "Website", "StationStatus", "Station Status", false )}</span>" +
-                    "  <button class='navbar-toggler navbar-toggler-right custom-toggler' type='button' data-toggle='collapse' data-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation'>" +
+                    "  <button class='navbar-toggler navbar-toggler-right custom-toggler' type='button' data-bs-toggle='collapse' data-bs-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation'>" +
                     "    <span class='navbar-toggler-icon'></span>" +
                     "  </button>" +
                     "  <div class='collapse navbar-collapse' id='navbarSupportedContent'>" +
@@ -300,119 +300,136 @@ namespace CumulusUtils
                     //$"        <span class='nav-link' style='padding:0px;' onclick=\"LoadUtilsReport('pwsFWI.txt', false);\">{Sup.GetUtilsIniValue( "pwsFWI", "CurrentPwsFWI", "" )}</span>" +
                     //"      </li>" +
                     //"    </ul>" +
-                    "    <ul id='CUsermenu' class='navbar-nav ml-auto'></ul>" +
+                    "    <ul id='CUsermenu' class='navbar-nav ms-auto'></ul>" +
                     "    <ul class='navbar-nav'>" +
                     "      <li class='nav-item'>" +
                     $"        <span class='nav-link' onclick='ToggleDashboard()'>{Sup.GetCUstringValue( "Website", "ToggleDashboard", "Toggle Dashboard", false )}</span>" +
                     "      </li>" +
                     "      <li class='nav-item dropdown'>" +
-                    $"        <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownMisc' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>{Sup.GetCUstringValue( "Website", "Misc", "Misc.", false )}</a>" +
-                    "        <div class='dropdown-menu' aria-labelledby='navbarDropdownMisc'>" );
+                    "        <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownMisc' role='button' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
+                    $"          {Sup.GetCUstringValue( "Website", "Misc", "Misc.", false )}" +
+                    "        </a>" +
+                    "        <ul class='dropdown-menu' aria-labelledby='navbarDropdownMisc'>" );
 
                 indexFile.Append(
-                  $"          <span class='nav-link' onclick=\"LoadUtilsReport('forecast.txt', false);\">{Sup.GetCUstringValue( "Website", "Forecast", "Forecast", false )}</span>" +
-                  $"          <span class='nav-link' onclick=\"LoadUtilsReport('systeminfoTable.txt', false);\">{Sup.GetCUstringValue( "Website", "SystemInfo", "System Info", false )}</span>" );
+                  $"          <li class='nav-link' onclick=\"LoadUtilsReport('forecast.txt', false);\">{Sup.GetCUstringValue( "Website", "Forecast", "Forecast", false )}</li>" +
+                  $"          <li class='nav-link' onclick=\"LoadUtilsReport('systeminfoTable.txt', false);\">{Sup.GetCUstringValue( "Website", "SystemInfo", "System Info", false )}</li>" );
 
                 if ( CMXutils.CanDoMap )
-                    indexFile.Append( $"<span class='nav-link' onclick=\"LoadUtilsReport('maps.txt', false);\">{Sup.GetCUstringValue( "Website", "UserMap", "User Map", false )}</span>" );
+                    indexFile.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('maps.txt', false);\">{Sup.GetCUstringValue( "Website", "UserMap", "User Map", false )}</li>" );
 
                 if ( CMXutils.HasStationMapMenu )
-                    indexFile.Append( $"<span class='nav-link' onclick=\"LoadUtilsReport('stationmap.txt', false);\">{Sup.GetCUstringValue( "Website", "StationMap", "StationMap", false )}</span>" );
+                    indexFile.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('stationmap.txt', false);\">{Sup.GetCUstringValue( "Website", "StationMap", "StationMap", false )}</li>" );
 
                 if ( CMXutils.HasMeteoCamMenu )
-                    indexFile.Append( $"<span class='nav-link' onclick=\"LoadUtilsReport('meteocam.txt', false);\">{Sup.GetCUstringValue( "Website", "MeteoCam", "MeteoCam", false )}</span>" );
+                    indexFile.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('meteocam.txt', false);\">{Sup.GetCUstringValue( "Website", "MeteoCam", "MeteoCam", false )}</li>" );
 
-                indexFile.Append( "        </div>" +
+                indexFile.Append( "        </ul>" +
                   "      </li>" );
 
                 if ( CMXutils.HasAirLink || CMXutils.HasExtraSensors )
                 {
-                    indexFile.Append( "      <li class='nav-item dropdown'>" +
-                        $"        <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownMisc' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>{Sup.GetCUstringValue( "Website", "Extra", "Extra", false )}</a>" +
-                        "        <div class='dropdown-menu' aria-labelledby='navbarDropdownExtra'>" );
+                    indexFile.Append( "" +
+                        "      <li class='nav-item dropdown'>" +
+                        $"       <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownExtra' role='button' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
+                        $"         {Sup.GetCUstringValue( "Website", "Extra", "Extra", false )}" +
+                        $"       </a>" +
+                        "        <ul class='dropdown-menu' aria-labelledby='navbarDropdownExtra'>" );
 
                     if ( CMXutils.HasAirLink )
-                        indexFile.Append( $"<span class='nav-link' onclick=\"LoadUtilsReport('airlink.txt', false);\">{Sup.GetCUstringValue( "Website", "AirLink", "AirLink", false )}</span>" );
+                        indexFile.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('airlink.txt', false);\">{Sup.GetCUstringValue( "Website", "AirLink", "AirLink", false )}</li>" );
 
                     if ( CMXutils.HasExtraSensors )
-                        indexFile.Append( $"<span class='nav-link' onclick=\"LoadUtilsReport('extrasensors.txt', false);\">{Sup.GetCUstringValue( "Website", "ExtraSensors", "Extra Sensors", false )}</span>" );
+                        indexFile.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('extrasensors.txt', false);\">{Sup.GetCUstringValue( "Website", "ExtraSensors", "Extra Sensors", false )}</li>" );
 
                     if ( CMXutils.ParticipatesSensorCommunity )
-                        indexFile.Append( $"<span class='nav-link' onclick=\"LoadUtilsReport('sensorcommunity.txt', false);\">{Sup.GetCUstringValue( "Website", "SC map", "SC map", false )}</span>" );
+                        indexFile.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('sensorcommunity.txt', false);\">{Sup.GetCUstringValue( "Website", "SC map", "SC map", false )}</li>" );
 
 
-                    indexFile.Append( "        </div>" +
+                    indexFile.Append( "        </ul>" +
                       "      </li>" );
                 }
 
-                indexFile.Append( "      <li class='nav-item dropdown'>" +
-                  $"        <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownRecords' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>{Sup.GetCUstringValue( "Website", "Records", "Records", false )}</a>" +
-                  "        <div class='dropdown-menu' aria-labelledby='navbarDropdownRecords'>" +
-                  $"          <span class='nav-link' onclick=\"LoadUtilsReport('records.txt', false);\">{Sup.GetCUstringValue( "Website", "Records", "Records", false )}</span>" +
-                  $"          <span class='nav-link' onclick=\"LoadUtilsReport('top10Table.txt', false);\">{Sup.GetCUstringValue( "Website", "Top10Records", "Top 10 Records", false )}</span>" +
-                  $"          <span class='nav-link' onclick=\"LoadUtilsReport('dayrecords.txt', false);\">{Sup.GetCUstringValue( "Website", "DayRecords", "Day Records", false )}</span>" +
-                  "        </div>" +
-                  "      </li>" +
-                  "      <li class='nav-item dropdown'>" +
-                  $"        <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownGraphs' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>{Sup.GetCUstringValue( "Website", "Graphs", "Graphs", false )}</a>" +
-                  "        <div class='dropdown-menu' aria-labelledby='navbarDropdownGraphs'>" );
+                indexFile.Append( "" +
+                    "      <li class='nav-item dropdown'>" +
+                    $"         <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownRecords' role='button' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
+                    $"          {Sup.GetCUstringValue( "Website", "Records", "Records", false )}" +
+                    $"         </a>" +
+                    "          <ul class='dropdown-menu' aria-labelledby='navbarDropdownRecords'>" +
+                    $"           <li class='nav-link' onclick=\"LoadUtilsReport('records.txt', false);\">{Sup.GetCUstringValue( "Website", "Records", "Records", false )}</li>" +
+                    $"           <li class='nav-link' onclick=\"LoadUtilsReport('top10Table.txt', false);\">{Sup.GetCUstringValue( "Website", "Top10Records", "Top 10 Records", false )}</li>" +
+                    $"           <li class='nav-link' onclick=\"LoadUtilsReport('dayrecords.txt', false);\">{Sup.GetCUstringValue( "Website", "DayRecords", "Day Records", false )}</li>" +
+                    "          </ul>" +
+                    "      </li>" +
+                    "      <li class='nav-item dropdown'>" +
+                    $"        <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownGraphs' role='button' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
+                    $"          {Sup.GetCUstringValue( "Website", "Graphs", "Graphs", false )}" +
+                    $"       </a>" +
+                    "        <ul class='dropdown-menu' aria-labelledby='navbarDropdownGraphs'>" );
 
                 if ( CMXutils.HasRainGraphMenu )
-                    indexFile.Append( $"          <span class='nav-link' onclick=\"LoadUtilsReport('graphsrain.txt', false);\">{Sup.GetCUstringValue( "Website", "RainGraphs", "Rain Graphs", false )}</span>" );
+                    indexFile.Append( $"          <li class='nav-link' onclick=\"LoadUtilsReport('graphsrain.txt', false);\">{Sup.GetCUstringValue( "Website", "RainGraphs", "Rain Graphs", false )}</li>" );
 
                 if ( CMXutils.HasTempGraphMenu )
-                    indexFile.Append( $"          <span class='nav-link' onclick=\"LoadUtilsReport('graphstemp.txt', false);\">{Sup.GetCUstringValue( "Website", "TempGraphs", "Temp Graphs", false )}</span>" );
+                    indexFile.Append( $"          <li class='nav-link' onclick=\"LoadUtilsReport('graphstemp.txt', false);\">{Sup.GetCUstringValue( "Website", "TempGraphs", "Temp Graphs", false )}</li>" );
 
                 if ( CMXutils.HasWindGraphMenu )
-                    indexFile.Append( $"          <span class='nav-link' onclick=\"LoadUtilsReport('graphswind.txt', false);\">{Sup.GetCUstringValue( "Website", "WindGraphs", "Wind Graphs", false )}</span>" );
+                    indexFile.Append( $"          <li class='nav-link' onclick=\"LoadUtilsReport('graphswind.txt', false);\">{Sup.GetCUstringValue( "Website", "WindGraphs", "Wind Graphs", false )}</li>" );
 
                 if ( CMXutils.HasSolarGraphMenu )
-                    indexFile.Append( $"          <span class='nav-link' onclick=\"LoadUtilsReport('graphssolar.txt', false);\">{Sup.GetCUstringValue( "Website", "SolarGraphs", "Solar Graphs", false )}</span>" );
+                    indexFile.Append( $"          <li class='nav-link' onclick=\"LoadUtilsReport('graphssolar.txt', false);\">{Sup.GetCUstringValue( "Website", "SolarGraphs", "Solar Graphs", false )}</li>" );
 
                 if ( CMXutils.HasMiscGraphMenu )
-                    indexFile.Append( $"          <span class='nav-link' onclick=\"LoadUtilsReport('graphsmisc.txt', false);\">{Sup.GetCUstringValue( "Website", "MiscGraphs", "Misc Graphs", false )}</span>" );
+                    indexFile.Append( $"          <li class='nav-link' onclick=\"LoadUtilsReport('graphsmisc.txt', false);\">{Sup.GetCUstringValue( "Website", "MiscGraphs", "Misc Graphs", false )}</li>" );
 
                 indexFile.Append(
-                  "        </div>" +
-                  "      </li>" +
-                  "      <li class='nav-item dropdown'>" +
-                  $"        <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownReports' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>{Sup.GetCUstringValue( "Website", "Reports", "Reports", false )}</a>" +
-                  "        <div class='dropdown-menu' aria-labelledby='navbarDropdownReports'>" +
-                  $"          <span class='nav-link' onclick=\"LoadUtilsReport('pwsFWI.txt', false);\">pwsFWI</span>" +
-                  $"          <span class='nav-link' onclick=\"LoadUtilsReport('Yadr.txt', false);\">{Sup.GetCUstringValue( "Website", "Yadr", "Yadr", false )}</span>" +
-                  $"          <span class='nav-link' onclick=\"LoadUtilsReport('noaa.txt', false);\">{Sup.GetCUstringValue( "Website", "NOAA", "NOAA", false )}</span>" +
-                  "        </div>" +
-                  "      </li>" +
-                  "      <li class='nav-item dropdown'>" +
-                  $"        <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownAbout' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>{Sup.GetCUstringValue( "Website", "About", "About", false )}</a>" +
-                  "        <div class='dropdown-menu' aria-labelledby='navbarDropdownAbout'>" +
-                  $"          <span class='nav-link' data-toggle='modal' data-target='#CUserAbout'>{Sup.GetCUstringValue( "Website", "ThisSite", "This Site", false )}</span>" +
-                  $"          <span class='nav-link' data-toggle='modal' data-target='#CUabout'>CumulusUtils</span>" +
-                  $"          <span class='nav-link' data-toggle='modal' data-target='#CUlicense'>License</span>" +
-                  $"          <a class='nav-link' href=\"https://cumuluswiki.org/a/Category:CumulusUtils\" target=\"_blank\">CumulusUtils Wiki</a>" +
-                  "        </div>" +
-                  "      </li>" +
-                  "      <li class='nav-item'>" +
-                  $"          <span class='nav-link' onclick=\"LoadUtilsReport('cumuluscharts.txt', true);\">{Sup.GetCUstringValue( "Website", "Home", "Home", false )}</span>" +
-                  "      </li>" +
-                  "    </ul>" +
-                  "  </div>" +
-                  "</nav>" +
+                    "        </ul>" +
+                    "      </li>" +
+                    "      <li class='nav-item dropdown'>" +
+                    $"        <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownReports' role='button' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
+                    $"          {Sup.GetCUstringValue( "Website", "Reports", "Reports", false )}" +
+                    $"        </a>" +
+                    "        <ul class='dropdown-menu' aria-labelledby='navbarDropdownReports'>" +
+                    $"          <li class='nav-link' onclick=\"LoadUtilsReport('pwsFWI.txt', false);\">pwsFWI</li>" +
+                    $"          <li class='nav-link' onclick=\"LoadUtilsReport('Yadr.txt', false);\">{Sup.GetCUstringValue( "Website", "Yadr", "Yadr", false )}</li>" +
+                    $"          <li class='nav-link' onclick=\"LoadUtilsReport('noaa.txt', false);\">{Sup.GetCUstringValue( "Website", "NOAA", "NOAA", false )}</li>" +
+                    "        </ul>" +
+                    "      </li>" +
+                    "      <li class='nav-item dropdown'>" +
+                    $"        <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownAbout' role='button' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
+                    $"          {Sup.GetCUstringValue( "Website", "About", "About", false )}" +
+                    $"        </a>" +
+                    "        <ul class='dropdown-menu' aria-labelledby='navbarDropdownAbout'>" +
+                    $"          <li class='nav-link' data-bs-toggle='modal' data-bs-target='#CUserAbout'>{Sup.GetCUstringValue( "Website", "ThisSite", "This Site", false )}</li>" +
+                    $"          <li class='nav-link' data-bs-toggle='modal' data-bs-target='#CUabout'>CumulusUtils</li>" +
+                    $"          <li class='nav-link' data-bs-toggle='modal' data-bs-target='#CUlicense'>License</li>" +
+                    $"          <li><a class='nav-link' href=\"https://cumuluswiki.org/a/Category:CumulusUtils\" target=\"_blank\">CumulusUtils Wiki</a></li>" +
+                    "        </ul>" +
+                    "      </li>" +
+                    "      <li class='nav-item'>" +
+                    $"          <span class='nav-link' onclick=\"LoadUtilsReport('cumuluscharts.txt', true);\">{Sup.GetCUstringValue( "Website", "Home", "Home", false )}</span>" +
+                    "      </li>" +
+                    "    </ul>" +
+                    "  </div>" + // id='navbarSupportedContent'
+                    "  </div>" + // Containerfluid, required for bootstrap 5.2 ??
+                    "</nav>" );
+
+                indexFile.Append(
                   "<div class='modal fade' id='CUabout' tabindex='-1' role='dialog' aria-hidden='true'>" +
                   "  <div class='modal-dialog modal-dialog-centered modal-dialog modal-lg' role='document'>" +
                   "  <div class='modal-content'><div class='modal-header'>" +
                   "  <h5 class='modal-title'>About CumulusUtils</h5>" +
-                  "  <button type='button' class='close' data-dismiss='modal' aria-label='Close'>" +
+                  "  <button type='button' class='close' data-bs-dismiss='modal' aria-label='Close'>" +
                   "  <span aria-hidden='true'>&times;</span></button>" +
                   "  </div>" +
                   "  <div id='CUserContent' class='modal-body'>" +
                   "  </div>" +
                   "    <div class='modal-body'>" +
-                  @"This site is made with CumulusUtils, a generator tool for HTML presentation of weather data, retrieved from a weather station powered by <a href='https://cumulus.hosiene.co.uk/index.php'>Cumulus(MX)</a> (all versions). CumulusUtils is built and &copy; by Hans Rottier. It can be freely used an distributed under the Creative Commons 4.0 license (see Licenses). You can find it <a href='https://cumulus.hosiene.co.uk/viewtopic.php?f=44&t=17998' target='_blank'>here</a>.<br /> <br />
+                  @"This site is made with CumulusUtils, a generator tool for HTML presentation of weather data, retrieved from a weather station powered by <a href='https://cumulus.hosiene.co.uk/index.php'>Cumulus(MX)</a> (all versions). CumulusUtils is built and &copy; by Hans Rottier. It can be freely used an distributed under the Creative Commons 4.0 license (see Licenses). You can find it <a href='https://cumulus.hosiene.co.uk/viewtopic.php?f=44&t=17998' target='_blank'>here</a>.<br/> <br/>
 
-With a background in Forestry, chemistry and ICT, I started developing a Top10 list and - above all - a Fire Weather Index. This quickly went out of hand and more modules followed. Finally, the idea of a standard website generator followed. I started out in C on the RPi, quickly changed to C#, to create a similar environment as CumulusMX itself. Out of this, within 6 months, grew CumulusUtils. Version 3.0 is the first release of the website generator but all versions can be used for the single modules as well. CumulusUtils is primarily for cooperation with CumulusMX but on a modular level - not all modules - it can work with Cumulus 1 as well.<br /><br />
+With a background in Forestry, chemistry and ICT, I started developing a Top10 list and - above all - a Fire Weather Index. This quickly went out of hand and more modules followed. Finally, the idea of a standard website generator followed. I started out in C on the RPi, quickly changed to C#, to create a similar environment as CumulusMX itself. Out of this, within 6 months, grew CumulusUtils. Version 3.0 is the first release of the website generator but all versions can be used for the single modules as well. CumulusUtils is primarily for cooperation with CumulusMX but on a modular level - not all modules - it can work with Cumulus 1 as well.<br/><br/>
 
-CumulusUtils stands on the shoulders of the following:<br /><br />
+CumulusUtils stands on the shoulders of the following:<br/><br/>
 <ul>
 <li><a href='https://cumulus.hosiene.co.uk/index.php'>CumulusMX</a> by Steve Loft (retired). Now maintained by Mark Crossley who also did the Gauges (based on the Steelseries). Beteljuice, user on the Cumulus forum, who, often unsollicited, provided advice and ideas. He made a large range of PHP/javascript tools to enhance the basic sites.</li>
 <li>Ken True of <a href='http://saratoga-weather.org/station.php'>Saratoga Weather</a> (Read the About of that site!), Murry Conarroe of <a href='http://weather.wildwoodnaturist.com/'>Wildwood Weather</a> had something to do with it.</li>
@@ -421,7 +438,7 @@ CumulusUtils stands on the shoulders of the following:<br /><br />
 </ul>" +
                   "  </div>" +
                   "  <div class='modal-footer'>" +
-                  $"    <button type='button' class='btn btn-secondary' data-dismiss='modal'>{Sup.GetCUstringValue( "Website", "Close", "Close", false )}</button>" +
+                  $"    <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>{Sup.GetCUstringValue( "Website", "Close", "Close", false )}</button>" +
                   "  </div></div></div>" +
                   "</div>" +
                   "<div class='modal fade' id='CUserAbout' tabindex='-1' role='dialog' aria-hidden='true'>" +
@@ -429,11 +446,11 @@ CumulusUtils stands on the shoulders of the following:<br /><br />
                   "  <div class='modal-content'>" +
                   "  <div class='modal-header'>" +
                   "    <h5 class='modal-title'>About this site</h5>" +
-                  "    <button type='button' class='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>" +
+                  "    <button type='button' class='close' data-bs-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>" +
                   "  </div>" +
                   "  <div id='CUserAboutTxt' class='modal-body'>Here comes the content of file CUserAbout.txt</div>" +
                   "  <div class='modal-footer'>" +
-                  $"    <button type='button' class='btn btn-secondary' data-dismiss='modal'>{Sup.GetCUstringValue( "Website", "Close", "Close", false )}</button>" +
+                  $"    <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>{Sup.GetCUstringValue( "Website", "Close", "Close", false )}</button>" +
                   "  </div></div></div>" +
                   "</div>" +
                   "<div class='modal fade' id='CUlicense' tabindex='-1' role='dialog' aria-hidden='true'>" +
@@ -441,10 +458,10 @@ CumulusUtils stands on the shoulders of the following:<br /><br />
                   "  <div class='modal-content'>" +
                   "  <div class='modal-header'>" +
                   "    <h5 class='modal-title'>Licences</h5>" +
-                  "    <button type='button' class='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>" +
+                  "    <button type='button' class='close' data-bs-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>" +
                   "  </div>" +
                   "    <div class='modal-body'>" +
-                  @"<a rel='license' href='http://creativecommons.org/licenses/by-nc-nd/4.0/'><img alt='Creative Commons Licence' style='border-width:0' src='https://i.creativecommons.org/l/by-nc-nd/4.0/80x15.png' /></a><br />This work is licensed under a <a rel='license' href='http://creativecommons.org/licenses/by-nc-nd/4.0/'>Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>.
+                  @"<a rel='license' href='http://creativecommons.org/licenses/by-nc-nd/4.0/'><img alt='Creative Commons Licence' style='border-width:0' src='https://i.creativecommons.org/l/by-nc-nd/4.0/80x15.png' /></a><br/>This work is licensed under a <a rel='license' href='http://creativecommons.org/licenses/by-nc-nd/4.0/'>Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>.
 The tool is constructed in C# and javascript by &copy; Hans Rottier, on the basis of the Bootstrap toolkit. Licence may change in future. 
 <br/><br/>CumulusUtils is built in C# with the use of <a href='https://visualstudio.microsoft.com/vs/'>Microsoft Visual Studio</a> under the community Licence. The runtime system makes use of HTML and javascript (tools by MicroSoft, Mozilla and Google). The resulting HTML should pass <a href='https://validator.w3.org/'>the W3.org Markup Validation</a>. Please notify if any issue.
 <br/><br/>Use is made of the following software libraries: <br/><br/>
@@ -465,11 +482,11 @@ The tool is constructed in C# and javascript by &copy; Hans Rottier, on the basi
 If I forgot anybody or anything or made the wrong interpretation or reference, please let me know and I will correct. You can contact me at the <a href='https://cumulus.hosiene.co.uk/viewtopic.php?f=14&t=17573'>Cumulus Support Forum</a>, user: HansR" +
                   "  </div>" +
                   "  <div class='modal-footer'>" +
-                  $"    <button type='button' class='btn btn-secondary' data-dismiss='modal'>{Sup.GetCUstringValue( "Website", "Close", "Close", false )}</button>" +
+                  $"    <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>{Sup.GetCUstringValue( "Website", "Close", "Close", false )}</button>" +
                   "  </div></div></div>" +
                   "</div>" +
                   "<div class='row' style='margin:auto'>" +
-                  "  <div class='col-xl-5 id='NormalDashboard' scrollable'>" +
+                  "  <div class='col-xl-5 scrollable' id='NormalDashboard'>" +
                   "<section id='Dashboard'>" +
                   "    <div class='row'>" +
                   "      <div class='col border rounded-lg CUCellBody' onclick=\"ClickGauge(1);\">" +
@@ -606,7 +623,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "    <td style='text-align: left; font-size: smaller'>Powered by <a href='https://cumulus.hosiene.co.uk/index.php'>Cumulus[MX]</a>&nbsp;" +
                   $"         <span id=programVersion>&nbsp;{thisCMXInfo.Version}&nbsp;(build:&nbsp;{thisCMXInfo.Build})</span>" +
                   $"         &nbsp;{( NewVersionAvailable ? "[New version available:&nbsp;build: " + thisCMXInfo.NewBuildNumber + "]" : "" )}<br/>" +
-                   "      Gauges based on work by Mark Crossley. See further under <a data-toggle='modal' href='#CUabout'>About</a> / <a data-toggle='modal' href='#CUlicense'>Licenses</a>.</td>" +
+                   "      Gauges based on work by Mark Crossley. See further under <a data-bs-toggle='modal' href='#CUabout'>About</a> / <a data-bs-toggle='modal' href='#CUlicense'>Licenses</a>.</td>" +
                   $"   <td style='text-align: right; font-size: smaller'>{CuSupport.FormattedVersion()} - {CuSupport.Copyright()}</td>" +
                   "</tr></table>" +
                   "</div>" +
@@ -622,11 +639,11 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     "<script defer  src='https://code.highcharts.com/stock/modules/windbarb.js'></script>" +
                     "<script defer src='https://code.highcharts.com/modules/exporting.js'></script>" +
                     "<script defer src='https://code.highcharts.com/modules/export-data.js'></script>" +
-                    "<script defer src=''https://code.highcharts.com/modules/accessibility.js'></script>" +
+                    "<script defer src='https://code.highcharts.com/modules/accessibility.js'></script>" +
                     "" );
 
                 if ( Graphx.UseHighchartsBoostModule )
-                    indexFile.Append( "<script defer src=\"https://code.highcharts.com/stock/modules/boost.js\"></script>" );
+                    indexFile.Append( "<script defer src='https://code.highcharts.com/stock/modules/boost.js'></script>" );
 
                 indexFile.Append( "<!--STEELSERIES-->" +
                     "<link href='css/gauges-ss.css' rel='stylesheet'/>" +
@@ -2474,10 +2491,10 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                  $"        <h4 class='CUCellTitle'>{Sup.GetCUstringValue( "Website", "Temperature", "Temperature", false )}</h4>" +
                   "        <span style='font-size:200%' id='ajxCurTemp'></span>" +
                   "        <p>" +
-                  "          <span id='ajxTempChange'></span><span id='ajxTempChangeIndicator'></span><br /><br />" +
-                  "          <span id='ajxTempMax'></span><br />" +
-                  "          <span id='ajxTimeTempMax'></span><br /><br />" +
-                  "          <span id='ajxTempMin'></span><br />" +
+                  "          <span id='ajxTempChange'></span><span id='ajxTempChangeIndicator'></span><br/><br/>" +
+                  "          <span id='ajxTempMax'></span><br/>" +
+                  "          <span id='ajxTimeTempMax'></span><br/><br/>" +
+                  "          <span id='ajxTempMin'></span><br/>" +
                   "          <span id='ajxTimeTempMin'></span>" +
                   "        </p>";
                     break;
@@ -2488,10 +2505,10 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "        <span style='font-size:200%' id='ajxCurPression'></span>" +
                   "        <p>" +
                   "          <span id='ajxBarChange'></span>" +
-                  "          <span id='ajxBarChangeIndicator'></span><br /><br />" +
-                  "          <span id='ajxBarMax'></span ><br />" +
-                  "          <span id='ajxTimeBarMax'></span><br /><br />" +
-                  "          <span id='ajxBarMin'></span><br />" +
+                  "          <span id='ajxBarChangeIndicator'></span><br/><br/>" +
+                  "          <span id='ajxBarMax'></span ><br/>" +
+                  "          <span id='ajxTimeBarMax'></span><br/><br/>" +
+                  "          <span id='ajxBarMin'></span><br/>" +
                   "          <span id='ajxTimeBarMin'></span>" +
                   "        </p>";
                     break;
@@ -2500,10 +2517,10 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     thisPanelCode =
                  $"        <h4 class='CUCellTitle'>{Sup.GetCUstringValue( "Website", "Rain", "Rain", false )}</h4><span style='font-size:200%' id='ajxRainToday'></span>" +
                   "        <p>" +
-                  "          <span id='ajxRainRateNow'></span><br /><br />" +
+                  "          <span id='ajxRainRateNow'></span><br/><br/>" +
                   "          <!-- span id='ajxTodayRainRateHigh'></span> -->" +
-                  "          <span id='ajxRainYesterday'></span><br />" +
-                  "          <span id='ajxRainMonth'></span><br />" +
+                  "          <span id='ajxRainYesterday'></span><br/>" +
+                  "          <span id='ajxRainMonth'></span><br/>" +
                   "          <span id='ajxRainYear'></span >" +
                   "        </p>";
                     break;
@@ -2511,8 +2528,8 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 case DashboardPanels.Clocks:
                     thisPanelCode =
                  $"        <h4 class='CUCellTitle'>{Sup.GetCUstringValue( "Website", "Clock", "Clock", false )}</h4>" +
-                  "        <span id='ajxDateUpdate'></span ><br />" +
-                  "        <span id='ajxTimeUpdate'></span><br />" +
+                  "        <span id='ajxDateUpdate'></span ><br/>" +
+                  "        <span id='ajxTimeUpdate'></span><br/>" +
                   "        <span id='CUClocktimetz'></span>" +
                   "        <span id='CUClocktimeBrowser'></span>" +
                   "        <span id='CUClocktimeutc'></span>";
@@ -2546,9 +2563,9 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                  $"        <span style='font-size: 140%'>{Sup.GetCUstringValue( "Website", "Average", "Average", false )}: </span><span style='font-size: 140%' id='ajxAverageWind'></span><br/>" +
                  $"        <span style='font-size: 140%'>{Sup.GetCUstringValue( "Website", "Beaufort", "Beaufort", false )}: </span><span style='font-size: 140%' id='ajxCurWindBf'></span><br/><br/>" +
                   "        <p>" +
-                  "          <span id='ajxHighAverage'></span><br />" +
-                  "          <span id='ajxTimeHighAverage'></span ><br />" +
-                  "          <span id='ajxHighGust'></span><br />" +
+                  "          <span id='ajxHighAverage'></span><br/>" +
+                  "          <span id='ajxTimeHighAverage'></span ><br/>" +
+                  "          <span id='ajxHighGust'></span><br/>" +
                   "          <span id='ajxTimeHighGust'></span >" +
                   "        </p>";
                     break;
@@ -2558,8 +2575,8 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   $"        <h4 class='CUCellTitle'>{Sup.GetCUstringValue( "Website", "Sun", "Sun", false )}</h4>" +
                   "        <div id='d3SunDisc'></div>" +
                   "        <p>" +
-                  $"          <span>{Sup.GetCUstringValue( "Website", "Sunrise", "Sunrise", false )}: @&nbsp;</span><span id='CUsunrise'></span><br />" +
-                  $"          <span>{Sup.GetCUstringValue( "Website", "Sunset", "Sunset", false )}: @&nbsp;</span><span id='CUsunset'></span><br />" +
+                  $"          <span>{Sup.GetCUstringValue( "Website", "Sunrise", "Sunrise", false )}: @&nbsp;</span><span id='CUsunrise'></span><br/>" +
+                  $"          <span>{Sup.GetCUstringValue( "Website", "Sunset", "Sunset", false )}: @&nbsp;</span><span id='CUsunset'></span><br/>" +
                   $"          <span>{Sup.GetCUstringValue( "Website", "DayLength", "Day length", false )}: @&nbsp;</span><span id='CUdaylength'></span>" +
                   "        </p>";
                     break;
@@ -2570,7 +2587,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "        <div id='d3MoonDisc'></div>" +
                   "        <br/>" +
                   "        <p>" +
-                  $"          <span>{Sup.GetCUstringValue( "Website", "Moonrise", "Moonrise", false )}: @&nbsp;</span><span id='CUmoonrise'></span><br />" +
+                  $"          <span>{Sup.GetCUstringValue( "Website", "Moonrise", "Moonrise", false )}: @&nbsp;</span><span id='CUmoonrise'></span><br/>" +
                   $"          <span>{Sup.GetCUstringValue( "Website", "Moonset", "Moonset", false )}: @&nbsp;</span><span id='CUmoonset'></span >" +
                   "        </p>";
                     break;
@@ -2578,10 +2595,10 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 case DashboardPanels.HumidityText:
                     thisPanelCode =
                   $"        <h4 class='CUCellTitle'>{Sup.GetCUstringValue( "Website", "Humidity", "Humidity", false )}</h4>" +
-                  $"        <span style='font-size: 140%'>{Sup.GetCUstringValue( "Website", "Humidity", "Humidity", false )}:</span><br />" +
-                  "        <span style='font-size: 200%' id='ajxCurHumidity'></span><br />" +
-                  $"        <span style='font-size: 140%'>{Sup.GetCUstringValue( "Website", "Dewpoint", "Dew Point", false )}:</span><br />" +
-                  "        <span style='font-size: 200%' id='ajxDewpoint'></span><br />";
+                  $"        <span style='font-size: 140%'>{Sup.GetCUstringValue( "Website", "Humidity", "Humidity", false )}:</span><br/>" +
+                  "        <span style='font-size: 200%' id='ajxCurHumidity'></span><br/>" +
+                  $"        <span style='font-size: 140%'>{Sup.GetCUstringValue( "Website", "Dewpoint", "Dew Point", false )}:</span><br/>" +
+                  "        <span style='font-size: 200%' id='ajxDewpoint'></span><br/>";
                     break;
 
                 case DashboardPanels.SolarText:
@@ -2590,17 +2607,17 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     if ( ShowSolar )
                     {
                         thisPanelCode +=
-                        $"        <span style='font-size: 140%'>{Sup.GetCUstringValue( "Website", "SolarRadiation", "Solar Radiation", false )}:</span><br />" +
-                         "        <span style='font-size: 200%' id='ajxCurSolar'></span><br />" +
-                        $"        <span>{Sup.GetCUstringValue( "Website", "MaxValue", "Max value", false )}: </span><span id='ajxCurSolarMax'></span><br />" +
-                        $"        <span>{Sup.GetCUstringValue( "Website", "SolarHours", "Sunshine today", false )}: </span><span id='ajxSolarHours'></span><br />";
+                        $"        <span style='font-size: 140%'>{Sup.GetCUstringValue( "Website", "SolarRadiation", "Solar Radiation", false )}:</span><br/>" +
+                         "        <span style='font-size: 200%' id='ajxCurSolar'></span><br/>" +
+                        $"        <span>{Sup.GetCUstringValue( "Website", "MaxValue", "Max value", false )}: </span><span id='ajxCurSolarMax'></span><br/>" +
+                        $"        <span>{Sup.GetCUstringValue( "Website", "SolarHours", "Sunshine today", false )}: </span><span id='ajxSolarHours'></span><br/>";
                     }
 
                     if ( ShowUV )
                     {
                         thisPanelCode +=
                        $"        <span style='font-size: 140%'>{Sup.GetCUstringValue( "Website", "UVindex", "UV index", false )}: </span>" +
-                        "        <span style='font-size: 200%' id='ajxCurUVindex'></span><br />";
+                        "        <span style='font-size: 200%' id='ajxCurUVindex'></span><br/>";
                     }
 
 
@@ -2707,20 +2724,20 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
         private string WindGaugeContent()
         {
-            return $"        <span id='WindContent'> <h4 class='CUCellTitle'>{Sup.GetCUstringValue( "Website", "Wind", "Wind", false )}</h4>" +
-                  "        <canvas id='canvas_wind' class='gaugeSizeSml'></canvas></span>";
+            return $"        <div id='WindContent'> <h4 class='CUCellTitle'>{Sup.GetCUstringValue( "Website", "Wind", "Wind", false )}</h4>" +
+                  "        <canvas id='canvas_wind' class='gaugeSizeSml'></canvas></div>";
         }
 
         private string WindDirContent()
         {
-            return $"        <span id='WindDirContent'><h4 class='CUCellTitle'>{Sup.GetCUstringValue( "Website", "Direction", "Direction", false )}</h4>" +
-                  "        <canvas id='canvas_dir' class='gaugeSizeSml'></canvas></span>";
+            return $"        <div id='WindDirContent'><h4 class='CUCellTitle'>{Sup.GetCUstringValue( "Website", "Direction", "Direction", false )}</h4>" +
+                  "        <canvas id='canvas_dir' class='gaugeSizeSml'></canvas></div>";
         }
 
         private string WindRoseContent()
         {
-            return $"        <span id='WindRoseContent'><h4 class='CUCellTitle'>{Sup.GetCUstringValue( "Website", "WindRose", "Wind Rose", false )}</h4>" +
-                  "        <canvas id='canvas_rose' class='gaugeSizeSml'></canvas></span>";
+            return $"        <div id='WindRoseContent'><h4 class='CUCellTitle'>{Sup.GetCUstringValue( "Website", "WindRose", "Wind Rose", false )}</h4>" +
+                  "        <canvas id='canvas_rose' class='gaugeSizeSml'></canvas></div>";
         }
 
         #endregion

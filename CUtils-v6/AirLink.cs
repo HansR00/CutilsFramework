@@ -86,7 +86,7 @@ namespace CumulusUtils
         readonly CuSupport Sup;
 
         enum SupportedCountries : int { US, UK, CA, EU, AU, NL, BE };
-        enum CumulusCountries : int { US, UK, CA, EUAQI, EUCAQI, AU, NL, BE };
+        enum CumulusCountries : int { US, UK, EUAQI, EUCAQI, CA, AU, NL, BE };
 
         readonly CultureInfo inv = CultureInfo.InvariantCulture;
         readonly string[] Concentrations = { "2p5", "10" };
@@ -697,7 +697,7 @@ namespace CumulusUtils
                         tmpBuilder.AppendLine( $" color: ReferenceColours[{i}]," );
                         tmpBuilder.AppendLine( " zIndex: 0," );
                         tmpBuilder.AppendLine( $" label: {{ text:'{Sup.GetCUstringValue( "AirQuality", "RefLine", "Reference line", true )} '+ ReferenceConcentrations{thisConc}[{i}] + ' μg/m3', y:-10}}," );
-                        tmpBuilder.AppendLine( " width: 4" );
+                        tmpBuilder.AppendLine( $" width: {Sup.GetUtilsIniValue( "AirLink", "ReferenceLineThickness", "4" )}" );
                         tmpBuilder.Append( "},{" );
                     }
 

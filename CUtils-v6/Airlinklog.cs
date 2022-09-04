@@ -214,8 +214,6 @@ namespace CumulusUtils
             //
             Sup.LogDebugMessage( $"ReadAirlinklog: start." );
 
-            Stopwatch watch = Stopwatch.StartNew();
-
             string line;
             bool NextFileTried = false;
             bool PeriodComplete = false;
@@ -301,8 +299,6 @@ namespace CumulusUtils
             } // Loop over all files in AirlinkfileList
 
             Sup.LogTraceInfoMessage( $"ReadAirlinklog: MainMonthList created: {MainAirLinkList.Count} records." );
-            watch.Stop();
-            Sup.LogTraceInfoMessage( $"ReadAirlinklog: Timing of Airlinklogfile read = {watch.ElapsedMilliseconds} ms" );
             Sup.LogTraceInfoMessage( $"ReadAirlinklog: End" );
 
             return MainAirLinkList;

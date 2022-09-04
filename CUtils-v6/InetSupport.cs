@@ -69,19 +69,19 @@ namespace CumulusUtils
         SftpClient clientRenci;
         bool FTPvalid;                         // Indication whether a connection could be made and filetransfer is possible.
 
+        #region Initialiser
+
         public InetSupport( CuSupport s )
         {
             Sup = s;
 
             Sup.LogDebugMessage( "InetSupport: Constructor start" );
 
-            // For version 4.7.0 the FTP coding / File Upload will be rewritten and requires a bit more info in this class
             username = Sup.GetCumulusIniValue( "FTP site", "Username", "" );
             password = Sup.GetCumulusIniValue( "FTP site", "Password", "" );
             hostname = Sup.GetCumulusIniValue( "FTP site", "Host", "" );
             port = Convert.ToInt32( Sup.GetCumulusIniValue( "FTP site", "Port", "21" ) );
 
-            // The next parameter require the default because Cumulus 1 does not know Sslftp parameter so an empty default fails the convert
             ProtocolUsed = (FtpProtocols) Convert.ToInt32( Sup.GetCumulusIniValue( "FTP site", "Sslftp", "0" ) );
             PassiveFTP = Sup.GetCumulusIniValue( "FTP site", "ActiveFTP", "" ).Equals( "0" );
 
@@ -132,7 +132,6 @@ namespace CumulusUtils
                     Sup.LogTraceErrorMessage( $"InetSupport: Unknown Exception on FTP connecting to {hostname}: {e.Message}" );
                     Sup.LogTraceErrorMessage( $"InetSupport: Failed FTP connecting to {hostname}. Files will not be transferred" );
                     FTPvalid = false;
-                    // throw;  Simply continue and leave all files without uploading Is OK
                 }
             }
             else if ( ProtocolUsed == FtpProtocols.FTPS )
@@ -171,7 +170,6 @@ namespace CumulusUtils
                     Sup.LogTraceErrorMessage( $"InetSupport: Unknown Exception on FTPS connecting to {hostname}: {e.Message}" );
                     Sup.LogTraceErrorMessage( $"InetSupport: Failed FTPS connecting to {hostname}. Files will not be transferred" );
                     FTPvalid = false;
-                    // throw;  Simply continue and leave all files without uploading Is OK
                 }
             }
             else if ( ProtocolUsed == FtpProtocols.SFTP )
@@ -257,6 +255,10 @@ namespace CumulusUtils
             return;
         }
 
+        #endregion
+
+        #region UploadFile
+
         public bool UploadFile( string remotefile, string localfile )
         {
             // On Async FTP: https://social.msdn.microsoft.com/Forums/vstudio/en-US/994fa6e8-e345-4d10-97e6-e540bec0cb76/what-is-asynchronous-ftp?forum=csharpgeneral
@@ -267,7 +269,6 @@ namespace CumulusUtils
             // Immediately return if something was wrong at contructor time
             if ( !FTPvalid )
             {
-                // No reason to do the whole procedure if we can't upload
                 Sup.LogTraceErrorMessage( $"UploadFile: Nothing uploaded because of connection error." );
                 return false;
             }
@@ -281,24 +282,19 @@ namespace CumulusUtils
 
             Upload = Sup.GetUtilsIniValue( "FTP site", "DoUploadFTP", "false" ).ToLower() == "true";
 
-            // Make sure the UploadDir is in the inifile early
             string CumulusURL = Sup.GetCumulusIniValue( "FTP site", "Host", "" );
             string CumulusDir = Sup.GetCumulusIniValue( "FTP site", "Directory", "" );
             string CumulusUtilsDir = Sup.GetUtilsIniValue( "FTP site", "UploadDir", "" );
 
             if ( !Upload ) { Sup.LogTraceInfoMessage( $"UploadFile: DoUploadFTP configured false => No Upload." ); return false; }      // No reason to do the whole procedure if we don't have to upload
 
-            // Check for URL in CumulusIni
-            if ( string.IsNullOrEmpty( CumulusURL ) )
-                Upload = false;                                                               // Kind of paranoia check but well,you never know :(
+            if ( string.IsNullOrEmpty( CumulusURL ) ) Upload = false; // Kind of paranoia check but well,you never know :|
             else
             {
                 URL = CumulusURL;
 
-                if ( string.IsNullOrEmpty( CumulusUtilsDir ) )
-                    Dir = CumulusDir;
-                else
-                    Dir = CumulusUtilsDir;
+                if ( string.IsNullOrEmpty( CumulusUtilsDir ) ) Dir = CumulusDir;
+                else Dir = CumulusUtilsDir;
             }
 
             if ( Upload )
@@ -323,22 +319,19 @@ namespace CumulusUtils
                     catch ( Exception e ) when ( e is TimeoutException )
                     {
                         Sup.LogTraceErrorMessage( $"UploadFile ERROR: Timeout Exception: {e.Message}" );
-                        if ( e.InnerException != null )
-                            Sup.LogTraceErrorMessage( $"UploadFile ERROR: Inner Exception: {e.InnerException}" );
+                        if ( e.InnerException != null ) Sup.LogTraceErrorMessage( $"UploadFile ERROR: Inner Exception: {e.InnerException}" );
                         return false;
                     }
                     catch ( Exception e ) when ( e is FtpAuthenticationException || e is FtpCommandException || e is FtpSecurityNotAvailableException )
                     {
                         Sup.LogTraceErrorMessage( $"UploadFile ERROR: Exception: {e.Message}" );
-                        if ( e.InnerException != null )
-                            Sup.LogTraceErrorMessage( $"UploadFile ERROR: Inner Exception: {e.InnerException}" );
+                        if ( e.InnerException != null ) Sup.LogTraceErrorMessage( $"UploadFile ERROR: Inner Exception: {e.InnerException}" );
                         return false;
                     }
                     catch ( Exception e )
                     {
                         Sup.LogTraceErrorMessage( $"UploadFile ERROR: General Exception: {e.Message}" );
-                        if ( e.InnerException != null )
-                            Sup.LogTraceErrorMessage( $"UploadFile ERROR: Inner Exception: {e.InnerException}" );
+                        if ( e.InnerException != null ) Sup.LogTraceErrorMessage( $"UploadFile ERROR: Inner Exception: {e.InnerException}" );
                         return false;
                     }
                 }
@@ -418,15 +411,13 @@ namespace CumulusUtils
                         catch ( Exception e ) when ( e is SshException )
                         {
                             Sup.LogTraceErrorMessage( $"Upload SFTP: Error uploading {localfile} to {remotefile} : {e.Message}" );
-                            if ( e.InnerException != null )
-                                Sup.LogTraceErrorMessage( $"UploadFile SFTP ERROR: Inner Exception: {e.InnerException}" );
+                            if ( e.InnerException != null ) Sup.LogTraceErrorMessage( $"UploadFile SFTP ERROR: Inner Exception: {e.InnerException}" );
                             return false;
                         }
                         catch ( Exception e )
                         {
                             Sup.LogTraceErrorMessage( $"Upload SFTP: ERROR General Exception: {e.Message}" );
-                            if ( e.InnerException != null )
-                                Sup.LogTraceErrorMessage( $"UploadFile SFTP ERROR: Inner Exception: {e.InnerException}" );
+                            if ( e.InnerException != null ) Sup.LogTraceErrorMessage( $"UploadFile SFTP ERROR: Inner Exception: {e.InnerException}" );
                             return false;
                         }
                     }
@@ -443,6 +434,9 @@ namespace CumulusUtils
             return true;
         } // EndOf UploadFile
 
+        #endregion
+
+        #region DownloadSignatureFiles
 
         public void DownloadSignatureFiles()
         {
@@ -450,29 +444,25 @@ namespace CumulusUtils
 
             bool Download;
 
-            // Immediately return if something was wrong at contructor time
             if ( !FTPvalid )
             {
-                // No reason to do the whole procedure if we can't upload
                 Sup.LogTraceErrorMessage( $"DownloadSignatureFiles: Nothing downloaded because of connection error." );
                 return;
             }
 
             Sup.LogDebugMessage( $"DownloadSignatureFiles: Start" );
 
-            // Make sure we are intended to do an FTP operation
             Download = Sup.GetUtilsIniValue( "FTP site", "DoUploadFTP", "false" ).ToLower() == "true";
 
-            // Make sure the UploadDir is in the inifile early
             string CumulusURL = Sup.GetCumulusIniValue( "FTP site", "Host", "" );
             string CumulusDir = Sup.GetCumulusIniValue( "FTP site", "Directory", "" );
             CumulusDir += "/maps";
 
-            if ( !Download ) 
+            if ( !Download ) // No reason to do the whole procedure if we don't have to Download
             { 
                 Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: DoUploadFTP configured false => No DownloadSignatureFiles." );
                 return; 
-            } // No reason to do the whole procedure if we don't have to Download
+            } 
             else
             {
                 Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: DoUploadFTP: {Download}" );
@@ -494,22 +484,19 @@ namespace CumulusUtils
                     catch ( Exception e ) when ( e is TimeoutException )
                     {
                         Sup.LogTraceErrorMessage( $"DownloadSignatureFiles ERROR: Timeout Exception: {e.Message}" );
-                        if ( e.InnerException != null )
-                            Sup.LogTraceErrorMessage( $"DownloadSignatureFiles ERROR: Inner Exception: {e.InnerException}" );
+                        if ( e.InnerException != null ) Sup.LogTraceErrorMessage( $"DownloadSignatureFiles ERROR: Inner Exception: {e.InnerException}" );
                         return;
                     }
                     catch ( Exception e ) when ( e is FtpAuthenticationException || e is FtpCommandException || e is FtpSecurityNotAvailableException )
                     {
                         Sup.LogTraceErrorMessage( $"DownloadSignatureFiles ERROR: Exception: {e.Message}" );
-                        if ( e.InnerException != null )
-                            Sup.LogTraceErrorMessage( $"DownloadSignatureFiles ERROR: Inner Exception: {e.InnerException}" );
+                        if ( e.InnerException != null ) Sup.LogTraceErrorMessage( $"DownloadSignatureFiles ERROR: Inner Exception: {e.InnerException}" );
                         return;
                     }
                     catch ( Exception e )
                     {
                         Sup.LogTraceErrorMessage( $"DownloadSignatureFiles ERROR: General Exception: {e.Message}" );
-                        if ( e.InnerException != null )
-                            Sup.LogTraceErrorMessage( $"DownloadSignatureFiles ERROR: Inner Exception: {e.InnerException}" );
+                        if ( e.InnerException != null ) Sup.LogTraceErrorMessage( $"DownloadSignatureFiles ERROR: Inner Exception: {e.InnerException}" );
                         return;
                     }
                 }
@@ -521,7 +508,6 @@ namespace CumulusUtils
                     {
                         if ( !clientRenci.IsConnected )
                         {
-                            //Lost connection so return
                             Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: FTPSConnection lost; return" );
                             return;
                         }
@@ -562,11 +548,9 @@ namespace CumulusUtils
             return;
         } // EndOf DownloadSignatureFiles
 
+        #endregion
 
-
-        // NOTE: The PostClient and the GetClient are solely used for the IPC with CMX
-        // So the baseaddress is allways the localhost and set here from the CmxIPC module
-        //
+        #region GET/POST
 
         public async Task<string> GetUrlDataAsync( Uri thisURL )
         {
@@ -660,6 +644,8 @@ namespace CumulusUtils
             return retval;
         }
 
+        #endregion
+
         #region IDisposable
 
         private bool disposedValue; // To detect redundant calls
@@ -701,5 +687,6 @@ namespace CumulusUtils
         }
 
         #endregion IDisposable
+
     } // EndOf Class
 } // EndOf NameSpace

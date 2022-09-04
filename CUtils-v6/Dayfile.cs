@@ -209,8 +209,6 @@ namespace CumulusUtils
             // Start the p rocessing of dayfile.txt
             Sup.LogTraceInfoMessage( "CumulusUtils : Creating class dayfile -> Opening dayfile.txt" );
 
-            Stopwatch watch = Stopwatch.StartNew();
-
             if ( UseSQL )
             {
                 tmpMainlist = ReadDayfileFromSQL();
@@ -234,9 +232,6 @@ namespace CumulusUtils
 
                     line = ReadLine();
                 }
-
-                watch.Stop();
-                Sup.LogTraceInfoMessage( $"Timing of Dayfile load = {watch.ElapsedMilliseconds} ms" );
             }
 
             Sup.LogTraceInfoMessage( $"CumulusUtils : Read dayfile.txt succesfully - {tmpMainlist.Count} records" );
@@ -578,8 +573,6 @@ namespace CumulusUtils
 
                 Sup.LogDebugMessage( $"ReadDayfileFromSQL: Reading Dayfile records from {builder.Database}@{builder.Server}" );
 
-                Stopwatch Watch = Stopwatch.StartNew();
-
                 using ( MySqlConnection connection = new MySqlConnection( builder.ConnectionString ) )
                 {
                     CultureInfo ci = CultureInfo.InvariantCulture;
@@ -656,9 +649,6 @@ namespace CumulusUtils
 
                 } // using: Connection
 
-                Watch.Stop();
-
-                Sup.LogDebugMessage( $"Timing of SQL command generation = {Watch.ElapsedMilliseconds} ms" );
                 Sup.LogDebugMessage( $"Reading Dayfile MySQL Done" );
             }
             catch ( MySqlException e )

@@ -198,8 +198,6 @@ namespace CumulusUtils
         {
             Sup.LogDebugMessage( $"ReadMonthlyLogs: start." );
 
-            Stopwatch watch = Stopwatch.StartNew();
-
             if ( MonthlyLogsRead )
             {
                 ;
@@ -227,10 +225,7 @@ namespace CumulusUtils
 
                     Sup.LogDebugMessage( $"ReadMonthlyLogs: reading {file}" );
 
-                    //watch = Stopwatch.StartNew();
                     string[] allLines = File.ReadAllLines( filenameCopy ); //got to use this sometime
-                    //watch.Stop();
-                    //Sup.LogTraceInfoMessage( $"Timing of ReadAllLines for {filenameCopy} = {watch.ElapsedMilliseconds} ms" );
 
                     bool SanityCheck = true;
 
@@ -261,8 +256,6 @@ namespace CumulusUtils
                 MonthlyLogsRead = true;
             } // else [from: if (MonthlyLogsRead) ]
 
-            watch.Stop();
-            Sup.LogTraceInfoMessage( $"ReadMonthlyLogs: Timing of Monthly logfile read = {watch.ElapsedMilliseconds} ms" );
             Sup.LogTraceInfoMessage( $"ReadMonthlyLogs: MainMonthList created/fetched: {MainMonthList.Count} records." );
             Sup.LogTraceInfoMessage( $"ReadMonthlyLogs: End" );
 
@@ -272,8 +265,6 @@ namespace CumulusUtils
         internal List<MonthfileValue> ReadPartialMonthlyLogs( DateTime Start, DateTime End )
         {
             Sup.LogDebugMessage( $"ReadPartialMonthlyLogs: start." );
-
-            Stopwatch watch = Stopwatch.StartNew();
 
             List<string> FilesToRead = new List<string>();
             List<MonthfileValue> thisList = new List<MonthfileValue>();
@@ -297,10 +288,7 @@ namespace CumulusUtils
 
                 Sup.LogTraceInfoMessage( $"ReadPartialMonthlyLogs: reading {file}" );
 
-                //watch = Stopwatch.StartNew();
                 string[] allLines = File.ReadAllLines( filenameCopy ); //got to use this sometime
-                //watch.Stop();
-                //Sup.LogTraceInfoMessage( $"Timing of ReadAllLines for {filenameCopy} = {watch.ElapsedMilliseconds} ms" );
 
                 bool SanityCheck = true;
 
@@ -317,8 +305,6 @@ namespace CumulusUtils
                     File.Delete( filenameCopy );
             } // Loop over all files in FilesToRead
 
-            watch.Stop();
-            Sup.LogTraceInfoMessage( $"ReadPartialMonthlyLogs: Timing = {watch.ElapsedMilliseconds} ms" );
             Sup.LogTraceInfoMessage( $"ReadMonthlyLogs: End" );
 
             return thisList;

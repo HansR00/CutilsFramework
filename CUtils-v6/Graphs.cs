@@ -639,7 +639,9 @@ namespace CumulusUtils
                     {
                         List<MonthfileValue> thisList;
 
-                        Stopwatch watch = Stopwatch.StartNew();
+#if DEBUG
+                        Stopwatch watch = Stopwatch.StartNew(); 
+#endif
 
                         // The MonthfileMainlist is created atr the start of graphs
                         // Check in the Monthfile Class itself whether the list has already been created because it may have been asked
@@ -648,8 +650,10 @@ namespace CumulusUtils
                         thisList = thisMonthfile.ReadMonthlyLogs();
                         GenerateWindRose( thisList, thisBuffer );
 
+#if DEBUG
                         watch.Stop();
-                        Sup.LogTraceInfoMessage( $"Timing of WindRose generation = {watch.ElapsedMilliseconds} ms" );
+                        Sup.LogTraceInfoMessage( $"Timing of WindRose generation = {watch.ElapsedMilliseconds} ms" ); 
+#endif
                     }
                     else
                     {

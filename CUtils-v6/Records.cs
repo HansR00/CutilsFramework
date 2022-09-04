@@ -89,13 +89,9 @@ namespace CumulusUtils
             IEnumerable<DayfileValue> yearlist = null;
             IEnumerable<DayfileValue> monthlist = null;
 
-            Stopwatch overallWatch;
+            int thisYear = YearMin - 1;
 
             Sup.LogDebugMessage( "Generate Yearly Records" );
-
-            overallWatch = Stopwatch.StartNew();
-
-            int thisYear = YearMin - 1;
 
             // Remember the indexcounters always need to be one higher becauze the alltime arrays are before it 
             for ( int count = 0; count <= NrOfYears; count++ )
@@ -123,8 +119,6 @@ namespace CumulusUtils
                     Sup.LogTraceInfoMessage( $"Generate Records for AllTime" );
                 else
                     Sup.LogTraceInfoMessage( $"Generate Records for {thisYear}" );
-
-                //watch = Stopwatch.StartNew();
 
                 tmp = yearlist.Max( y => y.MaxTemp );
                 RecordsArray[ (int) MeasurementRecords.Tmax ] = yearlist.Where( x => x.MaxTemp == tmp ).First(); //Thislist.Max(x => x.MaxTemp);
@@ -165,10 +159,6 @@ namespace CumulusUtils
                         }
                     }
                 }
-
-                //watch.Stop();
-                //Sup.LogDebugMessage($"Timing of yearlist({count}) generation = {watch.ElapsedMilliseconds} ms");
-                // Check for somewhere in this year
 
                 for ( int i = 0; i < 12; i++ )
                 {
@@ -234,9 +224,6 @@ namespace CumulusUtils
                     }
                 }
             }
-
-            overallWatch.Stop();
-            Sup.LogTraceInfoMessage( $"Overall Timing records generation = {overallWatch.ElapsedMilliseconds} ms" );
 
             return;
         }

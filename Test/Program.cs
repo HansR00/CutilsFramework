@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 namespace Test
 {
@@ -12,6 +13,17 @@ namespace Test
             //Wind TestWind = new Wind( WindDim.kmh );
             Rain TestRain = new Rain( RainDim.millimeter );
             Pressure TestPress = new Pressure( PressureDim.inchHg );
+
+            //string s = "test";
+            //for (int i=0; i<100; i++)
+            //{
+            //    Console.Write( s + i.ToString() + "\r");
+            //    Thread.Sleep( 100 );
+            //}
+
+            //Console.WriteLine("");
+
+            //Environment.Exit( 0 );
 
             Console.WriteLine( $"TestRain: {TestRain.Dim}" );
             Console.WriteLine( $"TestRain Converting from 25.4 mm to inch: {TestRain.Convert( RainDim.millimeter, RainDim.inch, 25.4 ):F4}" );

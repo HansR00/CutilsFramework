@@ -291,7 +291,7 @@ namespace CumulusUtils
                 Sup.LogTraceErrorMessage( $"Data: {ex.StackTrace}" );
                 Sup.LogTraceErrorMessage( "Exiting - check log file" );
                 Environment.Exit( 0 );
-                throw;
+                //throw;
             }
             finally
             {
@@ -318,8 +318,10 @@ namespace CumulusUtils
         {
             Dayfile ThisDayfile;
 
+#if DEBUG
             Stopwatch watch;
-            Stopwatch OverallWatch = Stopwatch.StartNew();
+            Stopwatch OverallWatch = Stopwatch.StartNew(); 
+#endif
 
             // Here we start the actual program Handle commandline arguments
             CommandLineArgs( args );
@@ -356,16 +358,21 @@ namespace CumulusUtils
             // Reading the Monthly logfile has no Async and is independent of InetSupport!!
             if ( DoCheckOnly )
             {
-                watch = Stopwatch.StartNew();
+#if DEBUG
+                watch = Stopwatch.StartNew(); 
+#endif
 
                 CheckOnlyAsked = DoCheckOnly;
 
                 Monthfile fncs = new Monthfile( Sup );
                 fncs.ReadMonthlyLogs();
                 fncs.Dispose();
-                watch.Stop();
 
-                Sup.LogTraceInfoMessage( $"Timing DocheckOnly = {watch.ElapsedMilliseconds} ms" );
+#if DEBUG
+                watch.Stop();
+                Sup.LogTraceInfoMessage( $"Timing DocheckOnly = {watch.ElapsedMilliseconds} ms" ); 
+#endif
+
                 Sup.LogTraceInfoMessage( "CheckOnly Done" );
                 Sup.LogTraceInfoMessage( "Main CmulusUtils: Exiting!" );
 
@@ -375,52 +382,70 @@ namespace CumulusUtils
             if ( DoSystemChk )
             {
                 // Timing of the SysInfo
-                watch = Stopwatch.StartNew();
+#if DEBUG
+                watch = Stopwatch.StartNew(); 
+#endif
 
                 SysInfo fncs = new SysInfo( Sup, Isup );
                 await fncs.GenerateSystemStatusAsync();
                 fncs.Dispose();
 
+#if DEBUG
                 watch.Stop();
                 Sup.LogTraceInfoMessage( $"Timing of SysInfo generation = {watch.ElapsedMilliseconds} ms" );
+#endif
             }
 
-            if ( DoStationMap )
+                if ( DoStationMap )
             {
-                watch = Stopwatch.StartNew();
+#if DEBUG
+                watch = Stopwatch.StartNew(); 
+#endif
 
                 StationMap fncs = new StationMap( Sup );
                 fncs.GenerateStationMap();
 
+#if DEBUG
                 watch.Stop();
-                Sup.LogTraceInfoMessage( $"Timing of StationMap generation = {watch.ElapsedMilliseconds} ms" );
+                Sup.LogTraceInfoMessage( $"Timing of StationMap generation = {watch.ElapsedMilliseconds} ms" ); 
+#endif
             }
 
             if ( DoMeteoCam )
             {
-                watch = Stopwatch.StartNew();
+#if DEBUG
+                watch = Stopwatch.StartNew(); 
+#endif
 
                 MeteoCam fncs = new MeteoCam( Sup );
                 fncs.GenerateMeteoCam();
 
+#if DEBUG
                 watch.Stop();
-                Sup.LogTraceInfoMessage( $"Timing of MeteoCam generation = {watch.ElapsedMilliseconds} ms" );
+                Sup.LogTraceInfoMessage( $"Timing of MeteoCam generation = {watch.ElapsedMilliseconds} ms" ); 
+#endif
             }
 
             if ( DoForecast )
             {
-                watch = Stopwatch.StartNew();
+#if DEBUG
+                watch = Stopwatch.StartNew(); 
+#endif
 
                 WeatherForecasts fncs = new WeatherForecasts( Sup, Isup );
                 await fncs.GenerateForecasts();
 
+#if DEBUG
                 watch.Stop();
-                Sup.LogTraceInfoMessage( $"Timing of WeatherForecast generation = {watch.ElapsedMilliseconds} ms" );
+                Sup.LogTraceInfoMessage( $"Timing of WeatherForecast generation = {watch.ElapsedMilliseconds} ms" ); 
+#endif
             }
 
             if ( DoUserReports )
             {
-                watch = Stopwatch.StartNew();
+#if DEBUG
+                watch = Stopwatch.StartNew(); 
+#endif
 
                 // This function does its own uploads immediately as it has the filenames and it is assumed they contain daily relevant info
                 // If not than we must consider later. 
@@ -428,32 +453,41 @@ namespace CumulusUtils
                 UserReports fncs = new UserReports( Sup, Isup );
                 await fncs.DoUserReports();
 
+#if DEBUG
                 watch.Stop();
-                Sup.LogTraceInfoMessage( $"Timing of USerReports generation = {watch.ElapsedMilliseconds} ms" );
+                Sup.LogTraceInfoMessage( $"Timing of USerReports generation = {watch.ElapsedMilliseconds} ms" ); 
+#endif
             }
 
             if ( DoAirLink )
             {
-                watch = Stopwatch.StartNew();
+#if DEBUG
+                watch = Stopwatch.StartNew(); 
+#endif
 
                 AirLink fncs = new AirLink( Sup );
                 fncs.DoAirLink();
 
+#if DEBUG
                 watch.Stop();
                 Sup.LogTraceInfoMessage( $"Timing of AirQuality generation = {watch.ElapsedMilliseconds} ms" );
+#endif
             }
 
             if ( DoExtraSensors && HasExtraSensors )
             {
-                watch = Stopwatch.StartNew();
+#if DEBUG
+                watch = Stopwatch.StartNew(); 
+#endif
+
                 ExtraSensors fncs = new ExtraSensors( Sup );
-
                 fncs.DoExtraSensors();
-                if ( ParticipatesSensorCommunity )
-                    fncs.CreateSensorCommunityMapIframeFile();
+                if ( ParticipatesSensorCommunity ) fncs.CreateSensorCommunityMapIframeFile();
 
+#if DEBUG
                 watch.Stop();
-                Sup.LogTraceInfoMessage( $"Timing of ExtraSensors generation = {watch.ElapsedMilliseconds} ms" );
+                Sup.LogTraceInfoMessage( $"Timing of ExtraSensors generation = {watch.ElapsedMilliseconds} ms" ); 
+#endif
             }
 
             // These were the tasks without [weather]data.
@@ -474,28 +508,35 @@ namespace CumulusUtils
 
                 if ( DoPwsFWI )
                 {
+#if DEBUG
                     watch = Stopwatch.StartNew();
+#endif
 
                     PwsFWI fncs = new PwsFWI( Sup, Isup );
                     await fncs.CalculatePwsFWI( MainList );
                     fncs.Dispose();
 
+#if DEBUG
                     watch.Stop();
                     Sup.LogTraceInfoMessage( $"Timing of pwsFWI generation = {watch.ElapsedMilliseconds} ms" );
+#endif
                 }
 
                 //
                 // YADR has no Async and is independent of InetSupport!!
                 if ( DoYadr )
                 {
+#if DEBUG
                     watch = Stopwatch.StartNew();
-
+#endif
                     Yadr fncs = new Yadr( Sup );
                     fncs.GenerateYadr( MainList );
                     fncs.Dispose();
 
+#if DEBUG
                     watch.Stop();
                     Sup.LogTraceInfoMessage( $"Timing of Yadr generation = {watch.ElapsedMilliseconds} ms" );
+#endif
                 }
 
                 //
@@ -503,13 +544,16 @@ namespace CumulusUtils
                 //
                 if ( DoRecords )
                 {
+#if DEBUG
                     watch = Stopwatch.StartNew();
-
+#endif
                     Records fncs = new Records( Sup );
                     fncs.GenerateRecords( MainList );
 
+#if DEBUG
                     watch.Stop();
                     Sup.LogTraceInfoMessage( $"Timing of Records generation = {watch.ElapsedMilliseconds} ms" );
+#endif
                 }
 
                 //
@@ -517,41 +561,51 @@ namespace CumulusUtils
                 //
                 if ( DoDayRecords )
                 {
+#if DEBUG
                     watch = Stopwatch.StartNew();
-
+#endif
                     DayRecords fncs = new DayRecords( Sup );
                     fncs.GenerateDayRecords( MainList );
 
+#if DEBUG
                     watch.Stop();
                     Sup.LogTraceInfoMessage( $"Timing of DayRecords generation = {watch.ElapsedMilliseconds} ms" );
+#endif
                 }
 
-                //
-                // NOAA has no Async and is independent of InetSupport!!
-                //
-                if ( DoNOAA && ( !Thrifty || RunStarted.Day == 2 ) )
+                    //
+                    // NOAA has no Async and is independent of InetSupport!!
+                    //
+                    if ( DoNOAA && ( !Thrifty || RunStarted.Day == 2 ) )
                 {
+#if DEBUG
                     watch = Stopwatch.StartNew();
-
+#endif
                     NOAAdisplay fncs = new NOAAdisplay( Sup );
                     fncs.GenerateNOAATxtfile( MainList );
 
+#if DEBUG
                     watch.Stop();
                     Sup.LogTraceInfoMessage( $"Timing of NOAA reader generation = {watch.ElapsedMilliseconds} ms" );
+#endif
                 }
 
                 //
                 // Graphs has no Async and is independent of InetSupport!!
                 if ( DoGraphs )
                 {
+#if DEBUG
                     watch = Stopwatch.StartNew();
+#endif
 
                     Graphx fncs = new Graphx( MainList, Sup );
                     fncs.GenerateGraphx( MainList );
                     fncs.Dispose();
 
+#if DEBUG
                     watch.Stop();
                     Sup.LogTraceInfoMessage( $"Timing of Graphs generation = {watch.ElapsedMilliseconds} ms" );
+#endif
                 }
 
                 //
@@ -560,26 +614,34 @@ namespace CumulusUtils
                 //
                 if ( DoTop10 )
                 {
+#if DEBUG
                     watch = Stopwatch.StartNew();
+#endif
 
                     Top10 fncs = new Top10( Sup );
                     fncs.GenerateTop10List( MainList );
                     fncs.Dispose();
 
+#if DEBUG
                     watch.Stop();
                     Sup.LogTraceInfoMessage( $"Timing of Top10 generation = {watch.ElapsedMilliseconds} ms" );
+#endif
                 }
 
                 if ( DoWebsite )
                 {
+#if DEBUG
                     watch = Stopwatch.StartNew();
+#endif
 
                     Website fncs = new Website( Sup, Isup );
                     await fncs.GenerateWebsite();
                     fncs.CheckPackageAndCopy();
 
+#if DEBUG
                     watch.Stop();
                     Sup.LogTraceInfoMessage( $"Timing of Website generation = {watch.ElapsedMilliseconds} ms" );
+#endif
                 }
 
                 //
@@ -590,9 +652,11 @@ namespace CumulusUtils
                 {
                     string retval;
 
+#if DEBUG
                     watch = Stopwatch.StartNew();
-                    Maps fncs = new Maps( Sup );
+#endif
 
+                    Maps fncs = new Maps( Sup );
                     retval = await fncs.MapsOn();
                     Sup.LogTraceInfoMessage( retval );
 
@@ -647,14 +711,20 @@ namespace CumulusUtils
                     }
 
                     fncs.Dispose();
+
+#if DEBUG
                     watch.Stop();
                     Sup.LogTraceInfoMessage( $"Timing of Map generation = {watch.ElapsedMilliseconds} ms" );
+#endif
                 }
 
                 if ( DoUserAskedData )
                 {
                     Sup.LogTraceInfoMessage( $"UserAskedData Start..." );
+
+#if DEBUG
                     watch = Stopwatch.StartNew();
+#endif
 
                     {
                         Sup.LogTraceInfoMessage( $"UserAskedData Doing the compiler stuff..." );
@@ -694,8 +764,10 @@ namespace CumulusUtils
                         fncs.GenerateExtraSensorDataJson();
                     }
 
+#if DEBUG
                     watch.Stop();
                     Sup.LogTraceInfoMessage( $"Timing of UserAskedData = {watch.ElapsedMilliseconds} ms" );
+#endif
                 }
             }
 
@@ -705,7 +777,9 @@ namespace CumulusUtils
             {
                 List<OutputDef> thisList;
 
+#if DEBUG
                 watch = Stopwatch.StartNew();
+#endif
 
                 ChartsCompiler fncs = new ChartsCompiler( Sup );
                 thisList = fncs.ParseChartDefinitions();
@@ -729,8 +803,10 @@ namespace CumulusUtils
                     Sup.LogTraceErrorMessage( $"Errors in Charts definition. See logfile, please correct and run again." );
                 }
 
+#if DEBUG
                 watch.Stop();
                 Sup.LogTraceInfoMessage( $"Timing of Compile and Generate CumulusCharts = {watch.ElapsedMilliseconds} ms" );
+#endif
             }
 
             //********************************  Do the uploading when required **************************************
@@ -882,8 +958,10 @@ namespace CumulusUtils
             // Before v4.0.0 SysInfo must be processed by Cumulus so not handy to do the uploading here but now we do
             if ( DoSystemChk ) { Isup.UploadFile( $"{Sup.SysInfoOutputFilename}", $"{Sup.PathUtils}{Sup.SysInfoOutputFilename}" ); }
 
+#if DEBUG
             OverallWatch.Stop();
             Sup.LogTraceInfoMessage( $"Overall Timing all Modules = {OverallWatch.ElapsedMilliseconds} ms" );
+#endif
 
             return;
         }

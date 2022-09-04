@@ -458,7 +458,7 @@ namespace CumulusUtils
             PlotvarUnitsEXTRA[ 85 ] = "μg/m3";
             PlotvarUnitsEXTRA[ 86 ] = "μg/m3";
             PlotvarUnitsEXTRA[ 87 ] = "μg/m3";
-            PlotvarUnitsEXTRA[ 88 ] = "Sup.StationTemp.Text()";
+            PlotvarUnitsEXTRA[ 88 ] = Sup.StationTemp.Text();
             PlotvarUnitsEXTRA[ 89 ] = "%";
 
             // Init the Compiler section in language file for the keywords just to  make sure they are there

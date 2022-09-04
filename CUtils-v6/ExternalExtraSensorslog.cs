@@ -91,8 +91,6 @@ namespace CumulusUtils
             //
             Sup.LogDebugMessage( $"ExternalExtraSensorslog: start." );
 
-            Stopwatch watch = Stopwatch.StartNew();
-
             string Filename;
             double HoursInGraph = Convert.ToDouble( Sup.GetCumulusIniValue( "Graphs", "GraphHours", "" ) );
 
@@ -190,9 +188,6 @@ namespace CumulusUtils
             }
 
             Sup.LogTraceInfoMessage( $"ExtraSensorslog: MainExtraSensorsValuesList created: {ExternalExtraSensorsValuesList.Count} records." );
-            watch.Stop();
-
-            Sup.LogTraceInfoMessage( $"ExtraSensorslog: Timing of ExtraSensors logfile read = {watch.ElapsedMilliseconds} ms" );
             Sup.LogTraceInfoMessage( $"ExtraSensorslog: End" );
 
             return ExternalExtraSensorsValuesList;
