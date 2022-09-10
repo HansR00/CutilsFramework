@@ -1,4 +1,7 @@
 /*!
+ * THIS VERSION CUSTOMISED FROM CUMULUS MX DEFAULT WEB SITE
+ * Last Modified: 2021/08/02 15:42:36
+ *
  * A starter gauges page for Cumulus and Weather Display, based
  * on the JavaScript SteelSeries gauges by Gerrit Grunwald.
  *
@@ -9,6 +12,7 @@
  * See the enclosed License file
  *
  * File encoding = UTF-8
+ *
  *
  * Stripped and modified to be used for CumulusUtils by Hans Rottier in March 2020.
  * Note that the original distribution has remained in tact but the only modifications are made
@@ -28,6 +32,10 @@
  *   - Added HR to the version as distinction between Marks original
  * Version 1.6.0 HR (based on Marks gauges.js v 2.7.3) - Updated: 24 November 2021 / (Went with CU 6.7.7)
  *   - Removed the initialisation of the gauges to have it executed in CumulusUtils.js after the GaugeSettings
+ * Version 2.0.0 HR (based on Marks gauges.js v 2.7.6) - Updated: 8 September 2022 / (Went with CU 6.10.1)
+ *   - Went back to the original release to account for a positiong issue of the odometer. All mods required for 
+ *     CumulusUtils were ported to  the original source with this file as result. 
+ *     Afaik this version does not go well with FF on Android. All other browsers seem to go.
  *
  */
 
@@ -35,55 +43,76 @@
 
 /*!
  * Tiny Pub/Sub - v0.7.0 - 2013-01-29
- * https://gist.github.com/cowboy/661855
  * https://github.com/cowboy/jquery-tiny-pubsub
  * Copyright (c) 2013 "Cowboy" Ben Alman; Licensed MIT
  */
 (function ($) {
-    'use strict';
-    var o = $({});
-    $.subscribe = function () {o.on.apply(o, arguments);};
-    $.unsubscribe = function () {o.off.apply(o, arguments);};
-    $.publish = function () {o.trigger.apply(o, arguments);};
+  'use strict';
+  var o = $({});
+  $.subscribe = function () {
+    o.on.apply(o, arguments);
+  };
+  $.unsubscribe = function () {
+    o.off.apply(o, arguments);
+  };
+  $.publish = function () {
+    o.trigger.apply(o, arguments);
+  };
 }(jQuery));
 
 var gauges;
 gauges = (function () {
   'use strict';
-  var strings = LANG.EN,         // Set to your default language. Store all the strings in one object
+  var strings = LANG.EN, // Set to your default language. Store all the strings in one object
     config = {
       // Script configuration parameters you may want to 'tweak'
-      scriptVer: '1.6.0',
-      weatherProgram: 0,                      // Set 0=Cumulus, (the rest is skipped => 1=Weather Display, 2=VWS, 3=WeatherCat, 4=Meteobridge, 5=WView, 6=WeeWX, 7=WLCOM)
-      realtimeInterval: 15,                     // *** Download data interval, set to your realtime data update interval in seconds
-      gaugeMobileScaling: 0.85,                   // scaling factor to apply when displaying the gauges mobile devices, set to 1 to disable (default 0.85)
-      stationTimeout: 3,                      // period of no data change before we declare the station off-line, in minutes (default 3)
-      pageUpdateLimit: 0,                     // period after which the page stops automatically updating, in minutes (default 20),
+      scriptVer: '2.0.0CU',
+      weatherProgram: 0, // Set 0=Cumulus, 1=Weather Display, 2=VWS, 3=WeatherCat, 4=Meteobridge, 5=WView, 6=WeeWX, 7=WLCOM
+      imgPathURL: './images/', // *** Change this to the relative path for your 'Trend' graph images
+      oldGauges: 'gauges.htm', // *** Change this to the relative path for your 'old' gauges page.
+      realtimeInterval: 15, // *** Download data interval, set to your realtime data update interval in seconds
+      longPoll: false, // if enabled, use long polling and PHP generated data !!only enable if you understand how this is implemented!!
+      gaugeMobileScaling: 0.85, // scaling factor to apply when displaying the gauges mobile devices, set to 1 to disable (default 0.85)
+      graphUpdateTime: 15, // period of pop-up data graph refresh, in minutes (default 15)
+      stationTimeout: 3, // period of no data change before we declare the station off-line, in minutes (default 3)
+      pageUpdateLimit: 0, // period after which the page stops automatically updating, in minutes (default 20),
       // - set to 0 (zero) to disable this feature
-      pageUpdatePswd: 'its-me',               // password to over ride the page updates time-out, do not set to blank even if you do not use a password - http://<URL>&pageUpdate=its-me
-      digitalFont: true,                  // Font control for the gauges & timer
-      digitalForecast: true,                  // Font control for the status display, set this to false for languages that use accented characters in the forecasts
-      showWindVariation: true,                   // Show variation in wind direction over the last 10 minutes on the direction gauge
-      showIndoorTempHum: false,                  // Show the indoor temperature/humidity options
-      showCloudGauge: true,                   // Display the Cloud Base gauge
-      showUvGauge: true,                   // Display the UV Index gauge
-      showSolarGauge: true,                   // Display the Solar gauge
-      showSunshineLed: true,                   // Show 'sun shining now' LED on solar gauge
-      showRoseGauge: true,                   // Show the optional Wind Rose gauge
-      showRoseGaugeOdo: true,                   // Show the optional Wind Rose gauge wind run Odometer
-      showRoseOnDirGauge: true,                   // Show the rose data as sectors on the direction gauge
-      showGaugeShadow: true,                   // Show a drop shadow outside the gauges
-      roundCloudbaseVal: true,                   // Round the value shown on the cloud base gauge to make it easier to read
+      pageUpdatePswd: 'its-me', // password to over ride the page updates time-out, do not set to blank even if you do not use a password - http://<URL>&pageUpdate=its-me
+      digitalFont: false, // Font control for the gauges & timer
+      digitalForecast: false, // Font control for the status display, set this to false for languages that use accented characters in the forecasts
+      showPopupData: false, // Pop-up data displayed
+      showPopupGraphs: false, // If pop-up data is displayed, show the graphs?
+      mobileShowGraphs: false, // If false, on a mobile/narrow display, always disable the graphs
+      showWindVariation: true, // Show variation in wind direction over the last 10 minutes on the direction gauge
+      showWindMetar: false, // Show the METAR substring for wind speed/direction over the last 10 minutes on the direction gauge popup
+      showIndoorTempHum: true, // Show the indoor temperature/humidity options
+      showCloudGauge: true, // Display the Cloud Base gauge
+      showUvGauge: true, // Display the UV Index gauge
+      showSolarGauge: true, // Display the Solar gauge
+      showSunshineLed: true, // Show 'sun shining now' LED on solar gauge
+      showRoseGauge: true, // Show the optional Wind Rose gauge
+      showRoseGaugeOdo: true, // Show the optional Wind Rose gauge wind run Odometer
+      showRoseOnDirGauge: true, // Show the rose data as sectors on the direction gauge
+      showGaugeShadow: true, // Show a drop shadow outside the gauges
+      roundCloudbaseVal: true, // Round the value shown on the cloud base gauge to make it easier to read
       // The realtime files should be absolute paths, "/xxx.txt" refers to the public root of your web server
-      realTimeUrl: 'realtimegauges.txt',     // *** Cumulus Users: Change to your location of the realtime file ***
-      useCookies: true,                   // Persistently store user preferences in a cookie?
-      dashboardMode: false,                  // Used by Cumulus MX dashboard - SET TO FALSE OTHERWISE
-      dewDisplayType: 'dew',                   // Initial 'scale' to display on the 'dew point' gauge.
+      realTimeUrlLongPoll: '', // *** ALL Users: If using long polling, change to your location of the PHP long poll realtime file ***
+                              // *** the supplied file is for Cumulus only
+      realTimeURL: 'realtimegauges.txt', // *** Cumulus Users: Change to your location of the realtime file ***
+                                         // CUtils users: Don't change here, configure in cumulusutils.ini
+
+      useCookies: true, // Persistently store user preferences in a cookie?
+      tipImages: [],
+      dashboardMode: false, // Used by Cumulus MX dashboard - SET TO FALSE OTHERWISE
+      dewDisplayType: 'dew', // Initial 'scale' to display on the 'dew point' gauge.
       // 'dew' - Dewpoint
       // 'app' - Apparent temperature
       // 'wnd' - Wind Chill
+      // 'feel' - Feels Like
       // 'hea' - Heat Index
       // 'hum' - Humidex
+      
+      // CUTILS additions:
       ThresholdTempVisible: true,
       ThresholdTempValue: 30,
       ThresholdHumidityVisible: true,
@@ -115,15 +144,15 @@ gauges = (function () {
       knob: steelseries.KnobType.STANDARD_KNOB,
       knobStyle: steelseries.KnobStyle.SILVER,
       labelFormat: steelseries.LabelNumberFormat.STANDARD,
-      tickLabelOrientation: steelseries.TickLabelOrientation.HORIZONTAL, 
-      rainUseSectionColours: false,                                       // Only one of these colour options should be true
-      rainUseGradientColours: true,                                       // Set both to false to use the pointer colour
+      tickLabelOrientation: steelseries.TickLabelOrientation.HORIZONTAL,
+      rainUseSectionColours: false, // Only one of these colour options should be true
+      rainUseGradientColours: true, // Set both to false to use the pointer colour
       tempTrendVisible: true,
       pressureTrendVisible: true,
       uvLcdDecimals: 1,
       // sunshine threshold values
-      sunshineThreshold: 50,    // the value in W/m² above which we can consider the Sun to be shining, *if* the current value exceeds...
-      sunshineThresholdPct: 75,    // the percentage of theoretical solar irradiance above which we consider the Sun to be shining
+      sunshineThreshold: 50, // the value in W/m² above which we can consider the Sun to be shining, *if* the current value exceeds...
+      sunshineThresholdPct: 75, // the percentage of theoretical solar irradiance above which we consider the Sun to be shining
       // default gauge ranges - before auto-scaling/ranging
       tempScaleDefMinC: -20,
       tempScaleDefMaxC: 40,
@@ -143,23 +172,23 @@ gauges = (function () {
       rainScaleDefMaxIn: 0.5,
       rainRateScaleDefMaxmm: 10,
       rainRateScaleDefMaxIn: 0.5,
-      uvScaleDefMax: 12,             // Northern Europe may be lower - max. value recorded in the UK is 8, so use a scale of 10 for UK
-                                     // In South of France I had 12 so thios is more general true
-      solarGaugeScaleMax: 1000,           // Max value to be shown on the solar gauge - theoretical max without atmosphere ~ 1374 W/m²
+      uvScaleDefMax: 12, // Northern Europe may be lower - max. value recorded in the UK is 8, so use a scale of 10 for UK
+      // In South of France I had 12 so thios is more general true
+      solarGaugeScaleMax: 1000, // Max value to be shown on the solar gauge - theoretical max without atmosphere ~ 1374 W/m²
       // - but Davis stations can read up to 1800, use 1000 for Northern Europe?
       cloudScaleDefMaxft: 3000,
       cloudScaleDefMaxm: 1000,
-      shadowColour: 'rgba(0,0,0,0.3)'  // Colour to use for gauge shadows - default 30% transparent black
+      shadowColour: 'rgba(0,0,0,0.3)' // Colour to use for gauge shadows - default 30% transparent black
     },
 
     commonParams = {
       // Common parameters for all the SteelSeries gauges
-      fullScaleDeflectionTime: 4,             // Bigger numbers (seconds) slow the gauge pointer movements more
+      fullScaleDeflectionTime: 4, // Bigger numbers (seconds) slow the gauge pointer movements more
       gaugeType: gaugeGlobals.gaugeType,
       minValue: 0,
       niceScale: true,
       ledVisible: false,
-	    frameDesign: gaugeGlobals.frameDesign,
+      frameDesign: gaugeGlobals.frameDesign,
       backgroundColor: gaugeGlobals.background,
       foregroundType: gaugeGlobals.foreground,
       pointerType: gaugeGlobals.pointer,
@@ -172,22 +201,40 @@ gauges = (function () {
       tickLabelOrientation: gaugeGlobals.tickLabelOrientation,
       labelNumberFormat: gaugeGlobals.labelFormat
     },
-    firstRun = true,            // Used to set-up units & scales etc
-    userUnitsSet = false,       // Tracks if the display units have been set by a user preference
-    data = {},                  // Stores all the values from realtime.txt
-    tickTockInterval,           // The 1s clock interval timer
-    downloadTimer,              // Stores a reference to the ajax download setTimout() timer
-    jqXHR = null,               // handle to the jQuery web request
-    displayUnits = null,        // Stores the display units cookie settings
+    firstRun = true, // Used to set-up units & scales etc
+    userUnitsSet = false, // Tracks if the display units have been set by a user preference
+    data = {}, // Stores all the values from realtime.txt
+    tickTockInterval, // The 1s clock interval timer
+
+    // ajaxDelay, used by long polling, the delay between getting a response and queueing the next request, as the default PHP
+    // script runtime timout is 30 seconds, we do not want the PHP task to run for more than 20 seconds. So queue the next
+    // request half of the realtime interval, or 20 seconds before it is due, which ever is the larger.
+    ajaxDelay = config.longPoll ? Math.max(config.realtimeInterval - 20, 0) : config.realtimeInterval,
+    downloadTimer, // Stores a reference to the ajax download setTimout() timer
+    timestamp = 0, // the timestamp of last data update on the server.
+    jqXHR = null, // handle to the jQuery web request
+    displayUnits = null, // Stores the display units cookie settings
     sampleDate,
-    realtimeVer,                // minimum version of the realtime JSON file required
-    PauseInEffect = false,
+    realtimeVer, // minimum version of the realtime JSON file required
+    // PauseInEffect = false,      // CUTILS specific
+    // programLink = [
+    //     '<a href="https://cumuluswiki.wxforum.net/a/Software" target="_blank" rel="noopener">Cumulus</a>',
+    //     '<a href="//www.weather-display.com/" target="_blank" rel="noopener">Weather Display</a>',
+    //     '<a href="//www.ambientweather.com/virtualstation.html" target="_blank" rel="noopener">Virtual Weather Station</a>',
+    //     '<a href="//trixology.com/weathercat/" target="_blank" rel="noopener">WeatherCat</a>',
+    //     '<a href="//www.meteobridge.com/" target="_blank rel="noopener"">Meteobridge</a>',
+    //     '<a href="//www.wviewweather.com/" target="_blank" rel="noopener">Wview</a>',
+    //     '<a href="//www.weewx.com/" target="_blank" rel="noopener">weewx</a>',
+    //     '<a href="//weatherlink.com/" target="_blank" rel="noopener">Weatherlink.com</a>'
+    // ],
 
     ledIndicator, statusScroller, statusTimer,
 
     gaugeTemp, gaugeDew, gaugeRain, gaugeRRate,
     gaugeHum, gaugeBaro, gaugeWind, gaugeDir,
     gaugeUV, gaugeSolar, gaugeCloud, gaugeRose,
+
+    /* _imgBackground,    // Uncomment if using a background image on the gauges */
 
     // ==================================================================================================================
     // Nothing below this line needs to be modified for the gauges as supplied
@@ -200,24 +247,36 @@ gauges = (function () {
     // the first Ajax fetch of realtimegauges.txt. First draw of the gauges now deferred until
     // the Ajax data is available as a 'speed up'.
     //
-
-
-
     init = function (dashboard) {
 
       // So any outstanding action is stopped and then restarted at the end of init
       //
       // Cumulus and nothing  else all other code removed
       // Cumulus
-      realtimeVer = 12;   // minimum version of the realtime JSON file required
+      realtimeVer = 12; // minimum version of the realtime JSON file required
 
       // Are we running on a phone device (or really low res screen)?
       if ($(window).width() < 480) {
         // Change the gauge scaling
         config.gaugeScaling = config.gaugeMobileScaling;
+        // Switch off graphs?
+        config.showPopupGraphs = config.mobileShowGraphs;
       } else {
         config.gaugeScaling = 1;
       }
+
+      // Logo images are used to 'personalise' the gauge backgrounds
+      // To add a logo to a gauge, add the parameter:
+      //    params.customLayer = _imgBackground;
+      // to the corresponding drawXxxx() function below.
+      //
+      // These are for demo only, to add them remove the comments around the following lines, and
+      // the _imgBackground definition line above...
+      /*
+      _imgBackground = document.createElement('img');                 // small logo
+      $(_imgBackground).attr('src', config.imgPathURL + 'logoSmall.png');
+      */
+      // End of logo images
 
       // Get the display units the user last used when they visited before - if present
       displayUnits = getCookie('units');
@@ -262,6 +321,27 @@ gauges = (function () {
         data.cloudunit = 'm';
       }
 
+      // enable popup data
+      if (config.showPopupData) {
+        ddimgtooltip.showTips = config.showPopupData;
+      }
+
+      if (config.showPopupGraphs) {
+        // Note the number of array elements must match 'i' in ddimgtooltip.tiparray()
+        ddimgtooltip.tiparray[0][0] = (config.tipImgs[0][0] === null ? null : '');
+        ddimgtooltip.tiparray[1][0] = (config.tipImgs[1][0] === null ? null : '');
+        ddimgtooltip.tiparray[2][0] = (config.tipImgs[2] === null ? null : '');
+        ddimgtooltip.tiparray[3][0] = (config.tipImgs[3] === null ? null : '');
+        ddimgtooltip.tiparray[4][0] = (config.tipImgs[4][0] === null ? null : '');
+        ddimgtooltip.tiparray[5][0] = (config.tipImgs[5] === null ? null : '');
+        ddimgtooltip.tiparray[6][0] = (config.tipImgs[6] === null ? null : '');
+        ddimgtooltip.tiparray[7][0] = (config.tipImgs[7] === null ? null : '');
+        ddimgtooltip.tiparray[8][0] = (config.tipImgs[8] === null ? null : '');
+        ddimgtooltip.tiparray[9][0] = (config.tipImgs[9] === null ? null : '');
+        ddimgtooltip.tiparray[10][0] = (config.tipImgs[10] === null ? null : '');
+        ddimgtooltip.tiparray[11][0] = (config.tipImgs[11] === null ? null : '');
+      }
+
       // draw the status gadgets first, they will display any errors in the initial set-up
       ledIndicator = singleLed.getInstance();
       statusScroller = singleStatus.getInstance();
@@ -269,22 +349,28 @@ gauges = (function () {
 
       gaugeTemp = singleTemp.getInstance();
       // Export gaugeTemp.update() so it can be called from the HTML code
-      if (gaugeTemp) { gauges.doTemp = gaugeTemp.update; }
+      if (gaugeTemp) {
+        gauges.doTemp = gaugeTemp.update;
+      }
 
       gaugeDew = singleDew.getInstance();
       // Export gaugeDew.update() so it can be called from the HTML code
-      if (gaugeDew) { gauges.doDew = gaugeDew.update; }
+      if (gaugeDew) {
+        gauges.doDew = gaugeDew.update;
+      }
 
       gaugeHum = singleHum.getInstance();
       // Export gaugeHum.update() so it can be called from the HTML code
-      if (gaugeHum) { gauges.doHum = gaugeHum.update; }
+      if (gaugeHum) {
+        gauges.doHum = gaugeHum.update;
+      }
 
-      gaugeBaro = singleBaro.getInstance(); 
+      gaugeBaro = singleBaro.getInstance();
 
       gaugeWind = singleWind.getInstance();
-      gaugeDir = singleDir.getInstance(); 
+      gaugeDir = singleDir.getInstance();
 
-      gaugeRain = singleRain.getInstance(); 
+      gaugeRain = singleRain.getInstance();
       gaugeRRate = singleRRate.getInstance();
 
       // remove the UV gauge?
@@ -317,24 +403,28 @@ gauges = (function () {
         gaugeCloud = singleCloudBase.getInstance();
       }
 
-      // The whole  thing is starting again
       // Set the language
       changeLang(strings, false);
 
-      // Go do get the data!
-      getRealtime();
+      if (!dashboard) {
+        // Go do get the data!
+        getRealtime();
 
-      // start a timer to update the status time
-      // NOT REALLY SURE THIS IS NEEDED!!! HAR
-      tickTockInterval = setInterval(
-        function () {
-          $.publish('gauges.clockTick', null);
-        },
-        1000);
+        // start a timer to update the status time
+        tickTockInterval = setInterval(
+          function () {
+            $.publish('gauges.clockTick', null);
+          },
+          1000);
+
+        // start a timer to stop the page updates after the timeout period
+        if (config.pageUpdateLimit > 0 && getUrlParam('pageUpdate') !== config.pageUpdatePswd) {
+          setTimeout(pageTimeout, config.pageUpdateLimit * 60 * 1000);
+        }
+      }
 
       console.log('Gauges Init Done...');
-
-    },// End of init function
+    }, // End of init function
 
     //
     // singleXXXX functions define a singleton for each of the gauges
@@ -344,17 +434,17 @@ gauges = (function () {
     // Singleton for the LED Indicator
     //
     singleLed = (function () {
-      var instance;   // Stores a reference to the Singleton
-      var led;        // Stores a reference to the SS LED
+      var instance; // Stores a reference to the Singleton
+      var led; // Stores a reference to the SS LED
 
       function init() {
         // create led indicator
         if ($('#canvas_led').length) {
           led = new steelseries.Led(
             'canvas_led', {
-            ledColor: steelseries.LedColor.GREEN_LED,
-            size: $('#canvas_led').width()
-          });
+              ledColor: steelseries.LedColor.GREEN_LED,
+              size: $('#canvas_led').width()
+            });
 
           setTitle(strings.led_title);
         }
@@ -405,24 +495,24 @@ gauges = (function () {
     // Singleton for the Status Scroller
     //
     singleStatus = (function () {
-      var instance;   // Stores a reference to the Singleton
-      var scroller;   // Stores a reference to the SS scrolling display
+      var instance; // Stores a reference to the Singleton
+      var scroller; // Stores a reference to the SS scrolling display
 
       function init() {
         // create forecast display
         if ($('#canvas_status').length) {
           scroller = new steelseries.DisplaySingle(
             'canvas_status', {
-            width: $('#canvas_status').width(),
-            height: $('#canvas_status').height(),
-            lcdColor: gaugeGlobals.lcdColour,
-            unitStringVisible: false,
-            value: strings.statusStr,
-            digitalFont: config.digitalForecast,
-            valuesNumeric: false,
-            autoScroll: true,
-            alwaysScroll: false
-          });
+              width: $('#canvas_status').width(),
+              height: $('#canvas_status').height(),
+              lcdColor: gaugeGlobals.lcdColour,
+              unitStringVisible: false,
+              value: strings.statusStr,
+              digitalFont: config.digitalForecast,
+              valuesNumeric: false,
+              autoScroll: true,
+              alwaysScroll: false
+            });
         }
 
         function setValue(newTxt) {
@@ -431,7 +521,9 @@ gauges = (function () {
           }
         }
 
-        return { setText: setValue };
+        return {
+          setText: setValue
+        };
       }
 
       return {
@@ -450,8 +542,8 @@ gauges = (function () {
     // Singleton for the Status Timer
     //
     singleTimer = (function () {
-      var instance,   // Stores a reference to the Singleton
-        lcd,        // Stores a reference to the SS LED
+      var instance, // Stores a reference to the Singleton
+        lcd, // Stores a reference to the SS LED
         count = 1;
 
       function init() {
@@ -476,16 +568,16 @@ gauges = (function () {
         if ($('#canvas_timer').length) {
           lcd = new steelseries.DisplaySingle(
             'canvas_timer', {
-            width: $('#canvas_timer').width(),
-            height: $('#canvas_timer').height(),
-            lcdColor: gaugeGlobals.lcdColour,
-            lcdDecimals: 0,
-            unitString: strings.timer,
-            unitStringVisible: true,
-            digitalFont: config.digitalFont,
-            value: count
-          });
-          // subcribe to data updates
+              width: $('#canvas_timer').width(),
+              height: $('#canvas_timer').height(),
+              lcdColor: gaugeGlobals.lcdColour,
+              lcdDecimals: 0,
+              unitString: strings.timer,
+              unitStringVisible: true,
+              digitalFont: config.digitalFont,
+              value: count
+            });
+          // subscribe to data updates
           $.subscribe('gauges.clockTick', tick);
         }
 
@@ -511,9 +603,9 @@ gauges = (function () {
     // Singleton for the Temperature Gauge
     //
     singleTemp = (function () {
-      var instance;   // Stores a reference to the Singleton
-      var ssGauge;    // Stores a reference to the SS Gauge
-      var cache = {};      // Stores various config values and parameters
+      var instance; // Stores a reference to the Singleton
+      var ssGauge; // Stores a reference to the SS Gauge
+      var cache = {}; // Stores various config values and parameters
 
       function init() {
         var params = $.extend(true, {}, commonParams);
@@ -541,20 +633,24 @@ gauges = (function () {
           params.titleString = cache.title;
           params.unitString = data.tempunit;
           params.trendVisible = gaugeGlobals.tempTrendVisible;
+          // params.customLayer = _imgBackground;      // uncomment to add a background image - See Logo Images above
 
           ssGauge = new steelseries.Radial('canvas_temp', params);
           ssGauge.setValue(cache.value);
-		  
-		      // Do the alarm/threshold settings
-		      if (config.ThresholdTempVisible) {
-			      ssGauge.setThresholdVisible(config.ThresholdTempVisible);
-		        ssGauge.setThreshold(config.ThresholdTempValue);
-		        ssGauge.setLedVisible(true);
-		      }
-		  
+
+          // CUtils: Do the alarm/threshold settings
+          if (config.ThresholdTempVisible) {
+            ssGauge.setThresholdVisible(config.ThresholdTempVisible);
+            ssGauge.setThreshold(config.ThresholdTempValue);
+            ssGauge.setLedVisible(true);
+          }
+
           // over-ride CSS applied size?
           if (config.gaugeScaling !== 1) {
-            $('#canvas_temp').css({ width: params.size + 'px', height: params.size + 'px' });
+            $('#canvas_temp').css({
+              width: params.size + 'px',
+              height: params.size + 'px'
+            });
           }
 
           // add a shadow to the gauge
@@ -574,8 +670,9 @@ gauges = (function () {
             $('#lab_hum2').remove();
           }
 
-          // subcribe to data updates
+          // subscribe to data updates
           $.subscribe('gauges.dataUpdated', update);
+          $.subscribe('gauges.graphUpdate', updateGraph);
         } else {
           // cannot draw gauge, return null
           return null;
@@ -605,6 +702,7 @@ gauges = (function () {
             cache.title = strings.temp_title_out;
             cache.loc = strings.temp_out_info;
             cache.trendVal = extractDecimal(data.temptrend);
+            cache.popupImg = 0;
             if (gaugeGlobals.tempTrendVisible) {
               t1 = tempTrend(+cache.trendVal, data.tempunit, false);
               if (t1 === -9999) {
@@ -623,6 +721,7 @@ gauges = (function () {
             cache.title = strings.temp_title_in;
             cache.loc = strings.temp_in_info;
             cache.value = extractDecimal(data.intemp);
+            cache.popupImg = 1;
             if (data.intempTL && data.intempTH) {
               // Indoor - and Max/Min values supplied
               cache.low = extractDecimal(data.intempTL);
@@ -648,6 +747,10 @@ gauges = (function () {
             ssGauge.setTitleString(cache.title);
             ssGauge.setMaxMeasuredValueVisible(cache.maxMinVisible);
             ssGauge.setMinMeasuredValueVisible(cache.maxMinVisible);
+            if (config.showPopupGraphs && config.tipImgs[0][cache.popupImg] !== null) {
+              var cacheDefeat = '?' + $('#imgtip0_img').attr('src').split('?')[1];
+              $('#imgtip0_img').attr('src', config.imgPathURL + config.tipImgs[0][cache.popupImg] + cacheDefeat);
+            }
           }
 
           // auto scale the ranges
@@ -676,7 +779,7 @@ gauges = (function () {
             // Indoor and min/max avaiable
             cache.areas = [steelseries.Section(+cache.low, +cache.high, gaugeGlobals.minMaxArea)];
           } else {
-            // Nndoor no min/max avaiable
+            // Indoor no min/max avaiable
             cache.areas = [];
           }
 
@@ -685,7 +788,36 @@ gauges = (function () {
           }
           ssGauge.setArea(cache.areas);
           ssGauge.setValueAnimated(+cache.value);
+
+          if (ddimgtooltip.showTips) {
+            // update tooltip
+            if (cache.selected === 'out') {
+              tip = cache.loc + ' - ' + strings.lowestF_info + ': ' + cache.low + data.tempunit + ' ' + strings.at + ' ' + data.TtempTL +
+                ' | ' +
+                strings.highestF_info + ': ' + cache.high + data.tempunit + ' ' + strings.at + ' ' + data.TtempTH;
+              if (cache.trendVal !== -9999) {
+                tip += '<br>' +
+                  strings.temp_trend_info + ': ' + tempTrend(cache.trendVal, data.tempunit, true) +
+                  ' ' + cache.trendVal + data.tempunit + '/h';
+              }
+            } else if (data.TintempTL && data.TintempTH) {
+              // Indoor and min/max available
+              tip = cache.loc + ' - ' + strings.lowestF_info + ': ' + cache.low + data.tempunit + ' ' + strings.at + ' ' + data.TintempTL +
+                ' | ' +
+                strings.highestF_info + ': ' + cache.high + data.tempunit + ' ' + strings.at + ' ' + data.TintempTH;
+            } else {
+              // Indoor no min/max
+              tip = cache.loc + ': ' + data.intemp + data.tempunit;
+            }
+            $('#imgtip0_txt').html(tip);
+          }
         } // End of update()
+
+        function updateGraph(evnt, cacheDefeat) {
+          if (config.tipImgs[0][cache.popupImg] !== null) {
+            $('#imgtip0_img').attr('src', config.imgPathURL + config.tipImgs[0][cache.popupImg] + cacheDefeat);
+          }
+        }
 
         return {
           data: cache,
@@ -710,9 +842,9 @@ gauges = (function () {
     // Singleton for the Dewpoint Gauge
     //
     singleDew = (function () {
-      var instance;   // Stores a reference to the Singleton
-      var ssGauge;    // Stores a reference to the SS Gauge
-      var cache = {};      // Stores various config values and parameters
+      var instance; // Stores a reference to the Singleton
+      var ssGauge; // Stores a reference to the SS Gauge
+      var cache = {}; // Stores various config values and parameters
 
       function init() {
         var params = $.extend(true, {}, commonParams);
@@ -731,22 +863,28 @@ gauges = (function () {
         switch (cache.selected) {
           case 'dew':
             cache.title = strings.dew_title;
+            cache.popupImg = 0;
             break;
           case 'app':
             cache.title = strings.apptemp_title;
+            cache.popupImg = 1;
             break;
-		  case 'feel':
-			cache.title = strings.feel_title;
-			break;
+          case 'feel':
+            cache.title = strings.feel_title;
+            cache.popupImg = 1;
+            break;
           case 'wnd':
             cache.title = strings.chill_title;
+            cache.popupImg = 2;
             break;
           case 'hea':
             cache.title = strings.heat_title;
+            cache.popupImg = 3;
             break;
           case 'hum':
             cache.title = strings.humdx_title;
-          // no default
+            cache.popupImg = 4;
+            // no default
         }
         cache.minMeasuredVisible = false;
         cache.maxMeasuredVisible = false;
@@ -767,7 +905,10 @@ gauges = (function () {
 
           // over-ride CSS applied size?
           if (config.gaugeScaling !== 1) {
-            $('#canvas_dew').css({ width: params.size + 'px', height: params.size + 'px' });
+            $('#canvas_dew').css({
+              width: params.size + 'px',
+              height: params.size + 'px'
+            });
           }
 
           // add a shadow to the gauge
@@ -775,8 +916,9 @@ gauges = (function () {
             $('#canvas_dew').css(gaugeShadow(params.size));
           }
 
-          // subcribe to data updates
+          // subscribe to data updates
           $.subscribe('gauges.dataUpdated', update);
+          $.subscribe('gauges.graphUpdate', updateGraph);
         } else {
           // cannot draw gauge, return null
           return null;
@@ -810,6 +952,11 @@ gauges = (function () {
               cache.title = strings.dew_title;
               cache.minMeasuredVisible = false;
               cache.maxMeasuredVisible = false;
+              cache.popupImg = 0;
+              tip = strings.dew_info + ':' +
+                '<br>' +
+                '- ' + strings.lowest_info + ': ' + cache.low + data.tempunit + ' ' + strings.at + ' ' + data.TdewpointTL +
+                ' | ' + strings.highest_info + ': ' + cache.high + data.tempunit + ' ' + strings.at + ' ' + data.TdewpointTH;
               break;
             case 'app': // apparent temperature
               cache.low = extractDecimal(data.apptempTL);
@@ -819,16 +966,26 @@ gauges = (function () {
               cache.title = strings.apptemp_title;
               cache.minMeasuredVisible = false;
               cache.maxMeasuredVisible = false;
+              cache.popupImg = 1;
+              tip = tip = strings.apptemp_info + ':' +
+                '<br>' +
+                '- ' + strings.lowestF_info + ': ' + cache.low + data.tempunit + ' ' + strings.at + ' ' + data.TapptempTL +
+                ' | ' + strings.highestF_info + ': ' + cache.high + data.tempunit + ' ' + strings.at + ' ' + data.TapptempTH;
               break;
-			case 'feel': // feels like
-			  cache.low = extractDecimal(data.feelslikeTL);
-			  cache.high = extractDecimal(data.feelslikeTH);
-			  cache.value = extractDecimal(data.feelslike);
-			  cache.areas = [steelseries.Section(+cache.low, +cache.high, gaugeGlobals.minMaxArea)];
-			  cache.title = strings.feel_title;
-			  cache.minMeasuredVisible = false;
-			  cache.maxMeasuredVisible = false;
-			  break;
+            case 'feel': // feels like
+              cache.low = extractDecimal(data.feelslikeTL);
+              cache.high = extractDecimal(data.feelslikeTH);
+              cache.value = extractDecimal(data.feelslike);
+              cache.areas = [steelseries.Section(+cache.low, +cache.high, gaugeGlobals.minMaxArea)];
+              cache.title = strings.feel_title;
+              cache.minMeasuredVisible = false;
+              cache.maxMeasuredVisible = false;
+              cache.popupImg = 1;
+              tip = tip = strings.feel_info + ':' +
+                '<br>' +
+                '- ' + strings.lowestF_info + ': ' + cache.low + data.tempunit + ' ' + strings.at + ' ' + data.TfeelslikeTL +
+                ' | ' + strings.highestF_info + ': ' + cache.high + data.tempunit + ' ' + strings.at + ' ' + data.TfeelslikeTH;
+              break;
             case 'wnd': // wind chill
               cache.low = extractDecimal(data.wchillTL);
               cache.high = extractDecimal(data.wchill);
@@ -837,6 +994,10 @@ gauges = (function () {
               cache.title = strings.chill_title;
               cache.minMeasuredVisible = true;
               cache.maxMeasuredVisible = false;
+              cache.popupImg = 2;
+              tip = strings.chill_info + ':' +
+                '<br>' +
+                '- ' + strings.lowest_info + ': ' + cache.low + data.tempunit + ' ' + strings.at + ' ' + data.TwchillTL;
               break;
             case 'hea': // heat index
               cache.low = extractDecimal(data.heatindex);
@@ -846,6 +1007,10 @@ gauges = (function () {
               cache.title = strings.heat_title;
               cache.minMeasuredVisible = false;
               cache.maxMeasuredVisible = true;
+              cache.popupImg = 3;
+              tip = strings.heat_info + ':' +
+                '<br>' +
+                '- ' + strings.highest_info + ': ' + cache.high + data.tempunit + ' ' + strings.at + ' ' + data.TheatindexTH;
               break;
             case 'hum': // humidex
               cache.low = extractDecimal(data.humidex);
@@ -855,14 +1020,21 @@ gauges = (function () {
               cache.title = strings.humdx_title;
               cache.minMeasuredVisible = false;
               cache.maxMeasuredVisible = false;
+              cache.popupImg = 4;
+              tip = strings.humdx_info + ': ' + cache.value + data.tempunit;
               break;
-            // no default
+              // no default
           }
 
           if (cache.selected !== sel) {
             cache.selected = sel;
             // change gauge title
             ssGauge.setTitleString(cache.title);
+            // and graph image
+            if (config.showPopupGraphs && config.tipImgs[1][cache.popupImg] !== null) {
+              var cacheDefeat = '?' + $('#imgtip1_img').attr('src').split('?')[1];
+              $('#imgtip1_img').attr('src', config.imgPathURL + config.tipImgs[1][cache.popupImg] + cacheDefeat);
+            }
           }
 
           // auto scale the ranges
@@ -892,6 +1064,16 @@ gauges = (function () {
           ssGauge.setArea(cache.areas);
           ssGauge.setValueAnimated(+cache.value);
 
+          if (ddimgtooltip.showTips) {
+            // update tooltip
+            $('#imgtip1_txt').html(tip);
+          }
+        }
+
+        function updateGraph(evnt, cacheDefeat) {
+          if (config.tipImgs[1][cache.popupImg] !== null) {
+            $('#imgtip1_img').attr('src', config.imgPathURL + config.tipImgs[1][cache.popupImg] + cacheDefeat);
+          }
         }
 
         return {
@@ -917,9 +1099,9 @@ gauges = (function () {
     // Singleton for the Rainfall Gauge
     //
     singleRain = (function () {
-      var instance;   // Stores a reference to the Singleton
-      var ssGauge;    // Stores a reference to the SS Gauge
-      var cache = {};      // Stores various config values and parameters
+      var instance; // Stores a reference to the Singleton
+      var ssGauge; // Stores a reference to the SS Gauge
+      var cache = {}; // Stores various config values and parameters
 
       function init() {
         var params = $.extend(true, {}, commonParams);
@@ -953,16 +1135,19 @@ gauges = (function () {
           ssGauge = new steelseries.RadialBargraph('canvas_rain', params);
           ssGauge.setValue(cache.value);
 
-          // Do the alarm/threshold settings
+          // CUtils: Do the alarm/threshold settings
           if (config.ThresholdRainVisible) {
-//            ssGauge.setThresholdVisible(config.ThresholdRainVisible);  // Apparently this does not exist for the RadialBargraph
+            // ssGauge.setThresholdVisible(config.ThresholdRainVisible);  // Apparently this does not exist for the RadialBargraph
             ssGauge.setThreshold(config.ThresholdRainValue);
             ssGauge.setLedVisible(true);
           }
 
           // over-ride CSS applied size?
           if (config.gaugeScaling !== 1) {
-            $('#canvas_rain').css({ width: params.size + 'px', height: params.size + 'px' });
+            $('#canvas_rain').css({
+              width: params.size + 'px',
+              height: params.size + 'px'
+            });
           }
 
           // add a shadow to the gauge
@@ -970,8 +1155,9 @@ gauges = (function () {
             $('#canvas_rain').css(gaugeShadow(params.size));
           }
 
-          // subcribe to data updates
+          // subscribe to data updates
           $.subscribe('gauges.dataUpdated', update);
+          $.subscribe('gauges.graphUpdate', updateGraph);
         } else {
           // cannot draw gauge, return null
           return null;
@@ -1002,7 +1188,18 @@ gauges = (function () {
             ssGauge.setMaxValue(cache.maxValue);
           }
           ssGauge.setValueAnimated(cache.value);
+
+          if (ddimgtooltip.showTips) {
+            // update tooltip
+            $('#imgtip2_txt').html(strings.LastRain_info + ': ' + data.LastRained);
+          }
         } // End of update()
+
+        function updateGraph(evnt, cacheDefeat) {
+          if (config.tipImgs[2] !== null) {
+            $('#imgtip2_img').attr('src', config.imgPathURL + config.tipImgs[2] + cacheDefeat);
+          }
+        }
 
         return {
           data: cache,
@@ -1027,9 +1224,9 @@ gauges = (function () {
     // Singleton for the Rainfall Rate Gauge
     //
     singleRRate = (function () {
-      var instance;   // Stores a reference to the Singleton
-      var ssGauge;    // Stores a reference to the SS Gauge
-      var cache = {};      // Stores various config values and parameters
+      var instance; // Stores a reference to the Singleton
+      var ssGauge; // Stores a reference to the SS Gauge
+      var cache = {}; // Stores various config values and parameters
 
       function init() {
         var params = $.extend(true, {}, commonParams);
@@ -1062,7 +1259,7 @@ gauges = (function () {
           ssGauge.setMaxMeasuredValue(cache.maxMeasured);
           ssGauge.setValue(cache.value);
 
-          // Do the alarm/threshold settings
+          // CUtils: Do the alarm/threshold settings
           if (config.ThresholdRRateVisible) {
             ssGauge.setThresholdVisible(config.ThresholdRRateVisible);
             ssGauge.setThreshold(config.ThresholdRRateValue);
@@ -1071,7 +1268,10 @@ gauges = (function () {
 
           // over-ride CSS applied size?
           if (config.gaugeScaling !== 1) {
-            $('#canvas_rrate').css({ width: params.size + 'px', height: params.size + 'px' });
+            $('#canvas_rrate').css({
+              width: params.size + 'px',
+              height: params.size + 'px'
+            });
           }
 
           // add a shadow to the gauge
@@ -1079,17 +1279,20 @@ gauges = (function () {
             $('#canvas_rrate').css(gaugeShadow(params.size));
           }
 
-          // subcribe to data updates
+          // subscribe to data updates
           $.subscribe('gauges.dataUpdated', update);
+          $.subscribe('gauges.graphUpdate', updateGraph);
         } else {
           // cannot draw gauge, return null
           return null;
         }
 
         function update() {
+          var tip;
+
           cache.value = extractDecimal(data.rrate);
           cache.maxMeasured = extractDecimal(data.rrateTM);
-          cache.overallMax = Math.max(cache.maxMeasured, cache.value);  // workaround for VWS bug, not supplying correct max value today
+          cache.overallMax = Math.max(cache.maxMeasured, cache.value); // workaround for VWS bug, not supplying correct max value today
 
           if (data.rainunit === 'mm') { // 10, 20, 30...
             cache.maxValue = nextHighest(cache.overallMax, 10);
@@ -1113,8 +1316,22 @@ gauges = (function () {
 
           ssGauge.setValueAnimated(cache.value);
           ssGauge.setMaxMeasuredValue(cache.maxMeasured);
+
+          if (ddimgtooltip.showTips) {
+            // update tooltip
+            tip = strings.rrate_info + ':<br>' +
+              '- ' + strings.maximum_info + ': ' + data.rrateTM + ' ' + data.rainunit + '/h ' + strings.at + ' ' + data.TrrateTM +
+              ' | ' + strings.max_hour_info + ': ' + extractDecimal(data.hourlyrainTH) + ' ' + data.rainunit + ' ' +
+              strings.at + ' ' + data.ThourlyrainTH;
+            $('#imgtip3_txt').html(tip);
+          }
         } // End of update()
 
+        function updateGraph(evnt, cacheDefeat) {
+          if (config.tipImgs[3] !== null) {
+            $('#imgtip3_img').attr('src', config.imgPathURL + config.tipImgs[3] + cacheDefeat);
+          }
+        }
         return {
           data: cache,
           update: update,
@@ -1138,9 +1355,9 @@ gauges = (function () {
     // Singleton for the Humidity Gauge
     //
     singleHum = (function () {
-      var instance;   // Stores a reference to the Singleton
-      var ssGauge;    // Stores a reference to the SS Gauge
-      var cache = {};      // Stores various config values and parameters
+      var instance; // Stores a reference to the Singleton
+      var ssGauge; // Stores a reference to the SS Gauge
+      var cache = {}; // Stores various config values and parameters
 
       function init() {
         var params = $.extend(true, {}, commonParams);
@@ -1177,7 +1394,10 @@ gauges = (function () {
 
           // over-ride CSS applied size?
           if (config.gaugeScaling !== 1) {
-            $('#canvas_hum').css({ width: params.size + 'px', height: params.size + 'px' });
+            $('#canvas_hum').css({
+              width: params.size + 'px',
+              height: params.size + 'px'
+            });
           }
 
           // add a shadow to the gauge
@@ -1185,28 +1405,30 @@ gauges = (function () {
             $('#canvas_hum').css(gaugeShadow(params.size));
           }
 
-          // subcribe to data updates
+          // subscribe to data updates
           $.subscribe('gauges.dataUpdated', update);
+          $.subscribe('gauges.graphUpdate', updateGraph);
         } else {
           // cannot draw gauge, return null
           return null;
         }
 
         function update() {
-          var tip, radio;
-
+          var radio;
           // Argument length === 2 when called from event handler
           if (arguments.length === 1) {
             radio = arguments[0];
           }
 
           // if rad isn't specified, just use existing value
-          var sel = (typeof radio === 'undefined' ? cache.selected : radio.value), tip;
+          var sel = (typeof radio === 'undefined' ? cache.selected : radio.value),
+            tip;
 
           if (sel === 'out') {
             cache.value = extractDecimal(data.hum);
             cache.areas = [steelseries.Section(+extractDecimal(data.humTL), +extractDecimal(data.humTH), gaugeGlobals.minMaxArea)];
             cache.title = strings.hum_title_out;
+            cache.popupImg = 0;
           } else {
             cache.value = extractDecimal(data.inhum);
             if (data.inhumTL && data.inhumTH) {
@@ -1215,17 +1437,48 @@ gauges = (function () {
               cache.areas = [];
             }
             cache.title = strings.hum_title_in;
+            cache.popupImg = 1;
           }
 
           if (cache.selected !== sel) {
             cache.selected = sel;
             // Change gauge title
             ssGauge.setTitleString(cache.title);
+            if (config.showPopupGraphs && config.tipImgs[4][cache.popupImg] !== null) {
+              var cacheDefeat = '?' + $('#imgtip4_img').attr('src').split('?')[1];
+              $('#imgtip4_img').attr('src', config.imgPathURL + config.tipImgs[4][cache.popupImg] + cacheDefeat);
+            }
           }
 
           ssGauge.setArea(cache.areas);
           ssGauge.setValueAnimated(cache.value);
+
+          if (ddimgtooltip.showTips) {
+            // update tooltip
+            if (cache.selected === 'out') {
+              tip = strings.hum_out_info + ':' +
+                '<br>' +
+                '- ' + strings.minimum_info + ': ' + extractDecimal(data.humTL) + '% ' + strings.at + ' ' + data.ThumTL +
+                ' | ' + strings.maximum_info + ': ' + extractDecimal(data.humTH) + '% ' + strings.at + ' ' + data.ThumTH;
+            } else if (data.inhumTL && data.inhumTH) {
+              // we have indoor high/low data
+              tip = strings.hum_in_info + ':' +
+                '<br>' +
+                '- ' + strings.minimum_info + ': ' + extractDecimal(data.inhumTL) + '% ' + strings.at + ' ' + data.TinhumTL +
+                ' | ' + strings.maximum_info + ': ' + extractDecimal(data.inhumTH) + '% ' + strings.at + ' ' + data.TinhumTH;
+            } else {
+              // no indoor high/low data
+              tip = strings.hum_in_info + ': ' + extractDecimal(data.inhum) + '%';
+            }
+            $('#imgtip4_txt').html(tip);
+          }
         } // End of update()
+
+        function updateGraph(evnt, cacheDefeat) {
+          if (config.tipImgs[4][cache.popupImg] !== null) {
+            $('#imgtip4_img').attr('src', config.imgPathURL + config.tipImgs[4][cache.popupImg] + cacheDefeat);
+          }
+        }
 
         return {
           data: cache,
@@ -1250,9 +1503,9 @@ gauges = (function () {
     // Singleton for the Barometer Gauge
     //
     singleBaro = (function () {
-      var instance;   // Stores a reference to the Singleton
-      var ssGauge;    // Stores a reference to the SS Gauge
-      var cache = {};      // Stores various config values and parameters
+      var instance; // Stores a reference to the Singleton
+      var ssGauge; // Stores a reference to the SS Gauge
+      var cache = {}; // Stores various config values and parameters
 
       function init() {
         var params = $.extend(true, {}, commonParams);
@@ -1289,7 +1542,10 @@ gauges = (function () {
 
           // over-ride CSS applied size?
           if (config.gaugeScaling !== 1) {
-            $('#canvas_baro').css({ width: params.size + 'px', height: params.size + 'px' });
+            $('#canvas_baro').css({
+              width: params.size + 'px',
+              height: params.size + 'px'
+            });
           }
 
           // add a shadow to the gauge
@@ -1297,8 +1553,9 @@ gauges = (function () {
             $('#canvas_baro').css(gaugeShadow(params.size));
           }
 
-          // subcribe to data updates
+          // subscribe to data updates
           $.subscribe('gauges.dataUpdated', update);
+          $.subscribe('gauges.graphUpdate', updateGraph);
         } else {
           // cannot draw gauge, return null
           return null;
@@ -1376,7 +1633,26 @@ gauges = (function () {
           ssGauge.setSection(cache.sections);
           ssGauge.setValueAnimated(cache.value);
 
+          if (ddimgtooltip.showTips) {
+            // update tooltip
+            tip = strings.baro_info + ':' +
+              '<br>' +
+              '- ' + strings.minimum_info + ': ' + cache.todayLowRnd + ' ' + data.pressunit + ' ' + strings.at + ' ' + data.TpressTL +
+              ' | ' + strings.maximum_info + ': ' + cache.todayHighRnd + ' ' + data.pressunit + ' ' + strings.at + ' ' + data.TpressTH;
+            if (cache.trendVal !== -9999) {
+              tip += '<br>' +
+                '- ' + strings.baro_trend_info + ': ' + baroTrend(cache.trendVal, data.pressunit, true) + ' ' +
+                (cache.trendValRnd > 0 ? '+' : '') + cache.trendValRnd + ' ' + data.pressunit + '/h';
+            }
+            $('#imgtip5_txt').html(tip);
+          }
         } // End of update()
+
+        function updateGraph(evnt, cacheDefeat) {
+          if (config.tipImgs[5] !== null) {
+            $('#imgtip5_img').attr('src', config.imgPathURL + config.tipImgs[5] + cacheDefeat);
+          }
+        }
 
         return {
           data: cache,
@@ -1401,9 +1677,9 @@ gauges = (function () {
     // Singleton for the Wind Speed Gauge
     //
     singleWind = (function () {
-      var instance;   // Stores a reference to the Singleton
-      var ssGauge;    // Stores a reference to the SS Gauge
-      var cache = {};      // Stores various config values and parameters
+      var instance; // Stores a reference to the Singleton
+      var ssGauge; // Stores a reference to the SS Gauge
+      var cache = {}; // Stores various config values and parameters
 
       function init() {
         var params = $.extend(true, {}, commonParams);
@@ -1439,7 +1715,10 @@ gauges = (function () {
 
           // over-ride CSS applied size?
           if (config.gaugeScaling !== 1) {
-            $('#canvas_wind').css({ width: params.size + 'px', height: params.size + 'px' });
+            $('#canvas_wind').css({
+              width: params.size + 'px',
+              height: params.size + 'px'
+            });
           }
 
           // add a shadow to the gauge
@@ -1447,14 +1726,17 @@ gauges = (function () {
             $('#canvas_wind').css(gaugeShadow(params.size));
           }
 
-          // subcribe to data updates
+          // subscribe to data updates
           $.subscribe('gauges.dataUpdated', update);
+          $.subscribe('gauges.graphUpdate', updateGraph);
         } else {
           // cannot draw gauge, return null
           return null;
         }
 
         function update() {
+          var tip;
+
           cache.value = extractDecimal(data.wlatest);
           cache.average = extractDecimal(data.wspeed);
           cache.gust = extractDecimal(data.wgust);
@@ -1484,7 +1766,24 @@ gauges = (function () {
           ssGauge.setArea(cache.areas);
           ssGauge.setMaxMeasuredValue(cache.maxGustToday);
           ssGauge.setValueAnimated(cache.value);
+
+          if (ddimgtooltip.showTips) {
+            // update tooltip
+            tip = strings.tenminavgwind_info + ': ' + cache.average + ' ' + data.windunit + ' | ' +
+              strings.maxavgwind_info + ': ' + cache.maxAvgToday + ' ' + data.windunit + '<br>' +
+              strings.tenmingust_info + ': ' + cache.gust + ' ' + data.windunit + ' | ' +
+              strings.maxgust_info + ': ' + cache.maxGustToday + ' ' + data.windunit + ' ' +
+              strings.at + ' ' + data.TwgustTM + ' ' + strings.bearing_info + ': ' + data.bearingTM +
+              (isNaN(parseFloat(data.bearingTM)) ? '' : '° (' + getord(+data.bearingTM) + ')');
+            $('#imgtip6_txt').html(tip);
+          }
         } // End of update()
+
+        function updateGraph(evnt, cacheDefeat) {
+          if (config.tipImgs[6] !== null) {
+            $('#imgtip6_img').attr('src', config.imgPathURL + config.tipImgs[6] + cacheDefeat);
+          }
+        }
 
         return {
           data: cache,
@@ -1509,8 +1808,8 @@ gauges = (function () {
     // Singleton for the Wind Direction Gauge
     //
     singleDir = (function () {
-      var instance;   // Stores a reference to the Singleton
-      var ssGauge;    // Stores a reference to the SS Gauge
+      var instance; // Stores a reference to the Singleton
+      var ssGauge; // Stores a reference to the SS Gauge
       var cache = {}; // Stores various config values and parameters
 
       function init() {
@@ -1527,7 +1826,7 @@ gauges = (function () {
           params.pointerTypeLatest = gaugeGlobals.pointer; // default TYPE8,
           params.pointerTypeAverage = gaugeGlobals.dirAvgPointer; // default TYPE8
           params.pointerColorAverage = gaugeGlobals.dirAvgPointerColour;
-          params.degreeScale = true;             // Show degree scale rather than ordinal directions
+          params.degreeScale = true; // Show degree scale rather than ordinal directions
           params.pointSymbols = strings.compass;
           params.roseVisible = false;
           params.lcdTitleStrings = cache.titles;
@@ -1539,7 +1838,10 @@ gauges = (function () {
 
           // over-ride CSS applied size?
           if (config.gaugeScaling !== 1) {
-            $('#canvas_dir').css({ width: params.size + 'px', height: params.size + 'px' });
+            $('#canvas_dir').css({
+              width: params.size + 'px',
+              height: params.size + 'px'
+            });
           }
 
           // add a shadow to the gauge
@@ -1547,8 +1849,9 @@ gauges = (function () {
             $('#canvas_dir').css(gaugeShadow(params.size));
           }
 
-          // subcribe to data updates
+          // subscribe to data updates
           $.subscribe('gauges.dataUpdated', update);
+          $.subscribe('gauges.graphUpdate', updateGraph);
         } else {
           // cannot draw gauge, return null
           return null;
@@ -1592,7 +1895,7 @@ gauges = (function () {
                 cache.avgKnots = 0.539956803 * windSpd;
                 cache.gstKnots = 0.539956803 * windGst;
                 break;
-              // no default
+                // no default
             }
             cache.avgKnots = Math.round(cache.avgKnots);
             cache.gstKnots = Math.round(cache.gstKnots);
@@ -1667,7 +1970,25 @@ gauges = (function () {
             }
             ssGauge.setArea(roseAreas);
           }
+
+          if (ddimgtooltip.showTips) {
+            // update tooltip
+            tip = strings.latest_title + ' ' + strings.bearing_info + ': ' + cache.valueLatest + '° (' + getord(+cache.valueLatest) + ')' +
+              ssGauge.VRB + '<br>' + strings.tenminavg_web + ' ' + strings.bearing_info + ': ' + cache.valueAverage + '° (' +
+              getord(+cache.valueAverage) + '), ' + strings.dominant_bearing + ': ' + data.domwinddir;
+            if (!config.showRoseGauge) {
+              // Wind run is shown on the wind rose if it is available
+              tip += '<br>' + strings.windruntoday + ': ' + data.windrun + ' ' + displayUnits.windrun;
+            }
+            $('#imgtip7_txt').html(tip);
+          }
         } // End of update()
+
+        function updateGraph(evnt, cacheDefeat) {
+          if (config.tipImgs[7] !== null) {
+            $('#imgtip7_img').attr('src', config.imgPathURL + config.tipImgs[7] + cacheDefeat);
+          }
+        }
 
         return {
           data: cache,
@@ -1692,15 +2013,15 @@ gauges = (function () {
     // Singleton for the Wind Rose Gauge
     //
     singleRose = (function () {
-      var instance;   // Stores a reference to the Singleton
-      var ssGauge;    // Stores a reference to the SS Gauge
+      var instance; // Stores a reference to the Singleton
+      var ssGauge; // Stores a reference to the SS Gauge
 
-      var buffers = {};   // Stores references to the various canvas buffers
-      var cache = {};     // various parameters to store for the life time of gauge
-      var ctxRoseCanvas;  // 2D context for the plotted gauge
+      var buffers = {}; // Stores references to the various canvas buffers
+      var cache = {}; // various parameters to store for the life time of gauge
+      var ctxRoseCanvas; // 2D context for the plotted gauge
 
       cache.firstRun = true;
-      cache.odoDigits = 5;  // Total number of odometer digits including the decimal
+      cache.odoDigits = 5; // Total number of odometer digits including the decimal
 
       function init() {
         var div, roseCanvas;
@@ -1759,6 +2080,14 @@ gauges = (function () {
             cache.gaugeSize
           );
 
+          // Optional - add a background image
+          /*
+          if (g_imgSmall !== null) {
+              var drawSize = g_size * 0.831775;
+              var x = (g_size - drawSize) / 2;
+              buffers.ctxBackground.drawImage(g_imgSmall, x, x, cache.gaugeSize, cache.gaugeSize);
+          }
+          */
           // Add the compass points
           drawCompassPoints(buffers.ctxBackground, cache.gaugeSize);
 
@@ -1779,7 +2108,10 @@ gauges = (function () {
           ctxRoseCanvas = roseCanvas.getContext('2d');
           // over-ride CSS applied size?
           if (config.gaugeScaling !== 1) {
-            $('#canvas_rose').css({ width: cache.gaugeSize + 'px', height: cache.gaugeSize + 'px' });
+            $('#canvas_rose').css({
+              width: cache.gaugeSize + 'px',
+              height: cache.gaugeSize + 'px'
+            });
           }
           // resize canvas on main page
           roseCanvas.width = cache.gaugeSize;
@@ -1802,7 +2134,7 @@ gauges = (function () {
           // Create an odometer
           if (cache.showOdo) {
             cache.odoHeight = Math.ceil(cache.gaugeSize * 0.08); // Sets the size of the odometer
-            cache.odoWidth = Math.ceil(Math.floor(cache.odoHeight * 0.68) * cache.odoDigits);  // 'Magic' number, do not alter
+            cache.odoWidth = Math.ceil(Math.floor(cache.odoHeight * 0.68) * cache.odoDigits); // 'Magic' number, do not alter
             // Create a new canvas for the oodometer
             buffers.Odo = document.createElement('canvas');
             $(buffers.Odo).attr({
@@ -1811,11 +2143,7 @@ gauges = (function () {
               height: cache.odoHeight
             });
             // Position it
-            $(buffers.Odo).css({
-              position: 'absolute',
-              top: Math.ceil(cache.gaugeSize * 0.7 + $('#canvas_rose').position().top) + 'px',
-              left: Math.ceil((cache.gaugeSize - cache.odoWidth) / 2 + $('#canvas_rose').position().left) + 'px'
-            });
+            $(buffers.Odo).attr('class', 'odo');
             // Insert it into the DOM before the Rose gauge
             $(buffers.Odo).insertBefore('#canvas_rose');
             // Create the odometer
@@ -1825,8 +2153,9 @@ gauges = (function () {
               decimals: 1
             });
           }
-          // subcribe to data updates
+          // subscribe to data updates
           $.subscribe('gauges.dataUpdated', update);
+          $.subscribe('gauges.graphUpdate', updateGraph);
         } else {
           // cannot draw gauge, return null
           return null;
@@ -1888,8 +2217,22 @@ gauges = (function () {
             if (cache.showOdo) {
               ssGauge.setValueAnimated(extractDecimal(data.windrun));
             }
+
+            // update tooltip
+            if (ddimgtooltip.showTips) {
+              $('#imgtip10_txt').html(
+                strings.dominant_bearing + ': ' + data.domwinddir + '<br>' +
+                strings.windruntoday + ': ' + data.windrun + ' ' + displayUnits.windrun
+              );
+            }
           }
         } // End of update()
+
+        function updateGraph(evnt, cacheDefeat) {
+          if (config.tipImgs[10] !== null) {
+            $('#imgtip10_img').attr('src', config.imgPathURL + config.tipImgs[10] + cacheDefeat);
+          }
+        }
 
         // Helper function to put the compass points on the background
         function drawCompassPoints(ctx, size) {
@@ -1976,9 +2319,9 @@ gauges = (function () {
     // Singleton for the UV-Index Gauge
     //
     singleUV = (function () {
-      var instance;   // Stores a reference to the Singleton
-      var ssGauge;    // Stores a reference to the SS Gauge
-      var cache = {};      // Stores various config values and parameters
+      var instance; // Stores a reference to the Singleton
+      var ssGauge; // Stores a reference to the SS Gauge
+      var cache = {}; // Stores various config values and parameters
 
       function init() {
         var params = $.extend(true, {}, commonParams);
@@ -2026,14 +2369,17 @@ gauges = (function () {
 
           // Do the alarm/threshold settings
           if (config.ThresholdTempVisible) {
-//            ssGauge.setThresholdVisible(config.ThresholdTempVisible);
+            // ssGauge.setThresholdVisible(config.ThresholdTempVisible);
             ssGauge.setThreshold(config.ThresholdTempValue);
             ssGauge.setLedVisible(true);
           }
 
           // over-ride CSS applied size?
           if (config.gaugeScaling !== 1) {
-            $('#canvas_uv').css({ width: params.size + 'px', height: params.size + 'px' });
+            $('#canvas_uv').css({
+              width: params.size + 'px',
+              height: params.size + 'px'
+            });
           }
 
           // add a shadow to the gauge
@@ -2041,8 +2387,9 @@ gauges = (function () {
             $('#canvas_uv').css(gaugeShadow(params.size));
           }
 
-          // subcribe to data updates
+          // subscribe to data updates
           $.subscribe('gauges.dataUpdated', update);
+          $.subscribe('gauges.graphUpdate', updateGraph);
         } else {
           // cannot draw gauge, return null
           return null;
@@ -2078,7 +2425,21 @@ gauges = (function () {
           cache.detail = strings.uv_details[indx];
           ssGauge.setUnitString(cache.risk);
           ssGauge.setValueAnimated(cache.value);
+
+          if (ddimgtooltip.showTips) {
+            // update tooltip
+            tip = '<b>' + strings.uv_title + ': ' + cache.value + '</b> - <i>' + strings.solar_maxToday + ': ' + data.UVTH + '</i><br>';
+            tip += '<i>' + cache.headLine + '</i><br>';
+            tip += cache.detail;
+            $('#imgtip8_txt').html(tip);
+          }
         } // End of update()
+
+        function updateGraph(evnt, cacheDefeat) {
+          if (config.tipImgs[8] !== null) {
+            $('#imgtip8_img').attr('src', config.imgPathURL + config.tipImgs[8] + cacheDefeat);
+          }
+        }
 
         return {
           update: update,
@@ -2102,9 +2463,9 @@ gauges = (function () {
     // Singleton for the Solar Irradiation Gauge
     //
     singleSolar = (function () {
-      var instance;   // Stores a reference to the Singleton
-      var ssGauge;    // Stores a reference to the SS Gauge
-      var cache = {};      // Stores various config values and parameters
+      var instance; // Stores a reference to the Singleton
+      var ssGauge; // Stores a reference to the SS Gauge
+      var cache = {}; // Stores various config values and parameters
 
       function init() {
         var params = $.extend(true, {}, commonParams);
@@ -2139,15 +2500,19 @@ gauges = (function () {
 
           // over-ride CSS applied size?
           if (config.gaugeScaling !== 1) {
-            $('#canvas_solar').css({ width: params.size + 'px', height: params.size + 'px' });
+            $('#canvas_solar').css({
+              width: params.size + 'px',
+              height: params.size + 'px'
+            });
           }
 
           // add a shadow to the gauge
           if (config.showGaugeShadow) {
             $('#canvas_solar').css(gaugeShadow(params.size));
           }
-          // subcribe to data updates
+          // subscribe to data updates
           $.subscribe('gauges.dataUpdated', update);
+          $.subscribe('gauges.graphUpdate', updateGraph);
         } else {
           // cannot draw gauge, return null
           return null;
@@ -2198,7 +2563,24 @@ gauges = (function () {
               +cache.value >= gaugeGlobals.sunshineThreshold
             );
           }
+
+          if (ddimgtooltip.showTips) {
+            // update tooltip
+            tip = '<b>' + strings.solar_title + ': ' + cache.value + ' W/m²</b> - ' +
+              '<i>' + percent + '% ' + strings.solar_ofMax + '</i><br>' +
+              strings.solar_currentMax + ': ' + cache.currMaxValue + ' W/m²';
+            if (typeof data.SolarTM !== 'undefined') {
+              tip += '<br>' + strings.solar_maxToday + ': ' + cache.maxToday + ' W/m²';
+            }
+            $('#imgtip9_txt').html(tip);
+          }
         } // End of update()
+
+        function updateGraph(evnt, cacheDefeat) {
+          if (config.tipImgs[9] !== null) {
+            $('#imgtip9_img').attr('src', config.imgPathURL + config.tipImgs[9] + cacheDefeat);
+          }
+        }
 
         return {
           update: update,
@@ -2222,9 +2604,9 @@ gauges = (function () {
     // Singleton for the Cloudbase Gauge
     //
     singleCloudBase = (function () {
-      var instance;   // Stores a reference to the Singleton
-      var ssGauge;    // Stores a reference to the SS Gauge
-      var cache = {};      // Stores various config values and parameters
+      var instance; // Stores a reference to the Singleton
+      var ssGauge; // Stores a reference to the SS Gauge
+      var cache = {}; // Stores various config values and parameters
 
       function init() {
         var params = $.extend(true, {}, commonParams);
@@ -2248,15 +2630,19 @@ gauges = (function () {
 
           // over-ride CSS applied size?
           if (config.gaugeScaling !== 1) {
-            $('#canvas_cloud').css({ width: params.size + 'px', height: params.size + 'px' });
+            $('#canvas_cloud').css({
+              width: params.size + 'px',
+              height: params.size + 'px'
+            });
           }
 
           // add a shadow to the gauge
           if (config.showGaugeShadow) {
             $('#canvas_cloud').css(gaugeShadow(params.size));
           }
-          // subcribe to data updates
+          // subscribe to data updates
           $.subscribe('gauges.dataUpdated', update);
+          $.subscribe('gauges.graphUpdate', updateGraph);
         } else {
           // cannot draw gauge, return null
           return null;
@@ -2301,7 +2687,18 @@ gauges = (function () {
             }
           }
           ssGauge.setValueAnimated(cache.value);
+
+          if (config.showPopupData) {
+            // static tooltip on cloud gauge
+            $('#imgtip11_txt').html('<strong>' + strings.cloudbase_popup_title + '</strong><br>' + strings.cloudbase_popup_text);
+          }
         } // End of update()
+
+        function updateGraph(evnt, cacheDefeat) {
+          if (config.tipImgs[11] !== null) {
+            $('#imgtip11_img').attr('src', config.imgPathURL + config.tipImgs[11] + cacheDefeat);
+          }
+        }
 
         return {
           data: cache,
@@ -2326,55 +2723,62 @@ gauges = (function () {
     // getRealtime() fetches the realtimegauges JSON data from the server
     //
     getRealtime = function () {
-      var url = config.realTimeUrl;
-
-      if (PauseInEffect) {
-    //    console.log('canceling getRealtime');
-        return;
-      }
-
-      if (jqXHR != null) {
+      var url = config.realTimeURL;
+      if ($.active > 0 && undefined != jqXHR) {
+        // kill any outstanding requests
         jqXHR.abort();
-        $('#ajxMessage').html('Ajax RealTimeGauges aborted for initialization again! ');
-        jqXHR = null;
       }
-
-      // creating ajax call 
+      if (config.longPoll) {
+        url += '?timestamp=' + timestamp;
+      }
       jqXHR = $.ajax({
-        // setting the url 
-        url: config.realTimeUrl,
+        url: url,
+        cache: (config.longPoll),
         dataType: 'json',
-        timeout: 2000,
-        headers: { 'Access-Control-Allow-Origin': '*' },
-        crossDomain: true,
+        timeout: config.longPoll ? (Math.min(config.realtimeInterval, 20) + 21) * 1000 : 21000 // 21 second time-out by default
+      }).done(function (data) {
+        checkRtResp(data);
+      }).fail(function (xhr, status, err) {
+        checkRtError(xhr, status, err);
+      });
+    },
 
-        // Check for existence of file 
-        statusCode: {
-          404: function () {
-            $('#ajxMessage').html('RealTimeGauges does not exists!');
-          }
-        },
+    //
+    // checkRtResp() called by the Ajax fetch once data has been downloaded
+    //
+    checkRtResp = function (response) {
+      var delay;
+      statusTimer.reset(config.longPoll ? 1 : config.realtimeInterval);
+      if (config.longPoll && response.status !== 'OK') {
+        checkRtError(null, 'PHP Error', response.status);
+      } else {
+        if (processData(response)) {
+          delay = ajaxDelay;
+        } else {
+          delay = 5;
+        }
+        if (delay > 0) {
+          downloadTimer = setTimeout(getRealtime, delay * 1000);
+        } else {
+          getRealtime();
+        }
+      }
+    },
 
-        error: function (xhr, textStatus, errorThrown) {
-          $('#ajxMessage').html('RealTimeGauges fetch Error : ' + textStatus);
-        },
-
-        //Check for success message in ajaxOutput div 
-        success: (function (response, responseStatus) {
-          if (responseStatus == 'success') {
-            processData(response);
-          }
-          else {
-            $('#ajxMessage').html('RealTimeGauges fetch Unknown Error : ' + responseStatus);
-          }
-        })
-      }); // End Ajax call
-
-      // Reset the cycle for the next timer. This assumes the handling of the data and the changing of the gauges takes place 
-      // within the cycle time (default 15 seconds!) This is done also under any error circumstance such that if the error circumstance
-      // is corrected and correct data fetch is resumed, that situation is checked every cycle period and normal operation is 
-      // automatically resumed. It is up to the user to correct erroneous realtimegauges.txt file situations. We do not take that responsibility.
-      downloadTimer = setTimeout(getRealtime, config.realtimeInterval * 1000);
+    //
+    // checkRtError() called by the Ajax fetch if an error occurs during the fetching realtimegauges.txt
+    //
+    checkRtError = function (xhr, status, error) {
+      if (xhr == null || xhr.statusText !== 'abort') {
+        // Clear any existing download timer
+        clearTimeout(downloadTimer);
+        // Set the status LED to off
+        ledIndicator.setLedOnOff(false);
+        ledIndicator.setTitle(strings.led_title_unknown);
+        statusScroller.setText(status + ': ' + error);
+        // wait 5 seconds, then try again...
+        downloadTimer = setTimeout(getRealtime, 5000);
+      }
     },
 
     //
@@ -2382,16 +2786,21 @@ gauges = (function () {
     //
     processData = function (dataObj) {
       var str, dt, tm, today, now, then, tmp, elapsedMins, retVal;
-
       // copy the realtime fields into the global 'data' object
-      data = dataObj;
+      if (config.longPoll) {
+        timestamp = dataObj.timestamp;
+        data = dataObj.data;
+      } else {
+        // normal polling
+        data = dataObj;
+      }
 
-      // and check we have the expected version number [typeof]
-      if (data.ver !== 'undefined' && data.ver >= realtimeVer) {
-        // mainpulate the last rain time into something more friendly
+      // and check we have the expected version number
+      if (typeof data.ver !== 'undefined' && data.ver >= realtimeVer) {
+        // manpulate the last rain time into something more friendly
         try {
           str = data.LastRainTipISO.split(' ');
-          dt = str[0].replace(/\//g, '-').split('-');  // WD uses dd/mm/yyyy, we use a '-'
+          dt = str[0].replace(/\//g, '-').split('-'); // WD uses dd/mm/yyyy, we use a '-'
           tm = str[1].split(':');
           today = new Date();
           today.setHours(0, 0, 0, 0);
@@ -2419,10 +2828,9 @@ gauges = (function () {
         } catch (e) {
           data.LastRained = data.LastRainTipISO;
         }
-
         if (data.tempunit.length > 1) {
           // clean up temperature units - remove html encoded degree symbols
-          data.tempunit = data.tempunit.replace(/&\S*;/, '°');  // old Cumulus versions uses &deg;, WeatherCat uses &#176;
+          data.tempunit = data.tempunit.replace(/&\S*;/, '°'); // old Cumulus versions uses &deg;, WeatherCat uses &#176;
         } else {
           // using new realtimegaugesT.txt with Cumulus > 1.9.2
           data.tempunit = '°' + data.tempunit;
@@ -2466,18 +2874,18 @@ gauges = (function () {
         data.forecast = $('<div/>').html(data.forecast).text();
         data.forecast = data.forecast.trim();
 
-        data.pressunit = data.pressunit.trim();  // WView sends ' in', ' mb', or ' hPa'
-        if (data.pressunit === 'in') {  // Cumulus and WView send 'in'
+        data.pressunit = data.pressunit.trim(); // WView sends ' in', ' mb', or ' hPa'
+        if (data.pressunit === 'in') { // Cumulus and WView send 'in'
           data.pressunit = 'inHg';
         }
 
         data.windunit = data.windunit.trim(); // WView sends ' kmh' etc
         data.windunit = data.windunit.toLowerCase(); // WeatherCat sends "MPH"
-        if (data.windunit === 'knots') {             // WeatherCat/weewx send "Knots", we use "kts"
+        if (data.windunit === 'knots') { // WeatherCat/weewx send "Knots", we use "kts"
           data.windunit = 'kts';
         }
 
-        if (data.windunit === 'kmh' || data.windunit === 'kph') {  // WD wind unit omits '/', weewx sends 'kph'
+        if (data.windunit === 'kmh' || data.windunit === 'kph') { // WD wind unit omits '/', weewx sends 'kph'
           data.windunit = 'km/h';
         }
 
@@ -2495,8 +2903,8 @@ gauges = (function () {
           data.cloudbaseunit = '';
         }
         if (config.showCloudGauge && (
-          (config.weatherProgram === 4 || config.weatherProgram === 5) ||
-          data.cloudbasevalue === '')) {
+            (config.weatherProgram === 4 || config.weatherProgram === 5) ||
+            data.cloudbasevalue === '')) {
           // WeatherCat and VWS (and WView?) do not provide a cloud base value, so we have to calculate it...
           // assume if the station uses an imperial wind speed they want cloud base in feet, otherwise metres
           data.cloudbaseunit = (data.windunit === 'mph' || data.windunit === 'kts') ? 'ft' : 'm';
@@ -2566,7 +2974,7 @@ gauges = (function () {
       } else {
         // set an error message
         if (data.ver < realtimeVer) {
-          //                    statusTimer.setValue(0);
+          statusTimer.setValue(0);
           statusScroller.setText('Your ' + config.realTimeURL.substr(config.realTimeURL.lastIndexOf('/') + 1) + ' file template needs updating!');
           return false;
         } else {
@@ -2579,6 +2987,55 @@ gauges = (function () {
         retVal = false;
       }
       return retVal;
+    },
+
+    //
+    // pagetimeout() called once every config.pageUpdateLimit minutes to stop updates and prevent page 'sitters'
+    //
+    pageTimeout = function () {
+
+      statusScroller.setText(strings.StatusPageLimit);
+      ledIndicator.setLedColor(steelseries.LedColor.RED_LED);
+      ledIndicator.setTitle(strings.StatusPageLimit);
+      ledIndicator.blink(true);
+      ledIndicator.setTitle(strings.StatusTimeout);
+
+      // stop any pending download
+      clearTimeout(downloadTimer);
+
+      // stop any long polling in progress
+      if ($.active > 0) {
+        jqXHR.abort();
+      }
+
+      // stop the clock
+      clearInterval(tickTockInterval);
+
+      // clear the timer display
+      statusTimer.setValue(0);
+
+      // set an onclick event on the LED to restart everything
+      $('#canvas_led').click(
+        function click() {
+          // disable the onClick event again
+          $('#canvas_led').unbind('click');
+          // reset the timer count to 1
+          statusTimer.reset(1);
+          // restart the timer to update the status time
+          tickTockInterval = setInterval(
+            function tick() {
+              $.publish('gauges.clockTick', null);
+            },
+            1000
+          );
+
+          // restart the page timeout timer, so we hit this code again
+          setTimeout(pageTimeout, config.pageUpdateLimit * 60 * 1000);
+
+          // refresh the page data
+          getRealtime();
+        }
+      );
     },
 
     //
@@ -2623,11 +3080,50 @@ gauges = (function () {
       }
 
       // set the script version on the page
-      $('#scriptVer').html(config.scriptVer);
+      // $('#scriptVer').html(config.scriptVer);
       // set the version information from the station
-//      $('#programVersion').html(data.version);
-//      $('#programBuild').html(data.build);
-//      $('#programName').html(programLink[config.weatherProgram]);
+      // $('#programVersion').html(data.version);
+      // $('#programBuild').html(data.build);
+      // $('#programName').html(programLink[config.weatherProgram]);
+
+      if (config.showPopupData) {
+        // now initialise the pop-up script and download the trend images
+        // - has to be done here as doFirst may remove elements from the page
+        // - and we delay the download of the images speeding up page display
+        ddimgtooltip.init('[id^="tip_"]');
+        // Are we running on a phone device (or really low res screen)?
+        if ($(window).width() < 480) {
+          $('.ddimgtooltip').filter(':hidden').width('200px');
+        }
+      }
+
+      if (config.showPopupData && config.showPopupGraphs) {
+        // now download the trend images
+        // - has to be done here as doFirst may remove elements from the page
+        // - and we delay the download of the images speeding up page display
+        //
+        $('#imgtip0_img').attr('src', config.imgPathURL + config.tipImgs[0][0] + cacheDefeat);
+        if (gaugeDew) {
+          $('#imgtip1_img').attr('src', config.imgPathURL + config.tipImgs[1][gaugeDew.data.popupImg] + cacheDefeat);
+        }
+        $('#imgtip2_img').attr('src', config.imgPathURL + config.tipImgs[2] + cacheDefeat);
+        $('#imgtip3_img').attr('src', config.imgPathURL + config.tipImgs[3] + cacheDefeat);
+        $('#imgtip4_img').attr('src', config.imgPathURL + config.tipImgs[4][0] + cacheDefeat);
+        $('#imgtip5_img').attr('src', config.imgPathURL + config.tipImgs[5] + cacheDefeat);
+        $('#imgtip6_img').attr('src', config.imgPathURL + config.tipImgs[6] + cacheDefeat);
+        $('#imgtip7_img').attr('src', config.imgPathURL + config.tipImgs[7] + cacheDefeat);
+        $('#imgtip8_img').attr('src', config.imgPathURL + config.tipImgs[8] + cacheDefeat);
+        $('#imgtip9_img').attr('src', config.imgPathURL + config.tipImgs[9] + cacheDefeat);
+        $('#imgtip10_img').attr('src', config.imgPathURL + config.tipImgs[10] + cacheDefeat);
+        $('#imgtip11_img').attr('src', config.imgPathURL + config.tipImgs[11] + cacheDefeat);
+        // start a timer for popup graphic updates
+        setInterval(
+          function timeout() {
+            $.publish('gauges.graphUpdate', '?' + (new Date()).getTime().toString());
+          },
+          config.graphUpdateTime * 60 * 1000
+        );
+      }
 
       firstRun = false;
     },
@@ -2679,6 +3175,26 @@ gauges = (function () {
       return section;
     },
 
+    //
+    // createRainSections() returns an array of section highlights for the Rain Rate gauge
+    //
+    /*
+      Assumes 'standard' descriptive limits from UK met office:
+       < 0.25 mm/hr - Very light rain
+       0.25mm/hr to 1.0mm/hr - Light rain
+       1.0 mm/hr to 4.0 mm/hr - Moderate rain
+       4.0 mm/hr to 16.0 mm/hr - Heavy rain
+       16.0 mm/hr to 50 mm/hr - Very heavy rain
+       > 50.0 mm/hour - Extreme rain
+
+       Roughly translated to the corresponding Inch rates
+       < 0.001
+       0.001 to 0.05
+       0.05 to 0.20
+       0.20 to 0.60
+       0.60 to 2.0
+       > 2.0
+    */
     createRainRateSections = function (metric) {
       var factor = metric ? 1 : 1 / 25;
       return [
@@ -3038,9 +3554,9 @@ gauges = (function () {
       data.apptemp = convFunc(data.apptemp);
       data.apptempTH = convFunc(data.apptempTH);
       data.apptempTL = convFunc(data.apptempTL);
-  	  data.feelslike = convFunc(data.feelslike);
-	  data.feelslikeTH = convFunc(data.feelslikeTH);
-	  data.feelslikeTL = convFunc(data.feelslikeTL);
+      data.feelslike = convFunc(data.feelslike);
+      data.feelslikeTH = convFunc(data.feelslikeTH);
+      data.feelslikeTL = convFunc(data.feelslikeTL);
       data.dew = convFunc(data.dew);
       data.dewpointTH = convFunc(data.dewpointTH);
       data.dewpointTL = convFunc(data.dewpointTL);
@@ -3102,7 +3618,7 @@ gauges = (function () {
           fromFunc2 = dummy;
           break;
         case 'm/s':
-        // falls through
+          // falls through
         default:
           fromFunc1 = dummy;
           fromFunc2 = dummy;
@@ -3125,7 +3641,7 @@ gauges = (function () {
           displayUnits.windrun = 'km';
           break;
         case 'm/s':
-        // falls through
+          // falls through
         default:
           toFunc1 = dummy;
           toFunc2 = dummy;
@@ -3153,7 +3669,7 @@ gauges = (function () {
       // convert to hPa
       switch (from) {
         case 'hPa':
-        // falls through
+          // falls through
         case 'mb':
           fromFunc = dummy;
           break;
@@ -3163,12 +3679,12 @@ gauges = (function () {
         case 'kPa':
           fromFunc = kpa2hpa;
           break;
-        // no default
+          // no default
       }
       // convert to required units
       switch (to) {
         case 'hPa':
-        // falls through
+          // falls through
         case 'mb':
           toFunc = dummy;
           break;
@@ -3178,7 +3694,7 @@ gauges = (function () {
         case 'kPa':
           toFunc = hpa2kpa;
           break;
-        // no default
+          // no default
       }
 
       data.press = toFunc(fromFunc(data.press));
@@ -3213,8 +3729,12 @@ gauges = (function () {
           if (data.tempunit[1] !== sel) {
             setTempUnits(true);
             convTempData(f2c);
-            if (gaugeTemp) { gaugeTemp.update(); }
-            if (gaugeDew) { gaugeDew.update(); }
+            if (gaugeTemp) {
+              gaugeTemp.update();
+            }
+            if (gaugeDew) {
+              gaugeDew.update();
+            }
           }
           break;
         case 'F':
@@ -3222,18 +3742,26 @@ gauges = (function () {
           if (data.tempunit[1] !== sel) {
             setTempUnits(false);
             convTempData(c2f);
-            if (gaugeTemp) { gaugeTemp.update(); }
-            if (gaugeDew) { gaugeDew.update(); }
+            if (gaugeTemp) {
+              gaugeTemp.update();
+            }
+            if (gaugeDew) {
+              gaugeDew.update();
+            }
           }
           break;
-        // == Rainfall ==
+          // == Rainfall ==
         case 'mm':
           displayUnits.rain = sel;
           if (data.rainunit !== sel) {
             setRainUnits(true);
             convRainData(in2mm);
-            if (gaugeRain) { gaugeRain.update(); }
-            if (gaugeRRate) { gaugeRRate.update(); }
+            if (gaugeRain) {
+              gaugeRain.update();
+            }
+            if (gaugeRRate) {
+              gaugeRRate.update();
+            }
           }
           break;
         case 'in':
@@ -3241,49 +3769,63 @@ gauges = (function () {
           if (data.rainunit !== sel) {
             setRainUnits(false);
             convRainData(mm2in);
-            if (gaugeRain) { gaugeRain.update(); }
-            if (gaugeRRate) { gaugeRRate.update(); }
+            if (gaugeRain) {
+              gaugeRain.update();
+            }
+            if (gaugeRRate) {
+              gaugeRRate.update();
+            }
           }
           break;
-        // == Pressure ==
+          // == Pressure ==
         case 'hPa':
-        // falls through
+          // falls through
         case 'inHg':
-        // falls through
+          // falls through
         case 'mb':
-        // falls through
+          // falls through
         case 'kPa':
           displayUnits.press = sel;
           if (data.pressunit !== sel) {
             convBaroData(data.pressunit, sel);
             setBaroUnits(sel);
-            if (gaugeBaro) { gaugeBaro.update(); }
+            if (gaugeBaro) {
+              gaugeBaro.update();
+            }
           }
           break;
-        // == Wind speed ==
+          // == Wind speed ==
         case 'mph':
-        // falls through
+          // falls through
         case 'kts':
-        // falls through
+          // falls through
         case 'm/s':
-        // falls through
+          // falls through
         case 'km/h':
           displayUnits.wind = sel;
           if (data.windunit !== sel) {
             convWindData(data.windunit, sel);
             setWindUnits(sel);
-            if (gaugeWind) { gaugeWind.update(); }
-            if (gaugeDir) { gaugeDir.update(); }
-            if (gaugeRose) { gaugeRose.update(); }
+            if (gaugeWind) {
+              gaugeWind.update();
+            }
+            if (gaugeDir) {
+              gaugeDir.update();
+            }
+            if (gaugeRose) {
+              gaugeRose.update();
+            }
           }
           break;
-        // == CloudBase ==
+          // == CloudBase ==
         case 'm':
           displayUnits.cloud = sel;
           if (data.cloudbaseunit !== sel) {
             setCloudBaseUnits(true);
             convCloudBaseData(ft2m);
-            if (gaugeCloud) { gaugeCloud.update(); }
+            if (gaugeCloud) {
+              gaugeCloud.update();
+            }
           }
           break;
         case 'ft':
@@ -3291,10 +3833,12 @@ gauges = (function () {
           if (data.cloudbaseunit !== sel) {
             setCloudBaseUnits(false);
             convCloudBaseData(m2ft);
-            if (gaugeCloud) { gaugeCloud.update(); }
+            if (gaugeCloud) {
+              gaugeCloud.update();
+            }
           }
           break;
-        // no default
+          // no default
       }
       if (config.useCookies) {
         setCookie('units', displayUnits);
@@ -3414,7 +3958,7 @@ gauges = (function () {
           case 'm/s':
             maxVal = gaugeGlobals.windScaleDefMaxMs;
             break;
-          // no default
+            // no default
         }
         // set the gauges
         gaugeWind.data.maxValue = maxVal;
@@ -3429,12 +3973,14 @@ gauges = (function () {
     setBaroUnits = function (to) {
       var minVal, maxVal;
 
-      if (!gaugeBaro) { return; }
+      if (!gaugeBaro) {
+        return;
+      }
 
       // set to the required units
       switch (to) {
         case 'hPa':
-        // falls through
+          // falls through
         case 'mb':
           minVal = gaugeGlobals.baroScaleDefMinhPa;
           maxVal = gaugeGlobals.baroScaleDefMaxhPa;
@@ -3456,7 +4002,7 @@ gauges = (function () {
           gaugeBaro.data.scaleDecimals = 1;
           gaugeBaro.data.labelNumberFormat = steelseries.LabelNumberFormat.FRACTIONAL;
           break;
-        // no default
+          // no default
       }
 
       data.pressunit = to;
@@ -3470,7 +4016,9 @@ gauges = (function () {
     },
 
     setCloudBaseUnits = function (m) {
-      if (!gaugeCloud) { return; }
+      if (!gaugeCloud) {
+        return;
+      }
 
       if (m) {
         gaugeCloud.data.sections = createCloudBaseSections(true);
@@ -3493,13 +4041,19 @@ gauges = (function () {
 
       // temperature
       if (gaugeTemp) {
-        if ($('#rad_temp1').is(':checked')) {
-          gaugeTemp.data.title = strings.temp_title_out;
+        if (config.showIndoorTempHum) {
+          if ($('#rad_temp1').is(':checked')) {
+            gaugeTemp.data.title = strings.temp_title_out;
+          } else {
+            gaugeTemp.data.title = strings.temp_title_in;
+          }
         } else {
-          gaugeTemp.data.title = strings.temp_title_in;
+          gaugeTemp.data.title = strings.temp_title_out;
         }
         gaugeTemp.gauge.setTitleString(gaugeTemp.data.title);
-        if (data.ver) { gaugeTemp.update(); }
+        if (data.ver) {
+          gaugeTemp.update();
+        }
       }
       if (gaugeDew) {
         switch ($('input[name="rad_dew"]:checked').val()) {
@@ -3509,9 +4063,9 @@ gauges = (function () {
           case 'app':
             gaugeDew.data.title = strings.apptemp_title;
             break;
-		  case 'feel':
-			gaugeDew.data.title = strings.feel_title;
-			break;
+          case 'feel':
+            gaugeDew.data.title = strings.feel_title;
+            break;
           case 'wnd':
             gaugeDew.data.title = strings.chill_title;
             break;
@@ -3521,71 +4075,97 @@ gauges = (function () {
           case 'hum':
             gaugeDew.data.title = strings.humdx_title;
             break;
-          // no default
+            // no default
         }
         gaugeDew.gauge.setTitleString(gaugeDew.data.title);
-        if (data.ver) { gaugeDew.update(); }
+        if (data.ver) {
+          gaugeDew.update();
+        }
       }
       // rain
       if (gaugeRain) {
         gaugeRain.data.title = strings.rain_title;
         gaugeRain.gauge.setTitleString(gaugeRain.data.title);
-        if (data.ver) { gaugeRain.update(); }
+        if (data.ver) {
+          gaugeRain.update();
+        }
       }
       // rrate
       if (gaugeRRate) {
         gaugeRRate.data.title = strings.rrate_title;
         gaugeRRate.gauge.setTitleString(gaugeRRate.data.title);
-        if (data.ver) { gaugeRRate.update(); }
+        if (data.ver) {
+          gaugeRRate.update();
+        }
       }
       // humidity
       if (gaugeHum) {
-        if ($('#rad_hum1').is(':checked')) {
-          gaugeHum.data.title = strings.hum_title_out;
+        if (config.showIndoorTempHum) {
+          if ($('#rad_hum1').is(':checked')) {
+            gaugeHum.data.title = strings.hum_title_out;
+          } else {
+            gaugeHum.data.title = strings.hum_title_in;
+          }
         } else {
-          gaugeHum.data.title = strings.hum_title_in;
+          gaugeHum.data.title = strings.hum_title_out;
         }
         gaugeHum.gauge.setTitleString(gaugeHum.data.title);
-        if (data.ver) { gaugeHum.update(); }
+        if (data.ver) {
+          gaugeHum.update();
+        }
       }
       // barometer
       if (gaugeBaro) {
         gaugeBaro.data.title = strings.baro_title;
         gaugeBaro.gauge.setTitleString(gaugeBaro.data.title);
-        if (data.ver) { gaugeBaro.update(); }
+        if (data.ver) {
+          gaugeBaro.update();
+        }
       }
       // wind
       if (gaugeWind) {
         gaugeWind.data.title = strings.wind_title;
         gaugeWind.gauge.setTitleString(gaugeWind.data.title);
-        if (data.ver) { gaugeWind.update(); }
+        if (data.ver) {
+          gaugeWind.update();
+        }
       }
       if (gaugeDir) {
         gaugeDir.gauge.setPointSymbols(strings.compass);
         gaugeDir.data.titles = [strings.latest_web, strings.tenminavg_web];
         gaugeDir.gauge.setLcdTitleStrings(gaugeDir.data.titles);
-        if (data.ver) { gaugeDir.update(); }
+        if (data.ver) {
+          gaugeDir.update();
+        }
       }
       if (gaugeUV) {
         gaugeUV.gauge.setTitleString(strings.uv_title);
-        if (data.ver) { gaugeUV.update(); }
+        if (data.ver) {
+          gaugeUV.update();
+        }
       }
       if (gaugeSolar) {
         gaugeSolar.gauge.setTitleString(strings.solar_title);
-        if (data.ver) { gaugeSolar.update(); }
+        if (data.ver) {
+          gaugeSolar.update();
+        }
       }
       if (gaugeRose) {
         gaugeRose.setTitle(strings.windrose);
         gaugeRose.setCompassStrings(strings.compass);
         gaugeRose.setOdoTitle(strings[getWindrunUnits(displayUnits.wind)]);
-        if (data.ver) { gaugeRose.update(); }
+        if (data.ver) {
+          gaugeRose.update();
+        }
       }
       if (gaugeCloud) {
         // Cloudbase
         gaugeCloud.data.units = data.cloudunit === 'm' ? strings.metres : strings.feet;
         gaugeCloud.gauge.setTitleString(strings.cloudbase_title);
         gaugeCloud.gauge.setUnitString(gaugeCloud.data.units);
-        if (data.ver) { gaugeCloud.update(); }
+        if (data.ver) {
+          gaugeCloud.update();
+        }
       }
     },
 
@@ -3602,9 +4182,9 @@ gauges = (function () {
           retVal = 'n_miles';
           break;
         case 'km/h':
-        // falls through
+          // falls through
         case 'm/s':
-        // falls through
+          // falls through
         default:
           retVal = 'km';
           break;
@@ -3666,55 +4246,58 @@ gauges = (function () {
     nextLowest = function (value, step) {
       return +value == 0 ? -step : Math.floor(+value / step) * step;
     },
-	
-	//	
-	// Functions to handle Appearance of the gauges from CumulusUtils
-	//
-	SetFrameAppearance = function (appearance) {
-	  gaugeGlobals.frameDesign = appearance;
-	  commonParams.frameDesign = appearance;
+
+    //	
+    // Functions to handle Appearance of the gauges from CumulusUtils
+    //
+    SetFrameAppearance = function (appearance) {
+      gaugeGlobals.frameDesign = appearance;
+      commonParams.frameDesign = appearance;
     },
-	SetBackground = function (appearance) {
-	  gaugeGlobals.background = appearance;
-	  commonParams.backgroundColor = appearance;
+    SetBackground = function (appearance) {
+      gaugeGlobals.background = appearance;
+      commonParams.backgroundColor = appearance;
     },
-	SetPointerColour = function (appearance) {
-	  gaugeGlobals.pointerColour = appearance;
-	  commonParams.pointerColor = appearance;
+    SetPointerColour = function (appearance) {
+      gaugeGlobals.pointerColour = appearance;
+      commonParams.pointerColor = appearance;
     },
-	SetPointerType = function (appearance) {
-	  gaugeGlobals.pointer = appearance;
-	  commonParams.pointerType = appearance;
+    SetPointerType = function (appearance) {
+      gaugeGlobals.pointer = appearance;
+      commonParams.pointerType = appearance;
     },
-	SetLcdColour = function (appearance) {
-	  gaugeGlobals.lcdColour = appearance;
-	  commonParams.lcdColor = appearance;
+    SetLcdColour = function (appearance) {
+      gaugeGlobals.lcdColour = appearance;
+      commonParams.lcdColor = appearance;
     },
-	SetForegroundType = function (appearance) {
-	  gaugeGlobals.foreground = appearance;
-	  commonParams.foregroundType = appearance;
+    SetForegroundType = function (appearance) {
+      gaugeGlobals.foreground = appearance;
+      commonParams.foregroundType = appearance;
     },
-	SetKnobType = function (appearance) {
-	  gaugeGlobals.knob = appearance;
-	  commonParams.knobType = appearance;
+    SetKnobType = function (appearance) {
+      gaugeGlobals.knob = appearance;
+      commonParams.knobType = appearance;
     },
-	SetKnobStyle = function (appearance) {
-	  gaugeGlobals.knobStyle = appearance;
-	  commonParams.knobStyle = appearance;
+    SetKnobStyle = function (appearance) {
+      gaugeGlobals.knobStyle = appearance;
+      commonParams.knobStyle = appearance;
     };
 
-    // ########################################################
-    // End of gauges() var declarations
-    // ########################################################
+  // ########################################################
+  // End of gauges() var declarations
+  // ########################################################
 
-    //
-    // Execution starts here
-    //
+  //
+  // Execution starts here
+  //
 
-    // test for canvas support before we do anything else, especially reference steelseries which will cause the script to abort!
+  // test for canvas support before we do anything else, especially reference steelseries which will cause the script to abort!
   if (!document.createElement('canvas').getContext) {
     // failed, no canvas support detected
     $('body').html(strings.canvasnosupport);
+    setTimeout(function () {
+      window.location = config.oldGauges;
+    }, 3000);
     return false;
   } else {
     //
@@ -3723,7 +4306,7 @@ gauges = (function () {
     //
     $(document).ready(function () {
       // Kick it all off - false for web page, true for dashboard
-      // init(config.dashboardMode);
+      init(config.dashboardMode);
     });
   }
 
@@ -3743,11 +4326,151 @@ gauges = (function () {
     SetLcdColour: SetLcdColour,
     SetForegroundType: SetForegroundType,
     SetKnobType: SetKnobType,
-    SetKnobStyle: SetKnobStyle,
+    SetKnobStyle: SetKnobStyle
   };
 }());
 
+// ===============================================================================================================================
+// ===============================================================================================================================
+// ===============================================================================================================================
+
+/*!
+ * Image w/ description tooltip v2.0  -  For FF1+ IE6+ Opr8+
+ * Created: April 23rd, 2010. This notice must stay intact for usage
+ * Author: Dynamic Drive at http://www.dynamicdrive.com/
+ * Visit http://www.dynamicdrive.com/ for full source code
+ * Modified: M Crossley June 2011, January 2012
+ * v2.-
+ */
+var ddimgtooltip;
+ddimgtooltip = {
+  tiparray: (function () {
+    var style = {
+        background: '#FFFFFF',
+        color: 'black',
+        border: '2px ridge darkblue'
+      },
+      i = 12, // set to number of tooltips required
+      tooltips = [];
+    for (; i--;) {
+      tooltips[i] = [null, ' ', style];
+    }
+    return tooltips;
+  }()),
+
+  tooltipoffsets: [20, -30], // additional x and y offset from mouse cursor for tooltips
+
+  tipDelay: 1000,
+
+  delayTimer: 0,
+
+  tipprefix: 'imgtip', // tooltip DOM ID prefixes
+
+  createtip: function ($, tipid, tipinfo) {
+    if ($('#' + tipid).length === 0) { // if this tooltip doesn't exist yet
+      return $('<div id="' + tipid + '" class="ddimgtooltip" />')
+        .html(
+          ((tipinfo[1]) ? '<div class="tipinfo" id="' + tipid + '_txt">' + tipinfo[1] + '</div>' : '') +
+          (tipinfo[0] !== null ? '<div style="text-align:center"><img class="tipimg" id="' + tipid +
+            '_img" src="' + tipinfo[0] + '" /></div>' : '')
+        )
+        .css(tipinfo[2] || {})
+        .appendTo(document.body);
+    }
+    return null;
+  },
+
+  positiontooltip: function ($, $tooltip, e) {
+    var x = e.pageX + this.tooltipoffsets[0],
+      y = e.pageY + this.tooltipoffsets[1],
+      tipw = $tooltip.outerWidth(),
+      tiph = $tooltip.outerHeight(),
+      wWidth = $(window).width(),
+      wHght = $(window).height(),
+      dTop = $(document).scrollTop();
+
+    x = (x + tipw > $(document).scrollLeft() + wWidth) ? x - tipw - (ddimgtooltip.tooltipoffsets[0] * 2) : x;
+    y = (y + tiph > dTop + wHght) ? dTop + wHght - tiph - 10 : y;
+    // last ditch attempt to keep the graphs 'on page'
+    x = Math.max(x, 0);
+    if (tipw >= wWidth) {
+      $($tooltip.attr('id') + '_img').css({
+        width: wWidth - 20
+      });
+      $('#' + $tooltip.attr('id') + '_img').css({
+        width: wWidth - 20
+      });
+      y = e.pageY + 5;
+    }
+    $tooltip.css({
+      left: x,
+      top: y
+    });
+  },
+
+  delaybox: function ($, $tooltip) {
+    if (this.showTips) {
+      ddimgtooltip.delayTimer = setTimeout(
+        function () {
+          ddimgtooltip.showbox($tooltip);
+        }, ddimgtooltip.tipDelay);
+    }
+  },
+
+  showbox: function (tooltip) {
+    if (this.showTips) {
+      // $(tooltip).show();
+      $(tooltip).fadeIn();
+    }
+  },
+
+  hidebox: function ($, $tooltip) {
+    clearTimeout(ddimgtooltip.delayTimer);
+    // $tooltip.hide();
+    $tooltip.fadeOut();
+  },
+
+  showTips: false,
+
+  init: function (targetselector) {
+    var tiparray = ddimgtooltip.tiparray,
+      $targets = $(targetselector);
+
+    if ($targets.length === 0) {
+      return;
+    }
+    $targets.each(function () {
+      var $target = $(this),
+        tipsuffix, tipid,
+        $tooltip;
+      var ind = ($target.attr('id').match(/_(\d+)/) || [])[1] || ''; // match d of attribute id='tip_d'
+      tipsuffix = parseInt(ind, 10); // get d as integer
+      tipid = this.tipid = ddimgtooltip.tipprefix + tipsuffix; // construct this tip's ID value and remember it
+      $tooltip = ddimgtooltip.createtip($, tipid, tiparray[tipsuffix]);
+
+      $target.mouseenter(function (e) {
+        var $tooltip = $('#' + this.tipid);
+        // ddimgtooltip.showbox($, $tooltip, e);
+        ddimgtooltip.delaybox($, $tooltip, e);
+      });
+      $target.mouseleave(function () {
+        var $tooltip = $('#' + this.tipid);
+        ddimgtooltip.hidebox($, $tooltip);
+      });
+      $target.mousemove(function (e) {
+        var $tooltip = $('#' + this.tipid);
+        ddimgtooltip.positiontooltip($, $tooltip, e);
+      });
+      if ($tooltip) { // add mouseenter to this tooltip (only if event hasn't already been added)
+        $tooltip.mouseenter(function () {
+          ddimgtooltip.hidebox($, $(this));
+        });
+      }
+    });
+  }
+};
+
 // if String doesn't offer a .trim() method, add it
-//String.prototype.trim = String.prototype.trim || function trim() {
-//    return this.replace(/^\s+|\s+$/g, '');
-//};
+String.prototype.trim = String.prototype.trim || function trim() {
+  return this.replace(/^\s+|\s+$/g, '');
+};

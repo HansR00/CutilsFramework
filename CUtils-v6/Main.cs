@@ -58,6 +58,27 @@
  *              UserReports.cs
  *              Website.cs
  *              Yadr.cs
+ *              
+ * Beside this direct C# code there are also supporting files:
+ * Distribution:
+ *              CUserAbout-example.txt
+ *              CUsermenu-example.txt
+ *              CutilsCharts-default-for-use.def
+ *              CutilsCharts-examples.def
+ *              gauges.js
+ *              gauges-ss.css
+ *              HighchartsDefaults.js
+ *              language.js
+ *              LICENCE
+ *              
+ * Not owned or maintained by CUtils but distributed because required:
+ * 
+ *              RGraph.common.core.js
+ *              RGraph.rose.js
+ *              steelseries.min.js
+ *              suncalc.js
+ *              tween.min.js
+ * 
  */
 
 /* 

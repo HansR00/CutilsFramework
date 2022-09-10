@@ -2724,20 +2724,21 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
         private string WindGaugeContent()
         {
-            return $"        <div id='WindContent'> <h4 class='CUCellTitle'>{Sup.GetCUstringValue( "Website", "Wind", "Wind", false )}</h4>" +
-                  "        <canvas id='canvas_wind' class='gaugeSizeSml'></canvas></div>";
+            return $"<div id='WindContent'> <h4 class='CUCellTitle'>{Sup.GetCUstringValue( "Website", "Wind", "Wind", false )}</h4>" +
+                  "<canvas id='canvas_wind' class='gaugeSizeSml'></canvas></div>";
         }
 
         private string WindDirContent()
         {
-            return $"        <div id='WindDirContent'><h4 class='CUCellTitle'>{Sup.GetCUstringValue( "Website", "Direction", "Direction", false )}</h4>" +
-                  "        <canvas id='canvas_dir' class='gaugeSizeSml'></canvas></div>";
+            return $"<div id='WindDirContent'><h4 class='CUCellTitle'>{Sup.GetCUstringValue( "Website", "Direction", "Direction", false )}</h4>" +
+                  "<canvas id='canvas_dir' class='gaugeSizeSml'></canvas></div>";
         }
 
         private string WindRoseContent()
         {
-            return $"        <div id='WindRoseContent'><h4 class='CUCellTitle'>{Sup.GetCUstringValue( "Website", "WindRose", "Wind Rose", false )}</h4>" +
-                  "        <canvas id='canvas_rose' class='gaugeSizeSml'></canvas></div>";
+            // The div around the Canvas with position:relative is required to have the odometer respond to orientation changes correctly
+            return $"<div id='WindRoseContent'><h4 class='CUCellTitle'>{Sup.GetCUstringValue( "Website", "WindRose", "Wind Rose", false )}</h4>" +
+                  "<div style='position: relative'><canvas id='canvas_rose' class='gaugeSizeSml'></canvas></div></div>";
         }
 
         #endregion
