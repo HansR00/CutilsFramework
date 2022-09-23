@@ -33,6 +33,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using ServiceStack;
 
 namespace CumulusUtils
 {
@@ -62,6 +63,7 @@ namespace CumulusUtils
 
             List<string> theseDatafiles = AllVars.Where( p => p.Datafile != "" ).Select( p => p.Datafile ).Distinct().ToList();
             bool TheseChartsUseWindBarbs = theseCharts.Where( p => p.HasWindBarbs ).Any();
+            bool TheseChartsUseInfo = theseCharts.Where( p => p.HasInfo ).Any();
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{filename}", false, Encoding.UTF8 ) )
             {
@@ -77,10 +79,11 @@ namespace CumulusUtils
 
                 Html.AppendLine( Sup.GenjQueryIncludestring() );
 
-                if ( !CMXutils.DoWebsite && CMXutils.DoLibraryIncludes )
-                {
-                    Html.AppendLine( Sup.GenHighchartsIncludes().ToString() );
-                }
+                if ( !CMXutils.DoWebsite && CMXutils.DoLibraryIncludes && TheseChartsUseInfo)
+                    Html.AppendLine( "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.2/jquery.modal.min.js\"  crossorigin=\"anonymous\" referrerpolicy=\"no-referrer\"></script>" +
+                       "<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.2/jquery.modal.css\" crossorigin=\"anonymous\" referrerpolicy=\"no-referrer\" />" );
+
+                if ( !CMXutils.DoWebsite && CMXutils.DoLibraryIncludes ) Html.AppendLine( Sup.GenHighchartsIncludes().ToString() );
 
                 Html.AppendLine( "<style>" );
                 Html.AppendLine( "#report{" );
@@ -307,8 +310,25 @@ namespace CumulusUtils
                     }
 
                     TheCharts.AppendLine( "  });" );
+
+                    if ( thisChart.HasInfo)
+                    {
+                        string Info = $"{Sup.GetUtilsIniValue( "Compiler", "Info", "Info" )}";
+
+                        TheCharts.AppendLine( "chart.update({" );
+                        TheCharts.AppendLine( "  chart:{events:{render() {const {x,y,width} = this.exportingGroup.getBBox();" );
+
+                        TheCharts.AppendLine( "  if ( !this.customText ){" ); // Create a customText if it doesn't exist
+                        TheCharts.AppendLine( $"    this.customText = this.renderer.text( '{Info}', x - width - 15, y + 15 )" );
+                        TheCharts.AppendLine( "      .add()" +
+                            ".css({color: this.title.styles.color})" +
+                            ".css({cursor: 'pointer'})" +
+                            $".on('click', () => $('#{thisChart.Id}').modal( 'show') );" );
+                        TheCharts.AppendLine( "  } else {" ); // Update the label position on render event (i.e on window resize)
+                        TheCharts.AppendLine( "    this.customText.attr({x: x - width - 15, y: y + 15}); } } } } });" );
+                    }
+
                     TheCharts.AppendLine( "  chart.showLoading();" );
-                    //TheCharts.AppendLine( $"  chart.setTitle();" );
 
                     CreateAxis( thisChart, TheCharts, ref AxisSet );
 
@@ -470,9 +490,10 @@ namespace CumulusUtils
                 Html.AppendLine( "</select>" );
                 Html.AppendLine( "</p>" );
                 Html.AppendLine( "</div>" );
+
                 Html.AppendLine( "<div id=report><br/>" );
-                Html.AppendLine( $"<div id='chartcontainer'  " +
-                    $"style='min-height:{Convert.ToInt32( Sup.GetUtilsIniValue( "General", "ChartContainerHeight", "650" ) )}px;margin-top: 10px;margin-bottom: 5px;'> </div>" );
+
+                Html.AppendLine( $"<div id='chartcontainer' style='min-height:{Convert.ToInt32( Sup.GetUtilsIniValue( "General", "ChartContainerHeight", "650" ) )}px;margin-top: 10px;margin-bottom: 5px;'> </div>" );
                 Html.AppendLine( $" <p style='text-align:center;font-size:11px;'>Generated with the ChartsCompiler {CuSupport.FormattedVersion()} - {CuSupport.Copyright()}</p>" );
                 Html.AppendLine( "</div>" ); // #Report
                 Html.AppendLine( "<script>" );
@@ -483,13 +504,56 @@ namespace CumulusUtils
                 Html.AppendLine( AddSeriesJavascript.ToString() );
                 Html.AppendLine( TheCharts.ToString() );
 
+                Html.AppendLine( "</script>" );
+
+                // Now write out the modal popup texts for the chart info's
+
+                foreach ( ChartDef thisChart in theseCharts )
+                {
+                    if ( thisChart.HasInfo )
+                    {
+                        if ( !CMXutils.DoWebsite && CMXutils.DoLibraryIncludes )
+                        {
+                            // Use the jQuery modal, by setting the DoLibraryIncludes to false the user has control whether or not to use the 
+                            // supplied includes or do it all by her/himself
+                            Html.AppendLine(
+                                $"<div class='modal' id='{thisChart.Id}' style='font-family: Verdana, Geneva, Tahoma, sans-serif;font-size: 120%;'>" +
+                                "      <div>" +
+                                $"        <h5 class='modal-title'>{thisChart.Title}</h5>" +
+                                "      </div>" +
+                                "      <div style='text-align: left;'>" +
+                                $"       {thisChart.InfoText}" +
+                                "      </div>" +
+                                "</div>" );
+                        }
+                        else
+                        {
+                            // Use the bootstrap modal --- tabindex='-1' 
+                            Html.AppendLine( $"<div class='modal fade' id='{thisChart.Id}' role='dialog' aria-hidden='true'>" +
+                            "  <div class='modal-dialog modal-dialog-centered modal-dialog modal-lg' role='document'>" +
+                            "    <div class='modal-content'>" +
+                            "      <div class='modal-header'>" +
+                            $"        <h5 class='modal-title'>{thisChart.Title}</h5>" +
+                            "        <button type='button' class='close' data-bs-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>" +
+                            "      </div>" +
+                            "      <div class='modal-body text-start'>" +
+                            $"       {thisChart.InfoText}" +
+                            "      </div>" +
+                            "      <div class='modal-footer'>" +
+                            $"       <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>{Sup.GetCUstringValue( "Website", "Close", "Close", false )}</button>" +
+                            "      </div>" +
+                            "    </div>" +
+                            "  </div>" +
+                            "</div>" );
+                        }
+                    }
+                }
+
 #if !RELEASE
                 of.WriteLine( Html );
 #else
                 of.WriteLine( CuSupport.StringRemoveWhiteSpace( Html.ToString(), " " ) );
 #endif
-
-                of.WriteLine( "</script>" );
 
                 Sup.LogDebugMessage( $"Compiler - CodeGen: {filename} Finished" );
             } // using output file

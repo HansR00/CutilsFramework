@@ -94,6 +94,7 @@ namespace CumulusUtils
         public string CUserdataDAILY { get; } = "CUserdataDAILY.json";
         public string CUserdataALL { get; } = "CUserdataALL.json";
         public string CutilsChartsDef { get; } = "CutilsCharts.def";
+        public string CutilsMenuDef { get; } = "CutilsMenu.def";
 
         private readonly IniFile Ini;           // that is: Cumulus.ini
         private readonly IniFile AtrIni;        // that is: data/alltime.ini
@@ -402,8 +403,7 @@ namespace CumulusUtils
         public static string Copyright() => "&copy; Hans Rottier";
 
         public string GenjQueryIncludestring() => ( CMXutils.DojQueryInclude && !CMXutils.DoWebsite ) ?
-                                                  "<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js\" type=\"text/javascript\"></script>" :
-                                                  "";
+                "<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js\" type=\"text/javascript\"></script>" : "";
 
         public StringBuilder GenHighchartsIncludes()
         {

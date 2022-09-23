@@ -656,7 +656,7 @@ namespace CumulusUtils
             {
                 List<DayfileValue> yearmonthlist = Thislist.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == (int) thisMonth ).ToList();
 
-                Sup.LogTraceInfoMessage( $"Generating Year Month Rain Statistics, doing year {i} and month {thisMonth}" );
+                Sup.LogTraceVerboseMessage( $"Generating Year Month Rain Statistics, doing year {i} and month {thisMonth}" );
 
                 if ( yearmonthlist.Any() )
                 {

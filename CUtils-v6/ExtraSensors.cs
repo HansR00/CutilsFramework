@@ -664,11 +664,12 @@ namespace CumulusUtils
                         case (int) ExtraSensorType.LeafWetness:
                             sb.Append( $"<#LeafWetness{++LeafWetness} rc=y> " );
                             break;
-                        //case (int) ExtraSensorType.External:
-                        //    sb.Append( $"<#{tmp.Name} rc=y> " );
-                        //    break;
+                        case (int) ExtraSensorType.External:
+                            Sup.LogTraceWarningMessage( $"DoExtraSensorsWork: No ExtraSensorsRealTime for {tmp.Name} ({tmp.Type}) - has no realtime value." );
+                            //sb.Append( $"<#{tmp.Name} rc=y> " );  // Maybe later
+                            break;
                         default:
-                            Sup.LogTraceErrorMessage( $"DoExtraSensorsWork: Not ExtraSensorsRealTime for {tmp.Name} ({tmp.Type}) - has no realtime value." );
+                            Sup.LogTraceErrorMessage( $"DoExtraSensorsWork: Illegal ExtraSensor type {tmp.Type} - no realtime value." );
                             break;
                     }
                 }

@@ -69,6 +69,8 @@ namespace CumulusUtils
             WindBarbsBelow = true;
             WindBarbColor = "black";
             ConnectsToDashboardPanel = new List<int>();
+            HasInfo = false;
+            InfoText = "";
         }
         internal PlotvarRangeType Range { get; set; }
         internal AxisType Axis;
@@ -80,6 +82,8 @@ namespace CumulusUtils
         internal bool WindBarbsBelow { get; set; }
         internal string WindBarbColor { get; set; }
         internal List<int> ConnectsToDashboardPanel { get; set; }
+        internal bool HasInfo { get; set; }
+        internal string InfoText { get; set; }
     }
 
     internal struct EqDef

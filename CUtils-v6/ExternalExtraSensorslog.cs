@@ -165,7 +165,7 @@ namespace CumulusUtils
 
                         if ( IgnoreDataErrors )
                             if ( ErrorCount < MaxErrors )
-                                Sup.LogTraceErrorMessage( "ExtraSensorslogValue.SetValues : Continuing to read data" );
+                                Sup.LogTraceErrorMessage( $"{m} : Continuing to read data" );
                             else
                                 // Environment.Exit(0);
                                 throw;
@@ -177,18 +177,18 @@ namespace CumulusUtils
 
                 if ( ExternalExtraSensorsValuesList.Last().ThisDate.Month == timeEnd.Month )
                 {
-                    Sup.LogDebugMessage( $"ExtraSensorslog: Finished reading the log at {ExternalExtraSensorsValuesList.Last().ThisDate}" );
+                    Sup.LogDebugMessage( $"ExternalExtraSensorslog: Finished reading the log at {ExternalExtraSensorsValuesList.Last().ThisDate}" );
                     PeriodComplete = true;
                 }
                 else
                 {
                     Filename = $"data/{ThisSensorName}{timeEnd:yyyy}{timeEnd:MM}.txt";  // Take care of a period passing month boundary
-                    Sup.LogDebugMessage( $"ExtraSensorslog: Require the  next logfile: {Filename}" );
+                    Sup.LogDebugMessage( $"ExternalExtraSensorslog: Require the  next logfile: {Filename}" );
                 }
             }
 
-            Sup.LogTraceInfoMessage( $"ExtraSensorslog: MainExtraSensorsValuesList created: {ExternalExtraSensorsValuesList.Count} records." );
-            Sup.LogTraceInfoMessage( $"ExtraSensorslog: End" );
+            Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog: MainExtraSensorsValuesList created: {ExternalExtraSensorsValuesList.Count} records." );
+            Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog: End" );
 
             return ExternalExtraSensorsValuesList;
         } // End ExtraSensorsLogs
@@ -196,7 +196,7 @@ namespace CumulusUtils
 
         ~ExternalExtraSensorslog()
         {
-            Sup.LogTraceVerboseMessage( "ExtraSensorslog destructor: Closing file and ending program" );
+            Sup.LogTraceVerboseMessage( "ExternalExtraSensorslog destructor: Closing file and ending program" );
             Dispose( false );
         }
 

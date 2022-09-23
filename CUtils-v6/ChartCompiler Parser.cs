@@ -82,7 +82,8 @@ namespace CumulusUtils
 
                 // The where clause takes care of (trailing) empty lines. 
                 // Have to review this I don't understand why they don't just get replaced by space.
-                Keywords = DefContents.Split( ' ' ).Where( s => !string.IsNullOrWhiteSpace( s ) ).ToList();
+                char[] charSeparators = new char[] { ' ' };
+                Keywords = DefContents.Split( charSeparators ).Where( s => !string.IsNullOrWhiteSpace( s ) ).ToList();
             }
             else
                 return null;
@@ -579,18 +580,37 @@ namespace CumulusUtils
 
                     if ( Keywords[ CurrPosition++ ].Equals( "EndChart", cmp ) )
                     {
-                        //if ( thisChart.HasScatter )
-                        //{
-                        //    foreach ( Plotvar pv in thisChart.PlotVars )
-                        //    {
-                        //        if ( pv.GraphType != "scatter" )
-                        //        {
-                        //            // Error condition
-                        //            Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : A Scatter graph has other Plotvar Types '{pv.Keyword}' as '{pv.GraphType}'" );
-                        //            return null;
-                        //        }
-                        //    }
-                        //}
+                        // thisChart still has the value for the current chart for which we just read the EndChart keyword.
+                        // This means the Info and Output keywords which may follow the EndChart still refer to the chart for which those are valid!!
+
+                        if ( CurrPosition < Keywords.Count - 1 && Keywords[ CurrPosition ].Equals( "Info", cmp ) )
+                        {
+                            thisChart.HasInfo = true;
+                            CurrPosition++;
+
+                            if ( Keywords[ CurrPosition++ ].Equals( "\"", cmp ) )
+                            {
+                                try
+                                {
+                                    while ( !Keywords[ CurrPosition ].Equals( "\"", cmp ) )
+                                    {
+                                        thisChart.InfoText += " " + Keywords[ CurrPosition++ ];
+                                    }
+
+                                    CurrPosition++;  // Keyword next to the quote
+                                }
+                                catch (Exception e) when (e is IndexOutOfRangeException)
+                                {
+                                    Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : Info specified on '{thisChart.Id}' but no closing quote found." );
+                                    return null;
+                                }
+                            }
+                            else
+                            {
+                                Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : Info specified on '{thisChart.Id}' but no start quote found." );
+                                return null;
+                            }
+                        }
 
                         // Do the possible(!) output
                         if ( CurrPosition < Keywords.Count - 1 && Keywords[ CurrPosition ].Equals( "Output", cmp ) )
@@ -600,17 +620,20 @@ namespace CumulusUtils
                             if ( AllOutputs.Count == 0 && AllCharts.Count == 0 )
                             {
                                 Sup.LogTraceWarningMessage( $"Parsing User Charts Definitions : Output given for first Chart '{thisChart.Id}'. Cannot specify output for first chart" );
-                                return null;
+                            }
+                            else
+                            {
+                                thisOutput.TheseCharts = AllCharts;
+                                AllOutputs.Add( thisOutput );
+
+                                AllCharts = new List<ChartDef>();
+                                thisOutput = new OutputDef
+                                {
+                                    Filename = Keywords[ CurrPosition ]
+                                };
                             }
 
-                            thisOutput.TheseCharts = AllCharts;
-                            AllOutputs.Add( thisOutput );
-
-                            AllCharts = new List<ChartDef>();
-                            thisOutput = new OutputDef
-                            {
-                                Filename = Keywords[ CurrPosition++ ]
-                            };
+                            CurrPosition++;  // Keyword next to the filename
                         }
 
                         AllCharts.Add( thisChart );
@@ -622,7 +645,7 @@ namespace CumulusUtils
                         return null;
                     }
 
-                } while ( CurrPosition < Keywords.Count - 1 /* && Keywords[CurrPosition++].Equals("EndChart", cmp)*/ );  // While chart definition properties
+                } while ( CurrPosition < Keywords.Count - 1 );
 
                 // Do some elementary checks
                 // Check for ColumnRange to have a parameter plottable as such
