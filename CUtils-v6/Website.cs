@@ -26,12 +26,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Compilation;
-using Renci.SshNet;
-using ServiceStack.Text;
+using FluentFTP.Helpers;
 
 //
 // Remember minification: 
@@ -2604,26 +2601,26 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     break;
             }
 
+            string WindGaugeContent()
+            {
+                return $"<div id='WindContent'> <h4 class='CUCellTitle'>{Sup.GetCUstringValue( "Website", "Wind", "Wind", false )}</h4>" +
+                      "<canvas id='canvas_wind' class='gaugeSizeSml'></canvas></div>";
+            }
+
+            string WindDirContent()
+            {
+                return $"<div id='WindDirContent'><h4 class='CUCellTitle'>{Sup.GetCUstringValue( "Website", "Direction", "Direction", false )}</h4>" +
+                      "<canvas id='canvas_dir' class='gaugeSizeSml'></canvas></div>";
+            }
+
+            string WindRoseContent()
+            {
+                // The div around the Canvas with position:relative is required to have the odometer respond to orientation changes correctly
+                return $"<div id='WindRoseContent'><h4 class='CUCellTitle'>{Sup.GetCUstringValue( "Website", "WindRose", "Wind Rose", false )}</h4>" +
+                      "<div style='position: relative'><canvas id='canvas_rose' class='gaugeSizeSml'></canvas></div></div>";
+            }
+
             return thisPanelCode;
-        }
-
-        private string WindGaugeContent()
-        {
-            return $"<div id='WindContent'> <h4 class='CUCellTitle'>{Sup.GetCUstringValue( "Website", "Wind", "Wind", false )}</h4>" +
-                  "<canvas id='canvas_wind' class='gaugeSizeSml'></canvas></div>";
-        }
-
-        private string WindDirContent()
-        {
-            return $"<div id='WindDirContent'><h4 class='CUCellTitle'>{Sup.GetCUstringValue( "Website", "Direction", "Direction", false )}</h4>" +
-                  "<canvas id='canvas_dir' class='gaugeSizeSml'></canvas></div>";
-        }
-
-        private string WindRoseContent()
-        {
-            // The div around the Canvas with position:relative is required to have the odometer respond to orientation changes correctly
-            return $"<div id='WindRoseContent'><h4 class='CUCellTitle'>{Sup.GetCUstringValue( "Website", "WindRose", "Wind Rose", false )}</h4>" +
-                  "<div style='position: relative'><canvas id='canvas_rose' class='gaugeSizeSml'></canvas></div></div>";
         }
 
         #endregion
@@ -2642,7 +2639,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
             StringBuilder tmpMenu = new StringBuilder();
 
             char[] charSeparators = new char[] { ',', ';' };
-            string[] DefaultMenu = { "Home","About", "Reports", "Graphs", "Records", "Extra", "Misc", "Toggle Dashboard" };
+            string[] DefaultMenu = { "Home", "About", "Reports", "Graphs", "Records", "Extra", "Misc", "Toggle Dashboard" };
             List<string> Keywords;
 
             if ( File.Exists( $"{Sup.PathUtils}{Sup.CutilsMenuDef}" ) )
@@ -2656,9 +2653,9 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
                 string[] MenuContents = File.ReadAllLines( $"{Sup.PathUtils}{Sup.CutilsMenuDef}", Encoding.UTF8 );
 
-                foreach(string line in MenuContents)
+                foreach ( string line in MenuContents )
                 {
-                    if ( line[ 0 ] == ';' ) continue;  // Allow comments
+                    if ( line.IsBlank() || line[ 0 ] == ';' ) continue;  // Allow comments
 
                     Keywords = line.Split( charSeparators, StringSplitOptions.RemoveEmptyEntries ).ToList(); // .Where( s => !string.IsNullOrWhiteSpace( s ) )
 
@@ -2670,10 +2667,10 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
                             CurrentMainMenuItem = thisKeyword;
 
-                            switch( thisKeyword )
+                            switch ( thisKeyword )
                             {
                                 case "Home": WriteMenuHome( tmpMenu ); break;
-                                case "About": WriteAboutMenu( tmpMenu ); AboutWritten = true;  break;
+                                case "About": WriteAboutMenu( tmpMenu ); AboutWritten = true; break;
                                 case "Reports": WriteReportsMenu( tmpMenu ); break;
                                 case "Graphs": WriteGraphsMenu( tmpMenu ); break;
                                 case "Records": WriteRecordsMenu( tmpMenu ); break;
@@ -2712,191 +2709,191 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 WriteMenuEnd( tmpMenu );
             }
 
-            return tmpMenu.ToString();
-        }
+            void WriteMenuStart( StringBuilder s )
+            {
+                s.Append(
+                    "<nav class='navbar navbar-default navbar-expand-lg '>" + // navbar-light bg-light
+                    "  <div class='container-fluid'>" +
+                    "  <div class='collapse navbar-collapse' id='navbarSupportedContent'>" +
+                    "    <ul class='navbar-nav'>" );
 
-        private void WriteMenuStart( StringBuilder s )
-        {
-            s.Append(
-                "<nav class='navbar navbar-default navbar-expand-lg '>" + // navbar-light bg-light
-                "  <div class='container-fluid'>" +
-                "  <div class='collapse navbar-collapse' id='navbarSupportedContent'>" +
-                "    <ul class='navbar-nav'>" );
+                return;
+            }
 
-            return;
-        }
+            void WriteMenuHome( StringBuilder s )
+            {
+                s.Append(
+                    "      <li class='nav-item'>" +
+                    $"          <span class='nav-link' onclick=\"LoadUtilsReport('cumuluscharts.txt', true);\">{Sup.GetCUstringValue( "Website", "Home", "Home", false )}</span>" +
+                    "      </li>" );
 
-        private void WriteMenuHome( StringBuilder s )
-        {
-            s.Append(
-                "      <li class='nav-item'>" +
-                $"          <span class='nav-link' onclick=\"LoadUtilsReport('cumuluscharts.txt', true);\">{Sup.GetCUstringValue( "Website", "Home", "Home", false )}</span>" +
-                "      </li>" );
+                return;
+            }
 
-            return;
-        }
-
-        private void WriteAboutMenu( StringBuilder s )
-        {
-            s.Append(
-                "      <li class='nav-item dropdown'>" +
-                "        <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownAbout' role='button' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
-                $"          {Sup.GetCUstringValue( "Website", "About", "About", false )}" +
-                "        </a>" +
-                "        <ul class='dropdown-menu' aria-labelledby='navbarDropdownAbout'>" +
-                $"          <li class='nav-link' data-bs-toggle='modal' data-bs-target='#CUserAbout'>{Sup.GetCUstringValue( "Website", "ThisSite", "This Site", false )}</li>" +
-                "          <li class='nav-link' data-bs-toggle='modal' data-bs-target='#CUabout'>CumulusUtils</li>" +
-                "          <li class='nav-link' data-bs-toggle='modal' data-bs-target='#CUlicense'>License</li>" +
-                "          <li><a class='nav-link' href=\"https://cumuluswiki.org/a/Category:CumulusUtils\" target=\"_blank\">CumulusUtils Wiki</a></li>" +
-                "        </ul>" +
-                "      </li>" );
-
-            return;
-        }
-
-        private void WriteReportsMenu( StringBuilder s )
-        {
-            s.Append(
-                "      <li class='nav-item dropdown'>" +
-                "        <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownReports' role='button' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
-                $"          {Sup.GetCUstringValue( "Website", "Reports", "Reports", false )}" +
-                "        </a>" +
-                "        <ul class='dropdown-menu' aria-labelledby='navbarDropdownReports'>" +
-                "          <li class='nav-link' onclick=\"LoadUtilsReport('pwsFWI.txt', false);\">pwsFWI</li>" +
-                $"          <li class='nav-link' onclick=\"LoadUtilsReport('Yadr.txt', false);\">{Sup.GetCUstringValue( "Website", "Yadr", "Yadr", false )}</li>" +
-                $"          <li class='nav-link' onclick=\"LoadUtilsReport('noaa.txt', false);\">{Sup.GetCUstringValue( "Website", "NOAA", "NOAA", false )}</li>" +
-                "        </ul>" +
-                "      </li>" );
-
-            return;
-        }
-
-        private void WriteGraphsMenu( StringBuilder s )
-        {
-            s.Append(
-                "      <li class='nav-item dropdown'>" +
-                "        <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownGraphs' role='button' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
-                $"          {Sup.GetCUstringValue( "Website", "Graphs", "Graphs", false )}" +
-                "       </a>" +
-                "        <ul class='dropdown-menu' aria-labelledby='navbarDropdownGraphs'>" );
-
-            if ( CMXutils.HasRainGraphMenu )
-                s.Append( $"          <li class='nav-link' onclick=\"LoadUtilsReport('graphsrain.txt', false);\">{Sup.GetCUstringValue( "Website", "RainGraphs", "Rain Graphs", false )}</li>" );
-
-            if ( CMXutils.HasTempGraphMenu )
-                s.Append( $"          <li class='nav-link' onclick=\"LoadUtilsReport('graphstemp.txt', false);\">{Sup.GetCUstringValue( "Website", "TempGraphs", "Temp Graphs", false )}</li>" );
-
-            if ( CMXutils.HasWindGraphMenu )
-                s.Append( $"          <li class='nav-link' onclick=\"LoadUtilsReport('graphswind.txt', false);\">{Sup.GetCUstringValue( "Website", "WindGraphs", "Wind Graphs", false )}</li>" );
-
-            if ( CMXutils.HasSolarGraphMenu )
-                s.Append( $"          <li class='nav-link' onclick=\"LoadUtilsReport('graphssolar.txt', false);\">{Sup.GetCUstringValue( "Website", "SolarGraphs", "Solar Graphs", false )}</li>" );
-
-            if ( CMXutils.HasMiscGraphMenu )
-                s.Append( $"          <li class='nav-link' onclick=\"LoadUtilsReport('graphsmisc.txt', false);\">{Sup.GetCUstringValue( "Website", "MiscGraphs", "Misc Graphs", false )}</li>" );
-
-            s.Append(
-                "        </ul>" +
-                "      </li>" );
-
-            return;
-        }
-
-        private void WriteRecordsMenu( StringBuilder s )
-        {
-            s.Append(
-                "      <li class='nav-item dropdown'>" +
-                "         <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownRecords' role='button' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
-                $"          {Sup.GetCUstringValue( "Website", "Records", "Records", false )}" +
-                "         </a>" +
-                "          <ul class='dropdown-menu' aria-labelledby='navbarDropdownRecords'>" +
-                $"           <li class='nav-link' onclick=\"LoadUtilsReport('records.txt', false);\">{Sup.GetCUstringValue( "Website", "Records", "Records", false )}</li>" +
-                $"           <li class='nav-link' onclick=\"LoadUtilsReport('top10Table.txt', false);\">{Sup.GetCUstringValue( "Website", "Top10Records", "Top 10 Records", false )}</li>" +
-                $"           <li class='nav-link' onclick=\"LoadUtilsReport('dayrecords.txt', false);\">{Sup.GetCUstringValue( "Website", "DayRecords", "Day Records", false )}</li>" +
-                "          </ul>" +
-                "      </li>" );
-
-            return;
-        }
-
-        private void WriteExtraMenu( StringBuilder s )
-        {
-            if ( CMXutils.HasAirLink || CMXutils.HasExtraSensors )
+            void WriteAboutMenu( StringBuilder s )
             {
                 s.Append(
                     "      <li class='nav-item dropdown'>" +
-                    "       <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownExtra' role='button' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
-                    $"         {Sup.GetCUstringValue( "Website", "Extra", "Extra", false )}" +
+                    "        <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownAbout' role='button' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
+                    $"          {Sup.GetCUstringValue( "Website", "About", "About", false )}" +
+                    "        </a>" +
+                    "        <ul class='dropdown-menu' aria-labelledby='navbarDropdownAbout'>" +
+                    $"          <li class='nav-link' data-bs-toggle='modal' data-bs-target='#CUserAbout'>{Sup.GetCUstringValue( "Website", "ThisSite", "This Site", false )}</li>" +
+                    "          <li class='nav-link' data-bs-toggle='modal' data-bs-target='#CUabout'>CumulusUtils</li>" +
+                    "          <li class='nav-link' data-bs-toggle='modal' data-bs-target='#CUlicense'>License</li>" +
+                    "          <li><a class='nav-link' href=\"https://cumuluswiki.org/a/Category:CumulusUtils\" target=\"_blank\">CumulusUtils Wiki</a></li>" +
+                    "        </ul>" +
+                    "      </li>" );
+
+                return;
+            }
+
+            void WriteReportsMenu( StringBuilder s )
+            {
+                s.Append(
+                    "      <li class='nav-item dropdown'>" +
+                    "        <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownReports' role='button' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
+                    $"          {Sup.GetCUstringValue( "Website", "Reports", "Reports", false )}" +
+                    "        </a>" +
+                    "        <ul class='dropdown-menu' aria-labelledby='navbarDropdownReports'>" +
+                    "          <li class='nav-link' onclick=\"LoadUtilsReport('pwsFWI.txt', false);\">pwsFWI</li>" +
+                    $"          <li class='nav-link' onclick=\"LoadUtilsReport('Yadr.txt', false);\">{Sup.GetCUstringValue( "Website", "Yadr", "Yadr", false )}</li>" +
+                    $"          <li class='nav-link' onclick=\"LoadUtilsReport('noaa.txt', false);\">{Sup.GetCUstringValue( "Website", "NOAA", "NOAA", false )}</li>" +
+                    "        </ul>" +
+                    "      </li>" );
+
+                return;
+            }
+
+            void WriteGraphsMenu( StringBuilder s )
+            {
+                s.Append(
+                    "      <li class='nav-item dropdown'>" +
+                    "        <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownGraphs' role='button' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
+                    $"          {Sup.GetCUstringValue( "Website", "Graphs", "Graphs", false )}" +
                     "       </a>" +
-                    "        <ul class='dropdown-menu' aria-labelledby='navbarDropdownExtra'>" );
+                    "        <ul class='dropdown-menu' aria-labelledby='navbarDropdownGraphs'>" );
 
-                if ( CMXutils.HasAirLink )
-                    s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('airlink.txt', false);\">{Sup.GetCUstringValue( "Website", "AirLink", "AirLink", false )}</li>" );
+                if ( CMXutils.HasRainGraphMenu )
+                    s.Append( $"          <li class='nav-link' onclick=\"LoadUtilsReport('graphsrain.txt', false);\">{Sup.GetCUstringValue( "Website", "RainGraphs", "Rain Graphs", false )}</li>" );
 
-                if ( CMXutils.HasExtraSensors )
-                    s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('extrasensors.txt', false);\">{Sup.GetCUstringValue( "Website", "ExtraSensors", "Extra Sensors", false )}</li>" );
+                if ( CMXutils.HasTempGraphMenu )
+                    s.Append( $"          <li class='nav-link' onclick=\"LoadUtilsReport('graphstemp.txt', false);\">{Sup.GetCUstringValue( "Website", "TempGraphs", "Temp Graphs", false )}</li>" );
 
-                if ( CMXutils.ParticipatesSensorCommunity )
-                    s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('sensorcommunity.txt', false);\">{Sup.GetCUstringValue( "Website", "SC map", "SC map", false )}</li>" );
+                if ( CMXutils.HasWindGraphMenu )
+                    s.Append( $"          <li class='nav-link' onclick=\"LoadUtilsReport('graphswind.txt', false);\">{Sup.GetCUstringValue( "Website", "WindGraphs", "Wind Graphs", false )}</li>" );
 
+                if ( CMXutils.HasSolarGraphMenu )
+                    s.Append( $"          <li class='nav-link' onclick=\"LoadUtilsReport('graphssolar.txt', false);\">{Sup.GetCUstringValue( "Website", "SolarGraphs", "Solar Graphs", false )}</li>" );
+
+                if ( CMXutils.HasMiscGraphMenu )
+                    s.Append( $"          <li class='nav-link' onclick=\"LoadUtilsReport('graphsmisc.txt', false);\">{Sup.GetCUstringValue( "Website", "MiscGraphs", "Misc Graphs", false )}</li>" );
+
+                s.Append(
+                    "        </ul>" +
+                    "      </li>" );
+
+                return;
+            }
+
+            void WriteRecordsMenu( StringBuilder s )
+            {
+                s.Append(
+                    "      <li class='nav-item dropdown'>" +
+                    "         <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownRecords' role='button' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
+                    $"          {Sup.GetCUstringValue( "Website", "Records", "Records", false )}" +
+                    "         </a>" +
+                    "          <ul class='dropdown-menu' aria-labelledby='navbarDropdownRecords'>" +
+                    $"           <li class='nav-link' onclick=\"LoadUtilsReport('records.txt', false);\">{Sup.GetCUstringValue( "Website", "Records", "Records", false )}</li>" +
+                    $"           <li class='nav-link' onclick=\"LoadUtilsReport('top10Table.txt', false);\">{Sup.GetCUstringValue( "Website", "Top10Records", "Top 10 Records", false )}</li>" +
+                    $"           <li class='nav-link' onclick=\"LoadUtilsReport('dayrecords.txt', false);\">{Sup.GetCUstringValue( "Website", "DayRecords", "Day Records", false )}</li>" +
+                    "          </ul>" +
+                    "      </li>" );
+
+                return;
+            }
+
+            void WriteExtraMenu( StringBuilder s )
+            {
+                if ( CMXutils.HasAirLink || CMXutils.HasExtraSensors )
+                {
+                    s.Append(
+                        "      <li class='nav-item dropdown'>" +
+                        "       <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownExtra' role='button' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
+                        $"         {Sup.GetCUstringValue( "Website", "Extra", "Extra", false )}" +
+                        "       </a>" +
+                        "        <ul class='dropdown-menu' aria-labelledby='navbarDropdownExtra'>" );
+
+                    if ( CMXutils.HasAirLink )
+                        s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('airlink.txt', false);\">{Sup.GetCUstringValue( "Website", "AirLink", "AirLink", false )}</li>" );
+
+                    if ( CMXutils.HasExtraSensors )
+                        s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('extrasensors.txt', false);\">{Sup.GetCUstringValue( "Website", "ExtraSensors", "Extra Sensors", false )}</li>" );
+
+                    if ( CMXutils.ParticipatesSensorCommunity )
+                        s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('sensorcommunity.txt', false);\">{Sup.GetCUstringValue( "Website", "SC map", "SC map", false )}</li>" );
+
+
+                    s.Append( "        </ul>" +
+                      "      </li>" );
+                }
+
+                return;
+            }
+
+            void WriteMiscellaneousMenu( StringBuilder s )
+            {
+                s.Append(
+                "      <li class='nav-item dropdown'>" +
+                "        <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownMisc' role='button' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
+                $"          {Sup.GetCUstringValue( "Website", "Misc", "Misc.", false )}" +
+                "        </a>" +
+                "        <ul class='dropdown-menu' aria-labelledby='navbarDropdownMisc'>" +
+                  $"          <li class='nav-link' onclick=\"LoadUtilsReport('forecast.txt', false);\">{Sup.GetCUstringValue( "Website", "Forecast", "Forecast", false )}</li>" +
+                  $"          <li class='nav-link' onclick=\"LoadUtilsReport('systeminfoTable.txt', false);\">{Sup.GetCUstringValue( "Website", "SystemInfo", "System Info", false )}</li>" );
+
+                if ( CMXutils.CanDoMap )
+                    s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('maps.txt', false);\">{Sup.GetCUstringValue( "Website", "UserMap", "User Map", false )}</li>" );
+
+                if ( CMXutils.HasStationMapMenu )
+                    s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('stationmap.txt', false);\">{Sup.GetCUstringValue( "Website", "StationMap", "StationMap", false )}</li>" );
+
+                if ( CMXutils.HasMeteoCamMenu )
+                    s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('meteocam.txt', false);\">{Sup.GetCUstringValue( "Website", "MeteoCam", "MeteoCam", false )}</li>" );
 
                 s.Append( "        </ul>" +
                   "      </li>" );
+
+                return;
             }
 
-            return;
-        }
+            void WriteToggleMenu( StringBuilder s )
+            {
+                s.Append(
+                    "      <li class='nav-item'>" +
+                    $"        <span class='nav-link' onclick='ToggleDashboard()'>{Sup.GetCUstringValue( "Website", "ToggleDashboard", "Toggle Dashboard", false )}</span>" +
+                    "      </li>" );
 
-        private void WriteMiscellaneousMenu( StringBuilder s )
-        {
-            s.Append(
-            "      <li class='nav-item dropdown'>" +
-            "        <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownMisc' role='button' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
-            $"          {Sup.GetCUstringValue( "Website", "Misc", "Misc.", false )}" +
-            "        </a>" +
-            "        <ul class='dropdown-menu' aria-labelledby='navbarDropdownMisc'>" +
-              $"          <li class='nav-link' onclick=\"LoadUtilsReport('forecast.txt', false);\">{Sup.GetCUstringValue( "Website", "Forecast", "Forecast", false )}</li>" +
-              $"          <li class='nav-link' onclick=\"LoadUtilsReport('systeminfoTable.txt', false);\">{Sup.GetCUstringValue( "Website", "SystemInfo", "System Info", false )}</li>" );
+                return;
+            }
 
-            if ( CMXutils.CanDoMap )
-                s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('maps.txt', false);\">{Sup.GetCUstringValue( "Website", "UserMap", "User Map", false )}</li>" );
+            void WriteMenuEnd( StringBuilder s )
+            {
+                s.Append(
+                    "    </ul>" +
+                    "    <ul id='CUsermenu' class='navbar-nav'></ul>" +
+                    "  </div>" + // id='navbarSupportedContent'
+                    "  <button class='navbar-toggler navbar-toggler-right custom-toggler ms-auto' type='button' data-bs-toggle='collapse' data-bs-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation'>" +
+                    "    <span class='navbar-toggler-icon'></span>" +
+                    "  </button>" +
+                    $"  <canvas id='canvas_led' width=30 height=30 style='float:left;'></canvas><span class='navbar-text'>{Sup.GetCUstringValue( "Website", "StationStatus", "Station Status", false )}</span>" +
+                    "  </div>" + // Containerfluid, required for bootstrap 5.2 ??
+                    "</nav>" );
 
-            if ( CMXutils.HasStationMapMenu )
-                s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('stationmap.txt', false);\">{Sup.GetCUstringValue( "Website", "StationMap", "StationMap", false )}</li>" );
+                return;
+            }
 
-            if ( CMXutils.HasMeteoCamMenu )
-                s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('meteocam.txt', false);\">{Sup.GetCUstringValue( "Website", "MeteoCam", "MeteoCam", false )}</li>" );
-
-            s.Append( "        </ul>" +
-              "      </li>" );
-
-            return;
-        }
-
-        private void WriteToggleMenu( StringBuilder s )
-        {
-            s.Append(
-                "      <li class='nav-item'>" +
-                $"        <span class='nav-link' onclick='ToggleDashboard()'>{Sup.GetCUstringValue( "Website", "ToggleDashboard", "Toggle Dashboard", false )}</span>" +
-                "      </li>" );
-
-            return;
-        }
-
-        private void WriteMenuEnd( StringBuilder s )
-        {
-            s.Append(
-                "    </ul>" +
-                "    <ul id='CUsermenu' class='navbar-nav'></ul>" +
-                "  </div>" + // id='navbarSupportedContent'
-                "  <button class='navbar-toggler navbar-toggler-right custom-toggler ms-auto' type='button' data-bs-toggle='collapse' data-bs-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation'>" +
-                "    <span class='navbar-toggler-icon'></span>" +
-                "  </button>" +
-                $"  <canvas id='canvas_led' width=30 height=30 style='float:left;'></canvas><span class='navbar-text'>{Sup.GetCUstringValue( "Website", "StationStatus", "Station Status", false )}</span>" +
-                "  </div>" + // Containerfluid, required for bootstrap 5.2 ??
-                "</nav>" );
-
-            return;
+            return tmpMenu.ToString();
         }
 
 

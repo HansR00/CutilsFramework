@@ -24,10 +24,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using FluentFTP.Helpers;
 
 namespace CumulusUtils
 {
@@ -274,7 +274,7 @@ namespace CumulusUtils
                         if ( tmp.ThisDate >= timeEnd )
                             break; // we have our set of data required
                         line = ReadLine( af, false );
-                    } while ( !string.IsNullOrEmpty( line ) );
+                    } while ( !line.IsBlank() );
                 } // End Using the AirLink Log to Read
 
                 if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
@@ -608,10 +608,8 @@ namespace CumulusUtils
                     Console.WriteLine( $"{m} fail: {e.Message}" );
                     Console.WriteLine( $"{m}: in field nr {FieldInUse} ({enumFieldTypeNames[ FieldInUse ]})" );
 
-                    if ( string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) )
-                    {
+                    if ( lineSplit[ FieldInUse ].IsBlank() )
                         Sup.LogTraceErrorMessage( $"{m}: Field {enumFieldTypeNames[ FieldInUse ]} is Empty" );
-                    }
                 }
 
                 if ( IgnoreDataErrors )

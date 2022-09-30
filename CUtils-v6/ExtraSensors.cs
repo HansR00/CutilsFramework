@@ -358,7 +358,7 @@ namespace CumulusUtils
                             break;
                         case (int) ExtraSensorType.External:
                             //buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Name}();'><td {thisPadding()}>{tmp.Name}</td><td id='{tmp.Name}'></td></tr>" );
-                            Sup.LogTraceErrorMessage( $"GenerateExtraSensorsModule: External realtime not implemented." );
+                            Sup.LogTraceWarningMessage( $"GenerateExtraSensorsModule: External realtime not implemented." );
                             break;
                         default:
                             Sup.LogTraceErrorMessage( $"GenerateExtraSensorsModule: At impossible Switch default generating the table" );
@@ -443,7 +443,7 @@ namespace CumulusUtils
                     currentType = ExtraSensorList[ i ].Type;
                 }
 
-                CutilsChartsMods.Add( $"Chart {ExtraSensorList[ i ].Type} Title " +
+                CutilsChartsMods.Add( $"Chart Extra{ExtraSensorList[ i ].Type} Title " +
                     $"{Sup.GetCUstringValue( "ExtraSensors", "Trend chart of Extra", "Trend chart of Extra", true )} " +
                     $"{ExtraSensorList[ i ].Type} " +
                     $"{Sup.GetCUstringValue( "ExtraSensors", "Sensors", "Sensors", true )}" );

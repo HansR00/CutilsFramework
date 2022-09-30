@@ -42,6 +42,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using FluentFTP.Helpers;
 
 namespace CumulusUtils
 {
@@ -73,8 +74,7 @@ namespace CumulusUtils
                 DefLinesArray = File.ReadAllLines( $"{Sup.PathUtils}{Sup.CutilsChartsDef}", Encoding.UTF8 );
 
                 foreach ( string line in DefLinesArray )
-                    if ( string.IsNullOrEmpty( line ) || line[ 0 ] == ';' )
-                        continue;
+                    if ( line.IsBlank() || line[ 0 ] == ';' ) continue;
                     else
                         DefContents += line + ' ';
 
@@ -134,6 +134,7 @@ namespace CumulusUtils
                         thisChart.Title = Keywords[ CurrPosition++ ];
 
                         while ( !Keywords[ CurrPosition ].Equals( "Plot", cmp ) && !Keywords[ CurrPosition ].Equals( "ConnectsTo", cmp ) &&
+                                                                                   !Keywords[ CurrPosition ].Equals( "Zoom", cmp ) &&
                                                                                    !Keywords[ CurrPosition ].Equals( "Has", cmp ) )
                         {
                             thisChart.Title += " " + Keywords[ CurrPosition++ ];
@@ -146,65 +147,87 @@ namespace CumulusUtils
                         return null;
                     }
 
-                    if ( Keywords[ CurrPosition ].Equals( "ConnectsTo", cmp ) )
+                    while ( Keywords[ CurrPosition ].Equals( "ConnectsTo", cmp ) ||
+                            Keywords[ CurrPosition ].Equals( "Zoom", cmp ) ||
+                            Keywords[ CurrPosition ].Equals( "Has", cmp ) )
                     {
-                        CurrPosition++;
-
-                        while ( int.TryParse( Keywords[ CurrPosition ], out int DasboardPanelNr ) )
+                        if ( Keywords[ CurrPosition ].Equals( "ConnectsTo", cmp ) )
                         {
                             CurrPosition++;
 
-                            if ( AllOutputs.Count > 0 )
+                            while ( int.TryParse( Keywords[ CurrPosition ], out int DasboardPanelNr ) )
                             {
-                                Sup.LogTraceWarningMessage( $"Parsing User Charts '{thisChart.Id}' : Skipping illegal ConnectTo '{DasboardPanelNr}'" );
-                                continue; // Only have Connects to from cumuluscharts.txt
-                            }
+                                CurrPosition++;
 
-                            thisChart.ConnectsToDashboardPanel.Add( DasboardPanelNr );
-                            ClickEvents[ DasboardPanelNr - 1 ] = thisChart.Id;
+                                if ( AllOutputs.Count > 0 )
+                                {
+                                    Sup.LogTraceWarningMessage( $"Parsing User Charts '{thisChart.Id}' : Skipping illegal ConnectTo '{DasboardPanelNr}'" );
+                                    continue; // Only have Connects to from cumuluscharts.txt
+                                }
+
+                                thisChart.ConnectsToDashboardPanel.Add( DasboardPanelNr );
+                                ClickEvents[ DasboardPanelNr - 1 ] = thisChart.Id;
+                            }
                         }
-                    }
 
-                    if ( Keywords[ CurrPosition ].Equals( "Has", cmp ) )
-                    {
-                        CurrPosition++;
-
-                        if ( Keywords[ CurrPosition ].Equals( "WindBarbs", cmp ) )
+                        // Search for Zoom keyword
+                        if ( Keywords[ CurrPosition ].Equals( "Zoom", cmp ) )
                         {
                             CurrPosition++;
-                            thisChart.HasWindBarbs = true;
 
-                            if ( Keywords[ CurrPosition ].Equals( "Above", cmp ) )
+                            try
                             {
-                                CurrPosition++;
-                                thisChart.WindBarbsBelow = false;
+                                int.TryParse( Keywords[ CurrPosition++ ], out int tmp );
+                                thisChart.Zoom = tmp;
                             }
-                            else if ( Keywords[ CurrPosition ].Equals( "Below", cmp ) )
+                            catch ( Exception e )
+                            {
+                                Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' Exception: {e.Message}" );
+                                Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' : Error around Zoom value of '{thisChart.Id}'" );
+                            }
+                        } // End ZOOM
+
+                        if ( Keywords[ CurrPosition ].Equals( "Has", cmp ) )
+                        {
+                            CurrPosition++;
+
+                            if ( Keywords[ CurrPosition ].Equals( "WindBarbs", cmp ) )
                             {
                                 CurrPosition++;
-                                thisChart.WindBarbsBelow = true;
+                                thisChart.HasWindBarbs = true;
+
+                                if ( Keywords[ CurrPosition ].Equals( "Above", cmp ) )
+                                {
+                                    CurrPosition++;
+                                    thisChart.WindBarbsBelow = false;
+                                }
+                                else if ( Keywords[ CurrPosition ].Equals( "Below", cmp ) )
+                                {
+                                    CurrPosition++;
+                                    thisChart.WindBarbsBelow = true;
+                                }
+                                else
+                                {
+                                    // Error condition
+                                    Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' : Missing BELOW or ABOVE Keyword" );
+                                    return null;
+                                }
+
+                                if ( Keywords[ CurrPosition ].Equals( "Colour", cmp ) )
+                                {
+                                    CurrPosition++;
+
+                                    thisChart.WindBarbColor = Keywords[ CurrPosition++ ];
+                                }
                             }
                             else
                             {
                                 // Error condition
-                                Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' : Missing BELOW or ABOVE Keyword" );
+                                Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' : Missing WindBarbs Keyword" );
                                 return null;
                             }
-
-                            if ( Keywords[ CurrPosition ].Equals( "Colour", cmp ) )
-                            {
-                                CurrPosition++;
-
-                                thisChart.WindBarbColor = Keywords[ CurrPosition++ ];
-                            }
                         }
-                        else
-                        {
-                            // Error condition
-                            Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' : Missing WindBarbs Keyword" );
-                            return null;
-                        }
-                    }
+                    } // while ConnectsTo, Zoom, Has
 
                     if ( !( Keywords[ CurrPosition ].Equals( "Plot", cmp ) || Keywords[ CurrPosition ].Equals( "Stats", cmp ) ) )
                     {
@@ -599,7 +622,7 @@ namespace CumulusUtils
 
                                     CurrPosition++;  // Keyword next to the quote
                                 }
-                                catch (Exception e) when (e is IndexOutOfRangeException)
+                                catch ( Exception e ) when ( e is IndexOutOfRangeException )
                                 {
                                     Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : Info specified on '{thisChart.Id}' but no closing quote found." );
                                     return null;

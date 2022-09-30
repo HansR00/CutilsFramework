@@ -33,7 +33,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using ServiceStack;
 
 namespace CumulusUtils
 {
@@ -79,7 +78,7 @@ namespace CumulusUtils
 
                 Html.AppendLine( Sup.GenjQueryIncludestring() );
 
-                if ( !CMXutils.DoWebsite && CMXutils.DoLibraryIncludes && TheseChartsUseInfo)
+                if ( !CMXutils.DoWebsite && CMXutils.DoLibraryIncludes && TheseChartsUseInfo )
                     Html.AppendLine( "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.2/jquery.modal.min.js\"  crossorigin=\"anonymous\" referrerpolicy=\"no-referrer\"></script>" +
                        "<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.2/jquery.modal.css\" crossorigin=\"anonymous\" referrerpolicy=\"no-referrer\" />" );
 
@@ -299,21 +298,32 @@ namespace CumulusUtils
                         TheCharts.AppendLine( $"       count: {HoursInGraph / 4},type: 'hour',text: '{HoursInGraph / 4}h'}}, {{" );
                         TheCharts.AppendLine( $"       count: {HoursInGraph / 2},type: 'hour',text: '{HoursInGraph / 2}h'}}, {{" );
                         TheCharts.AppendLine( "        type: 'all',text: 'All'}]," );
-                        TheCharts.AppendLine( "      inputEnabled: false}" );
+                        TheCharts.AppendLine( "      inputEnabled: false," );
+
+                        if (thisChart.Zoom == -1)
+                            TheCharts.AppendLine( "     selected: 2 }" );
+                        else
+                            TheCharts.AppendLine( $"     selected: {thisChart.Zoom} - 1 }}" );
                     }
                     else
                     {
                         if ( thisChart.Range == PlotvarRangeType.Daily )
-                            TheCharts.AppendLine( "      rangeSelector:{allButtonsEnabled: true, selected: 0}" );
+                            if ( thisChart.Zoom == -1 )
+                                TheCharts.AppendLine( "      rangeSelector:{allButtonsEnabled: true, selected: 0 }" );
+                            else
+                                TheCharts.AppendLine( $"      rangeSelector:{{allButtonsEnabled: true, selected: {thisChart.Zoom} - 1 }}" );
                         else
-                            TheCharts.AppendLine( "      rangeSelector:{allButtonsEnabled: true, selected: 4}" );
+                            if ( thisChart.Zoom == -1 )
+                                TheCharts.AppendLine( "      rangeSelector:{allButtonsEnabled: true, selected: 4 }" );
+                            else
+                                TheCharts.AppendLine( $"      rangeSelector:{{allButtonsEnabled: true, selected: {thisChart.Zoom} - 1 }}" );
                     }
 
                     TheCharts.AppendLine( "  });" );
 
-                    if ( thisChart.HasInfo)
+                    if ( thisChart.HasInfo )
                     {
-                        string Info = $"{Sup.GetUtilsIniValue( "Compiler", "Info", "Info" )}";
+                        string Info = $"{Sup.GetCUstringValue( "Compiler", "Info", "Info", true )}";
 
                         TheCharts.AppendLine( "chart.update({" );
                         TheCharts.AppendLine( "  chart:{events:{render() {const {x,y,width} = this.exportingGroup.getBBox();" );

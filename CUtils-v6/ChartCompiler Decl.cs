@@ -71,6 +71,7 @@ namespace CumulusUtils
             ConnectsToDashboardPanel = new List<int>();
             HasInfo = false;
             InfoText = "";
+            Zoom = -1;
         }
         internal PlotvarRangeType Range { get; set; }
         internal AxisType Axis;
@@ -84,6 +85,7 @@ namespace CumulusUtils
         internal List<int> ConnectsToDashboardPanel { get; set; }
         internal bool HasInfo { get; set; }
         internal string InfoText { get; set; }
+        internal int Zoom { get; set; }
     }
 
     internal struct EqDef

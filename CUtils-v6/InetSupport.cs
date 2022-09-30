@@ -206,9 +206,8 @@ namespace CumulusUtils
                     // From CMX, take care of ECDSA ciphers not implemented in mono
                     try
                     {
-                        using ( var ecdsa = new System.Security.Cryptography.ECDsaCng() )
 #pragma warning disable CS0642 // Possible mistaken empty statement
-                            ;
+                        using ( var ecdsa = new System.Security.Cryptography.ECDsaCng() ) ;
 #pragma warning restore CS0642 // Possible mistaken empty statement
                     }
                     catch ( NotImplementedException )
@@ -459,10 +458,10 @@ namespace CumulusUtils
             CumulusDir += "/maps";
 
             if ( !Download ) // No reason to do the whole procedure if we don't have to Download
-            { 
+            {
                 Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: DoUploadFTP configured false => No DownloadSignatureFiles." );
-                return; 
-            } 
+                return;
+            }
             else
             {
                 Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: DoUploadFTP: {Download}" );
@@ -604,7 +603,7 @@ namespace CumulusUtils
             //};
 
             //using ( HttpClient PostClient = new HttpClient( clientHandler, true ) )
-            using ( HttpClient PostClient = new HttpClient( ) )
+            using ( HttpClient PostClient = new HttpClient() )
             {
                 Sup.LogTraceInfoMessage( $"PostUrlData Calling PostAsync" );
 

@@ -24,7 +24,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -54,7 +53,7 @@ namespace CumulusUtils
         internal ExternalExtraSensorslog( CuSupport s, string SensorName )
         {
             Sup = s;
-            Sup.LogDebugMessage( $"ExternalExtraSensorslog constructor: Using fixed path: | data/ |; file: | *log.txt" );
+            Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog constructor: Using fixed path: | data/ |; file: | *log.txt" );
 
             ThisSensorName = SensorName;
             IgnoreDataErrors = Sup.GetUtilsIniValue( "General", "IgnoreDataErrors", "true" ).Equals( "true" );
@@ -89,7 +88,7 @@ namespace CumulusUtils
 
             // Get the list of values starting datetime to Now - period by user definition GraphHours in section Graphs in Cumulus.ini
             //
-            Sup.LogDebugMessage( $"ExternalExtraSensorslog: start." );
+            Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog: start." );
 
             string Filename;
             double HoursInGraph = Convert.ToDouble( Sup.GetCumulusIniValue( "Graphs", "GraphHours", "" ) );
@@ -112,7 +111,7 @@ namespace CumulusUtils
             DateTime timeEnd = Now.AddMinutes( -Now.Minute % Math.Max( FTPIntervalInMinutes, LogIntervalInMinutes ) );
             DateTime timeStart = timeEnd.AddHours( -HoursInGraph );
 
-            Sup.LogDebugMessage( $"ExternalExtraSensorslog: timeStart = {timeStart}; timeEnd = {timeEnd}" );
+            Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog: timeStart = {timeStart}; timeEnd = {timeEnd}" );
 
             ExternalExtraSensorslogValue tmp;
             ExternalExtraSensorsValuesList = new List<ExternalExtraSensorslogValue>();
@@ -120,11 +119,11 @@ namespace CumulusUtils
             Filename = $"data/{ThisSensorName}{timeStart:yyyy}{timeStart:MM}.txt";
             if ( !File.Exists( Filename ) )
             {
-                Sup.LogDebugMessage( $"ExternalExtraSensorslog: Require {Filename} to start but it does not exist, aborting ExternalExtraSensorsLog" );
+                Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog: Require {Filename} to start but it does not exist, aborting ExternalExtraSensorsLog" );
                 return ExternalExtraSensorsValuesList;
             }
 
-            Sup.LogDebugMessage( $"ExternalExtraSensorslog: Require {Filename} to start" );
+            Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog: Require {Filename} to start" );
 
             while ( !PeriodComplete )
             {
@@ -177,13 +176,19 @@ namespace CumulusUtils
 
                 if ( ExternalExtraSensorsValuesList.Last().ThisDate.Month == timeEnd.Month )
                 {
-                    Sup.LogDebugMessage( $"ExternalExtraSensorslog: Finished reading the log at {ExternalExtraSensorsValuesList.Last().ThisDate}" );
+                    Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog: Finished reading the log at {ExternalExtraSensorsValuesList.Last().ThisDate}" );
                     PeriodComplete = true;
                 }
                 else
                 {
                     Filename = $"data/{ThisSensorName}{timeEnd:yyyy}{timeEnd:MM}.txt";  // Take care of a period passing month boundary
-                    Sup.LogDebugMessage( $"ExternalExtraSensorslog: Require the  next logfile: {Filename}" );
+                    Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog: Require the  next logfile: {Filename}" );
+
+                    if ( !File.Exists( Filename ) )
+                    {
+                        Sup.LogTraceErrorMessage( $"ExternalExtraSensorslog: Require {Filename} to continue but it does not exist, aborting ExternalExtraSensorsLog" );
+                        PeriodComplete = true;
+                    }
                 }
             }
 

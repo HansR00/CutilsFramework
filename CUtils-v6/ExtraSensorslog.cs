@@ -24,7 +24,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -184,7 +183,7 @@ namespace CumulusUtils
             string line;
 
             Sup = s;
-            Sup.LogDebugMessage( $"ExtraSensorslog constructor: Using fixed path: | data/ |; file: | *log.txt" );
+            Sup.LogTraceInfoMessage( $"ExtraSensorslog constructor: Using fixed path: | data/ |; file: | *log.txt" );
 
             // Get the list of monthly logfile in the datadirectory and check what type of delimeters we have
             ExtraSensorslogList = Directory.GetFiles( "data/", "ExtraLog*.txt" );
@@ -192,7 +191,7 @@ namespace CumulusUtils
             if ( ExtraSensorslogList.Length >= 0 )
             {
                 filenameCopy = "data/" + "copy_" + Path.GetFileName( ExtraSensorslogList[ 0 ] );
-                Sup.LogDebugMessage( $"ExtraSensorslog constructor: Using {filenameCopy}" );
+                Sup.LogTraceInfoMessage( $"ExtraSensorslog constructor: Using {filenameCopy}" );
             }
             else
                 return;

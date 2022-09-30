@@ -733,8 +733,8 @@ namespace CumulusUtils
         {
             Sup.LogTraceInfoMessage( $"Solar Graphs - CreateListsFromMonthlyLogs start" );
 
-#if DEBUG
-            Stopwatch watch = Stopwatch.StartNew(); 
+#if TIMING
+            Stopwatch watch = Stopwatch.StartNew();
 #endif
 
             List<MonthfileValue> thisList = MonthfileList.Where( x => x.SolarTheoreticalMax > 0 ).ToList();
@@ -797,9 +797,9 @@ namespace CumulusUtils
                 DailySolarValuesList.Add( tmp );
             }
 
-#if DEBUG
+#if TIMING
             watch.Stop();
-            Sup.LogTraceInfoMessage( $"Solar Graphs: Timing of CreateListsFromMonthlyLogs = {watch.ElapsedMilliseconds} ms" ); 
+            Sup.LogTraceInfoMessage( $"Solar Graphs: Timing of CreateListsFromMonthlyLogs = {watch.ElapsedMilliseconds} ms" );
 #endif
 
             return;

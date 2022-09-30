@@ -78,6 +78,7 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using FluentFTP.Helpers;
 
 namespace CumulusUtils
 {
@@ -127,8 +128,7 @@ namespace CumulusUtils
 
             // Check the country. Order is 1) found  in inifile 2) part of locale 3) Use the default if not present or not supported
             string tmp = Sup.GetUtilsIniValue( "AirLink", "CountrySelected", "" );
-            if ( string.IsNullOrEmpty( tmp ) )
-                tmp = Sup.Country;
+            if ( tmp.IsBlank() ) tmp = Sup.Country;
 
             try
             {
@@ -816,8 +816,7 @@ namespace CumulusUtils
             #region HTML
 
             // Create the page header titles, station  identification etc...
-            if ( !string.IsNullOrEmpty( Message ) )
-                of.AppendLine( Message );
+            if ( !Message.IsBlank() ) of.AppendLine( Message );
 
             of.AppendLine( "<div style='float:right;'>" );
             of.AppendLine( "<input type='button' class=buttonSlim id='TableViewBtn' value='TableView' onclick='SetTableView()'>" );

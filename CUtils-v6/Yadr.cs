@@ -84,7 +84,8 @@ namespace CumulusUtils
             Sup = s;
             Sup.LogDebugMessage( $"Main CmulusUtils: Yadr Constructor Start" );
 
-            Windrunbase = Windrunstep = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "WindrunClassWidth", "75" ), CultureInfo.InvariantCulture );
+            //Windrunbase = Windrunstep = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "WindrunClassWidth", "75" ), CultureInfo.InvariantCulture );
+            Windrunbase = Windrunstep = 75;
 
             // we have 13 classes in the table. If it becomes more or less we have to adjust tables
             for ( i = 0; i < 13; i++ )
@@ -94,7 +95,7 @@ namespace CumulusUtils
             for ( i = 0; i < 13; i++ )
                 WindRanges[ i ] = (float) Sup.StationWind.Convert( WindDim.kmh, Sup.StationWind.Dim, WindRanges[ i ] );
             for ( i = 0; i < 13; i++ )
-                WindrunRanges[ i ] = Windrunbase + i * Windrunstep; // No conversion as the user supplies this via the inifile (section Graphs)
+                WindrunRanges[ i ] = (float) Sup.StationDistance.Convert( DistanceDim.kilometer, Sup.StationDistance.Dim, Windrunbase + i * Windrunstep );
             for ( i = 0; i < 13; i++ )
                 PressRanges[ i ] = (float) Sup.StationPressure.Convert( PressureDim.hectopascal, Sup.StationPressure.Dim, Pressbase + i * Pressstep );
 
