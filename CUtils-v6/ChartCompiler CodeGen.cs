@@ -323,7 +323,7 @@ namespace CumulusUtils
 
                     if ( thisChart.HasInfo )
                     {
-                        string Info = $"{Sup.GetCUstringValue( "Compiler", "Info", "Info", true )}";
+                        string Info = $"{Sup.GetCUstringValue( "General", "Info", "Info", true )}";
 
                         TheCharts.AppendLine( "chart.update({" );
                         TheCharts.AppendLine( "  chart:{events:{render() {const {x,y,width} = this.exportingGroup.getBBox();" );

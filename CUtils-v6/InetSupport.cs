@@ -376,9 +376,8 @@ namespace CumulusUtils
                                 // From CMX, take care of ECDSA ciphers not implemented in mono
                                 try
                                 {
-                                    using ( var ecdsa = new System.Security.Cryptography.ECDsaCng() )
 #pragma warning disable CS0642 // Possible mistaken empty statement
-                                        ;
+                                    using ( var ecdsa = new System.Security.Cryptography.ECDsaCng() ) ;
 #pragma warning restore CS0642 // Possible mistaken empty statement
                                 }
                                 catch ( NotImplementedException )
@@ -553,8 +552,6 @@ namespace CumulusUtils
 
         public async Task<string> GetUrlDataAsync( Uri thisURL )
         {
-            string retval;
-
             Sup.LogDebugMessage( $"GetUrlData Start: URL - {thisURL} " );
 
             // Note: I use 'using' because it is easier and it gets only called for UserReports, MAps and yourweather.co.uk so 
@@ -565,23 +562,21 @@ namespace CumulusUtils
                 try
                 {
                     Sup.LogTraceInfoMessage( $"GetUrlData Calling GetAsync" );
-                    retval = await GetClient.GetStringAsync( thisURL );
+                    return await GetClient.GetStringAsync( thisURL );
                 }
                 catch ( Exception e ) when ( e is HttpRequestException )
                 {
                     Sup.LogTraceErrorMessage( $"GetUrlData : Exception - {e.Message}" );
                     if ( e.InnerException != null )
                         Sup.LogTraceErrorMessage( $"GetUrlData: Inner Exception: {e.InnerException}" );
-                    retval = "";
+                    return "";
                 }
                 catch ( Exception e )
                 {
                     Sup.LogTraceErrorMessage( $"GetUrlData : General exception - {e.Message}" );
-                    retval = "";
+                    return "";
                 }
             }
-
-            return retval;
         } // EndOf GetUrlData
 
 

@@ -191,9 +191,11 @@ namespace CumulusUtils
         static public DateTime RunStarted { get; private set; }
         static public DateTime StartOfObservations { get; set; }
         static public bool CanDoMap { get; set; }
+        static internal HelpTexts ChartHelp { get; private set; }
 
         static internal List<DayfileValue> MainList = new List<DayfileValue>();
 
+        #region Main
         private static async Task Main( string[] args )
         {
             TraceListener FtpListener = null;
@@ -254,6 +256,8 @@ namespace CumulusUtils
                 // Initialise the Thrifty system parameters
                 Thrifty = false;
                 RunStarted = DateTime.Now;
+
+                ChartHelp = new HelpTexts(Sup);
 
                 ThriftyRecordsDirty = false;
                 ThriftyTop10RecordsDirty = false;
@@ -335,6 +339,9 @@ namespace CumulusUtils
             return;
         }
 
+        #endregion
+
+        #region RealMainAsync
         private async Task RealMainAsync( string[] args )  // 
         {
             Dayfile ThisDayfile;
@@ -359,7 +366,6 @@ namespace CumulusUtils
                                   "      [SysInfo][Forecast][StationMap][UserReports][MeteoCam]\n" +
                                   "      [pwsFWI][Top10][Graphs][Yadr][Records][UserAskedData]\n" +
                                   "      [NOAA][DayRecords][AirLink][CompileOnly][ExtraSensors]\n" +
-                                  //"      | [Thrifty] All\n" +
                                   "      | CheckOnly" );
                 Console.WriteLine( "" );
                 Console.WriteLine( "OR (in case you use the website generator):\n" );
@@ -987,6 +993,9 @@ namespace CumulusUtils
             return;
         }
 
+        #endregion
+
+        #region CommandLineArgs
         private void CommandLineArgs( string[] args )
         {
             Sup.LogDebugMessage( "CommandLineArgs : starting" );
@@ -1068,5 +1077,8 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "CommandLineArgs : End" );
         } // Commandline handling
+
+        #endregion
+
     } // Class CMXutils
 } // namespace

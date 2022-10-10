@@ -119,7 +119,7 @@ namespace CumulusUtils
                 }
             }
 
-            thisBuffer.AppendLine( "Highcharts.chart('chartcontainer', {" );
+            thisBuffer.AppendLine( "chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "chart:" );
             thisBuffer.AppendLine( "{" );
             thisBuffer.AppendLine( "  type: 'columnrange'" );
@@ -278,7 +278,7 @@ namespace CumulusUtils
                 return; // We're done, nothing here
             }
 
-            thisBuffer.AppendLine( "Highcharts.chart('chartcontainer', {" );
+            thisBuffer.AppendLine( "chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "chart:" );
             thisBuffer.AppendLine( "{" );
             thisBuffer.AppendLine( "  type: 'columnrange'" );
@@ -445,7 +445,7 @@ namespace CumulusUtils
                 }
             }
 
-            thisBuffer.AppendLine( "Highcharts.chart('chartcontainer', {" );
+            thisBuffer.AppendLine( "chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "chart:" );
             thisBuffer.AppendLine( "{" );
             thisBuffer.AppendLine( "  type: 'columnrange'" );
@@ -604,7 +604,7 @@ namespace CumulusUtils
                 return; // We're done, nothing here
             }
 
-            thisBuffer.AppendLine( "Highcharts.chart('chartcontainer', {" );
+            thisBuffer.AppendLine( "chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "chart:" );
             thisBuffer.AppendLine( "{" );
             thisBuffer.AppendLine( "  type: 'columnrange'" );

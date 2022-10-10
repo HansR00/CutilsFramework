@@ -42,7 +42,7 @@ namespace CumulusUtils
             // First generate the general HTML and Graph chartcontainer stuff,
             // Then generate the dataseries.
 
-            thisBuffer.AppendLine( "Highcharts.stockChart('chartcontainer', {" );
+            thisBuffer.AppendLine( "chart = Highcharts.stockChart('chartcontainer', {" );
             thisBuffer.AppendLine( "  rangeSelector:" );
             thisBuffer.AppendLine( "  {" );
             thisBuffer.AppendLine( "    selected: 4" );
@@ -347,7 +347,7 @@ namespace CumulusUtils
             Sup.LogTraceInfoMessage( "GenMonthlyRainvsNOAAGraphData : start Generation" );
 
             // Now generate the script
-            thisBuffer.AppendLine( "  Highcharts.chart('chartcontainer', {" );
+            thisBuffer.AppendLine( "  chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "  chart:" );
             thisBuffer.AppendLine( "  {" );
             thisBuffer.AppendLine( "    type: 'spline'," );
@@ -518,7 +518,7 @@ namespace CumulusUtils
                 maxrain.Add( yearlist.Select( x => x.TotalRainThisDay ).Max() );
             }
 
-            thisBuffer.AppendLine( "Highcharts.chart('chartcontainer', {" );
+            thisBuffer.AppendLine( "chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "chart:" );
             thisBuffer.AppendLine( "{" );
             thisBuffer.AppendLine( "  type: 'columnrange'" );
@@ -675,7 +675,7 @@ namespace CumulusUtils
                 return; // We're done, nothing here
             }
 
-            thisBuffer.AppendLine( "Highcharts.chart('chartcontainer', {" );
+            thisBuffer.AppendLine( "chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "chart:" );
             thisBuffer.AppendLine( "{" );
             thisBuffer.AppendLine( "  type: 'columnrange'" );

@@ -41,7 +41,7 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "GenDailyEVTGraphData : starting" );
 
-            thisBuffer.AppendLine( "Highcharts.stockChart('chartcontainer', {" );
+            thisBuffer.AppendLine( "chart = Highcharts.stockChart('chartcontainer', {" );
             thisBuffer.AppendLine( "  rangeSelector:" );
             thisBuffer.AppendLine( "  {" );
             thisBuffer.AppendLine( "    selected: 4" );
@@ -186,7 +186,7 @@ namespace CumulusUtils
             }
 
             // Now generate the script
-            thisBuffer.AppendLine( "  Highcharts.chart('chartcontainer', {" );
+            thisBuffer.AppendLine( "  chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "  chart:" );
             thisBuffer.AppendLine( "  {" );
             thisBuffer.AppendLine( "    type: 'spline'," );
@@ -292,7 +292,7 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "GenTempSum : starting" );
 
-            thisBuffer.AppendLine( "Highcharts.chart('chartcontainer', {" );
+            thisBuffer.AppendLine( "chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "  rangeSelector:" );
             thisBuffer.AppendLine( "  {" );
             thisBuffer.AppendLine( "    enabled: false" );
@@ -421,7 +421,7 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "GrowingDegreeDays : starting" );
 
-            thisBuffer.AppendLine( "Highcharts.chart('chartcontainer', {" );
+            thisBuffer.AppendLine( "chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "  rangeSelector:" );
             thisBuffer.AppendLine( "  {" );
             thisBuffer.AppendLine( "    enabled: false" );
@@ -699,7 +699,7 @@ namespace CumulusUtils
 
             SeasonList.Reverse();
 
-            thisBuffer.AppendLine( "Highcharts.chart('chartcontainer', {" );
+            thisBuffer.AppendLine( "chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "  rangeSelector:{enabled: false}," );
             thisBuffer.AppendLine( "  chart:{type: 'bar'}, " );
 
@@ -805,7 +805,7 @@ namespace CumulusUtils
             // First generate the general HTML and Graph chartcontainer stuff,
             // Then generate the dataseries.
 
-            thisBuffer.AppendLine( "Highcharts.stockChart('chartcontainer', {" );
+            thisBuffer.AppendLine( "chart = Highcharts.stockChart('chartcontainer', {" );
 
             string tmp = Sup.GetUtilsIniValue( "Graphs", "GraphColors", graphColors );
             if ( !string.IsNullOrEmpty( tmp ) )

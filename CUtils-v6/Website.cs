@@ -307,12 +307,11 @@ namespace CumulusUtils
                   "  </div>" +
                   "    <div class='modal-body'>" +
                   @"This site is made with CumulusUtils, a generator tool for HTML presentation of weather data, retrieved from a weather station powered by <a href='https://cumulus.hosiene.co.uk/index.php'>Cumulus(MX)</a> (all versions). CumulusUtils is built and &copy; by Hans Rottier. It can be freely used an distributed under the Creative Commons 4.0 license (see Licenses). You can find it <a href='https://cumulus.hosiene.co.uk/viewtopic.php?f=44&t=17998' target='_blank'>here</a>.<br/> <br/>
-
-With a background in Forestry, chemistry and ICT, I started developing a Top10 list and - above all - a Fire Weather Index. This quickly went out of hand and more modules followed. Finally, the idea of a standard website generator followed. I started out in C on the RPi, quickly changed to C#, to create a similar environment as CumulusMX itself. Out of this, within 6 months, grew CumulusUtils. Version 3.0 is the first release of the website generator but all versions can be used for the single modules as well. CumulusUtils is primarily for cooperation with CumulusMX but on a modular level - not all modules - it can work with Cumulus 1 as well.<br/><br/>
-
+It has a wiki of its own: <a href='https://cumuluswiki.org/a/Category:CumulusUtils'>go here</a>.<br/> <br/>
+With a background in Forestry, chemistry and ICT, I started developing a Top10 list and - above all - a Fire Weather Index. This quickly evolved into a standard website generator and it became CumulusUtils. All versions can be used for the single modules as well. CumulusUtils is for cooperation with CumulusMX.<br/><br/>
 CumulusUtils stands on the shoulders of the following:<br/><br/>
 <ul>
-<li><a href='https://cumulus.hosiene.co.uk/index.php'>CumulusMX</a> by Steve Loft (retired). Now maintained by Mark Crossley who also did the Gauges (based on the Steelseries). Beteljuice, user on the Cumulus forum, who, often unsollicited, provided advice and ideas. He made a large range of PHP/javascript tools to enhance the basic sites.</li>
+<li><a href='https://cumulus.hosiene.co.uk/index.php'>CumulusMX</a> by Steve Loft (retired). Now maintained by Mark Crossley who also did the Gauges (based on the Steelseries). Beteljuice†, user on the Cumulus forum, who, often unsollicited, provided advice and ideas. He made a large range of PHP/javascript tools to enhance the basic sites.</li>
 <li>Ken True of <a href='http://saratoga-weather.org/station.php'>Saratoga Weather</a> (Read the About of that site!), Murry Conarroe of <a href='http://weather.wildwoodnaturist.com/'>Wildwood Weather</a> had something to do with it.</li>
 <li>Many sites I visited showed an enormous diversity and originality and therefore generated ideas. Look here for <a href='https://meteo-wagenborgen.nl/wp/2019/09/21/sites-which-carry-the-fire-weather-index-pwsfwi/'>a list of sites (the first 15)</a>, carrying CumulusUtils (or part of it), which inspired and contributed to the development and testing of the tool. Notably <a href='http://weather.inverellit.com/index.htm'><em>Phil’s Backyard</em></a>, which quickly became my first test site in the fire summer of 2020 in NSW Autralia. Thanks Phil! Also PaulMy's 'Komoka' played an important role closely followed by <a href='http://kocher.es/index.php'>Kocher.es</a> and <a href='http://meteo.laurentmey.fr/php/index.php'>Meyenheim</a> which showed the way for the statistics. And last but not least <a href='https://weather.wilmslowastro.com/'>Mark Crossley's site</a>.</li>
 <li>Finally, FWIcalc by Graeme Kates. <em><a href='http://www.arthurspass.com/fwicalc'>FWIcalc</a></em>, has been developed (from 2002 to 2014) by Graeme Kates in New Zealand, on the basis of the <a href='https://meteo-wagenborgen.nl/wp/2019/08/11/fire-weather-the-canadian-fwi/'>FWI (Fire Weather Index)</a>, developed in Canada and also used in New-Zealand and France. Some other indices like the <a href='https://meteo-wagenborgen.nl/wp/2019/07/10/fire-weather-the-angstrom-index-and-the-fmi-index/'> Angstrom</a> and the <a href='https://meteo-wagenborgen.nl/wp/2019/07/08/the-chandler-burning-index/'>CBI (Chandler Burning Index)</a> are calculated by FWIcalc as well. Although pwsFWI has theoretically nothing to do with FWIcalc, it definitly is linked to it from a genealogists point of view.</li>
@@ -811,7 +810,10 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "function DoRealtime(input) {" +
                   "let tmpInput = input;" );
 
-                if ( ReplaceDecimalSeparator ) CUlibFile.Append( $"  tmpInput = tmpInput.replace(/\\./g, '{DecimalSeparator}');" );
+                //if ( ReplaceDecimalSeparator ) CUlibFile.Append( $"  tmpInput = tmpInput.replace(/\\./g, '{DecimalSeparator}');" );
+                // Do not replace the date separator if it is a point
+                if ( ReplaceDecimalSeparator ) 
+                    CUlibFile.Append( $"  tmpInput = tmpInput.substring(0,9)  + tmpInput.substring(9).replace(/\\./g, '{DecimalSeparator}');" );
 
                 CUlibFile.Append( "" +
                           "  let realtime = tmpInput.split(' '); " +

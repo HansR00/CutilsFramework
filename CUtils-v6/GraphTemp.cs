@@ -112,7 +112,7 @@ namespace CumulusUtils
             Sup.LogTraceInfoMessage( "GenMonthlyTempvsNOAAGraphData : start Generation" );
 
             // Now generate the script
-            thisBuffer.AppendLine( "  Highcharts.chart('chartcontainer', {" );
+            thisBuffer.AppendLine( "  chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "    chart:" );
             thisBuffer.AppendLine( "    {" );
             thisBuffer.AppendLine( "      type: 'spline'," );
@@ -297,7 +297,7 @@ namespace CumulusUtils
                 AllYears.Add( YearValue );
             }
 
-            thisBuffer.AppendLine( "Highcharts.chart('chartcontainer', {" );
+            thisBuffer.AppendLine( "chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "  chart:" );
             thisBuffer.AppendLine( "  {" );
             thisBuffer.AppendLine( "    type: 'column'" );
@@ -405,7 +405,7 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "Generate Heat Map Start" );
 
-            thisBuffer.AppendLine( "thisHeatmap = Highcharts.chart('chartcontainer', {" );
+            thisBuffer.AppendLine( "chart = thisHeatmap = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "chart:" );
             thisBuffer.AppendLine( "{" );
             thisBuffer.AppendLine( "  type: 'heatmap'" );
@@ -536,7 +536,7 @@ namespace CumulusUtils
                 maxtemp.Add( yearlist.Select( x => x.MaxTemp ).Max() );
             }
 
-            thisBuffer.AppendLine( "Highcharts.chart('chartcontainer', {" );
+            thisBuffer.AppendLine( "chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "chart:" );
             thisBuffer.AppendLine( "{" );
             thisBuffer.AppendLine( "  type: 'columnrange'" );
@@ -685,7 +685,7 @@ namespace CumulusUtils
                 return; // We're done, nothing here
             }
 
-            thisBuffer.AppendLine( "Highcharts.chart('chartcontainer', {" );
+            thisBuffer.AppendLine( "chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "chart:" );
             thisBuffer.AppendLine( "{" );
             thisBuffer.AppendLine( "  type: 'columnrange'" );

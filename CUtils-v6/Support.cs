@@ -95,6 +95,7 @@ namespace CumulusUtils
         public string CUserdataALL { get; } = "CUserdataALL.json";
         public string CutilsChartsDef { get; } = "CutilsCharts.def";
         public string CutilsMenuDef { get; } = "CutilsMenu.def";
+        public string CUhelptexts { get; } = "CUhelptexts.txt";
 
         private readonly IniFile Ini;           // that is: Cumulus.ini
         private readonly IniFile AtrIni;        // that is: data/alltime.ini

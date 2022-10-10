@@ -27,6 +27,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -149,8 +150,8 @@ namespace CumulusUtils
                 //
                 if ( Environment.OSVersion.Platform.Equals( PlatformID.Unix ) )
                 {
-                    Sup.LogDebugMessage( "SystemStatus : DoingUnix" );
-                    DoingUnix( of );
+                    if ( IsRunningOnMac() ) { Sup.LogDebugMessage( "SystemStatus : DoingMacOS" ); DoingMacOS( of ); }
+                    else { Sup.LogDebugMessage( "SystemStatus : DoingUnix" ); DoingUnix( of ); }
                 }
                 else if ( Environment.OSVersion.Platform.Equals( PlatformID.MacOSX ) )
                 {
@@ -179,6 +180,34 @@ namespace CumulusUtils
                 of.WriteLine( $"<div style ='width:100%; margin-left: auto; margin-right: auto; text-align: center; font-size: 12px;'>" +
                                       $"{CuSupport.FormattedVersion()} - {CuSupport.Copyright()} </div>" );
             } // End using of
+
+            [DllImport( "libc" )]
+            static extern int uname( IntPtr buf );
+
+            static bool IsRunningOnMac()
+            {
+                IntPtr buf = IntPtr.Zero;
+                try
+                {
+                    buf = Marshal.AllocHGlobal( 8192 );
+                    // This is a hacktastic way of getting sysname from uname ()
+                    if ( uname( buf ) == 0 )
+                    {
+                        string os = Marshal.PtrToStringAnsi( buf );
+                        if ( os == "Darwin" )
+                            return true;
+                    }
+                }
+                catch
+                {
+                }
+                finally
+                {
+                    if ( buf != IntPtr.Zero )
+                        Marshal.FreeHGlobal( buf );
+                }
+                return false;
+            }
 
             return;
         }
@@ -320,6 +349,100 @@ namespace CumulusUtils
             {
                 Sup.LogTraceErrorMessage( $"Disk info: Unknown error - {e.Message}" );
                 throw;
+            }
+
+            return;
+        }
+
+        private void DoingMacOS( StreamWriter of )
+        {
+            Sup.LogTraceInfoMessage( "SystemStatus : DoingMacOS Start" );
+
+            of.WriteLine( "MacOS" );
+            of.WriteLine( "" );
+
+            try
+            {
+                StartProcess( "uptime", "" );
+
+                if ( !String.IsNullOrEmpty( returnValues[ 0 ] ) )
+                {
+                    // Just for recognition of where we are : start of Station Info
+                    //of.WriteLine( $"System uptime: {returnValues[ 0 ].Substring( 3 )}" );
+                    of.WriteLine( $"System uptime: {returnValues[ 0 ]}" );
+                    of.WriteLine( "" );
+                }
+            }
+            catch ( Exception e )
+            {
+                Sup.LogTraceErrorMessage( $"System uptime: Unknown exception: {e.Message}" );
+            }
+
+            try
+            {
+                StartProcess( "lshw", "-quiet -class system" );
+
+                if ( !string.IsNullOrEmpty( returnValues[ 2 ] ) )
+                    of.WriteLine( $"System: {returnValues[ 2 ].Remove( 0, "    product: ".Length )}" );
+                if ( !string.IsNullOrEmpty( returnValues[ 1 ] ) )
+                    of.WriteLine( $"Processor: {returnValues[ 1 ].Remove( 0, "    description: ".Length )}" );
+                of.WriteLine( $"Nr of processors: {thisInfo.CpuCount}" );
+                of.WriteLine( $"Processor Temperature: {thisInfo.CpuTemp} °C" );
+            }
+            catch ( Exception e )
+            {
+                Sup.LogTraceErrorMessage( $"System/Processor: Unknown (exception) - {e.Message}" );
+                Sup.LogDebugMessage( "Please install lshw (apt-get install lshw)" );
+            }
+
+            // Linux 4.19.58-v7+ armv7l
+            try
+            {
+                StartProcess( "uname", "-s -r -m" );
+                of.WriteLine( $"OS: {returnValues[ 0 ]}" );
+
+                StartProcess( "lsb_release", "-a" );
+                foreach ( string line in returnValues )
+                    if ( line.StartsWith( "Description", StringComparison.OrdinalIgnoreCase ) )
+                        of.WriteLine( CuSupport.StringRemoveWhiteSpace( line, " " ) );
+            }
+            catch ( Exception e )
+            {
+                Sup.LogTraceErrorMessage( $"OS: Unknown exception - {e.Message}" );
+            }
+
+            try
+            {
+                StartProcess( "mono", "-V" );
+                of.WriteLine( $"{returnValues[ 0 ]}" );
+                of.WriteLine( "" );
+            }
+            catch ( Exception e )
+            {
+                Sup.LogTraceErrorMessage( $"Mono: Unknown, most likely it is not installed - {e.Message}" );
+            }
+
+            try
+            {
+                StartProcess( "free", "-m" );
+                of.WriteLine( "Memory info:" );
+                foreach ( string line in returnValues ) of.WriteLine( line );
+            }
+            catch ( Exception e )
+            {
+                Sup.LogTraceErrorMessage( $"Memory: Unknown error - {e.Message}" );
+            }
+
+            of.WriteLine( "" );
+
+            try
+            {
+                StartProcess( "df", "-T -text4 -tvfat -h" );
+                foreach ( string line in returnValues ) of.WriteLine( line );
+            }
+            catch ( Exception e )
+            {
+                Sup.LogTraceErrorMessage( $"Disk info: Unknown error - {e.Message}" );
             }
 
             return;

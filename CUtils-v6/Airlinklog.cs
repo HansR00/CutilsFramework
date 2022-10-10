@@ -274,7 +274,7 @@ namespace CumulusUtils
                         if ( tmp.ThisDate >= timeEnd )
                             break; // we have our set of data required
                         line = ReadLine( af, false );
-                    } while ( !line.IsBlank() );
+                    } while ( !string.IsNullOrEmpty( line ) );
                 } // End Using the AirLink Log to Read
 
                 if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );

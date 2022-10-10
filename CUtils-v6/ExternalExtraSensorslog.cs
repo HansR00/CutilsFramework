@@ -84,6 +84,7 @@ namespace CumulusUtils
         internal List<ExternalExtraSensorslogValue> ReadExternalExtraSensorslog()
         {
             CultureInfo Inv = CultureInfo.InvariantCulture;
+            bool NextFileTried = false;
             bool PeriodComplete = false;
 
             // Get the list of values starting datetime to Now - period by user definition GraphHours in section Graphs in Cumulus.ini
@@ -108,6 +109,7 @@ namespace CumulusUtils
             // This is also shared with the ChartsCompiler -> make some shared function for start and endtime related to the intervals.
             //
             DateTime Now = DateTime.Now;
+            Now = new DateTime( Now.Year, Now.Month, Now.Day, Now.Hour, Now.Minute, 0 );
             DateTime timeEnd = Now.AddMinutes( -Now.Minute % Math.Max( FTPIntervalInMinutes, LogIntervalInMinutes ) );
             DateTime timeStart = timeEnd.AddHours( -HoursInGraph );
 
@@ -144,6 +146,7 @@ namespace CumulusUtils
                     {
                         tmp.ThisDate = DateTime.ParseExact( splitLine[ 0 ], "dd/MM/yy HH:mm", Inv );
                         if ( tmp.ThisDate < timeStart ) continue;
+                        if ( tmp.ThisDate >= timeEnd ) break; // we have our set of data required
 
                         tmp.Value = Convert.ToSingle( splitLine[ 1 ] );
 
@@ -173,14 +176,15 @@ namespace CumulusUtils
 
                 if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
 
-
-                if ( ExternalExtraSensorsValuesList.Last().ThisDate.Month == timeEnd.Month )
+                if ( ExternalExtraSensorsValuesList.Last().ThisDate >= timeEnd || NextFileTried)
                 {
                     Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog: Finished reading the log at {ExternalExtraSensorsValuesList.Last().ThisDate}" );
                     PeriodComplete = true;
                 }
                 else
                 {
+                    NextFileTried = true;
+
                     Filename = $"data/{ThisSensorName}{timeEnd:yyyy}{timeEnd:MM}.txt";  // Take care of a period passing month boundary
                     Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog: Require the  next logfile: {Filename}" );
 

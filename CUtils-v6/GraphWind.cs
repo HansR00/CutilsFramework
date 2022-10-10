@@ -266,7 +266,7 @@ namespace CumulusUtils
                 WindrunYearData.Add( WindrunMonthData );
             }
 
-            thisBuffer.AppendLine( "Highcharts.chart('chartcontainer', {" );
+            thisBuffer.AppendLine( "chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "  chart:" );
             thisBuffer.AppendLine( "  {" );
             thisBuffer.AppendLine( "    type: 'column'" );
