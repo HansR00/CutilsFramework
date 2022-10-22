@@ -47,6 +47,7 @@ namespace CumulusUtils
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.MeteoCamOutputFilename}", false, Encoding.UTF8 ) )
             {
                 of.WriteLine( "<script>" );
+                of.WriteLine( "  console.log('Meteocam starting...')" );
                 of.WriteLine( "  $( function() {" );
                 of.WriteLine( $"    $.get( '{Sup.GetUtilsIniValue( "MeteoCam", "MeteoCamDir", "." )}/', function( data ) {{" );
                 of.WriteLine( "      thing = data;" );

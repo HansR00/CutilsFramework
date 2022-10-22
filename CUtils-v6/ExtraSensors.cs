@@ -815,11 +815,13 @@ namespace CumulusUtils
 
                     ExtraSensorList.Add( tmp );
                     Sup.SetCUstringValue( "Compiler", tmp.PlotvarType, thisSensor );
-                }
 
-                thisSensor = Sup.GetStringsIniValue( "AirQualityCaptions", $"SensorAvg{i}", "" );
-                if ( !thisSensor.Equals( $"Sensor Avg {i}" ) && !string.IsNullOrEmpty( thisSensor ) )
-                {
+                    // As we just found the Airquality sensor, the AVG is implicit. If the user did not register it
+                    // we give it a default name
+                    thisSensor = Sup.GetStringsIniValue( "AirQualityCaptions", $"SensorAvg{i}", "" );
+
+                    if ( thisSensor.Equals( $"Sensor Avg {i}" ) || string.IsNullOrEmpty( thisSensor ) ) thisSensor = tmp.Name + " Avg";
+
                     tmp = new ExtraSensor
                     {
                         Name = thisSensor,

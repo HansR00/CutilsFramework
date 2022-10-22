@@ -741,7 +741,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "  else DoStationMap = false;" +
                  $"  if (ReportName == '{Sup.MeteoCamOutputFilename}') DoWebCam = true;" +
                   "  else DoWebCam = false;" +
-                 $"  if (ReportName != '{Sup.ExtraSensorsOutputFilename}' && ReportName != '{Sup.ExtraSensorsCharts}') {{" +
+                 $"  if (ReportName != '{Sup.ExtraSensorsOutputFilename}' && ReportName != '{Sup.ExtraSensorsCharts}') {{ " +
                   "    if ($('#ExtraSensors').is (':visible') ) {" +
                   "      $('#ExtraSensors').hide();" +
                   "      $('#Dashboard').show();" +
@@ -2629,86 +2629,213 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
         #region GenerateMenu
 
-        //struct MenuDef
-        //{
-        //    string ItemName;  // The text the user wants to see in the menu
-        //    string ItemType;  // can be Link to Blank, Link to ReportView, OnClick Load, DropDown (meaning there shpould be item below it
-        //    string ItemContent;
-        //}
+        enum ItemTypes : int { None, External, Internal, Image, Report, Separator};
 
         private string GenerateMenu()
         {
             StringBuilder tmpMenu = new StringBuilder();
 
-            char[] charSeparators = new char[] { ',', ';' };
-            string[] DefaultMenu = { "Home", "About", "Reports", "Graphs", "Records", "Extra", "Misc", "Toggle Dashboard" };
-            List<string> Keywords;
-
             if ( File.Exists( $"{Sup.PathUtils}{Sup.CutilsMenuDef}" ) )
             {
-                bool AboutWritten = false;
-                string CurrentMainMenuItem = "";
+                Sup.LogDebugMessage( $"Website Menu generator: Menu definition found, using the user defined menu" );
+
+                // Preparation
+
+                string[] MenuContents = File.ReadAllLines( $"{Sup.PathUtils}{Sup.CutilsMenuDef}", Encoding.UTF8 );
+                string tmp = "";
+
+                foreach ( string thisline in MenuContents )
+                    if ( string.IsNullOrEmpty( thisline ) || thisline[ 0 ] == ';' ) continue;
+                    else tmp += thisline + ' ';
+
+                // End of preparation
+
+                char[] charSeparators = new char[] { ' ', ';' };
+                string[] Keywords;
+                string thisKeyword;
+
+                Keywords = tmp.Split( charSeparators, StringSplitOptions.RemoveEmptyEntries );  // .Where( s => !string.IsNullOrWhiteSpace( s ) )
 
                 WriteMenuStart( tmpMenu );
 
-                Sup.LogDebugMessage( $"Website Menu generator: Menu definition found, using the user defined menu" );
-
-                string[] MenuContents = File.ReadAllLines( $"{Sup.PathUtils}{Sup.CutilsMenuDef}", Encoding.UTF8 );
-
-                foreach ( string line in MenuContents )
+                for ( int i = 0; i < Keywords.Length; i++ )   // string thisKeyword in Keywords 
                 {
-                    if ( line.IsBlank() || line[ 0 ] == ';' ) continue;  // Allow comments
+                    thisKeyword = Keywords[ i ];
 
-                    Keywords = line.Split( charSeparators, StringSplitOptions.RemoveEmptyEntries ).ToList(); // .Where( s => !string.IsNullOrWhiteSpace( s ) )
+                    Sup.LogTraceInfoMessage( $"Website Menu generator: Generating menu {thisKeyword} on main level" );
 
-                    foreach ( string thisKeyword in Keywords )
+                    switch ( thisKeyword )
                     {
-                        if ( DefaultMenu.Any( thisKeyword.Contains ) )
-                        {
-                            Sup.LogDebugMessage( $"Website Menu generator: Generating menu {thisKeyword} on main level" );
-
-                            CurrentMainMenuItem = thisKeyword;
-
-                            switch ( thisKeyword )
-                            {
-                                case "Home": WriteMenuHome( tmpMenu ); break;
-                                case "About": WriteAboutMenu( tmpMenu ); AboutWritten = true; break;
-                                case "Reports": WriteReportsMenu( tmpMenu ); break;
-                                case "Graphs": WriteGraphsMenu( tmpMenu ); break;
-                                case "Records": WriteRecordsMenu( tmpMenu ); break;
-                                case "Extra": WriteExtraMenu( tmpMenu ); break;
-                                case "Misc": WriteMiscellaneousMenu( tmpMenu ); break;
-                                case "Toggle Dashboard": WriteToggleMenu( tmpMenu ); break;
-                                default: break;
-                            }
-                        }
-                        else
-                        {
-                            // So must be an item to add to the last main menu written
-                            Sup.LogDebugMessage( $"Website Menu generator: Skipping line starting with {thisKeyword}" );
-                        }
+                        case "Home":
+                            WriteMenuHome( tmpMenu );
+                            break;
+                        case "About":
+                            WriteAboutMenu( tmpMenu );
+                            WriteUserItems( Keywords, true, tmpMenu, ref i );
+                            tmpMenu.Append( "</ul></li>" );
+                            break;
+                        case "Reports":
+                            WriteReportsMenu( tmpMenu );
+                            WriteUserItems( Keywords, true, tmpMenu, ref i );
+                            tmpMenu.Append( "</ul></li>" );
+                            break;
+                        case "Graphs":
+                            WriteGraphsMenu( tmpMenu );
+                            WriteUserItems( Keywords, true, tmpMenu, ref i );
+                            tmpMenu.Append( "</ul></li>" );
+                            break;
+                        case "Records":
+                            WriteRecordsMenu( tmpMenu );
+                            WriteUserItems( Keywords, true, tmpMenu, ref i );
+                            tmpMenu.Append( "</ul></li>" );
+                            break;
+                        case "Extra":
+                            WriteExtraMenu( tmpMenu );
+                            WriteUserItems( Keywords, true, tmpMenu, ref i );
+                            tmpMenu.Append( "</ul></li>" );
+                            break;
+                        case "Misc":
+                            WriteMiscellaneousMenu( tmpMenu );
+                            WriteUserItems( Keywords, true, tmpMenu, ref i );
+                            tmpMenu.Append( "</ul></li>" );
+                            break;
+                        case "ToggleDashboard":
+                            WriteToggleMenu( tmpMenu );
+                            break;
+                        default:
+                            tmpMenu.Append( "      <li class='nav-item dropdown'>" +
+                                "        <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownAbout' role='button' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
+                                $"          {thisKeyword}" +
+                                "        </a>" );
+                            tmpMenu.Append( "        <ul class='dropdown-menu' aria-labelledby='navbarDropdown'>" );
+                            WriteUserItems( Keywords, false, tmpMenu, ref i );
+                            tmpMenu.Append( "</ul></li>" );
+                            break;
                     }
                 }
 
-                if ( !AboutWritten ) WriteAboutMenu( tmpMenu );
                 WriteMenuEnd( tmpMenu );
+
+                Sup.LogTraceInfoMessage( $"Website Menu generator: Menu generation finished." );
             }
             else
             {
-                Sup.LogDebugMessage( $"Website Menu generator: No Menu definition found, using standard menu" );
+                Sup.LogTraceInfoMessage( $"Website Menu generator: No Menu definition found, using standard menu" );
 
                 // No user definition found so generate the default standard menu
                 //
-                WriteMenuStart( tmpMenu );
+                WriteMenuStart( tmpMenu ); 
                 WriteMenuHome( tmpMenu );
-                WriteAboutMenu( tmpMenu );
-                WriteReportsMenu( tmpMenu );
-                WriteGraphsMenu( tmpMenu );
-                WriteRecordsMenu( tmpMenu );
-                WriteExtraMenu( tmpMenu );
-                WriteMiscellaneousMenu( tmpMenu );
+                WriteAboutMenu( tmpMenu ); tmpMenu.Append( "</ul></li>" );
+                WriteReportsMenu( tmpMenu ); tmpMenu.Append( "</ul></li>" );
+                WriteGraphsMenu( tmpMenu ); tmpMenu.Append( "</ul></li>" );
+                WriteRecordsMenu( tmpMenu ); tmpMenu.Append( "</ul></li>" );
+                WriteExtraMenu( tmpMenu ); tmpMenu.Append( "</ul></li>" );
+                WriteMiscellaneousMenu( tmpMenu ); tmpMenu.Append( "</ul></li>" );
                 WriteToggleMenu( tmpMenu );
                 WriteMenuEnd( tmpMenu );
+            }
+
+            void WriteUserItems( string[] K, bool UseDivider, StringBuilder s, ref int i)
+            {
+                const StringComparison cmp = StringComparison.OrdinalIgnoreCase;
+
+                string Destination = "";
+                string ItemName, ItemNameURL, baseName, MenuFile;
+                int ItemNumber = 0;
+                bool ItemNameIsURL = false;
+                ItemTypes thisType = ItemTypes.None;
+
+                baseName = K[ i++ ]; // Get the Menu name and advance to the first item (if any)
+
+                if ( i >= K.Length ) return;
+                if ( K[ i ].ToLower() == "item" && UseDivider ) s.AppendLine( "<div class='dropdown-divider'></div>" );
+
+                while ( K[i].ToLower() == "item" )
+                {
+                    MenuFile = $"{baseName}{ItemNumber++:00}.txt";
+                    i++;
+
+                    ItemName = K[i++];
+
+                    if (ItemName.ToLower() == "separator" )
+                    {
+                        thisType = ItemTypes.Separator;
+                        Destination = "";
+                    }
+                    else
+                    {
+                        try
+                        {
+                            while ( !Enum.IsDefined( typeof( ItemTypes ), K[ i ] ) ) ItemName += ' ' + K[ i++ ];  // Get all words before the Itemtype
+
+                            if ( ItemName.StartsWith( "../", cmp ) || ItemName.StartsWith( "./", cmp ) ||
+                                 ItemName.StartsWith( "http", cmp ) || ItemName.StartsWith( "https", cmp ) ) ItemNameIsURL = true;
+
+                            thisType = (ItemTypes) Enum.Parse( typeof( ItemTypes ), K[ i++ ], true );
+                            Destination = K[ i++ ];
+                        }
+                        catch( Exception )
+                        {
+                            Sup.LogTraceErrorMessage( $"Website Menu generator: Error generating {ItemName}" );
+                        }
+                    }
+
+                    if ( K[i++].ToLower() == "enditem" )
+                    {
+                        // Write out what we have found
+                        Sup.LogTraceInfoMessage( $"Website Menu generator: Generating {ItemName}" );
+
+                        if ( ItemNameIsURL ) { ItemNameURL = $"<img src={ItemName}>"; ItemNameIsURL = false; }
+                        else ItemNameURL = ItemName;
+
+                        switch ( thisType)
+                        {
+                            case ItemTypes.External:
+                                s.AppendLine( $"<li><a class='nav-link' href=\"{Destination}\" target='_blank'>{ItemNameURL}</a></li>" );
+                                break;
+
+                            case ItemTypes.Internal:
+                                using (StreamWriter sw = new StreamWriter($"{Sup.PathUtils}{MenuFile}") )
+                                    sw.WriteLine( $"<iframe src='{Destination}' frameborder='0' style='border: 0; width:100%; height: 75vh;'></iframe>" );
+
+                                Sup.LogTraceInfoMessage( $"Website Menu generator: Created Iframe file {MenuFile}" );
+                                Isup.UploadFile( $"{MenuFile}", $"{Sup.PathUtils}{MenuFile}" );
+
+                                s.AppendLine( $"<li class='nav-link' onclick=\"LoadUtilsReport('{MenuFile}');\">{ItemNameURL}</li>" );
+                                break;
+
+                            case ItemTypes.Report:
+                                s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('{Destination}');\">{ItemNameURL}</li>" );
+                                break;
+
+                            case ItemTypes.Image:
+                                using ( StreamWriter sw = new StreamWriter( $"{Sup.PathUtils}{MenuFile}" ) )
+                                    sw.WriteLine( $"<image src='{Destination}' style='width:100%; height:100%; border:0;'>" );
+
+                                Sup.LogTraceInfoMessage( $"Website Menu generator: Created Iframe file {MenuFile}" );
+                                Isup.UploadFile( $"{MenuFile}", $"{Sup.PathUtils}{MenuFile}" );
+
+                                s.AppendLine( $"<li class='nav-link' onclick=\"LoadUtilsReport('{MenuFile}');\">{ItemNameURL}</li>" );
+                                break;
+
+                            case ItemTypes.Separator:
+                                s.Append( "<div class='dropdown-divider'></div>" );
+                                break;
+
+                            default:
+                                Sup.LogTraceInfoMessage( $"Website Menu generator: Illegal UserItem, can't generate..." );
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        Sup.LogTraceErrorMessage( $"Website Menu generator: Error generating {ItemName} - EndItem not found" );
+                    }
+                }
+
+                i--;        // Correct for the position (we had to preview the next keyword
+                return;     // return if no more items found
             }
 
             void WriteMenuStart( StringBuilder s )
@@ -2743,9 +2870,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     $"          <li class='nav-link' data-bs-toggle='modal' data-bs-target='#CUserAbout'>{Sup.GetCUstringValue( "Website", "ThisSite", "This Site", false )}</li>" +
                     "          <li class='nav-link' data-bs-toggle='modal' data-bs-target='#CUabout'>CumulusUtils</li>" +
                     "          <li class='nav-link' data-bs-toggle='modal' data-bs-target='#CUlicense'>License</li>" +
-                    "          <li><a class='nav-link' href=\"https://cumuluswiki.org/a/Category:CumulusUtils\" target=\"_blank\">CumulusUtils Wiki</a></li>" +
-                    "        </ul>" +
-                    "      </li>" );
+                    "          <li><a class='nav-link' href=\"https://cumuluswiki.org/a/Category:CumulusUtils\" target=\"_blank\">CumulusUtils Wiki</a></li>");
 
                 return;
             }
@@ -2760,9 +2885,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     "        <ul class='dropdown-menu' aria-labelledby='navbarDropdownReports'>" +
                     "          <li class='nav-link' onclick=\"LoadUtilsReport('pwsFWI.txt', false);\">pwsFWI</li>" +
                     $"          <li class='nav-link' onclick=\"LoadUtilsReport('Yadr.txt', false);\">{Sup.GetCUstringValue( "Website", "Yadr", "Yadr", false )}</li>" +
-                    $"          <li class='nav-link' onclick=\"LoadUtilsReport('noaa.txt', false);\">{Sup.GetCUstringValue( "Website", "NOAA", "NOAA", false )}</li>" +
-                    "        </ul>" +
-                    "      </li>" );
+                    $"          <li class='nav-link' onclick=\"LoadUtilsReport('noaa.txt', false);\">{Sup.GetCUstringValue( "Website", "NOAA", "NOAA", false )}</li>" );
 
                 return;
             }
@@ -2791,10 +2914,6 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 if ( CMXutils.HasMiscGraphMenu )
                     s.Append( $"          <li class='nav-link' onclick=\"LoadUtilsReport('graphsmisc.txt', false);\">{Sup.GetCUstringValue( "Website", "MiscGraphs", "Misc Graphs", false )}</li>" );
 
-                s.Append(
-                    "        </ul>" +
-                    "      </li>" );
-
                 return;
             }
 
@@ -2808,9 +2927,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     "          <ul class='dropdown-menu' aria-labelledby='navbarDropdownRecords'>" +
                     $"           <li class='nav-link' onclick=\"LoadUtilsReport('records.txt', false);\">{Sup.GetCUstringValue( "Website", "Records", "Records", false )}</li>" +
                     $"           <li class='nav-link' onclick=\"LoadUtilsReport('top10Table.txt', false);\">{Sup.GetCUstringValue( "Website", "Top10Records", "Top 10 Records", false )}</li>" +
-                    $"           <li class='nav-link' onclick=\"LoadUtilsReport('dayrecords.txt', false);\">{Sup.GetCUstringValue( "Website", "DayRecords", "Day Records", false )}</li>" +
-                    "          </ul>" +
-                    "      </li>" );
+                    $"           <li class='nav-link' onclick=\"LoadUtilsReport('dayrecords.txt', false);\">{Sup.GetCUstringValue( "Website", "DayRecords", "Day Records", false )}</li>" );
 
                 return;
             }
@@ -2835,9 +2952,6 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     if ( CMXutils.ParticipatesSensorCommunity )
                         s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('sensorcommunity.txt', false);\">{Sup.GetCUstringValue( "Website", "SC map", "SC map", false )}</li>" );
 
-
-                    s.Append( "        </ul>" +
-                      "      </li>" );
                 }
 
                 return;
@@ -2862,9 +2976,6 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
                 if ( CMXutils.HasMeteoCamMenu )
                     s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('meteocam.txt', false);\">{Sup.GetCUstringValue( "Website", "MeteoCam", "MeteoCam", false )}</li>" );
-
-                s.Append( "        </ul>" +
-                  "      </li>" );
 
                 return;
             }

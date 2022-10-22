@@ -43,6 +43,7 @@
  *              GraphSolar.cs
  *              GraphTemp.cs
  *              GraphWind.cs
+ *              HelpTexts.cs
  *              InetSupport.cs
  *              IniFile.cs
  *              Maps.cs

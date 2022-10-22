@@ -118,10 +118,10 @@ namespace CumulusUtils
                 of.WriteLine( "markerWindArrow.setRotationOrigin('center center');" );
                 of.WriteLine( "markerWindArrow.bindTooltip('<div style=\\\'font-size:200%; text-align:left; \\\'>" +
                   $"{Sup.GetCUstringValue( "StationMap", "WindInBf", "Wind", true )}: <span id=\\\'TT1\\\'></span> Bf<br/>" +
-                  //$"{Sup.GetCUstringValue("StationMap", "Temperature", "Temperature", true)}: <span id=\\\'TT2\\\'></span> {Sup.UnitTempText[Sup.UnitConv.TempUnit]}<br/>" +
-                  //$"{Sup.GetCUstringValue("StationMap", "Barometer", "Barometer", true)}: <span id=\\\'TT3\\\'></span> {Sup.UnitPressureText[Sup.UnitConv.PressUnit]}<br/>" +
-                  //$"{Sup.GetCUstringValue("StationMap", "Humidity", "Humidity", true)}: <span id=\\\'TT4\\\'></span> %<br/>" +
-                  //$"{Sup.GetCUstringValue("StationMap", "Rain", "Rain", true)}: <span id =\\\'TT5\\\'></span> {Sup.UnitRainText[Sup.UnitConv.RainUnit]}<br/>" +
+                  $"{Sup.GetCUstringValue( "StationMap", "Temperature", "Temperature", true )}: <span id=\\\'TT2\\\'></span> {Sup.StationTemp.Text()}<br/>" +
+                  $"{Sup.GetCUstringValue( "StationMap", "Barometer", "Barometer", true )}: <span id=\\\'TT3\\\'></span> {Sup.StationPressure.Text()}<br/>" +
+                  $"{Sup.GetCUstringValue( "StationMap", "Humidity", "Humidity", true )}: <span id=\\\'TT4\\\'></span> %<br/>" +
+                  $"{Sup.GetCUstringValue( "StationMap", "Rain", "Rain", true )}: <span id =\\\'TT5\\\'></span> {Sup.StationRain.Text()}<br/>" +
                   $"</div>',{{offset: L.point(0, {RoseSize / 2}), permanent: true, direction: 'bottom'}});" ); // possibilities: right, left, top, bottom, center, auto
 
                 of.WriteLine( $"var markerStation = L.marker([{Latitude.ToString( CultureInfo.InvariantCulture )}, {Longitude.ToString( CultureInfo.InvariantCulture )}]).addTo(StationMap);" );
@@ -143,10 +143,10 @@ namespace CumulusUtils
 #endif
                 of.WriteLine( "  markerWindArrow.setRotationAngle(newAngle);" );
                 of.WriteLine( "  $('#TT1').html(beaufort);" );
-                //of.WriteLine("  $('#TT2').html(temp);");
-                //of.WriteLine("  $('#TT3').html(baro);");
-                //of.WriteLine("  $('#TT4').html(humidity);");
-                //of.WriteLine("  $('#TT5').html(rain);");
+                of.WriteLine( "  $('#TT2').html(temp);" );
+                of.WriteLine( "  $('#TT3').html(baro);" );
+                of.WriteLine( "  $('#TT4').html(humidity);" );
+                of.WriteLine( "  $('#TT5').html(rain);" );
                 of.WriteLine( "}" );
 
                 of.WriteLine( "</script>" );
