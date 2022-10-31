@@ -23,12 +23,10 @@
  */
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using FluentFTP.Helpers;
 
 namespace CumulusUtils
 {
@@ -1116,7 +1114,7 @@ namespace CumulusUtils
             {
                 chartId = "HT_" + chartId;
 
-                if (string.IsNullOrEmpty(CMXutils.ChartHelp.GetHelpText(chartId) ) )
+                if ( string.IsNullOrEmpty( CMXutils.ChartHelp.GetHelpText( chartId ) ) )
                 {
                     return ""; // No helptext present so do nothing
                 }
@@ -1139,7 +1137,7 @@ namespace CumulusUtils
                 return tmp.ToString();
             }
 
-            string GenerateChartInfoModal(string chartId, string Title)
+            string GenerateChartInfoModal( string chartId, string Title )
             {
                 chartId = "HT_" + chartId;
 
@@ -1160,7 +1158,7 @@ namespace CumulusUtils
                         $"        <h5 class='modal-title'>{Title}</h5>" +
                         "      </div>" +
                         "      <div style='text-align: left;'>" +
-                        $"        {CMXutils.ChartHelp.GetHelpText(chartId)}" +
+                        $"        {CMXutils.ChartHelp.GetHelpText( chartId )}" +
                         "      </div>" +
                         "</div>" );
                 }

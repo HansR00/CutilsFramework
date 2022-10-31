@@ -136,10 +136,10 @@ namespace CumulusUtils
 
                 string[] allLines = File.ReadAllLines( filenameCopy ); //got to use this sometime
 
+                tmp = new ExternalExtraSensorslogValue();
+
                 foreach ( string line in allLines )
                 {
-                    tmp = new ExternalExtraSensorslogValue();
-
                     string[] splitLine = line.Split( ',' );
 
                     try
@@ -176,7 +176,7 @@ namespace CumulusUtils
 
                 if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
 
-                if ( ExternalExtraSensorsValuesList.Last().ThisDate >= timeEnd || NextFileTried)
+                if ( ExternalExtraSensorsValuesList.Last().ThisDate >= timeEnd || NextFileTried )
                 {
                     Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog: Finished reading the log at {ExternalExtraSensorsValuesList.Last().ThisDate}" );
                     PeriodComplete = true;

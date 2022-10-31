@@ -4,10 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using FluentFTP.Helpers;
-using Renci.SshNet.Messages;
-using Renci.SshNet.Security;
 
 namespace CumulusUtils
 {
@@ -29,7 +26,7 @@ namespace CumulusUtils
                 {
                     // Create the slots for the fixed climate charts to be filled in by the user
                     // The slots for the compiler will be made on the fly when required by the user
-                    ht.WriteLine( "HT_DailyRain = \" \"" ); 
+                    ht.WriteLine( "HT_DailyRain = \" \"" );
                     ht.WriteLine( "HT_MonthlyRain = \" \"" );
                     ht.WriteLine( "HT_YearlyRainStats = \" \"" );
                     ht.WriteLine( "HT_YearlyMonthlyRainStats = \" \"" );
@@ -59,8 +56,8 @@ namespace CumulusUtils
 
             // Now we are sure the file exists
             // Read the file and fill the dictionary
-            string Contents = "", Key="";
-            string[] LinesArray; 
+            string Contents = "", Key = "";
+            string[] LinesArray;
             List<string> Keywords;
 
             LinesArray = File.ReadAllLines( $"{Sup.PathUtils}{Sup.CUhelptexts}", Encoding.UTF8 );
@@ -72,10 +69,10 @@ namespace CumulusUtils
 
             Contents = Regex.Replace( Contents, @"\s+", " " );
 
-            Keywords = Contents.Split( ' ' ).Where( tmp => !tmp.IsBlank( ) ).ToList();
+            Keywords = Contents.Split( ' ' ).Where( tmp => !tmp.IsBlank() ).ToList();
             int i = 0;
 
-            while ( i < Keywords.Count)
+            while ( i < Keywords.Count )
             {
                 Key = Keywords[ i++ ];
 
@@ -112,11 +109,11 @@ namespace CumulusUtils
 
         #region GetHelptext
 
-        internal string GetHelpText(string key)
+        internal string GetHelpText( string key )
         {
             string retval;
 
-            if ( Helptexts.ContainsKey( key) ) retval = Helptexts[ key ];
+            if ( Helptexts.ContainsKey( key ) ) retval = Helptexts[ key ];
             else
             {
                 Sup.LogTraceWarningMessage( $"HelpTexts unknown {key}, returning empty string" );

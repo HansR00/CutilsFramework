@@ -606,57 +606,87 @@ namespace CumulusUtils
                         // thisChart still has the value for the current chart for which we just read the EndChart keyword.
                         // This means the Info and Output keywords which may follow the EndChart still refer to the chart for which those are valid!!
 
-                        if ( CurrPosition < Keywords.Count - 1 && Keywords[ CurrPosition ].Equals( "Info", cmp ) )
-                        {
-                            thisChart.HasInfo = true;
-                            CurrPosition++;
+                        bool OutputDone = false;
 
-                            if ( Keywords[ CurrPosition++ ].Equals( "\"", cmp ) )
+                        try
+                        {
+                            while ( CurrPosition < Keywords.Count - 1 && ( Keywords[ CurrPosition ].Equals( "Info", cmp ) || Keywords[ CurrPosition ].Equals( "Output", cmp ) ) )
                             {
-                                try
+                                if ( Keywords[ CurrPosition ].Equals( "Info", cmp ) )
                                 {
-                                    while ( !Keywords[ CurrPosition ].Equals( "\"", cmp ) )
+                                    if ( thisChart.HasInfo )
                                     {
-                                        thisChart.InfoText += " " + Keywords[ CurrPosition++ ];
+                                        Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : Double Info specified on '{thisChart.Id}'." );
+                                        return null;
+                                    }
+                                    else thisChart.HasInfo = true;
+
+                                    CurrPosition++;
+
+                                    if ( Keywords[ CurrPosition++ ].Equals( "\"", cmp ) )
+                                    {
+                                        try
+                                        {
+                                            while ( !Keywords[ CurrPosition ].Equals( "\"", cmp ) )
+                                            {
+                                                thisChart.InfoText += " " + Keywords[ CurrPosition++ ];
+                                            }
+
+                                            CurrPosition++;  // Keyword next to the quote
+                                        }
+                                        catch ( Exception e ) when ( e is IndexOutOfRangeException )
+                                        {
+                                            Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : Info specified on '{thisChart.Id}' but no closing quote found." );
+                                            return null;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : Info specified on '{thisChart.Id}' but no start quote found." );
+                                        return null;
+                                    }
+                                }
+
+                                if ( CurrPosition >= Keywords.Count ) break;
+
+                                // Do the possible(!) output
+                                if ( Keywords[ CurrPosition ].Equals( "Output", cmp ) )
+                                {
+                                    if ( OutputDone )
+                                    {
+                                        Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : Double Output specified on '{thisChart.Id}'." );
+                                        return null;
+                                    }
+                                    else OutputDone = true;
+
+                                    CurrPosition++;  // Go to the filename
+
+                                    if ( AllOutputs.Count == 0 && AllCharts.Count == 0 )
+                                    {
+                                        Sup.LogTraceWarningMessage( $"Parsing User Charts Definitions : Output given for first Chart '{thisChart.Id}'. Cannot specify output for first chart" );
+                                    }
+                                    else
+                                    {
+                                        thisOutput.TheseCharts = AllCharts;
+                                        AllOutputs.Add( thisOutput );
+
+                                        AllCharts = new List<ChartDef>();
+                                        thisOutput = new OutputDef
+                                        {
+                                            Filename = Keywords[ CurrPosition ]
+                                        };
                                     }
 
-                                    CurrPosition++;  // Keyword next to the quote
+                                    CurrPosition++;  // Keyword next to the filename
                                 }
-                                catch ( Exception e ) when ( e is IndexOutOfRangeException )
-                                {
-                                    Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : Info specified on '{thisChart.Id}' but no closing quote found." );
-                                    return null;
-                                }
-                            }
-                            else
-                            {
-                                Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : Info specified on '{thisChart.Id}' but no start quote found." );
-                                return null;
-                            }
-                        }
-
-                        // Do the possible(!) output
-                        if ( CurrPosition < Keywords.Count - 1 && Keywords[ CurrPosition ].Equals( "Output", cmp ) )
+                            } // While Info or Output (the order does not matter)
+                        } // try to detect EOF
+                        catch ( Exception e )
                         {
-                            CurrPosition++;  // Go to the filename
-
-                            if ( AllOutputs.Count == 0 && AllCharts.Count == 0 )
-                            {
-                                Sup.LogTraceWarningMessage( $"Parsing User Charts Definitions : Output given for first Chart '{thisChart.Id}'. Cannot specify output for first chart" );
-                            }
-                            else
-                            {
-                                thisOutput.TheseCharts = AllCharts;
-                                AllOutputs.Add( thisOutput );
-
-                                AllCharts = new List<ChartDef>();
-                                thisOutput = new OutputDef
-                                {
-                                    Filename = Keywords[ CurrPosition ]
-                                };
-                            }
-
-                            CurrPosition++;  // Keyword next to the filename
+                            Sup.LogTraceErrorMessage( "Parsing User Charts Definitions : Unknown exception while reaching EOF. Incomplete Charts definition." );
+                            Sup.LogTraceErrorMessage( $"Exception found is: {e.Message}" );
+                            if ( e.InnerException != null ) Sup.LogTraceErrorMessage( $"InnerException found is: {e.InnerException}" );
+                            return null;
                         }
 
                         AllCharts.Add( thisChart );

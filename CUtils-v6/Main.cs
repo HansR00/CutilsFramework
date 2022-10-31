@@ -221,10 +221,8 @@ namespace CumulusUtils
                     Environment.Exit( 0 );
                 }
 
-                if ( !Directory.Exists( "utils" ) )
-                    Directory.CreateDirectory( "utils" );
-                if ( !Directory.Exists( "utils/utilslog" ) )
-                    Directory.CreateDirectory( "utils/utilslog" );
+                if ( !Directory.Exists( "utils" ) ) Directory.CreateDirectory( "utils" );
+                if ( !Directory.Exists( "utils/utilslog" ) ) Directory.CreateDirectory( "utils/utilslog" );
 
                 string[] files = Directory.GetFiles( "utils/utilslog" );
 
@@ -258,7 +256,7 @@ namespace CumulusUtils
                 Thrifty = false;
                 RunStarted = DateTime.Now;
 
-                ChartHelp = new HelpTexts(Sup);
+                ChartHelp = new HelpTexts( Sup );
 
                 ThriftyRecordsDirty = false;
                 ThriftyTop10RecordsDirty = false;

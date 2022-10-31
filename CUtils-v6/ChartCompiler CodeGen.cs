@@ -300,7 +300,7 @@ namespace CumulusUtils
                         TheCharts.AppendLine( "        type: 'all',text: 'All'}]," );
                         TheCharts.AppendLine( "      inputEnabled: false," );
 
-                        if (thisChart.Zoom == -1)
+                        if ( thisChart.Zoom == -1 )
                             TheCharts.AppendLine( "     selected: 2 }" );
                         else
                             TheCharts.AppendLine( $"     selected: {thisChart.Zoom} - 1 }}" );
@@ -308,15 +308,19 @@ namespace CumulusUtils
                     else
                     {
                         if ( thisChart.Range == PlotvarRangeType.Daily )
+                        {
                             if ( thisChart.Zoom == -1 )
                                 TheCharts.AppendLine( "      rangeSelector:{allButtonsEnabled: true, selected: 0 }" );
                             else
                                 TheCharts.AppendLine( $"      rangeSelector:{{allButtonsEnabled: true, selected: {thisChart.Zoom} - 1 }}" );
+                        }
                         else
+                        {
                             if ( thisChart.Zoom == -1 )
                                 TheCharts.AppendLine( "      rangeSelector:{allButtonsEnabled: true, selected: 4 }" );
                             else
                                 TheCharts.AppendLine( $"      rangeSelector:{{allButtonsEnabled: true, selected: {thisChart.Zoom} - 1 }}" );
+                        }
                     }
 
                     TheCharts.AppendLine( "  });" );

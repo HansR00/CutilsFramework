@@ -25,10 +25,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FluentFTP.Helpers;
 
 //
 // Remember minification: 
@@ -812,7 +810,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
                 //if ( ReplaceDecimalSeparator ) CUlibFile.Append( $"  tmpInput = tmpInput.replace(/\\./g, '{DecimalSeparator}');" );
                 // Do not replace the date separator if it is a point
-                if ( ReplaceDecimalSeparator ) 
+                if ( ReplaceDecimalSeparator )
                     CUlibFile.Append( $"  tmpInput = tmpInput.substring(0,9)  + tmpInput.substring(9).replace(/\\./g, '{DecimalSeparator}');" );
 
                 CUlibFile.Append( "" +
@@ -1155,6 +1153,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     $"    else {{ nowImage = '{backgroundImageNight}'; }}" +
                     "  }" +
                     "  else {" +
+                    $"    if ( prevImage == undefined ) nowImage = '{backgroundImageNight}';" +
                     $"    if ( date > ST.night ) {{ nowImage = '{backgroundImageNight}'; }}" +
                     $"    if ( date > ST.nightEnd ) {{ nowImage = '{backgroundImageAstronomical}'; }}" +
                     $"    if ( date > ST.nauticalDawn ) {{ nowImage = '{backgroundImageNautical}'; }}" +
@@ -2629,7 +2628,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
         #region GenerateMenu
 
-        enum ItemTypes : int { None, External, Internal, Image, Report, Separator};
+        enum ItemTypes : int { None, External, Internal, Image, Report, Separator };
 
         private string GenerateMenu()
         {
@@ -2690,9 +2689,13 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                             tmpMenu.Append( "</ul></li>" );
                             break;
                         case "Extra":
-                            WriteExtraMenu( tmpMenu );
-                            WriteUserItems( Keywords, true, tmpMenu, ref i );
-                            tmpMenu.Append( "</ul></li>" );
+                            // Prevent the menu to be generated if it is not required.
+                            if ( CMXutils.HasAirLink || CMXutils.HasExtraSensors )
+                            {
+                                WriteExtraMenu( tmpMenu );
+                                WriteUserItems( Keywords, true, tmpMenu, ref i );
+                                tmpMenu.Append( "</ul></li>" );
+                            }
                             break;
                         case "Misc":
                             WriteMiscellaneousMenu( tmpMenu );
@@ -2724,7 +2727,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
                 // No user definition found so generate the default standard menu
                 //
-                WriteMenuStart( tmpMenu ); 
+                WriteMenuStart( tmpMenu );
                 WriteMenuHome( tmpMenu );
                 WriteAboutMenu( tmpMenu ); tmpMenu.Append( "</ul></li>" );
                 WriteReportsMenu( tmpMenu ); tmpMenu.Append( "</ul></li>" );
@@ -2736,14 +2739,18 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 WriteMenuEnd( tmpMenu );
             }
 
-            void WriteUserItems( string[] K, bool UseDivider, StringBuilder s, ref int i)
+            void WriteUserItems( string[] K, bool UseDivider, StringBuilder s, ref int i )
             {
                 const StringComparison cmp = StringComparison.OrdinalIgnoreCase;
 
+                bool ItemNameIsURL = false;
+
+                int ItemNumber = 0;
+                int ItemNameLength = 20;
+
                 string Destination = "";
                 string ItemName, ItemNameURL, baseName, MenuFile;
-                int ItemNumber = 0;
-                bool ItemNameIsURL = false;
+
                 ItemTypes thisType = ItemTypes.None;
 
                 baseName = K[ i++ ]; // Get the Menu name and advance to the first item (if any)
@@ -2751,14 +2758,14 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 if ( i >= K.Length ) return;
                 if ( K[ i ].ToLower() == "item" && UseDivider ) s.AppendLine( "<div class='dropdown-divider'></div>" );
 
-                while ( K[i].ToLower() == "item" )
+                while ( K[ i ].ToLower() == "item" )
                 {
                     MenuFile = $"{baseName}{ItemNumber++:00}.txt";
                     i++;
 
-                    ItemName = K[i++];
+                    ItemName = K[ i++ ];
 
-                    if (ItemName.ToLower() == "separator" )
+                    if ( ItemName.ToLower() == "separator" )
                     {
                         thisType = ItemTypes.Separator;
                         Destination = "";
@@ -2775,38 +2782,49 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                             thisType = (ItemTypes) Enum.Parse( typeof( ItemTypes ), K[ i++ ], true );
                             Destination = K[ i++ ];
                         }
-                        catch( Exception )
+                        catch ( Exception )
                         {
                             Sup.LogTraceErrorMessage( $"Website Menu generator: Error generating {ItemName}" );
                         }
                     }
 
-                    if ( K[i++].ToLower() == "enditem" )
+                    if ( K[ i++ ].ToLower() == "enditem" )
                     {
+                        string WidthStyleString = "";
+
                         // Write out what we have found
                         Sup.LogTraceInfoMessage( $"Website Menu generator: Generating {ItemName}" );
 
                         if ( ItemNameIsURL ) { ItemNameURL = $"<img src={ItemName}>"; ItemNameIsURL = false; }
-                        else ItemNameURL = ItemName;
+                        else
+                        {
+                            ItemNameURL = ItemName;
 
-                        switch ( thisType)
+                            if ( ItemName.Length > ItemNameLength )
+                            {
+                                WidthStyleString = $"style='width:{ItemName.Length / 2}rem'";
+                                ItemNameLength = ItemName.Length;
+                            }
+                        }
+
+                        switch ( thisType )
                         {
                             case ItemTypes.External:
-                                s.AppendLine( $"<li><a class='nav-link' href=\"{Destination}\" target='_blank'>{ItemNameURL}</a></li>" );
+                                s.AppendLine( $"<li {WidthStyleString}><a class='nav-link' href=\"{Destination}\" target='_blank'>{ItemNameURL}</a></li>" );
                                 break;
 
                             case ItemTypes.Internal:
-                                using (StreamWriter sw = new StreamWriter($"{Sup.PathUtils}{MenuFile}") )
+                                using ( StreamWriter sw = new StreamWriter( $"{Sup.PathUtils}{MenuFile}" ) )
                                     sw.WriteLine( $"<iframe src='{Destination}' frameborder='0' style='border: 0; width:100%; height: 75vh;'></iframe>" );
 
                                 Sup.LogTraceInfoMessage( $"Website Menu generator: Created Iframe file {MenuFile}" );
                                 Isup.UploadFile( $"{MenuFile}", $"{Sup.PathUtils}{MenuFile}" );
 
-                                s.AppendLine( $"<li class='nav-link' onclick=\"LoadUtilsReport('{MenuFile}');\">{ItemNameURL}</li>" );
+                                s.AppendLine( $"<li class='nav-link' onclick=\"LoadUtilsReport('{MenuFile}');\" {WidthStyleString}>{ItemNameURL}</li>" );
                                 break;
 
                             case ItemTypes.Report:
-                                s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('{Destination}');\">{ItemNameURL}</li>" );
+                                s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('{Destination}');\" {WidthStyleString}>{ItemNameURL}</li>" );
                                 break;
 
                             case ItemTypes.Image:
@@ -2816,7 +2834,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                                 Sup.LogTraceInfoMessage( $"Website Menu generator: Created Iframe file {MenuFile}" );
                                 Isup.UploadFile( $"{MenuFile}", $"{Sup.PathUtils}{MenuFile}" );
 
-                                s.AppendLine( $"<li class='nav-link' onclick=\"LoadUtilsReport('{MenuFile}');\">{ItemNameURL}</li>" );
+                                s.AppendLine( $"<li class='nav-link' onclick=\"LoadUtilsReport('{MenuFile}');\" {WidthStyleString}>{ItemNameURL}</li>" );
                                 break;
 
                             case ItemTypes.Separator:
@@ -2870,7 +2888,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     $"          <li class='nav-link' data-bs-toggle='modal' data-bs-target='#CUserAbout'>{Sup.GetCUstringValue( "Website", "ThisSite", "This Site", false )}</li>" +
                     "          <li class='nav-link' data-bs-toggle='modal' data-bs-target='#CUabout'>CumulusUtils</li>" +
                     "          <li class='nav-link' data-bs-toggle='modal' data-bs-target='#CUlicense'>License</li>" +
-                    "          <li><a class='nav-link' href=\"https://cumuluswiki.org/a/Category:CumulusUtils\" target=\"_blank\">CumulusUtils Wiki</a></li>");
+                    "          <li><a class='nav-link' href=\"https://cumuluswiki.org/a/Category:CumulusUtils\" target=\"_blank\">CumulusUtils Wiki</a></li>" );
 
                 return;
             }
@@ -2934,25 +2952,21 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
             void WriteExtraMenu( StringBuilder s )
             {
-                if ( CMXutils.HasAirLink || CMXutils.HasExtraSensors )
-                {
-                    s.Append(
-                        "      <li class='nav-item dropdown'>" +
-                        "       <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownExtra' role='button' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
-                        $"         {Sup.GetCUstringValue( "Website", "Extra", "Extra", false )}" +
-                        "       </a>" +
-                        "        <ul class='dropdown-menu' aria-labelledby='navbarDropdownExtra'>" );
+                s.Append(
+                    "      <li class='nav-item dropdown'>" +
+                    "       <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownExtra' role='button' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
+                    $"         {Sup.GetCUstringValue( "Website", "Extra", "Extra", false )}" +
+                    "       </a>" +
+                    "        <ul class='dropdown-menu' aria-labelledby='navbarDropdownExtra'>" );
 
-                    if ( CMXutils.HasAirLink )
-                        s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('airlink.txt', false);\">{Sup.GetCUstringValue( "Website", "AirLink", "AirLink", false )}</li>" );
+                if ( CMXutils.HasAirLink )
+                    s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('airlink.txt', false);\">{Sup.GetCUstringValue( "Website", "AirLink", "AirLink", false )}</li>" );
 
-                    if ( CMXutils.HasExtraSensors )
-                        s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('extrasensors.txt', false);\">{Sup.GetCUstringValue( "Website", "ExtraSensors", "Extra Sensors", false )}</li>" );
+                if ( CMXutils.HasExtraSensors )
+                    s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('extrasensors.txt', false);\">{Sup.GetCUstringValue( "Website", "ExtraSensors", "Extra Sensors", false )}</li>" );
 
-                    if ( CMXutils.ParticipatesSensorCommunity )
-                        s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('sensorcommunity.txt', false);\">{Sup.GetCUstringValue( "Website", "SC map", "SC map", false )}</li>" );
-
-                }
+                if ( CMXutils.ParticipatesSensorCommunity )
+                    s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('sensorcommunity.txt', false);\">{Sup.GetCUstringValue( "Website", "SC map", "SC map", false )}</li>" );
 
                 return;
             }
