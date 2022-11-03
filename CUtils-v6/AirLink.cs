@@ -633,8 +633,9 @@ namespace CumulusUtils
             // At least it is different and therefore educational :D
             if ( WantToSeeWind )
             {
-                of.AppendLine( $"function convertToMs(data){{data.map(s => {{s[1] = s[1] * {Sup.StationWind.Convert( Sup.StationWind.Dim, WindDim.ms, 1 ).ToString( "F5", CultureInfo.InvariantCulture )} }}); " +
-                    $"return data}};" );
+                of.AppendLine( "function convertToMs(data){data.map(s => {" +
+                    $"s[1] = s[1] * {Sup.StationWind.Convert( Sup.StationWind.Dim, WindDim.ms, 1 ).ToString( "F5", inv )} " +
+                    "}); return data};" );
             }
 
 
@@ -756,7 +757,10 @@ namespace CumulusUtils
                         of.AppendLine( "        if (idx == 'wind') {" );
                         of.AppendLine( "           let convertedWindbarbData = convertToMs(resp[idx]);" );
                         of.AppendLine( $"          chart.addSeries({{name: titles[idx], xAxis: 1, color: 'black', type: 'windbarb', visible: true, " +
-                            $"dataGrouping: {{enabled: true,units: [ ['hour', [{Sup.HighChartsWindBarbSpacing()}] ] ]}}, tooltip: {{valueSuffix: ' m/s'}}, data: convertedWindbarbData }}, false);" );
+                            $"dataGrouping: {{enabled: true,units: [ ['hour', [{Sup.HighChartsWindBarbSpacing()}] ] ]}}, " );
+                        of.AppendLine( "    tooltip: {pointFormatter() {return this.series.name + ': ' + " +
+                            $"(this.value/{Sup.StationWind.Convert( Sup.StationWind.Dim, WindDim.ms, 1 ).ToString( "F5", inv )}).toFixed(1) + ' {Sup.StationWind.Text()}'}} }}," );
+                        of.AppendLine( $"data: convertedWindbarbData }}, false);" );
                         of.AppendLine( "        }" );
                         of.AppendLine( "        else {" );
                     }

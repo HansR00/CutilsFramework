@@ -285,7 +285,7 @@ namespace CumulusUtils
                     else
                         TheCharts.AppendLine( "      plotOptions: { series: {turboThreshold: 0, states: { hover: { halo: { size: 5,opacity: 0.25} } },marker: { enabled: false, states: { hover: { enabled: true, radius: 0.1} } } }, }," );
 
-                    TheCharts.AppendLine( "      tooltip: {shared: true,split: true, valueDecimals: 1, xDateFormat: '%A, %b %e, %H:%M'}," );
+                    TheCharts.AppendLine( "      tooltip: {split: true, valueDecimals: 1, xDateFormat: '%A, %b %e, %H:%M'}," );
                     TheCharts.AppendLine( "      series:[]," );
 
                     if ( thisChart.Range == PlotvarRangeType.Recent || thisChart.Range == PlotvarRangeType.Extra )
@@ -480,6 +480,9 @@ namespace CumulusUtils
 
                     if ( thisChart.HasWindBarbs )
                     {
+                        // Since the data is in m/s in the WindBarbData array it has to be converted back for the tooltip
+                        // 
+
                         AddSeriesJavascript.AppendLine( "  thisChart.addSeries({ " );
                         AddSeriesJavascript.AppendLine( "    name: 'WindBarbs'," );
                         AddSeriesJavascript.AppendLine( "    xAxis: 1," );
@@ -487,7 +490,9 @@ namespace CumulusUtils
                         AddSeriesJavascript.AppendLine( "    type: 'windbarb'," );
                         AddSeriesJavascript.AppendLine( "    visible: true," );
                         AddSeriesJavascript.AppendLine( $"    dataGrouping: {{enabled: true,units: [ ['hour', [{Sup.HighChartsWindBarbSpacing()}] ] ]}}, " );
-                        AddSeriesJavascript.AppendLine( "    tooltip:{valueSuffix: ' m/s'}," );
+                        AddSeriesJavascript.AppendLine( $"    tooltip: {{pointFormatter() {{return this.series.name + ': ' + " +
+                            $"(this.value/{Sup.StationWind.Convert( Sup.StationWind.Dim, WindDim.ms, 1 ).ToString( "F5", CultureInfo.InvariantCulture )}).toFixed(1) + " +
+                            $"' {Sup.StationWind.Text()}'}} }}," );
                         AddSeriesJavascript.AppendLine( "    data: WindBarbData" );
                         AddSeriesJavascript.AppendLine( "  }, false);" );
                     }
