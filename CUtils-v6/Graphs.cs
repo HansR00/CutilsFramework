@@ -28,6 +28,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
+#if TIMING
+using System.Diagnostics;
+#endif
+
 namespace CumulusUtils
 {
     partial class Graphx : IDisposable

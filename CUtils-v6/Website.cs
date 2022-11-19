@@ -55,6 +55,8 @@ namespace CumulusUtils
 
     class Website
     {
+        const StringComparison cmp = StringComparison.OrdinalIgnoreCase;
+
         readonly private string[] Package = new string[] {"index.html", "cumulusutils.js","cumuluscharts.txt","gauges.js","HighchartsDefaults.js","HighchartsLanguage.js",
                                      "suncalc.js","tween.min.js", "steelseries.min.js","RGraph.rose.js","RGraph.common.core.js","language.js",
                                      "gauges-ss.css"};
@@ -67,6 +69,7 @@ namespace CumulusUtils
         private readonly float Latitude;
         private readonly float Longitude;
         private readonly int Altitude;
+        private readonly bool AltitudeInFeet;
         private readonly bool ShowSolar;
         private readonly bool ShowUV;
         private readonly bool DoGoogleStats;
@@ -84,14 +87,15 @@ namespace CumulusUtils
             Latitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Latitude", "" ), CultureInfo.InvariantCulture );
             Longitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Longitude", "" ), CultureInfo.InvariantCulture );
             Altitude = Convert.ToInt32( Sup.GetCumulusIniValue( "Station", "Altitude", "" ), CultureInfo.InvariantCulture );
+            AltitudeInFeet = Sup.GetCumulusIniValue( "Station", "AltitudeInFeet", "" ) == "1";
 
             // ShowSolar and HasSolar are the same for now, but it may be different as HasSolar determines whether there is a sensor, ShowSolar is to show it on screen....
             // Difficult. May change into one variable (which must be global then: also used in Graphs
             ShowSolar = CMXutils.HasSolar;
-            ShowUV = Sup.GetUtilsIniValue( "Website", "ShowUV", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
+            ShowUV = Sup.GetUtilsIniValue( "Website", "ShowUV", "true" ).Equals( "true", cmp );
 
             DoGoogleStats = !string.IsNullOrEmpty( Sup.GetUtilsIniValue( "Website", "GoogleStatsId", "" ) );
-            PermitGoogleOptOut = Sup.GetUtilsIniValue( "Website", "PermitGoogleOptout", "false" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
+            PermitGoogleOptOut = Sup.GetUtilsIniValue( "Website", "PermitGoogleOptout", "false" ).Equals( "true", cmp );
 
             PanelsConfiguration = new string[ 24 ]
             {
@@ -157,7 +161,7 @@ namespace CumulusUtils
             // USed in the Footer generation
             thisIPC = new CmxIPC( Sup, Isup );
             thisCMXInfo = await thisIPC.GetCMXInfoAsync();
-            NewVersionAvailable = thisCMXInfo.NewBuildAvailable?.Equals( "1", StringComparison.InvariantCultureIgnoreCase ) ?? false;
+            NewVersionAvailable = thisCMXInfo.NewBuildAvailable?.Equals( "1" ) ?? false;
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}index.html", false, Encoding.UTF8 ) )
             {
@@ -268,9 +272,10 @@ namespace CumulusUtils
                     $".CUTable a:hover {{color: {Sup.GetUtilsIniValue( "Website", "ColorFooterLinkHover", "OrangeRed" )};}} " +
                     $".keytext {{color: {Sup.GetUtilsIniValue( "Website", "ColorReportviewText", "Black" )};}} " +
                     $".fwi_key {{color: {Sup.GetUtilsIniValue( "Website", "ColorReportviewText", "Black" )};}}" +
-                    //                    $"#chartcontainer {{min-height:{Convert.ToInt32( Sup.GetUtilsIniValue( "General", "ChartContainerHeight", "650" ) )};margin-top: 10px;margin-bottom: 5px;}} " +
                     "</style>" +
-                    "</head>" +
+                    "</head>" );
+
+                indexFile.Append( 
                     $"<body style='background-color: {Sup.GetUtilsIniValue( "Website", "ColorBodyBackground", "white" )};'>" + //whitesmoke
                     "<div class='container-fluid border' style='padding: 5px'>" +
                     "<div class='col-sm-12 CUTitle'>" +
@@ -278,14 +283,14 @@ namespace CumulusUtils
                     $"<td style='width:20%;text-align:left'><span onclick=\"LoadUtilsReport('pwsFWI.txt', false);\">{Sup.GetUtilsIniValue( "pwsFWI", "CurrentPwsFWI", "" )}</span><br/>" +
                     $"{Sup.GetUtilsIniValue( "Website", "HeaderLeftText", "" )}</td>" +
                     "  <td style='width:60%;text-align:center'>" +
-                   $"  <h2 style = 'padding:10px' >{Sup.GetCumulusIniValue( "Station", "LocName", "" )} {Sup.GetUtilsIniValue( "Website", "SiteTitleAddition", "" )}</h2 > " +
-                   $"   <h5 style='padding:2px'>" +
-                   $"     {Sup.GetCUstringValue( "Website", "Latitude", "Latitude", false )}: {Latitude:F4}  " +
-                   $"     {Sup.GetCUstringValue( "Website", "Longitude", "Longitude", false )}: {Longitude:F4} " +
-                   $"     {Sup.GetCUstringValue( "Website", "Altitude", "Altitude", false )}: {Altitude} m" +
-                   $"   </h5>" +
+                    $"  <h2 style = 'padding:10px' >{Sup.GetCumulusIniValue( "Station", "LocName", "" )} {Sup.GetUtilsIniValue( "Website", "SiteTitleAddition", "" )}</h2 > " +
+                    $"   <h5 style='padding:2px'>" +
+                    $"     {Sup.GetCUstringValue( "Website", "Latitude", "Latitude", false )}: {Latitude:F4}  " +
+                    $"     {Sup.GetCUstringValue( "Website", "Longitude", "Longitude", false )}: {Longitude:F4} " +
+                    $"     {Sup.GetCUstringValue( "Website", "Altitude", "Altitude", false )}: {Altitude} {(AltitudeInFeet ? "ft" : "m")}" +
+                    $"   </h5>" +
                     "</td>" +
-                   $"  <td style='width:20%;text-align:right'>{Sup.GetUtilsIniValue( "Website", "HeaderRightText", "" )}</td>" +
+                    $"  <td style='width:20%;text-align:right'>{Sup.GetUtilsIniValue( "Website", "HeaderRightText", "" )}</td>" +
                     "</tr></table>" +
                     "</div >" );
 
@@ -510,15 +515,15 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
                 // Do all includes deferred apart from the leaflet because of the rotate function included later on
                 indexFile.Append(
-                    "<script defer src='https://cdnjs.cloudflare.com/ajax/libs/d3/5.15.1/d3.min.js'></script>" +
-                    "<script defer  src='https://code.highcharts.com/stock/highstock.js'></script>" +
+                    "<script src='https://code.highcharts.com/stock/highstock.js'></script>" +
+                    "<script src='https://code.highcharts.com/stock/modules/windbarb.js'></script>" +
                     "<script defer  src=\"https://code.highcharts.com/stock/highcharts-more.js\"></script>" +
                     "<script defer src=\"https://code.highcharts.com/stock/indicators/indicators.js\"></script>" +
                     "<script defer  src=\"https://code.highcharts.com/stock/modules/heatmap.js\"></script>" +
-                    "<script defer  src='https://code.highcharts.com/stock/modules/windbarb.js'></script>" +
                     "<script defer src='https://code.highcharts.com/modules/exporting.js'></script>" +
                     "<script defer src='https://code.highcharts.com/modules/export-data.js'></script>" +
                     "<script defer src='https://code.highcharts.com/modules/accessibility.js'></script>" +
+                    "<script defer src='https://cdnjs.cloudflare.com/ajax/libs/d3/5.15.1/d3.min.js'></script>" +
                     "" );
 
                 if ( Graphx.UseHighchartsBoostModule )
@@ -1696,7 +1701,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                       "tooltip:{valueSuffix:'°'+config.temp.units,valueDecimals:config.temp.decimals,xDateFormat:'%A, %b %e, %H:%M'}," +
                       $"series:[]," +
                       "rangeSelector:{buttons:[{count:6,type:\"hour\",text:\"6h\"},{count:12,type:\"hour\",text:\"12h\"},{type:\"all\",text:\"All\"}],inputEnabled:false}};" +
-                      "chart=new Highcharts.StockChart(t);chart.showLoading();" +
+                      "chart=new Highcharts.stockChart(t);chart.showLoading();" +
                       "" +
                       "$.ajax({" +
                      $"  url:\"{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}tempdata.json\"," +
@@ -1781,7 +1786,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                       "rangeSelector:{ buttons:[{count:6,type:'hour',text:'6h'},{count:12,type:'hour',text:'12h'},{type:'all',text:'All'}],inputEnabled:false}" +
                       "};" +
                       "" +
-                      "chart=new Highcharts.StockChart(n);chart.showLoading();" +
+                      "chart=new Highcharts.stockChart(n);chart.showLoading();" +
                       "" +
                       "$.ajax({" +
                      $"  url:'{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}pressdata.json'," +
@@ -1844,7 +1849,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                      "  }" +
                      "]," +
                      "rangeSelector:{buttons:[{count:6,type:'hour',text:'6h'},{count:12,type:'hour',text:'12h'},{type:'all',text:'All'}],inputEnabled:false}};" +
-                     "chart=new Highcharts.StockChart(n);chart.showLoading();" +
+                     "chart=new Highcharts.stockChart(n);chart.showLoading();" +
                      "" +
                      "$.ajax({" +
                     $"  url:'{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}wdirdata.json'," +
@@ -1897,7 +1902,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                      "  }" +
                      "]," +
                      "rangeSelector:{buttons:[{count:6,type:'hour',text:'6h'},{count:12,type:'hour',text:'12h'},{type:'all',text:'All'}],inputEnabled:false}};" +
-                     "chart=new Highcharts.StockChart(n);chart.showLoading();" +
+                     "chart=new Highcharts.stockChart(n);chart.showLoading();" +
                      "" +
                      "$.ajax({" +
                     $"  url:'{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}winddata.json'," +
@@ -1954,7 +1959,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                      "  }" +
                      "]," +
                      "rangeSelector:{buttons:[{count:6,type:'hour',text:'6h'},{count:12,type:'hour',text:'12h'},{type:'all',text:'All'}],inputEnabled:false}};" +
-                     "chart=new Highcharts.StockChart(n);chart.showLoading();" +
+                     "chart=new Highcharts.stockChart(n);chart.showLoading();" +
                      "" +
                      "$.ajax({" +
                     $"  url:'{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}raindata.json'," +
@@ -1996,7 +2001,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                      "tooltip:{valueSuffix:'%',valueDecimals:config.hum.decimals,xDateFormat:'%A, %b %e, %H:%M'}," + // shared:true, crosshairs: true,
                      "series:[]," +
                      "rangeSelector:{buttons:[{count:6,type:'hour',text:'6h'},{count:12,type:'hour',text:'12h'},{type:'all',text:'All'}],inputEnabled:false}};" +
-                     "chart=new Highcharts.StockChart(n);chart.showLoading();" +
+                     "chart=new Highcharts.stockChart(n);chart.showLoading();" +
                      "" +
                      "$.ajax({" +
                     $"  url:'{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}humdata.json'," +
@@ -2085,7 +2090,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                      "  }" +
                      "]," +
                      "rangeSelector:{buttons:[{count:6,type:\"hour\",text:\"6h\"},{count:12,type:\"hour\",text:\"12h\"},{type:\"all\",text:\"All\"}],inputEnabled:false}};" +
-                     "chart=new Highcharts.StockChart(n);chart.showLoading();" +
+                     "chart=new Highcharts.stockChart(n);chart.showLoading();" +
                      "" +
                      "$.ajax({" +
                     $"  url:'{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}solardata.json'," +
@@ -2235,7 +2240,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                      $"  {{name:\"{Sup.GetCUstringValue( "Website", "MaxTemp", "Max Temp", true )}\",color:'{Sup.GetUtilsIniValue( "Website", "HomeGraphDailyTempMaxColor", "#ED561B" )}'}} " +
                      "]};" +
                      "" +
-                     "chart=new Highcharts.StockChart(t);chart.showLoading();" +
+                     "chart=new Highcharts.stockChart(t);chart.showLoading();" +
                      "" +
                      "$.ajax({" +
                     $"  url:'{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}dailytemp.json'," +
@@ -2741,8 +2746,6 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
             void WriteUserItems( string[] K, bool UseDivider, StringBuilder s, ref int i )
             {
-                const StringComparison cmp = StringComparison.OrdinalIgnoreCase;
-
                 bool ItemNameIsURL = false;
 
                 int ItemNumber = 0;

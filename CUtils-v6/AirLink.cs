@@ -721,7 +721,7 @@ namespace CumulusUtils
                     of.AppendLine( "    inputEnabled: false" );
                     of.AppendLine( "  }" );
                     of.AppendLine( "};" );
-                    of.AppendLine( "let chart = new Highcharts.StockChart(t);" );
+                    of.AppendLine( "let chart = new Highcharts.stockChart(t);" );
                     of.AppendLine( "chart.showLoading();" );
                     of.AppendLine( "$.ajax({" );
                     of.AppendLine( $"  url: 'airlinkdata{InOut}{thisConc}.json', " ); // Note this is always the CU directory, never the CumulusRealTimeLocation

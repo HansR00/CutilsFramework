@@ -52,7 +52,7 @@ namespace CumulusUtils
     public class CuSupport : IDisposable
     {
         // Is it a version number beta shown at users?
-        const string beta = "";
+        const string beta = "beta 1";
 
         #region declarations
         public Wind StationWind { get; set; }
@@ -155,7 +155,7 @@ namespace CumulusUtils
             InitLogging();
 
             StationWind = new Wind( (WindDim) Ini.GetValue( "Station", "WindUnit", 2 ) );                    // default does not count: comes from CMX, for me km/h
-            StationPressure = new Pressure( (PressureDim) Ini.GetValue( "Station", "PressUnit", 1 ) );       // default does not count: comes from CMX, for me hPa
+            StationPressure = new Pressure( (PressureDim) Ini.GetValue( "Station", "PressureUnit", 1 ) );       // default does not count: comes from CMX, for me hPa
             StationRain = new Rain( (RainDim) Ini.GetValue( "Station", "RainUnit", 0 ) );                    // default does not count: comes from CMX, for me mm
             StationTemp = new Temp( (TempDim) Ini.GetValue( "Station", "TempUnit", 0 ) );                    // default does not count: comes from CMX, for me C
             StationDistance = new Distance( (DistanceDim) Ini.GetValue( "Station", "WindUnit", 2 ) );

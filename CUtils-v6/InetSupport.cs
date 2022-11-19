@@ -557,7 +557,13 @@ namespace CumulusUtils
             // Note: I use 'using' because it is easier and it gets only called for UserReports, MAps and yourweather.co.uk so 
             //       there is no risk - I don't see a risk - of socket exhaustion
             //
-            using ( HttpClient GetClient = new HttpClient() )
+            HttpClientHandler clientHandler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = ( sender, cert, chain, sslPolicyErrors ) => { return true; }
+            };
+
+            using ( HttpClient GetClient = new HttpClient( clientHandler, true ) )
+            //using ( HttpClient GetClient = new HttpClient() )
             {
                 try
                 {
@@ -592,13 +598,13 @@ namespace CumulusUtils
             // https://stackoverflow.com/questions/52939211/the-ssl-connection-could-not-be-established
 
             // This does no longer seem necessary:
-            //HttpClientHandler clientHandler = new HttpClientHandler
-            //{
-            //    ServerCertificateCustomValidationCallback = ( sender, cert, chain, sslPolicyErrors ) => { return true; }
-            //};
+            HttpClientHandler clientHandler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = ( sender, cert, chain, sslPolicyErrors ) => { return true; }
+            };
 
-            //using ( HttpClient PostClient = new HttpClient( clientHandler, true ) )
-            using ( HttpClient PostClient = new HttpClient() )
+            using ( HttpClient PostClient = new HttpClient( clientHandler, true ) )
+            //using ( HttpClient PostClient = new HttpClient() )
             {
                 Sup.LogTraceInfoMessage( $"PostUrlData Calling PostAsync" );
 

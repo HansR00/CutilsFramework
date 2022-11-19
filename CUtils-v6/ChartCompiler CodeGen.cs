@@ -253,7 +253,7 @@ namespace CumulusUtils
                     TheCharts.AppendLine( $"function do{thisChart.Id}() {{" );
                     TheCharts.AppendLine( $"  console.log('Creating chart: {thisChart.Title}');" );
 
-                    TheCharts.AppendLine( "  chart = Highcharts.StockChart('chartcontainer', { title: {" );
+                    TheCharts.AppendLine( "  chart = Highcharts.stockChart('chartcontainer', { title: {" );
                     TheCharts.Append( $" text: '{thisChart.Title}'" );
                     if ( thisChart.HasWindBarbs && !thisChart.WindBarbsBelow ) TheCharts.Append( ", margin: 35" );
                     TheCharts.AppendLine( "}," );
@@ -663,11 +663,14 @@ namespace CumulusUtils
                 }
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.Pressure ) && !AxisSet.HasFlag( AxisType.Pressure ) )
                 {
+                    int NrOfDecimals = Sup.StationPressure.Dim == PressureDim.inchHg ? 2 : 0;
+
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Pressure", "Pressure", true )} ({thisPlotvar.Unit})'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( "allowDecimals: false," );
-                    buf.Append( $"softMin: {MinPressure}, softMax: {MaxPressure}," );
-                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}," : "labels:{align: 'right',x: -5, y: -2}" )}" );
+                    buf.Append( $"softMin: {Sup.StationPressure.Format(MinPressure)}, softMax: {Sup.StationPressure.Format(MaxPressure)}," );
+                    buf.Append( $"labels: {{ formatter: function () {{return Highcharts.numberFormat(this.value, {NrOfDecimals}, '.', '');}}, " +
+                        $"{( opposite ? "align: 'left',x: 5,y: -2}" : "align: 'right',x: -5, y: -2}" )}" );
                     AxisSet |= AxisType.Pressure;
                 }
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.Rain ) && !AxisSet.HasFlag( AxisType.Rain ) )

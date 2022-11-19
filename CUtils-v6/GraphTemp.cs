@@ -475,8 +475,10 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "    [0.8, '#ff4d4d']," );
             thisBuffer.AppendLine( "    [1, '#ff0000']" );
             thisBuffer.AppendLine( "  ]," );
-            thisBuffer.AppendLine( "  min: -20," );
-            thisBuffer.AppendLine( "  max: 50," );
+
+            thisBuffer.AppendLine( $"  min: {Sup.StationTemp.Convert( TempDim.celsius, Sup.StationTemp.Dim, -20.0 )}," );
+            thisBuffer.AppendLine( $"  max: {Sup.StationTemp.Convert( TempDim.celsius, Sup.StationTemp.Dim, 50.0 )}," );
+
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "series: [{" );
             thisBuffer.AppendLine( "  boostThreshold: 100," );
@@ -802,6 +804,7 @@ namespace CumulusUtils
 
         //  // May want see:
         //  // https://stackoverflow.com/questions/17821828/calculating-heat-map-colours
+        //  // https://javascript.plainenglish.io/creating-color-gradients-for-heat-maps-with-vanilla-javascript-c8d62bdd648e
         //  // Changed to adjust for a max/min value
     }
 }
