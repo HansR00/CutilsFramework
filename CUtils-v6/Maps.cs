@@ -329,7 +329,7 @@ namespace CumulusUtils
 
                     // Remove an existing entry (only one, if more than the old one will disappear eventually by timing out
                     tmp = root.Descendants( "Station" ).Where( x => x.Element( "Name" ).Value.Equals( thisName ) ).FirstOrDefault();
-                    if ( tmp != null ) tmp.Remove();
+                    tmp?.Remove();
 
                     root.Add( thisStation );
                 }

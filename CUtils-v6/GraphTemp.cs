@@ -476,8 +476,16 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "    [1, '#ff0000']" );
             thisBuffer.AppendLine( "  ]," );
 
-            thisBuffer.AppendLine( $"  min: {Sup.StationTemp.Convert( TempDim.celsius, Sup.StationTemp.Dim, -20.0 )}," );
-            thisBuffer.AppendLine( $"  max: {Sup.StationTemp.Convert( TempDim.celsius, Sup.StationTemp.Dim, 50.0 )}," );
+            if (Sup.StationTemp.Dim == TempDim.celsius)
+            {
+                thisBuffer.AppendLine( $"  min: -20," );
+                thisBuffer.AppendLine( $"  max: 50," );
+            }
+            else // Fahrenheit
+            {
+                thisBuffer.AppendLine( $"  min: 0," );
+                thisBuffer.AppendLine( $"  max: 122," );
+            }
 
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "series: [{" );

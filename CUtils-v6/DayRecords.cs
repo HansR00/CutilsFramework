@@ -258,7 +258,6 @@ namespace CumulusUtils
                                   ? "style=\"color: Red\""
                                   : "";
                                 of.WriteLine( $"<td class=\"reportttl\"><table class=\"CUtable\">" );
-                                ;
                                 of.WriteLine( $"<tr><td {HighlightFormat}>{Sup.StationTemp.Format( thisEntry.MaxTemp )} ({thisEntry.ThisDate.Year})</td></tr>" );
 
                                 // Do LowHighTemp

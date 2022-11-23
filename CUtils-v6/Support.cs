@@ -52,7 +52,7 @@ namespace CumulusUtils
     public class CuSupport : IDisposable
     {
         // Is it a version number beta shown at users?
-        const string beta = "beta 1";
+        const string beta = "";
 
         #region declarations
         public Wind StationWind { get; set; }
@@ -412,14 +412,17 @@ namespace CumulusUtils
 
             bool UseHighchartsBoostModule = GetUtilsIniValue( "Graphs", "UseHighchartsBoostModule", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
 
-            sb.AppendLine( "<script src='https://code.highcharts.com/stock/highstock.js'></script>" );
-            sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/highcharts-more.js\"></script>" );
-            sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/indicators/indicators.js\"></script>" );
-            sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/modules/exporting.js\" ></script>" );
-            sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/modules/heatmap.js\"></script>" );
-            sb.AppendLine( "<script src='https://code.highcharts.com/stock/modules/windbarb.js'></script>" );
+            sb.AppendLine( "<script src='https://code.highcharts.com/stock/9.1.0/highstock.js'></script>" );
+            sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/9.1.0/highcharts-more.js\"></script>" );
+            sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/9.1.0/indicators/indicators.js\"></script>" );
+            sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/9.1.0/modules/exporting.js\" ></script>" );
+            sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/9.1.0/modules/heatmap.js\"></script>" );
+            sb.AppendLine( "<script src='https://code.highcharts.com/stock/9.1.0/modules/windbarb.js'></script>" );
+            sb.AppendLine( "<script defer src='https://code.highcharts.com/9.1.0/modules/accessibility.js'></script>" );
+
             if ( UseHighchartsBoostModule )
-                sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/modules/boost.js\"></script>" );
+                sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/9.1.0/modules/boost.js\"></script>" );
+
             sb.AppendLine( "  <script src='lib/HighchartsLanguage.js'></script>" );
             sb.AppendLine( "  <script src='lib/HighchartsDefaults.js'></script>" );
 

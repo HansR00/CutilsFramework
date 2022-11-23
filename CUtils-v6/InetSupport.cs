@@ -657,10 +657,8 @@ namespace CumulusUtils
                 if ( disposing )
                 {
                     // TODO: dispose managed state (managed objects).
-                    if ( clientFluentFTP != null )
-                        clientFluentFTP.Dispose();
-                    if ( clientRenci != null )
-                        clientRenci.Dispose();
+                    clientFluentFTP?.Dispose();
+                    clientRenci?.Dispose();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.

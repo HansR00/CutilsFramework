@@ -162,8 +162,7 @@ namespace CumulusUtils
                 finally
                 {
                     // *** Cleanup: close file ***
-                    if ( sr != null )
-                        sr.Dispose();
+                    sr?.Dispose();
                     sr = null;
                     fs.Close();
                 }

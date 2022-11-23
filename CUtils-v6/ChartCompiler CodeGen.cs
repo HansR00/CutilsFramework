@@ -25,7 +25,31 @@
  *              https://www.highcharts.com/docs/chart-and-series-types/chart-types
  *              https://stackoverflow.com/questions/1232040/how-do-i-empty-an-array-in-javascript
  *              
- *              
+ * 
+ * Highcharts date/time format specifiers (https://api.highcharts.com/class-reference/Highcharts.Time) :
+ * 
+ *        * Supported format keys:
+ *
+ *        %a: Short weekday, like 'Mon'
+ *        %A: Long weekday, like 'Monday'
+ *        %d: Two digit day of the month, 01 to 31
+ *        %e: Day of the month, 1 through 31
+ *        %w: Day of the week, 0 through 6
+ *        %b: Short month, like 'Jan'
+ *        %B: Long month, like 'January'
+ *        %m: Two digit month number, 01 through 12
+ *        %y: Two digits year, like 09 for 2009
+ *        %Y: Four digits year, like 2009
+ *        %H: Two digits hours in 24h format, 00 through 23
+ *        %k: Hours in 24h format, 0 through 23
+ *        %I: Two digits hours in 12h format, 00 through 11
+ *        %l: Hours in 12h format, 1 through 12
+ *        %M: Two digits minutes, 00 through 59
+ *        %p: Upper case AM or PM
+ *        %P: Lower case AM or PM
+ *        %S: Two digits seconds, 00 through 59
+ *        %L: Milliseconds (naming from Ruby)
+ *
  */
 using System;
 using System.Collections.Generic;
@@ -278,14 +302,22 @@ namespace CumulusUtils
                     TheCharts.AppendLine( "      legend:{enabled: true}," );
 
                     if ( thisChart.HasScatter )
+                    {
                         TheCharts.AppendLine( "      plotOptions: { scatter: {cursor: 'pointer'," +
                             $"{( Graphx.UseHighchartsBoostModule ? "boostThreshold: 200," : "" )} lineWidth:0," +
                             $"marker: {{radius: {thisChart.PlotVars.First().LineWidth} }}, " +
-                            "}}," );  //  states:{hover:{enabled: false},select:{enabled: false},normal:{enabled: false}}
+                            "}}," );
+                        TheCharts.AppendLine( "      tooltip: { xDateFormat: '%A, %b %e %H:%M', " +
+                            "pointFormatter() {return this.series.name + ': ' + this.y}," +
+                            "headerFormat: '{point.key}' }," );
+                    }
                     else
-                        TheCharts.AppendLine( "      plotOptions: { series: {turboThreshold: 0, states: { hover: { halo: { size: 5,opacity: 0.25} } },marker: { enabled: false, states: { hover: { enabled: true, radius: 0.1} } } }, }," );
+                    {
+                        TheCharts.AppendLine( "      plotOptions: { series: {turboThreshold: 0, states: { hover: { halo: { size: 5,opacity: 0.25} } }," +
+                            "marker: { enabled: false, states: { hover: { enabled: true, radius: 0.1} } } }, }," );
+                        TheCharts.AppendLine( "      tooltip: {split: true, valueDecimals: 1, xDateFormat: '%A, %b %e, %H:%M'}," );
+                    }
 
-                    TheCharts.AppendLine( "      tooltip: {split: true, valueDecimals: 1, xDateFormat: '%A, %b %e, %H:%M'}," );
                     TheCharts.AppendLine( "      series:[]," );
 
                     if ( thisChart.Range == PlotvarRangeType.Recent || thisChart.Range == PlotvarRangeType.Extra )
@@ -667,8 +699,8 @@ namespace CumulusUtils
 
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Pressure", "Pressure", true )} ({thisPlotvar.Unit})'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
-                    buf.Append( "allowDecimals: false," );
-                    buf.Append( $"softMin: {Sup.StationPressure.Format(MinPressure)}, softMax: {Sup.StationPressure.Format(MaxPressure)}," );
+                    _ = Sup.StationPressure.Dim == PressureDim.inchHg ? buf.Append( "allowDecimals: true," ) : buf.Append( "allowDecimals: false," );
+                    buf.Append( $"softMin: {Sup.StationPressure.Format( MinPressure )}, softMax: {Sup.StationPressure.Format( MaxPressure )}," );
                     buf.Append( $"labels: {{ formatter: function () {{return Highcharts.numberFormat(this.value, {NrOfDecimals}, '.', '');}}, " +
                         $"{( opposite ? "align: 'left',x: 5,y: -2}" : "align: 'right',x: -5, y: -2}" )}" );
                     AxisSet |= AxisType.Pressure;

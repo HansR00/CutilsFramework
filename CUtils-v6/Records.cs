@@ -32,22 +32,23 @@ namespace CumulusUtils
 {
     internal class Records
     {
-        private readonly CuSupport Sup;
+        readonly string[] m = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };  //Culture independent, just strings to compare
+        readonly CuSupport Sup;
 
-        private enum MeasurementRecords { Tmax, Tmin, Rrate, Rhour, Rday, Rmonth, Ryear, Wgust, Wrun, Waverage, Plow, Phigh };
+        enum MeasurementRecords { Tmax, Tmin, Rrate, Rhour, Rday, Rmonth, Ryear, Wgust, Wrun, Waverage, Plow, Phigh };
 
-        private int NrOfYears;
+        int NrOfYears;
 
-        private DayfileValue[] RecordsArray;
-        private DayfileValue[][] YearRecords;
-        private DayfileValue[][] MonthlyRecords;
+        DayfileValue[] RecordsArray;
+        DayfileValue[][] YearRecords;
+        DayfileValue[][] MonthlyRecords;
 
-        private int[] MonthsNotPresentYearMin;
-        private int[] MonthsNotPresentYearMax;
-        private int[] MonthsNotPresentAllYears;
-        private readonly int[] tmpIntArray = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
+        int[] MonthsNotPresentYearMin;
+        int[] MonthsNotPresentYearMax;
+        int[] MonthsNotPresentAllYears;
+        readonly int[] tmpIntArray = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
 
-        private readonly DateTime Yesterday = DateTime.Today.AddDays( -1 );
+        readonly DateTime Yesterday = DateTime.Today.AddDays( -1 );
 
         public Records( CuSupport s )
         {
@@ -100,24 +101,19 @@ namespace CumulusUtils
                 RecordsArray = new DayfileValue[ Enum.GetNames( typeof( MeasurementRecords ) ).Length ];
                 YearRecords[ count ] = RecordsArray;
 
-                if ( count == 0 )
-                    yearlist = Thislist;
+                if ( count == 0 ) yearlist = Thislist;
                 else
                 {
                     // NOTE: yearlist (and monthlist further down) change actively when the thisyear variable changes, no need to define
                     //       the query again. Same for i in the monthlist. For performance gain, just the if statement is made!
                     thisYear++;
-                    if ( count == 1 )
-                        yearlist = Thislist.Where( x => x.ThisDate.Year == thisYear );
+                    if ( count == 1 ) yearlist = Thislist.Where( x => x.ThisDate.Year == thisYear );
                 }
 
-                if ( yearlist.Count() == 0 )
-                    continue;
+                if ( yearlist.Count() == 0 ) continue;
 
-                if ( count == 0 )
-                    Sup.LogTraceInfoMessage( $"Generate Records for AllTime" );
-                else
-                    Sup.LogTraceInfoMessage( $"Generate Records for {thisYear}" );
+                if ( count == 0 ) Sup.LogTraceInfoMessage( $"Generate Records for AllTime" );
+                else Sup.LogTraceInfoMessage( $"Generate Records for {thisYear}" );
 
                 tmp = yearlist.Max( y => y.MaxTemp );
                 RecordsArray[ (int) MeasurementRecords.Tmax ] = yearlist.Where( x => x.MaxTemp == tmp ).First(); //Thislist.Max(x => x.MaxTemp);
@@ -146,7 +142,6 @@ namespace CumulusUtils
 
                 if ( CMXutils.Thrifty && ( count == 0 || CMXutils.RunStarted.Year == thisYear ) ) // Check for alltime record or the current record 
                 {
-                    //    private enum MeasurementRecords { Tmax, Tmin, Rrate, Rhour, Rday, Rmonth, Ryear, Wgust, Wrun, Waverage,Plow, Phigh};
                     for ( int i = 0; i < Enum.GetNames( typeof( MeasurementRecords ) ).Length; i++ )
                     {
                         if ( RecordsArray[ i ].ThisDate.Date == Yesterday.Date )
@@ -154,7 +149,7 @@ namespace CumulusUtils
                             CMXutils.ThriftyRecordsDirty = true;
                             Sup.LogTraceInfoMessage( $"Generate Records: CMXutils.ThriftyRecordsDirty {CMXutils.ThriftyRecordsDirty} detected on {RecordsArray[ i ].ThisDate}" );
 
-                            break; // We have a record on yesterday so we need to generate and upload!
+                            break;
                         }
                     }
                 }
@@ -165,16 +160,12 @@ namespace CumulusUtils
                     MonthlyRecords[ i + count * 12 ] = RecordsArray;
 
                     // See NOTE above for the yearlist!!
-                    if ( i == 0 )
-                        monthlist = yearlist.Where( x => x.ThisDate.Month == ( i + 1 ) );
+                    if ( i == 0 ) monthlist = yearlist.Where( x => x.ThisDate.Month == ( i + 1 ) );
 
-                    if ( monthlist.Count() == 0 )
-                        continue;
+                    if ( monthlist.Count() == 0 ) continue;
 
-                    if ( count == 0 )
-                        Sup.LogTraceInfoMessage( $"Generate Records for AllTime/month: {i + 1}" );
-                    else
-                        Sup.LogTraceInfoMessage( $"Generate Records for {thisYear}/month: {i + 1}" );
+                    if ( count == 0 ) Sup.LogTraceInfoMessage( $"Generate Records for AllTime/month: {i + 1}" );
+                    else Sup.LogTraceInfoMessage( $"Generate Records for {thisYear}/month: {i + 1}" );
 
                     if ( monthlist.Any() )
                     {
@@ -230,6 +221,7 @@ namespace CumulusUtils
         private void GenerateHTMLRecords( int YearMin, int YearMax )
         {
             string tmp;
+            DateTime now = DateTime.Now;
 
             Sup.LogDebugMessage( "Generate HTML table for Records Start" );
 
@@ -246,7 +238,7 @@ namespace CumulusUtils
                 of.WriteLine( "<script>" );
                 of.WriteLine( "$(function() {" );
                 of.WriteLine( "  $('.jqueryOptions').hide();" );
-                of.WriteLine( "  $('.AllYearsAllMonths').show();" );
+                of.WriteLine( $"  $('.AllYears{m[ now.Month-1 ]}').show();" );
                 of.WriteLine( "  SetMonthsDisabled();" );
                 of.WriteLine( "  $('#year').change(function() {" );
                 of.WriteLine( "    SetMonthsDisabled();" );
@@ -394,28 +386,17 @@ namespace CumulusUtils
                 of.WriteLine( $"<input type='button' class=buttonFat id='MOPrev' value='{Sup.GetCUstringValue( "General", "PrevMonth", "Prev Month", false )}'>" );
 
                 of.WriteLine( "<select id='year'>" );
-                // loop over years for the options
                 of.WriteLine( $"<option value='AllYears' selected>{Sup.GetCUstringValue( "General", "AllTime", "All Time", false )}</option>" );
-                for ( int i = YearMin; i <= YearMax; i++ )
-                {
-                    of.WriteLine( $"<option value='{i}'>{i}</option>" );
-                }
+                for ( int i = YearMin; i <= YearMax; i++ ) of.WriteLine( $"<option value='{i}'>{i}</option>" );
                 of.WriteLine( "</select>" );
 
                 of.WriteLine( "<select id='month'>" );
-                of.WriteLine( $"<option value='AllMonths' selected>{Sup.GetCUstringValue( "General", "AllMonths", "All Months", false )}</option>" );
-                of.WriteLine( $"<option value='Jan' id='01'>{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( 1 )}</option>" );
-                of.WriteLine( $"<option value='Feb' id='02'>{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( 2 )}</option>" );
-                of.WriteLine( $"<option value='Mar' id='03'>{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( 3 )}</option>" );
-                of.WriteLine( $"<option value='Apr' id='04'>{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( 4 )}</option>" );
-                of.WriteLine( $"<option value='May' id='05'>{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( 5 )}</option>" );
-                of.WriteLine( $"<option value='Jun' id='06'>{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( 6 )}</option>" );
-                of.WriteLine( $"<option value='Jul' id='07'>{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( 7 )}</option>" );
-                of.WriteLine( $"<option value='Aug' id='08'>{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( 8 )}</option>" );
-                of.WriteLine( $"<option value='Sep' id='09'>{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( 9 )}</option>" );
-                of.WriteLine( $"<option value='Oct' id='10'>{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( 10 )}</option>" );
-                of.WriteLine( $"<option value='Nov' id='11'>{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( 11 )}</option>" );
-                of.WriteLine( $"<option value='Dec' id='12'>{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( 12 )}</option>" );
+                of.WriteLine( $"<option value='AllMonths'>{Sup.GetCUstringValue( "General", "AllMonths", "All Months", false )}</option>" );
+                for ( int i = 0; i < 12; i++ )
+                {
+                    tmp = now.Month == ( i + 1 ) ? "Selected" : "";
+                    of.WriteLine( $"<option value='{m[ i ]}' id='{i + 1:D2}' {tmp}>{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( i + 1 )}</option>" );
+                }
                 of.WriteLine( "</select>" );
 
                 of.WriteLine( $"<input type='button' class=buttonFat id='MONext' value='{Sup.GetCUstringValue( "General", "NextMonth", "Next Month", false )}'>" );
@@ -423,24 +404,18 @@ namespace CumulusUtils
 
                 of.WriteLine( "</p>" );
 
-
-
                 for ( int j = 0; j <= NrOfYears; j++ )
                 {
-                    if ( j == 0 )
-                        tmp = "jqueryOptions " + "AllYears" + "AllMonths";
-                    else
-                        tmp = $"jqueryOptions {YearMin + j - 1}AllMonths";
-
-                    DateTime now = DateTime.Now;
+                    if ( j == 0 ) tmp = "jqueryOptions " + "AllYears" + "AllMonths";
+                    else tmp = $"jqueryOptions {YearMin + j - 1}AllMonths";
 
                     of.WriteLine( $"<div class='{tmp}'>" );
                     of.WriteLine( $"<table class='CUtable'><thead>" );
                     of.WriteLine( $"<tr style='color:{RecordsTxtHeaderColor}'>" );
-                    if ( j == 0 )
-                        of.WriteLine( $"<th colspan='3' style='text-align:center;'>{Sup.GetCUstringValue( "General", "AllTime", "All Time", false )}</th>" );
-                    else
-                        of.WriteLine( $"<th colspan='3' style='text-align:center'>{YearMin + j - 1}</th>" );
+
+                    if ( j == 0 ) of.WriteLine( $"<th colspan='3' style='text-align:center;'>{Sup.GetCUstringValue( "General", "AllTime", "All Time", false )}</th>" );
+                    else of.WriteLine( $"<th colspan='3' style='text-align:center'>{YearMin + j - 1}</th>" );
+
                     of.WriteLine( $"</tr>" );
 
                     of.WriteLine( $"<tr style='color:{RecordsTxtHeaderColor}'>" );
@@ -538,19 +513,17 @@ namespace CumulusUtils
 
                         if ( MonthlyRecords[ i ] != null )
                         {
-                            if ( j == 0 )
-                                tmp = $"jqueryOptions AllYears{m[ month ]}";
-                            else
-                                tmp = $"jqueryOptions {YearMin + j - 1}{m[ month ]}";
+                            if ( j == 0 ) tmp = $"jqueryOptions AllYears{m[ month ]}";
+                            else tmp = $"jqueryOptions {YearMin + j - 1}{m[ month ]}";
 
                             of.WriteLine( $"<div class='{tmp}'>" );
                             of.WriteLine( $"<table class='CUtable'><thead>" );
 
                             of.WriteLine( $"<tr style='color:{RecordsTxtHeaderColor}'>" );
-                            if ( j == 0 )
-                                of.WriteLine( $"<th colspan='3' style='text-align:center'>{Sup.GetCUstringValue( "General", "AllTime", "All Time", false )} {CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( month + 1 )}</th>" );
-                            else
-                                of.WriteLine( $"<th colspan='3' style='text-align:center'>{YearMin + j - 1} {CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( month + 1 )}</th>" );
+
+                            if ( j == 0 ) of.WriteLine( $"<th colspan='3' style='text-align:center'>{Sup.GetCUstringValue( "General", "AllTime", "All Time", false )} {CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( month + 1 )}</th>" );
+                            else of.WriteLine( $"<th colspan='3' style='text-align:center'>{YearMin + j - 1} {CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( month + 1 )}</th>" );
+
                             of.WriteLine( $"</tr>" );
 
                             of.WriteLine( $"<tr style='color:{RecordsTxtHeaderColor}'>" );

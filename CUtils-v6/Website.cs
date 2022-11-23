@@ -275,7 +275,7 @@ namespace CumulusUtils
                     "</style>" +
                     "</head>" );
 
-                indexFile.Append( 
+                indexFile.Append(
                     $"<body style='background-color: {Sup.GetUtilsIniValue( "Website", "ColorBodyBackground", "white" )};'>" + //whitesmoke
                     "<div class='container-fluid border' style='padding: 5px'>" +
                     "<div class='col-sm-12 CUTitle'>" +
@@ -287,7 +287,7 @@ namespace CumulusUtils
                     $"   <h5 style='padding:2px'>" +
                     $"     {Sup.GetCUstringValue( "Website", "Latitude", "Latitude", false )}: {Latitude:F4}  " +
                     $"     {Sup.GetCUstringValue( "Website", "Longitude", "Longitude", false )}: {Longitude:F4} " +
-                    $"     {Sup.GetCUstringValue( "Website", "Altitude", "Altitude", false )}: {Altitude} {(AltitudeInFeet ? "ft" : "m")}" +
+                    $"     {Sup.GetCUstringValue( "Website", "Altitude", "Altitude", false )}: {Altitude} {( AltitudeInFeet ? "ft" : "m" )}" +
                     $"   </h5>" +
                     "</td>" +
                     $"  <td style='width:20%;text-align:right'>{Sup.GetUtilsIniValue( "Website", "HeaderRightText", "" )}</td>" +
@@ -513,21 +513,11 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "</div>" +
                   "</div>" );
 
-                // Do all includes deferred apart from the leaflet because of the rotate function included later on
+                indexFile.Append( Sup.GenHighchartsIncludes().ToString() );
+
                 indexFile.Append(
-                    "<script src='https://code.highcharts.com/stock/highstock.js'></script>" +
-                    "<script src='https://code.highcharts.com/stock/modules/windbarb.js'></script>" +
-                    "<script defer  src=\"https://code.highcharts.com/stock/highcharts-more.js\"></script>" +
-                    "<script defer src=\"https://code.highcharts.com/stock/indicators/indicators.js\"></script>" +
-                    "<script defer  src=\"https://code.highcharts.com/stock/modules/heatmap.js\"></script>" +
-                    "<script defer src='https://code.highcharts.com/modules/exporting.js'></script>" +
-                    "<script defer src='https://code.highcharts.com/modules/export-data.js'></script>" +
-                    "<script defer src='https://code.highcharts.com/modules/accessibility.js'></script>" +
                     "<script defer src='https://cdnjs.cloudflare.com/ajax/libs/d3/5.15.1/d3.min.js'></script>" +
                     "" );
-
-                if ( Graphx.UseHighchartsBoostModule )
-                    indexFile.Append( "<script defer src='https://code.highcharts.com/stock/modules/boost.js'></script>" );
 
                 indexFile.Append( "<!--STEELSERIES-->" +
                     "<link href='css/gauges-ss.css' rel='stylesheet'/>" +
@@ -822,7 +812,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                           "  let realtime = tmpInput.split(' '); " +
                           $"  let UnitWind = realtime[{(int) RealtimeFields.windunit}];" +
                           $"  let UnitDegree = realtime[{(int) RealtimeFields.tempunitnodeg}] == 'C' ? '°C' : '°F';" +
-                          $"  let UnitPress = realtime[{(int) RealtimeFields.pressunit}];" +
+                          $"  let UnitPress = realtime[{(int) RealtimeFields.pressunit}] == 'in' ? 'ínHg' : realtime[{(int) RealtimeFields.pressunit}];" +
                           $"  let UnitRain = realtime[{(int) RealtimeFields.rainunit}];" +
 
                           // This one is only for the StationMap, if that one is not active don't do this (needs to be implemented)
