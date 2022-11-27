@@ -288,7 +288,7 @@ namespace CumulusUtils
         internal readonly string[] StatsTypeKeywords = { "SMA" };
 
         readonly CuSupport Sup;
-        readonly int MaxPressure, MinPressure;
+        readonly float MaxPressure, MinPressure;
         readonly CultureInfo ci = CultureInfo.InvariantCulture;
         readonly StringComparison cmp = StringComparison.OrdinalIgnoreCase;
 
@@ -478,8 +478,8 @@ namespace CumulusUtils
 
             try
             {
-                MaxPressure = (int) Convert.ToDouble( Sup.GetAlltimeRecordValue( "Pressure", "highpressurevalue", "" ), ci );
-                MinPressure = (int) Convert.ToDouble( Sup.GetAlltimeRecordValue( "Pressure", "lowpressurevalue", "" ), ci );
+                MaxPressure = Convert.ToSingle( Sup.GetAlltimeRecordValue( "Pressure", "highpressurevalue", "" ), ci );
+                MinPressure = Convert.ToSingle( Sup.GetAlltimeRecordValue( "Pressure", "lowpressurevalue", "" ), ci );
             }
             catch
             {

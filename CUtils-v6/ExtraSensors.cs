@@ -76,6 +76,8 @@ namespace CumulusUtils
             internal string PlotvarType;
             internal int PlotvarIndex;
             internal ExtraSensorType Type;
+            internal int SensorIndex;
+            internal int RTposition;
         }
 
         readonly CultureInfo inv = CultureInfo.InvariantCulture;
@@ -122,10 +124,6 @@ namespace CumulusUtils
 
         internal void GenerateExtraSensorsModule()
         {
-            // Some variables required for generaton
-            int ExtraTemp, ExtraDP, ExtraHum, SoilTemp, SoilMoisture, AirQuality, AirQualityAvg, UserTemp, LeafTemp, LeafWetness;
-            int i;
-
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.ExtraSensorsOutputFilename}", false, Encoding.UTF8 ) )
             {
                 #region Javascript
@@ -174,77 +172,63 @@ namespace CumulusUtils
                 sb.AppendLine( "function DoExtraSensorRT(input) {" );
                 sb.AppendLine( "  var ExtraSensorRT = input.split(' ');" );
 
-                // The order is the same as in writing the realtime file so we follow that with i to give the index
-                //
-                ExtraTemp = 0;
-                ExtraDP = 0;
-                ExtraHum = 0;
-                SoilTemp = 0;
-                SoilMoisture = 0;
-                AirQuality = 0;
-                AirQualityAvg = 0;
-                UserTemp = 0;
-                LeafTemp = 0;
-                LeafWetness = 0;
-                i = 0;
-
                 foreach ( ExtraSensor tmp in ExtraSensorList )
                 {
                     switch ( (int) tmp.Type )
                     {
                         case (int) ExtraSensorType.Temperature:
-                            sb.AppendLine( $" $('#ExtraTemp{++ExtraTemp}').html(ExtraSensorRT[ {i++} ]);" );
+                            sb.AppendLine( $" $('#ExtraTemp{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ]);" );
                             break;
                         case (int) ExtraSensorType.DewPoint:
-                            sb.AppendLine( $" $('#ExtraDP{++ExtraDP}').html(ExtraSensorRT[ {i++} ]);" );
+                            sb.AppendLine( $" $('#ExtraDP{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ]);" );
                             break;
                         case (int) ExtraSensorType.Humidity:
-                            sb.AppendLine( $" $('#ExtraHum{++ExtraHum}').html(ExtraSensorRT[ {i++} ]);" );
+                            sb.AppendLine( $" $('#ExtraHum{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ]);" );
                             break;
                         case (int) ExtraSensorType.SoilTemp:
-                            sb.AppendLine( $" $('#SoilTemp{++SoilTemp}').html(ExtraSensorRT[ {i++} ]);" );
+                            sb.AppendLine( $" $('#SoilTemp{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ]);" );
                             break;
                         case (int) ExtraSensorType.SoilMoisture:
-                            sb.AppendLine( $" $('#SoilMoisture{++SoilMoisture}').html(ExtraSensorRT[ {i++} ]);" );
+                            sb.AppendLine( $" $('#SoilMoisture{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ]);" );
                             break;
                         case (int) ExtraSensorType.AirQuality:
-                            sb.AppendLine( $" $('#Airquality{++AirQuality}').html(ExtraSensorRT[ {i++} ]);" );
+                            sb.AppendLine( $" $('#Airquality{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ]);" );
                             break;
                         case (int) ExtraSensorType.AirQualityAvg:
-                            sb.AppendLine( $" $('#AirQualityAvg{++AirQualityAvg}').html(ExtraSensorRT[ {i++} ]);" );
+                            sb.AppendLine( $" $('#AirQualityAvg{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ]);" );
                             break;
                         case (int) ExtraSensorType.CO2:
-                            sb.AppendLine( $" $('#CO2').html(ExtraSensorRT[ {i++} ]);" );
+                            sb.AppendLine( $" $('#CO2').html(ExtraSensorRT[ {tmp.RTposition} ]);" );
                             break;
                         case (int) ExtraSensorType.CO2avg:
-                            sb.AppendLine( $" $('#CO2-24h').html(ExtraSensorRT[ {i++} ]);" );
+                            sb.AppendLine( $" $('#CO2-24h').html(ExtraSensorRT[ {tmp.RTposition} ]);" );
                             break;
                         case (int) ExtraSensorType.CO2pm2p5:
-                            sb.AppendLine( $" $('#CO2-pm2p5').html(ExtraSensorRT[ {i++} ]);" );
+                            sb.AppendLine( $" $('#CO2-pm2p5').html(ExtraSensorRT[ {tmp.RTposition} ]);" );
                             break;
                         case (int) ExtraSensorType.CO2pm2p5avg:
-                            sb.AppendLine( $" $('#CO2-pm2p5-24h').html(ExtraSensorRT[ {i++} ]);" );
+                            sb.AppendLine( $" $('#CO2-pm2p5-24h').html(ExtraSensorRT[ {tmp.RTposition} ]);" );
                             break;
                         case (int) ExtraSensorType.CO2pm10:
-                            sb.AppendLine( $" $('#CO2-pm10').html(ExtraSensorRT[ {i++} ]);" );
+                            sb.AppendLine( $" $('#CO2-pm10').html(ExtraSensorRT[ {tmp.RTposition} ]);" );
                             break;
                         case (int) ExtraSensorType.CO2pm10avg:
-                            sb.AppendLine( $" $('#CO2-pm10-24h').html(ExtraSensorRT[ {i++} ]);" );
+                            sb.AppendLine( $" $('#CO2-pm10-24h').html(ExtraSensorRT[ {tmp.RTposition} ]);" );
                             break;
                         case (int) ExtraSensorType.CO2temp:
-                            sb.AppendLine( $" $('#CO2-temp').html(ExtraSensorRT[ {i++} ]);" );
+                            sb.AppendLine( $" $('#CO2-temp').html(ExtraSensorRT[ {tmp.RTposition} ]);" );
                             break;
                         case (int) ExtraSensorType.CO2hum:
-                            sb.AppendLine( $" $('#CO2-hum').html(ExtraSensorRT[ {i++} ]);" );
+                            sb.AppendLine( $" $('#CO2-hum').html(ExtraSensorRT[ {tmp.RTposition} ]);" );
                             break;
                         case (int) ExtraSensorType.UserTemp:
-                            sb.AppendLine( $" $('#UserTemp{++UserTemp}').html(ExtraSensorRT[ {i++} ]);" );
+                            sb.AppendLine( $" $('#UserTemp{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ]);" );
                             break;
                         case (int) ExtraSensorType.LeafTemp:
-                            sb.AppendLine( $" $('#LeafTemp{++LeafTemp}').html(ExtraSensorRT[ {i++} ]);" );
+                            sb.AppendLine( $" $('#LeafTemp{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ]);" );
                             break;
                         case (int) ExtraSensorType.LeafWetness:
-                            sb.AppendLine( $" $('#LeafWetness{++LeafWetness}').html(ExtraSensorRT[ {i++} ]);" );
+                            sb.AppendLine( $" $('#LeafWetness{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ]);" );
                             break;
                         case (int) ExtraSensorType.External:
                             //sb.AppendLine( $" $('#{tmp.Name}').html(ExtraSensorRT[ {i++} ]);" );
@@ -264,17 +248,6 @@ namespace CumulusUtils
 
                 StringBuilder buf = new StringBuilder();
 
-                ExtraTemp = 0;
-                ExtraDP = 0;
-                ExtraHum = 0;
-                SoilTemp = 0;
-                SoilMoisture = 0;
-                AirQuality = 0;
-                AirQualityAvg = 0;
-                UserTemp = 0;
-                LeafTemp = 0;
-                LeafWetness = 0;
-                i = 0;
                 bool SwitchRowBackground = true;
 
                 string RowColour()
@@ -299,29 +272,28 @@ namespace CumulusUtils
 
                 foreach ( ExtraSensor tmp in ExtraSensorList )
                 {
-
                     switch ( (int) tmp.Type )
                     {
                         case (int) ExtraSensorType.Temperature:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ExtraTemp{++ExtraTemp}'></td></tr>" );
+                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ExtraTemp{tmp.SensorIndex}'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.DewPoint:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ExtraDP{++ExtraDP}'></td></tr>" );
+                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ExtraDP{tmp.SensorIndex}'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.Humidity:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ExtraHum{++ExtraHum}'></td></tr>" );
+                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ExtraHum{tmp.SensorIndex}'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.SoilTemp:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='SoilTemp{++SoilTemp}'></td></tr>" );
+                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='SoilTemp{tmp.SensorIndex}'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.SoilMoisture:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='SoilMoisture{++SoilMoisture}'></td></tr>" );
+                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='SoilMoisture{tmp.SensorIndex}'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.AirQuality:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='Airquality{++AirQuality}'></td></tr>" );
+                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='Airquality{tmp.SensorIndex}'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.AirQualityAvg:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='AirQualityAvg{++AirQualityAvg}'></td></tr>" );
+                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='AirQualityAvg{tmp.SensorIndex}'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.CO2:
                             buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='CO2'></td></tr>" );
@@ -348,16 +320,15 @@ namespace CumulusUtils
                             buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='CO2-hum'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.UserTemp:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='UserTemp{++UserTemp}'></td></tr>" );
+                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='UserTemp{tmp.SensorIndex}'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.LeafTemp:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='LeafTemp{++LeafTemp}'></td></tr>" );
+                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='LeafTemp{tmp.SensorIndex}'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.LeafWetness:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='LeafWetness{++LeafWetness}'></td></tr>" );
+                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='LeafWetness{tmp.SensorIndex}'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.External:
-                            //buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Name}();'><td {thisPadding()}>{tmp.Name}</td><td id='{tmp.Name}'></td></tr>" );
                             Sup.LogTraceWarningMessage( $"GenerateExtraSensorsModule: External realtime not implemented." );
                             break;
                         default:
@@ -450,10 +421,8 @@ namespace CumulusUtils
 
                 while ( i < ExtraSensorList.Count && ( ExtraSensorList[ i ].Type == currentType || thisKeyword.Substring( 0, 3 ).Equals( "CO2" ) ) )
                 {
-                    if ( ExtraSensorList[ i ].Type == ExtraSensorType.External )
-                        thisKeyword = ExtraSensorList[ i ].Name;
-                    else
-                        thisKeyword = ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ];
+                    if ( ExtraSensorList[ i ].Type == ExtraSensorType.External ) thisKeyword = ExtraSensorList[ i ].Name;
+                    else thisKeyword = ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ];
 
                     Sup.LogTraceInfoMessage( $"GenerateExtraSensorsCharts: Adding Sensor: {thisKeyword}" );
 
@@ -494,15 +463,10 @@ namespace CumulusUtils
 
         internal void GenerateExtraSensorDataJson()
         {
-            // Purpose is to create the JSON for the ExtraSensor data and offering the poissibility to do only that to accomodate the fact that
-            // CMX does not (and probably will never) generate that JSON like it generates the temperature JSON for graphing.
-            // CumulusUtils will only generate the ExtraSensor JSON by issueing the command: "./utils/bin/cumulusutils.exe UserAskedData"
-
-            //InitialiseExtraSensorList();
-
-            // Purpose is to create the JSON for the Airlink data and offering the poissibility to do only that to accomodate the fact that
+            // Purpose is to create the JSON for the Airlink data and offering the possibility to do only that to accomodate the fact that
             // CMX does not (and probably will never) generate that JSON like it generates the temperature JSON for graphing.
             // CumulusUtils will only generate the AirLink JSON by issueing the command: "./utils/bin/cumulusutils.exe UserAskedData"
+
             // When we are generating the module, the JSON is automatically generated and uploaded (in the main loop) as well
             // So here we go: it has already been determined that an Airlink is present and that we need the data
 
@@ -582,6 +546,7 @@ namespace CumulusUtils
                 }
             }
 
+
             sb.Remove( sb.Length - 1, 1 );
             sb.Append( "}" );
 
@@ -601,7 +566,6 @@ namespace CumulusUtils
         {
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.ExtraSensorsRealtimeFilename}", false, Encoding.UTF8 ) )
             {
-                int ExtraTemp = 0, ExtraDP = 0, ExtraHum = 0, SoilTemp = 0, SoilMoisture = 0, AirQuality = 0, AirQualityAvg = 0, UserTemp = 0, LeafTemp = 0, LeafWetness = 0;
                 StringBuilder sb = new StringBuilder();
 
                 Sup.LogDebugMessage( $"GenerateExtraSensorsRealtime: Writing the ExtraSensors realtime file for the actual sensors found" );
@@ -611,25 +575,25 @@ namespace CumulusUtils
                     switch ( (int) tmp.Type )
                     {
                         case (int) ExtraSensorType.Temperature:
-                            sb.Append( $"<#ExtraTemp{++ExtraTemp} rc=y> " );
+                            sb.Append( $"<#ExtraTemp{tmp.SensorIndex} rc=y> " );
                             break;
                         case (int) ExtraSensorType.DewPoint:
-                            sb.Append( $"<#ExtraDP{++ExtraDP} rc=y> " );
+                            sb.Append( $"<#ExtraDP{tmp.SensorIndex} rc=y> " );
                             break;
                         case (int) ExtraSensorType.Humidity:
-                            sb.Append( $"<#ExtraHum{++ExtraHum} rc=y> " );
+                            sb.Append( $"<#ExtraHum{+tmp.SensorIndex} rc=y> " );
                             break;
                         case (int) ExtraSensorType.SoilTemp:
-                            sb.Append( $"<#SoilTemp{++SoilTemp} rc=y> " );
+                            sb.Append( $"<#SoilTemp{tmp.SensorIndex} rc=y> " );
                             break;
                         case (int) ExtraSensorType.SoilMoisture:
-                            sb.Append( $"<#SoilMoisture{++SoilMoisture} rc=y> " );
+                            sb.Append( $"<#SoilMoisture{tmp.SensorIndex} rc=y> " );
                             break;
                         case (int) ExtraSensorType.AirQuality:
-                            sb.Append( $"<#AirQuality{++AirQuality} rc=y> " );
+                            sb.Append( $"<#AirQuality{tmp.SensorIndex} rc=y> " );
                             break;
                         case (int) ExtraSensorType.AirQualityAvg:
-                            sb.Append( $"<#AirQualityAvg{++AirQualityAvg} rc=y> " );
+                            sb.Append( $"<#AirQualityAvg{tmp.SensorIndex} rc=y> " );
                             break;
                         case (int) ExtraSensorType.CO2:
                             sb.Append( $"<#CO2 rc=y> " );
@@ -656,17 +620,16 @@ namespace CumulusUtils
                             sb.Append( $"<#CO2-hum rc=y> " );
                             break;
                         case (int) ExtraSensorType.UserTemp:
-                            sb.Append( $"<#UserTemp{++UserTemp} rc=y> " );
+                            sb.Append( $"<#UserTemp{tmp.SensorIndex} rc=y> " );
                             break;
                         case (int) ExtraSensorType.LeafTemp:
-                            sb.Append( $"<#LeafTemp{++LeafTemp} rc=y> " );
+                            sb.Append( $"<#LeafTemp{tmp.SensorIndex} rc=y> " );
                             break;
                         case (int) ExtraSensorType.LeafWetness:
-                            sb.Append( $"<#LeafWetness{++LeafWetness} rc=y> " );
+                            sb.Append( $"<#LeafWetness{tmp.SensorIndex} rc=y> " );
                             break;
                         case (int) ExtraSensorType.External:
                             Sup.LogTraceWarningMessage( $"DoExtraSensorsWork: No ExtraSensorsRealTime for {tmp.Name} ({tmp.Type}) - has no realtime value." );
-                            //sb.Append( $"<#{tmp.Name} rc=y> " );  // Maybe later
                             break;
                         default:
                             Sup.LogTraceErrorMessage( $"DoExtraSensorsWork: Illegal ExtraSensor type {tmp.Type} - no realtime value." );
@@ -687,314 +650,253 @@ namespace CumulusUtils
         private void InitialiseExtraSensorList()
         {
             string thisSensor;
-            int PlotvarStartindex;
-
-            // Research which ExtraSensors are present using strings.ini (the use MUST rename from the defaults
-            // or check values for the lighning sensor and the CO2 sensor because these have no or no likely translation entry in strings.ini
+            int PlotvarStartindex = -1, RTindex = 0;
+            int[] ActiveSensors;
 
             ExtraSensorList = new List<ExtraSensor>();
 
-            PlotvarStartindex = -1;
+            // Search which ExtraSensors are present using strings.ini (the use MUST rename from the defaults)
+            // or check values for the lightning sensor and the CO2 sensor because these have no or no likely translation entry in strings.ini
 
             // Extra Temperature sensors
-            for ( int i = 1; i <= 10; i++ )
+            ActiveSensors = GetActiveSensors( "ExtraTemp" );
+
+            foreach( int i in ActiveSensors)
             {
                 thisSensor = Sup.GetStringsIniValue( "ExtraTempCaptions", $"Sensor{i}", "" );
-                if ( !thisSensor.Equals( $"Sensor {i}" ) && !string.IsNullOrEmpty( thisSensor ) )
-                {
-                    tmp = new ExtraSensor
-                    {
-                        Name = thisSensor,
-                        Type = ExtraSensorType.Temperature,
-                        PlotvarIndex = PlotvarStartindex + i,
-                        PlotvarType = ChartsCompiler.PlotvarTypesEXTRA[ PlotvarStartindex + i ]
-                    };
-
-                    ExtraSensorList.Add( tmp );
-
-                    // And immediately set the name as default in the Language file so the chart legend becomes comprehensible
-                    // and does not require additional user action
-                    Sup.SetCUstringValue( "Compiler", tmp.PlotvarType, thisSensor );
-                }
+                registerSensor( thisSensor, i, ExtraSensorType.Temperature );
             }
 
             // Extra Humidity sensors
             PlotvarStartindex += 10;
-            for ( int i = 1; i <= 10; i++ )
+            ActiveSensors = GetActiveSensors( "ExtraHum" );
+
+            foreach ( int i in ActiveSensors )
             {
                 thisSensor = Sup.GetStringsIniValue( "ExtraHumCaptions", $"Sensor{i}", "" );
-                if ( !thisSensor.Equals( $"Sensor {i}" ) && !string.IsNullOrEmpty( thisSensor ) )
-                {
-                    tmp = new ExtraSensor
-                    {
-                        Name = thisSensor,
-                        Type = ExtraSensorType.Humidity,
-                        PlotvarIndex = PlotvarStartindex + i,
-                        PlotvarType = ChartsCompiler.PlotvarTypesEXTRA[ PlotvarStartindex + i ]
-                    };
-
-                    ExtraSensorList.Add( tmp );
-                    Sup.SetCUstringValue( "Compiler", tmp.PlotvarType, thisSensor );
-                }
+                registerSensor( thisSensor, i, ExtraSensorType.Humidity );
             }
 
             // Extra Dewpoint sensors
             PlotvarStartindex += 10;
-            for ( int i = 1; i <= 10; i++ )
+            ActiveSensors = GetActiveSensors( "ExtraDP" );
+
+            foreach ( int i in ActiveSensors )
             {
                 thisSensor = Sup.GetStringsIniValue( "ExtraDPCaptions", $"Sensor{i}", "" );
-                if ( !thisSensor.Equals( $"Sensor {i}" ) && !string.IsNullOrEmpty( thisSensor ) )
-                {
-                    tmp = new ExtraSensor
-                    {
-                        Name = thisSensor,
-                        Type = ExtraSensorType.DewPoint,
-                        PlotvarIndex = PlotvarStartindex + i,
-                        PlotvarType = ChartsCompiler.PlotvarTypesEXTRA[ PlotvarStartindex + i ]
-                    };
-
-                    ExtraSensorList.Add( tmp );
-                    Sup.SetCUstringValue( "Compiler", tmp.PlotvarType, thisSensor );
-                }
+                registerSensor( thisSensor, i, ExtraSensorType.DewPoint );
             }
 
             // Extra SoilTemperature sensors
             PlotvarStartindex += 10;
-            for ( int i = 1; i <= 16; i++ )
+            ActiveSensors = GetActiveSensors( "SoilTemp" );
+
+            foreach ( int i in ActiveSensors )
             {
                 thisSensor = Sup.GetStringsIniValue( "SoilTempCaptions", $"Sensor{i}", "" );
-                if ( !thisSensor.Equals( $"Sensor {i}" ) && !string.IsNullOrEmpty( thisSensor ) )
-                {
-                    tmp = new ExtraSensor
-                    {
-                        Name = thisSensor,
-                        Type = ExtraSensorType.SoilTemp,
-                        PlotvarIndex = PlotvarStartindex + i,
-                        PlotvarType = ChartsCompiler.PlotvarTypesEXTRA[ PlotvarStartindex + i ]
-                    };
-
-                    ExtraSensorList.Add( tmp );
-                    Sup.SetCUstringValue( "Compiler", tmp.PlotvarType, thisSensor );
-                }
+                registerSensor( thisSensor, i, ExtraSensorType.SoilTemp );
             }
 
             // Extra Soil Moisture sensors
             PlotvarStartindex += 16;
-            for ( int i = 1; i <= 16; i++ )
+            ActiveSensors = GetActiveSensors( "SoilMoisture" );
+
+            foreach ( int i in ActiveSensors )
             {
                 thisSensor = Sup.GetStringsIniValue( "SoilMoistureCaptions", $"Sensor{i}", "" );
-                if ( !thisSensor.Equals( $"Sensor {i}" ) && !string.IsNullOrEmpty( thisSensor ) )
-                {
-                    tmp = new ExtraSensor
-                    {
-                        Name = thisSensor,
-                        Type = ExtraSensorType.SoilMoisture,
-                        PlotvarIndex = PlotvarStartindex + i,
-                        PlotvarType = ChartsCompiler.PlotvarTypesEXTRA[ PlotvarStartindex + i ]
-                    };
-
-                    ExtraSensorList.Add( tmp );
-                    Sup.SetCUstringValue( "Compiler", tmp.PlotvarType, thisSensor );
-                }
+                registerSensor( thisSensor, i, ExtraSensorType.SoilMoisture );
             }
 
             // Extra AirQuality sensors
             PlotvarStartindex += 16;
-            for ( int i = 1; i <= 4; i++ )
+            ActiveSensors = GetActiveSensors( "AirQuality" );
+
+            foreach ( int i in ActiveSensors )
             {
                 thisSensor = Sup.GetStringsIniValue( "AirQualityCaptions", $"Sensor{i}", "" );
-                if ( !thisSensor.Equals( $"Sensor {i}" ) && !string.IsNullOrEmpty( thisSensor ) )
-                {
-                    tmp = new ExtraSensor
-                    {
-                        Name = thisSensor,
-                        Type = ExtraSensorType.AirQuality,
-                        PlotvarIndex = PlotvarStartindex + i,
-                        PlotvarType = ChartsCompiler.PlotvarTypesEXTRA[ PlotvarStartindex + i ]
-                    };
-
-                    ExtraSensorList.Add( tmp );
-                    Sup.SetCUstringValue( "Compiler", tmp.PlotvarType, thisSensor );
-
-                    // As we just found the Airquality sensor, the AVG is implicit. If the user did not register it
-                    // we give it a default name
-                    thisSensor = Sup.GetStringsIniValue( "AirQualityCaptions", $"SensorAvg{i}", "" );
-
-                    if ( thisSensor.Equals( $"Sensor Avg {i}" ) || string.IsNullOrEmpty( thisSensor ) ) thisSensor = tmp.Name + " Avg";
-
-                    tmp = new ExtraSensor
-                    {
-                        Name = thisSensor,
-                        Type = ExtraSensorType.AirQualityAvg,
-                        PlotvarIndex = PlotvarStartindex + i + 4,
-                        PlotvarType = ChartsCompiler.PlotvarTypesEXTRA[ PlotvarStartindex + i + 4 ]
-                    };
-
-                    ExtraSensorList.Add( tmp );
-                    Sup.SetCUstringValue( "Compiler", tmp.PlotvarType, thisSensor );
-                }
+                registerSensor( thisSensor, i, ExtraSensorType.AirQuality );
             }
 
-            PlotvarStartindex += 8;
+            foreach ( int i in ActiveSensors )
+            {
+                thisSensor = Sup.GetStringsIniValue( "AirQualityCaptions", $"SensorAvg{i}", "" );
+                registerSensor( thisSensor, i, ExtraSensorType.AirQualityAvg );
+            }
 
-            for ( int i = 1; i <= 8; i++ )
+            // Extra UserTemp sensors
+            PlotvarStartindex += 8;
+            ActiveSensors = GetActiveSensors( "UserTemp" );
+
+            foreach ( int i in ActiveSensors )
             {
                 thisSensor = Sup.GetStringsIniValue( "UserTempCaptions", $"Sensor{i}", "" );
-                if ( !thisSensor.Equals( $"Sensor {i}" ) && !string.IsNullOrEmpty( thisSensor ) )
-                {
-                    tmp = new ExtraSensor
-                    {
-                        Name = thisSensor,
-                        Type = ExtraSensorType.UserTemp,
-                        PlotvarIndex = PlotvarStartindex + i,
-                        PlotvarType = ChartsCompiler.PlotvarTypesEXTRA[ PlotvarStartindex + i ]
-                    };
-
-                    ExtraSensorList.Add( tmp );
-                    Sup.SetCUstringValue( "Compiler", tmp.PlotvarType, thisSensor );
-                }
+                registerSensor( thisSensor, i, ExtraSensorType.UserTemp );
             }
 
             // Extra Leaf Temperature sensors
             PlotvarStartindex += 8;
-            for ( int i = 1; i <= 2; i++ )
+            ActiveSensors = GetActiveSensors( "LeafTemp" );
+
+            foreach ( int i in ActiveSensors )
             {
                 thisSensor = Sup.GetStringsIniValue( "LeafTempCaptions", $"Sensor{i}", "" );
-                if ( !thisSensor.Equals( $"Sensor {i}" ) && !string.IsNullOrEmpty( thisSensor ) )
-                {
-                    tmp = new ExtraSensor
-                    {
-                        Name = thisSensor,
-                        Type = ExtraSensorType.LeafTemp,
-                        PlotvarIndex = PlotvarStartindex + i,
-                        PlotvarType = ChartsCompiler.PlotvarTypesEXTRA[ PlotvarStartindex + i ]
-
-                    };
-
-                    ExtraSensorList.Add( tmp );
-                    Sup.SetCUstringValue( "Compiler", tmp.PlotvarType, thisSensor );
-                }
+                registerSensor( thisSensor, i, ExtraSensorType.LeafTemp );
             }
 
             // Extra Leaf Wetness sensors
             PlotvarStartindex += 2;
-            for ( int i = 1; i <= 2; i++ )
+            ActiveSensors = GetActiveSensors( "LeafWetness" );
+
+            foreach ( int i in ActiveSensors )
             {
                 thisSensor = Sup.GetStringsIniValue( "LeafWetnessCaptions", $"Sensor{i}", "" );
-                if ( !thisSensor.Equals( $"Sensor {i}" ) && !string.IsNullOrEmpty( thisSensor ) )
-                {
-                    tmp = new ExtraSensor
-                    {
-                        Name = thisSensor,
-                        Type = ExtraSensorType.LeafWetness,
-                        PlotvarIndex = PlotvarStartindex + i,
-                        PlotvarType = ChartsCompiler.PlotvarTypesEXTRA[ PlotvarStartindex + i ]
-                    };
-
-                    ExtraSensorList.Add( tmp );
-                    Sup.SetCUstringValue( "Compiler", tmp.PlotvarType, thisSensor );
-                }
+                registerSensor( thisSensor, i, ExtraSensorType.LeafWetness );
             }
 
-            PlotvarStartindex += 2;
             // Check for the CO2 sensor (WH45). If there is a non-zero value in the CO2 field then the sensor is present.
+            PlotvarStartindex += 2;
+            ActiveSensors = GetActiveSensors( "CO2" );
+
+            if ( ActiveSensors.Length > 1 )  // 
             {
-                string[] theseLines;            // I need the last line to be sure, so read all and pick last
-                string[] thislineFields;
-
-                DateTime timeStart = CMXutils.RunStarted;
-                string Filename = $"data/ExtraLog{timeStart:yyyy}{timeStart:MM}.txt";
-
-                if ( !File.Exists( Filename ) )
-                    return; // Nothing to do, may not happen
-
-                string filenameCopy = "data/" + "copy_" + Path.GetFileName( Filename );
-                if ( File.Exists( filenameCopy ) )
-                    File.Delete( filenameCopy );
-                File.Copy( Filename, filenameCopy );
-
-                theseLines = File.ReadAllLines( filenameCopy );
-                thislineFields = theseLines[ theseLines.Length - 1 ].Split( theseLines[ 0 ][ 8 ] );
-
-                int FieldInUse = (int) ExtraSensorslogFieldName.CO2;
-
-                // @formatter:off
-                if ( thislineFields[ FieldInUse ] != "0" )
+                Sup.LogTraceErrorMessage( $"GetActiveSensors: CO2 sensors - There can be only one! Please check configuration." );
+            } 
+            else
+            {
+                foreach ( int i in ActiveSensors )
                 {
-                    thisSensor = Sup.GetStringsIniValue( "CO2Captions", "CO2-Current", "" );
-                    tmp = new ExtraSensor { Name = thisSensor, Type = ExtraSensorType.CO2, PlotvarIndex = PlotvarStartindex + 1, PlotvarType = ChartsCompiler.PlotvarTypesEXTRA[ PlotvarStartindex + 1 ] };
-                    ExtraSensorList.Add( tmp );
-                    Sup.SetCUstringValue( "Compiler", tmp.PlotvarType, thisSensor );
+                    string[] theseLines;            // I need the last line to be sure, so read all and take last
+                    string[] thislineFields;
 
-                    thisSensor = Sup.GetStringsIniValue( "CO2Captions", "CO2-24hr", "" );
-                    tmp = new ExtraSensor { Name = thisSensor, Type = ExtraSensorType.CO2avg, PlotvarIndex = PlotvarStartindex + 2, PlotvarType = ChartsCompiler.PlotvarTypesEXTRA[ PlotvarStartindex + 2 ] };
-                    ExtraSensorList.Add( tmp );
-                    Sup.SetCUstringValue( "Compiler", tmp.PlotvarType, thisSensor );
+                    DateTime timeStart = CMXutils.RunStarted;
+                    string Filename = $"data/ExtraLog{timeStart:yyyy}{timeStart:MM}.txt";
 
-                    thisSensor = Sup.GetStringsIniValue( "CO2Captions", "CO2-Pm2p5", "" );
-                    tmp = new ExtraSensor { Name = thisSensor, Type = ExtraSensorType.CO2pm2p5, PlotvarIndex = PlotvarStartindex + 3, PlotvarType = ChartsCompiler.PlotvarTypesEXTRA[ PlotvarStartindex + 3 ] };
-                    ExtraSensorList.Add( tmp );
-                    Sup.SetCUstringValue( "Compiler", tmp.PlotvarType, thisSensor );
-
-                    thisSensor = Sup.GetStringsIniValue( "CO2Captions", "CO2-Pm2p5-24hr", "" );
-                    tmp = new ExtraSensor { Name = thisSensor, Type = ExtraSensorType.CO2pm2p5avg, PlotvarIndex = PlotvarStartindex + 4, PlotvarType = ChartsCompiler.PlotvarTypesEXTRA[ PlotvarStartindex + 4 ] };
-                    ExtraSensorList.Add( tmp );
-                    Sup.SetCUstringValue( "Compiler", tmp.PlotvarType, thisSensor );
-
-                    thisSensor = Sup.GetStringsIniValue( "CO2Captions", "CO2-Pm10", "" );
-                    tmp = new ExtraSensor { Name = thisSensor, Type = ExtraSensorType.CO2pm10, PlotvarIndex = PlotvarStartindex + 5, PlotvarType = ChartsCompiler.PlotvarTypesEXTRA[ PlotvarStartindex + 5 ] };
-                    ExtraSensorList.Add( tmp );
-                    Sup.SetCUstringValue( "Compiler", tmp.PlotvarType, thisSensor );
-
-                    thisSensor = Sup.GetStringsIniValue( "CO2Captions", "CO2-Pm10-24hr", "" );
-                    tmp = new ExtraSensor { Name = thisSensor, Type = ExtraSensorType.CO2pm10avg, PlotvarIndex = PlotvarStartindex + 6, PlotvarType = ChartsCompiler.PlotvarTypesEXTRA[ PlotvarStartindex + 6 ] };
-                    ExtraSensorList.Add( tmp );
-                    Sup.SetCUstringValue( "Compiler", tmp.PlotvarType, thisSensor );
-
-                    thisSensor = "WH45 Temperature";
-                    tmp = new ExtraSensor { Name = thisSensor, Type = ExtraSensorType.CO2temp, PlotvarIndex = PlotvarStartindex + 7, PlotvarType = ChartsCompiler.PlotvarTypesEXTRA[ PlotvarStartindex + 7 ] };
-                    ExtraSensorList.Add( tmp );
-                    Sup.SetCUstringValue( "Compiler", tmp.PlotvarType, thisSensor );
-
-                    thisSensor = "WH45 Humidity";
-                    tmp = new ExtraSensor { Name = thisSensor, Type = ExtraSensorType.CO2hum, PlotvarIndex = PlotvarStartindex + 8, PlotvarType = ChartsCompiler.PlotvarTypesEXTRA[ PlotvarStartindex + 8 ] };
-                    ExtraSensorList.Add( tmp );
-                    Sup.SetCUstringValue( "Compiler", tmp.PlotvarType, thisSensor );
-                }
-                // @formatter:on
-
-                // Do the External Extra Sensors
-                {
-                    string[] ExternalExtraSensors = Sup.GetUtilsIniValue( "ExtraSensors", "ExternalExtraSensors", "" ).Split( ',' );
-
-                    if ( !string.IsNullOrEmpty( ExternalExtraSensors[ 0 ] ) )
+                    if ( !File.Exists( Filename ) )
                     {
-                        foreach ( string thisExternal in ExternalExtraSensors )
-                        {
-                            tmp = new ExtraSensor
-                            {
-                                Name = thisExternal,
-                                Type = ExtraSensorType.External,
-                                PlotvarIndex = 0,  // Nul for every External because this will not be an index in an array, every external is on its own
-                                PlotvarType = thisExternal
-                            };
-
-                            ExtraSensorList.Add( tmp );
-
-                            // And immediately set the name as default in the Language file so the chart legend becomes comprehensible
-                            // and does not require additional user action
-                            Sup.SetCUstringValue( "Compiler", tmp.PlotvarType, thisExternal );
-                        }
+                        Sup.LogTraceErrorMessage( $"CO2 sensors - No logfile...  quitting the activation of CO2 sensor." );
+                        return; // Nothing to do, may not happen
                     }
-                }
 
-                Sup.LogTraceInfoMessage( $"InitialiseExtraSensorList: Found the following Extra Sensors:" );
-                foreach ( ExtraSensor tmp in ExtraSensorList )
-                    Sup.LogTraceInfoMessage( $"  {tmp.Name} of type: {tmp.Type}" );
+                    string filenameCopy = "data/" + "copy_" + Path.GetFileName( Filename );
+                    if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
+                    File.Copy( Filename, filenameCopy );
+
+                    theseLines = File.ReadAllLines( filenameCopy );
+                    thislineFields = theseLines[ theseLines.Length - 1 ].Split( theseLines[ 0 ][ 8 ] );
+
+                    int FieldInUse = (int) ExtraSensorslogFieldName.CO2;
+
+                    // @formatter:off
+                    if ( thislineFields[ FieldInUse ] != "0" )
+                    {
+                        thisSensor = Sup.GetStringsIniValue( "CO2Captions", "CO2-Current", "" );
+                        registerSensor( thisSensor, 1, ExtraSensorType.CO2 );
+
+                        thisSensor = Sup.GetStringsIniValue( "CO2Captions", "CO2-24hr", "" );
+                        registerSensor( thisSensor, 2, ExtraSensorType.CO2avg );
+
+                        thisSensor = Sup.GetStringsIniValue( "CO2Captions", "CO2-Pm2p5", "" );
+                        registerSensor( thisSensor, 3, ExtraSensorType.CO2pm2p5 );
+
+                        thisSensor = Sup.GetStringsIniValue( "CO2Captions", "CO2-Pm2p5-24hr", "" );
+                        registerSensor( thisSensor, 4, ExtraSensorType.CO2pm2p5avg );
+
+                        thisSensor = Sup.GetStringsIniValue( "CO2Captions", "CO2-Pm10", "" );
+                        registerSensor( thisSensor, 5, ExtraSensorType.CO2pm10 );
+
+                        thisSensor = Sup.GetStringsIniValue( "CO2Captions", "CO2-Pm10-24hr", "" );
+                        registerSensor( thisSensor, 6, ExtraSensorType.CO2pm10avg );
+
+                        thisSensor = "WH45 Temperature";
+                        registerSensor( thisSensor, 7, ExtraSensorType.CO2temp );
+
+                        thisSensor = "WH45 Humidity";
+                        registerSensor( thisSensor, 8, ExtraSensorType.CO2hum );
+                    }
+                    else
+                    {
+                        Sup.LogTraceErrorMessage( $"GetActiveSensors: CO2 sensor is active but there is no data. Sensor is ignored" );
+                    }
+                    // @formatter:on
+                }
             }
+
+            PlotvarStartindex += 8;
+            // Do the External Extra Sensors
+            {
+                string[] ExternalExtraSensors = Sup.GetUtilsIniValue( "ExtraSensors", "ExternalExtraSensors", "" ).Split( ',' );
+
+                if ( !string.IsNullOrEmpty( ExternalExtraSensors[ 0 ] ) )
+                    foreach ( string thisExternal in ExternalExtraSensors )
+                        registerSensor( thisExternal, 1, ExtraSensorType.External );
+            }
+
+            Sup.LogTraceInfoMessage( $"InitialiseExtraSensorList: Creating ExtraSensors list Done. CUtils Continues, if any configuration errors, please correct." );
+            Sup.LogTraceInfoMessage( $"InitialiseExtraSensorList: Found the following Extra Sensors:" );
+            foreach ( ExtraSensor tmp in ExtraSensorList )
+                Sup.LogTraceInfoMessage( $"  {tmp.Name} of type: {tmp.Type}" );
 
             return;
-        }
+
+            // Private functions to help in setting up the ExtraSensor:List
+            // 1) GetActiveSensors : Get the string with configured ExtraSensors from cumulusutils.ini and convert to array of int
+            //
+            int[] GetActiveSensors( string Type )
+            {
+                Sup.LogTraceInfoMessage( $"GetActiveSensors: Getting Extra Sensors for {Type}" );
+
+                char[] charSeparators = new char[] { ',' };
+
+                string a = Sup.GetUtilsIniValue( "ExtraSensors", Type, "" );
+                string[] sensorsAsStrings = a.Split( charSeparators, StringSplitOptions.RemoveEmptyEntries );
+                int[] theseSensors;
+
+                try
+                {
+                    theseSensors = new int[ sensorsAsStrings.Length ];
+
+                    for ( int i = 0; i < sensorsAsStrings.Length; i++ )
+                        theseSensors[ i ] = Convert.ToInt32( sensorsAsStrings[ i ] );
+                }
+                catch ( Exception e )
+                {
+                    // reinitialise to make sure we have a correct array with all nuls
+                    theseSensors = new int[ sensorsAsStrings.Length ];
+                    Sup.LogTraceErrorMessage( $"GetActiveSensors: Exception {e.Message} \n- can't configure for type = {Type}. Please check configuration." );
+                }
+
+                return theseSensors;
+            }
+
+            // 1) registerSensor : Create an entry in the ExtraSensorList for a configured sensor
+            //
+            void registerSensor( string thisSensor, int sensorIndex, ExtraSensorType sensorType )
+            {
+                // Elementary errorcheck, full range check vcan be implemented, I will when it becomes a nuisance
+                //
+                if ( sensorIndex == 0 ) return;
+
+                tmp = new ExtraSensor
+                {
+                    Name = thisSensor,
+                    Type = sensorType,
+                    PlotvarIndex =  PlotvarStartindex + sensorIndex,
+                    PlotvarType = sensorType== ExtraSensorType.External ? thisSensor : ChartsCompiler.PlotvarTypesEXTRA[ PlotvarStartindex + sensorIndex ],
+                    SensorIndex = sensorIndex,
+                    RTposition = RTindex++,
+                };
+
+                // Do some corrections for the deviative sensors
+                if ( sensorType == ExtraSensorType.AirQualityAvg ) { tmp.PlotvarIndex += 4; tmp.PlotvarType = ChartsCompiler.PlotvarTypesEXTRA[ tmp.PlotvarIndex ]; }
+                //if ( sensorType == ExtraSensorType.External ) tmp.PlotvarType = thisSensor;
+
+                // And immediately set the name as default in the Language file so the chart legend becomes comprehensible
+                // and does not require additional user action
+                Sup.SetCUstringValue( "Compiler", tmp.PlotvarType, thisSensor );
+
+                ExtraSensorList.Add( tmp );
+            }
+        } // End InitialiseExtraSensorList
 
         #endregion
 

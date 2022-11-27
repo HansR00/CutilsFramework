@@ -309,7 +309,7 @@ namespace CumulusUtils
                   "  <div id='CUserContent' class='modal-body'>" +
                   "  </div>" +
                   "    <div class='modal-body'>" +
-                  @"This site is made with CumulusUtils, a generator tool for HTML presentation of weather data, retrieved from a weather station powered by <a href='https://cumulus.hosiene.co.uk/index.php'>Cumulus(MX)</a> (all versions). CumulusUtils is built and &copy; by Hans Rottier. It can be freely used an distributed under the Creative Commons 4.0 license (see Licenses). You can find it <a href='https://cumulus.hosiene.co.uk/viewtopic.php?f=44&t=17998' target='_blank'>here</a>.<br/> <br/>
+                  @"This site is made with CumulusUtils, a generator tool for HTML presentation of weather data, retrieved from a weather station powered by <a href='https://cumulus.hosiene.co.uk/index.php'>Cumulus(MX)</a> (all versions). CumulusUtils is built and &copy; by Hans Rottier. It can be freely used and distributed under the Creative Commons 4.0 license (see Licenses). You can find it <a href='https://cumulus.hosiene.co.uk/viewtopic.php?f=44&t=17998' target='_blank'>here</a>.<br/> <br/>
 It has a wiki of its own: <a href='https://cumuluswiki.org/a/Category:CumulusUtils'>go here</a>.<br/> <br/>
 With a background in Forestry, chemistry and ICT, I started developing a Top10 list and - above all - a Fire Weather Index. This quickly evolved into a standard website generator and it became CumulusUtils. All versions can be used for the single modules as well. CumulusUtils is for cooperation with CumulusMX.<br/><br/>
 CumulusUtils stands on the shoulders of the following:<br/><br/>
@@ -791,7 +791,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 "    DoRealtime(response);" +
                 "  })" +
                 "  .fail( function (xhr, textStatus, errorThrown) {" +
-                "    console.log('realtime.txt ' + textStatus + ' : ' + 'errorThrown');" +
+                "    console.log('realtime.txt ' + textStatus + ' : ' + errorThrown);" +
                 "  })" +
                 "}" +
 
@@ -1149,7 +1149,6 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     "  }" +
                     "  else {" +
                     $"    if ( prevImage == undefined ) nowImage = '{backgroundImageNight}';" +
-                    $"    if ( date > ST.night ) {{ nowImage = '{backgroundImageNight}'; }}" +
                     $"    if ( date > ST.nightEnd ) {{ nowImage = '{backgroundImageAstronomical}'; }}" +
                     $"    if ( date > ST.nauticalDawn ) {{ nowImage = '{backgroundImageNautical}'; }}" +
                     $"    if ( date > ST.dawn ) {{ nowImage = '{backgroundImageCivil}'; }}" +
@@ -1157,6 +1156,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     $"    if ( date > ST.sunset ) {{ nowImage = '{backgroundImageCivil}'; }}" +
                     $"    if ( date > ST.dusk ) {{ nowImage = '{backgroundImageNautical}'; }}" +
                     $"    if ( date > ST.nauticalDusk ) {{ nowImage = '{backgroundImageAstronomical}'; }}" +
+                    $"    if ( date > ST.night ) {{ nowImage = '{backgroundImageNight}'; }}" +
                     "  }" +
                     "  if (nowImage != prevImage){" +
                     "    console.log( 'Setting header image ' + nowImage + ' at ' + date );" +

@@ -385,7 +385,7 @@ namespace CumulusUtils
 
             _ver = String.Format( CultureInfo.InvariantCulture, $"<a href='https://cumulus.hosiene.co.uk/viewtopic.php?f=44&t=17998' target='_blank'>CumulusUtils</a> " +
                                   $"Version {_ver} " + beta +
-                                  $" - generated at {DateTime.Now}" );  // .ToString( "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture )
+                                  $" - generated at " + DateTime.Now.ToString("g") );  // .ToString( "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture )
 
             return _ver;
         }
