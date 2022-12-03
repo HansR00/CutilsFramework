@@ -501,6 +501,7 @@ namespace CumulusUtils
                         AddSeriesJavascript.AppendLine( $"    type: '{thisPlotvar.GraphType}'," );
 
                         if ( !thisChart.HasScatter ) AddSeriesJavascript.AppendLine( $"    lineWidth: {thisPlotvar.LineWidth}," );
+                        if ( !thisPlotvar.Visible ) AddSeriesJavascript.AppendLine( $"    visible: false," );
 
                         AddSeriesJavascript.AppendLine( $"    zIndex: {thisPlotvar.zIndex}," );
                         AddSeriesJavascript.AppendLine( $"    tooltip:{{valueSuffix: ' {thisPlotvar.Unit}'}}" );

@@ -440,6 +440,7 @@ namespace CumulusUtils
                         thisPlotvar.Color = "";
                         thisPlotvar.LineWidth = 2;
                         thisPlotvar.Opacity = 1.0;
+                        thisPlotvar.Visible = true;
 
                         // Use the range of the last plotvar assuming the user does not use RECENT mixed with ALL or DAILY
                         // Doing so would be an error!
@@ -447,6 +448,13 @@ namespace CumulusUtils
 
                         do
                         {
+                            // Check if the line must be shown at initialisation
+                            if ( Keywords[ CurrPosition ].Equals( "InVisible", cmp ) )
+                            {
+                                CurrPosition++;
+                                thisPlotvar.Visible = false;
+                            }
+
                             // Search for AS keyword
                             if ( Keywords[ CurrPosition ].Equals( "As", cmp ) )
                             {

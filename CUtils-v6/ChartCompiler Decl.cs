@@ -114,6 +114,7 @@ namespace CumulusUtils
         internal string AxisId;             // For fast access to the type needed
         internal int zIndex;                // the zIndex plane for the plotorder (e.g. to get a  line before an area so it can be seen)
         internal bool IsStats;              // Remember it is a stats var and needs to be linked to the original which must be in the same chart
+        internal bool Visible;              // Should the  line be visible at initialisation? true == Yes, fals == No
     }
 
     internal struct AllVarInfo
