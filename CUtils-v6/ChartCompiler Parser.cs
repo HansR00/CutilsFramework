@@ -588,6 +588,7 @@ namespace CumulusUtils
                                     Keywords[ CurrPosition ].Equals( "zIndex", cmp ) ||
                                     Keywords[ CurrPosition ].Equals( "Opacity", cmp ) ||
                                     Keywords[ CurrPosition ].Equals( "Axis", cmp ) ||
+                                    Keywords[ CurrPosition ].Equals( "InVisible", cmp ) ||
                                     Keywords[ CurrPosition ].Equals( "LineWidth", cmp ) );
 
                         if ( thisPlotvar.GraphType == "scatter" )
