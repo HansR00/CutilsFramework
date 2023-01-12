@@ -130,7 +130,7 @@ using FluentFTP.Helpers;
 
 namespace CumulusUtils
 {
-    public class CMXutils
+    public class CUtils
     {
         private bool DoPwsFWI;
         private bool DoTop10;
@@ -150,6 +150,8 @@ namespace CumulusUtils
         private bool DoCompileOnly;
         private bool DoUserAskedData;
         private bool DoExtraSensors;
+
+        public const StringComparison cmp = StringComparison.OrdinalIgnoreCase;
 
         public static CuSupport Sup { get; set; }
         public static InetSupport Isup { get; set; }
@@ -237,7 +239,7 @@ namespace CumulusUtils
 
                 // So, here we go... for FluentFTP
                 // The only time CuSupport is instantiated; Can't be in the different classes
-                if ( Sup.GetUtilsIniValue( "FTP site", "FtpLog", "Off" ).Equals( "On", StringComparison.OrdinalIgnoreCase ) )
+                if ( Sup.GetUtilsIniValue( "FTP site", "FtpLog", "Off" ).Equals( "On", CUtils.cmp ) )
                 {
                     FtpTrace.LogPassword = false;
                     FtpTrace.LogUserName = false;
@@ -284,22 +286,22 @@ namespace CumulusUtils
                     CanDoMap = true;
 
 
-                HasStationMapMenu = Sup.GetUtilsIniValue( "StationMap", "StationMapMenu", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
-                HasMeteoCamMenu = Sup.GetUtilsIniValue( "MeteoCam", "MeteoCamMenu", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
-                HasExtraSensors = Sup.GetUtilsIniValue( "ExtraSensors", "ExtraSensors", "false" ).Equals( "true", StringComparison.OrdinalIgnoreCase ) &&
+                HasStationMapMenu = Sup.GetUtilsIniValue( "StationMap", "StationMapMenu", "true" ).Equals( "true", CUtils.cmp );
+                HasMeteoCamMenu = Sup.GetUtilsIniValue( "MeteoCam", "MeteoCamMenu", "true" ).Equals( "true", CUtils.cmp );
+                HasExtraSensors = Sup.GetUtilsIniValue( "ExtraSensors", "ExtraSensors", "false" ).Equals( "true", CUtils.cmp ) &&
                     Sup.GetCumulusIniValue( "Station", "LogExtraSensors", "" ).Equals( "1" );
-                ParticipatesSensorCommunity = Sup.GetUtilsIniValue( "ExtraSensors", "ParticipatesSensorCommunity", "false" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
-                MapParticipant = Sup.GetUtilsIniValue( "Maps", "Participant", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
-                HasSolar = Sup.GetUtilsIniValue( "Website", "ShowSolar", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase ); // Is an indirect determination set by the user only in  cutils
-                DoLibraryIncludes = Sup.GetUtilsIniValue( "General", "DoLibraryIncludes", "false" ).Equals( "true", StringComparison.OrdinalIgnoreCase ); // Do we need the libs??
-                DojQueryInclude = Sup.GetUtilsIniValue( "General", "GeneratejQueryInclude", "false" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
+                ParticipatesSensorCommunity = Sup.GetUtilsIniValue( "ExtraSensors", "ParticipatesSensorCommunity", "false" ).Equals( "true", CUtils.cmp );
+                MapParticipant = Sup.GetUtilsIniValue( "Maps", "Participant", "true" ).Equals( "true", CUtils.cmp );
+                HasSolar = Sup.GetUtilsIniValue( "Website", "ShowSolar", "true" ).Equals( "true", CUtils.cmp ); // Is an indirect determination set by the user only in  cutils
+                DoLibraryIncludes = Sup.GetUtilsIniValue( "General", "DoLibraryIncludes", "false" ).Equals( "true", CUtils.cmp ); // Do we need the libs??
+                DojQueryInclude = Sup.GetUtilsIniValue( "General", "GeneratejQueryInclude", "false" ).Equals( "true", CUtils.cmp );
 
                 bool AirLinkIn = Sup.GetCumulusIniValue( "AirLink", "In-Enabled", "0" ).Equals( "1" );
                 bool AirLinkOut = Sup.GetCumulusIniValue( "AirLink", "Out-Enabled", "0" ).Equals( "1" );
                 HasAirLink = AirLinkIn || AirLinkOut;
 
                 // Now start doing things
-                CMXutils p = new CMXutils();
+                CUtils p = new CUtils();
                 await p.RealMainAsync( args );
             }
             catch ( ArgumentNullException ex )
@@ -521,6 +523,7 @@ namespace CumulusUtils
             //
             if ( DoPwsFWI || DoTop10 || DoGraphs || DoYadr || DoRecords || DoNOAA || DoDayRecords || DoCheckOnly || DoWebsite || DoCreateMap || DoUserAskedData )
             {
+                //StartOfObservations = MainList.Select( x => x.ThisDate ).Min();
                 StartOfObservations = MainList.Select( x => x.ThisDate ).Min();
                 const int NrOfDaysForUsefulResults = 32;
 
@@ -1003,7 +1006,7 @@ namespace CumulusUtils
             {
                 Sup.LogDebugMessage( $" CommandLineArgs : handling arg: {s}" );
 
-                if ( s.Equals( "Website", StringComparison.OrdinalIgnoreCase ) )
+                if ( s.Equals( "Website", CUtils.cmp ) )
                 {
                     DoSystemChk = true;
                     DoTop10 = true;
@@ -1025,51 +1028,34 @@ namespace CumulusUtils
                 }
                 else
                 {
-                    if ( s.Equals( "Thrifty", StringComparison.OrdinalIgnoreCase ) )
+                    if ( s.Equals( "Thrifty", CUtils.cmp ) )
                     {
                         Thrifty = true;
                     }
                     else
                     {
-                        if ( s.Equals( "Top10", StringComparison.OrdinalIgnoreCase ) )
-                            DoTop10 = true;
-                        if ( s.Equals( "pwsFWI", StringComparison.OrdinalIgnoreCase ) )
-                            DoPwsFWI = true;
-                        if ( s.Equals( "Sysinfo", StringComparison.OrdinalIgnoreCase ) )
-                            DoSystemChk = true;
-                        if ( s.Equals( "Graphs", StringComparison.OrdinalIgnoreCase ) )
-                            DoGraphs = true;
-                        if ( s.Equals( "CreateMap", StringComparison.OrdinalIgnoreCase ) )
-                            DoCreateMap = true;    // Undocumented feature only for the keeper of the map
-                        if ( s.Equals( "Yadr", StringComparison.OrdinalIgnoreCase ) )
-                            DoYadr = true;
-                        if ( s.Equals( "Records", StringComparison.OrdinalIgnoreCase ) )
-                            DoRecords = true;
-                        if ( s.Equals( "NOAA", StringComparison.OrdinalIgnoreCase ) )
-                            DoNOAA = true;
-                        if ( s.Equals( "DayRecords", StringComparison.OrdinalIgnoreCase ) )
-                            DoDayRecords = true;
-                        if ( s.Equals( "CheckOnly", StringComparison.OrdinalIgnoreCase ) )
-                            DoCheckOnly = true;
-                        if ( s.Equals( "Forecast", StringComparison.OrdinalIgnoreCase ) )
-                            DoForecast = true;
-                        if ( s.Equals( "UserReports", StringComparison.OrdinalIgnoreCase ) )
-                            DoUserReports = true;
-                        if ( s.Equals( "StationMap", StringComparison.OrdinalIgnoreCase ) )
-                            DoStationMap = true;
-                        if ( s.Equals( "MeteoCam", StringComparison.OrdinalIgnoreCase ) )
-                            DoMeteoCam = true;
-                        if ( s.Equals( "AirLink", StringComparison.OrdinalIgnoreCase ) )
-                            DoAirLink = true;
-                        if ( s.Equals( "CompileOnly", StringComparison.OrdinalIgnoreCase ) )
-                            DoCompileOnly = true;
-                        if ( s.Equals( "ExtraSensors", StringComparison.OrdinalIgnoreCase ) )
+                        if ( s.Equals( "Top10", CUtils.cmp ) ) DoTop10 = true;
+                        if ( s.Equals( "pwsFWI", CUtils.cmp ) ) DoPwsFWI = true;
+                        if ( s.Equals( "Sysinfo", CUtils.cmp ) ) DoSystemChk = true;
+                        if ( s.Equals( "Graphs", CUtils.cmp ) ) DoGraphs = true;
+                        if ( s.Equals( "CreateMap", CUtils.cmp ) ) DoCreateMap = true;    // Undocumented feature only for the keeper of the map
+                        if ( s.Equals( "Yadr", CUtils.cmp ) ) DoYadr = true;
+                        if ( s.Equals( "Records", CUtils.cmp ) ) DoRecords = true;
+                        if ( s.Equals( "NOAA", CUtils.cmp ) ) DoNOAA = true;
+                        if ( s.Equals( "DayRecords", CUtils.cmp ) ) DoDayRecords = true;
+                        if ( s.Equals( "CheckOnly", CUtils.cmp ) ) DoCheckOnly = true;
+                        if ( s.Equals( "Forecast", CUtils.cmp ) ) DoForecast = true;
+                        if ( s.Equals( "UserReports", CUtils.cmp ) ) DoUserReports = true;
+                        if ( s.Equals( "StationMap", CUtils.cmp ) ) DoStationMap = true;
+                        if ( s.Equals( "MeteoCam", CUtils.cmp ) ) DoMeteoCam = true;
+                        if ( s.Equals( "AirLink", CUtils.cmp ) ) DoAirLink = true;
+                        if ( s.Equals( "CompileOnly", CUtils.cmp ) ) DoCompileOnly = true;
+                        if ( s.Equals( "ExtraSensors", CUtils.cmp ) )
                         {
                             DoExtraSensors = true;
                             DoCompileOnly = true;  // Implicit for Extra Sensors
                         }
-                        if ( s.Equals( "UserAskedData", StringComparison.OrdinalIgnoreCase ) )
-                            DoUserAskedData = true;
+                        if ( s.Equals( "UserAskedData", CUtils.cmp ) ) DoUserAskedData = true;
                     }
                 }
             }
@@ -1079,5 +1065,5 @@ namespace CumulusUtils
 
         #endregion
 
-    } // Class CMXutils
+    } // Class CUtils
 } // namespace

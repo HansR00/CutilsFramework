@@ -64,7 +64,7 @@ namespace CumulusUtils
             // Make sure the parameters exist in one run, otherwise the user has to run, define and run again
             ForecastSystem = Sup.GetUtilsIniValue( "Forecasts", "ForecastSystem", "SPOTWX" );
 
-            if ( ForecastSystem.Equals( "Yourweather", StringComparison.OrdinalIgnoreCase ) )
+            if ( ForecastSystem.Equals( "Yourweather", CUtils.cmp ) )
             {
                 string YourWeatherPredictionURL = Sup.GetUtilsIniValue( "Forecasts", "SevenDayPredictionURL", "" );
 
@@ -117,7 +117,7 @@ namespace CumulusUtils
                 return;
 
             }
-            else if ( Sup.GetUtilsIniValue( "Forecasts", "ForecastSystem", "SPOTWX" ).Equals( "Norway", StringComparison.OrdinalIgnoreCase ) )
+            else if ( Sup.GetUtilsIniValue( "Forecasts", "ForecastSystem", "SPOTWX" ).Equals( "Norway", CUtils.cmp ) )
             {
                 // https://developer.yr.no/
                 //
@@ -139,7 +139,7 @@ namespace CumulusUtils
                 }
                 return;
             }
-            else if ( Sup.GetUtilsIniValue( "Forecasts", "ForecastSystem", "SPOTWX" ).Equals( "WXSIM", StringComparison.OrdinalIgnoreCase ) )
+            else if ( Sup.GetUtilsIniValue( "Forecasts", "ForecastSystem", "SPOTWX" ).Equals( "WXSIM", CUtils.cmp ) )
             {
                 string WxsimPredictionURL = Sup.GetUtilsIniValue( "Forecasts", "WXsimURL", "" );
 
@@ -158,7 +158,7 @@ namespace CumulusUtils
                 }
                 return;
             }
-            else if ( Sup.GetUtilsIniValue( "Forecasts", "ForecastSystem", "SPOTWX" ).Equals( "SPOTWX", StringComparison.OrdinalIgnoreCase ) )
+            else if ( Sup.GetUtilsIniValue( "Forecasts", "ForecastSystem", "SPOTWX" ).Equals( "SPOTWX", CUtils.cmp ) )
             {
                 string SpotwxPredictionURL;
 

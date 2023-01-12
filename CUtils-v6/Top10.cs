@@ -324,8 +324,8 @@ namespace CumulusUtils
 
                 if ( Top10List[ i ][ j ].TimeMaxTemp.Date == Yesterday.Date )
                 {
-                    CMXutils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CMXutils.ThriftyTop10RecordsDirty {CMXutils.ThriftyTop10RecordsDirty} detected." );
+                    CUtils.ThriftyTop10RecordsDirty = true;
+                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
                 }
             }
 
@@ -338,8 +338,8 @@ namespace CumulusUtils
 
                 if ( Top10List[ i ][ j ].TimeMinTemp.Date == Yesterday.Date )
                 {
-                    CMXutils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CMXutils.ThriftyTop10RecordsDirty {CMXutils.ThriftyTop10RecordsDirty} detected." );
+                    CUtils.ThriftyTop10RecordsDirty = true;
+                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
                 }
             }
 
@@ -352,8 +352,8 @@ namespace CumulusUtils
 
                 if ( Top10List[ i ][ j ].TimeLowHumidity.Date == Yesterday.Date )
                 {
-                    CMXutils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CMXutils.ThriftyTop10RecordsDirty {CMXutils.ThriftyTop10RecordsDirty} detected." );
+                    CUtils.ThriftyTop10RecordsDirty = true;
+                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
                 }
             }
 
@@ -366,8 +366,8 @@ namespace CumulusUtils
 
                 if ( Top10List[ i ][ j ].TimeMaxBarometer.Date == Yesterday.Date )
                 {
-                    CMXutils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CMXutils.ThriftyTop10RecordsDirty {CMXutils.ThriftyTop10RecordsDirty} detected." );
+                    CUtils.ThriftyTop10RecordsDirty = true;
+                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
                 }
             }
 
@@ -380,8 +380,8 @@ namespace CumulusUtils
 
                 if ( Top10List[ i ][ j ].TimeMinBarometer.Date == Yesterday.Date )
                 {
-                    CMXutils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CMXutils.ThriftyTop10RecordsDirty {CMXutils.ThriftyTop10RecordsDirty} detected." );
+                    CUtils.ThriftyTop10RecordsDirty = true;
+                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
                 }
             }
 
@@ -394,8 +394,8 @@ namespace CumulusUtils
 
                 if ( Top10List[ i ][ j ].TimeHighAverageWindSpeed.Date == Yesterday.Date )
                 {
-                    CMXutils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CMXutils.ThriftyTop10RecordsDirty {CMXutils.ThriftyTop10RecordsDirty} detected." );
+                    CUtils.ThriftyTop10RecordsDirty = true;
+                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
                 }
             }
 
@@ -408,8 +408,8 @@ namespace CumulusUtils
 
                 if ( Top10List[ i ][ j ].TimeHighWindGust.Date == Yesterday.Date )
                 {
-                    CMXutils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CMXutils.ThriftyTop10RecordsDirty {CMXutils.ThriftyTop10RecordsDirty} detected." );
+                    CUtils.ThriftyTop10RecordsDirty = true;
+                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
                 }
             }
 
@@ -422,8 +422,8 @@ namespace CumulusUtils
 
                 if ( Top10List[ i ][ j ].ThisDate.Date == Yesterday.Date )
                 {
-                    CMXutils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CMXutils.ThriftyTop10RecordsDirty {CMXutils.ThriftyTop10RecordsDirty} detected." );
+                    CUtils.ThriftyTop10RecordsDirty = true;
+                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
                 }
             }
 
@@ -436,8 +436,8 @@ namespace CumulusUtils
 
                 if ( Top10List[ i ][ j ].TimeMaxRainRate.Date == Yesterday.Date )
                 {
-                    CMXutils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CMXutils.ThriftyTop10RecordsDirty {CMXutils.ThriftyTop10RecordsDirty} detected." );
+                    CUtils.ThriftyTop10RecordsDirty = true;
+                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
                 }
             }
 
@@ -450,8 +450,8 @@ namespace CumulusUtils
 
                 if ( Top10List[ i ][ j ].TimeHighHourlyRain.Date == Yesterday.Date )
                 {
-                    CMXutils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CMXutils.ThriftyTop10RecordsDirty {CMXutils.ThriftyTop10RecordsDirty} detected." );
+                    CUtils.ThriftyTop10RecordsDirty = true;
+                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
                 }
             }
 
@@ -464,8 +464,8 @@ namespace CumulusUtils
 
                 if ( Top10List[ i ][ j ].ThisDate.Date == Yesterday.Date )
                 {
-                    CMXutils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CMXutils.ThriftyTop10RecordsDirty {CMXutils.ThriftyTop10RecordsDirty} detected." );
+                    CUtils.ThriftyTop10RecordsDirty = true;
+                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
                 }
             }
 
@@ -478,8 +478,8 @@ namespace CumulusUtils
 
                 if ( Top10List[ i ][ j ].ThisDate.Date == Yesterday.Date )
                 {
-                    CMXutils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CMXutils.ThriftyTop10RecordsDirty {CMXutils.ThriftyTop10RecordsDirty} detected." );
+                    CUtils.ThriftyTop10RecordsDirty = true;
+                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
                 }
             }
 
@@ -492,8 +492,8 @@ namespace CumulusUtils
 
                 if ( Top10List[ i ][ j ].ThisDate.Date == Yesterday.Date )
                 {
-                    CMXutils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CMXutils.ThriftyTop10RecordsDirty {CMXutils.ThriftyTop10RecordsDirty} detected." );
+                    CUtils.ThriftyTop10RecordsDirty = true;
+                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
                 }
             }
 
@@ -506,18 +506,18 @@ namespace CumulusUtils
 
                 if ( Top10List[ i ][ j ].ThisDate.Date == Yesterday.Date )
                 {
-                    CMXutils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CMXutils.ThriftyTop10RecordsDirty {CMXutils.ThriftyTop10RecordsDirty} detected." );
+                    CUtils.ThriftyTop10RecordsDirty = true;
+                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
                 }
             }
 
             // If the cycle is true then set records dirty so it is always uploaded; required to release accented records when 30 day period has  passed
-            if ( CMXutils.RunStarted.DayOfYear % CMXutils.ThriftyTop10RecordsPeriod == 0 )
-                CMXutils.ThriftyTop10RecordsDirty = true;
+            if ( CUtils.RunStarted.DayOfYear % CUtils.ThriftyTop10RecordsPeriod == 0 )
+                CUtils.ThriftyTop10RecordsDirty = true;
 
-            if ( !CMXutils.Thrifty || CMXutils.ThriftyTop10RecordsDirty )
+            if ( !CUtils.Thrifty || CUtils.ThriftyTop10RecordsDirty )
                 HTMLexportTop10();
-            Sup.LogTraceVerboseMessage( $"Thrifty: !Thrifty || ThriftyTop10RecordsDirty - {!CMXutils.Thrifty || CMXutils.ThriftyTop10RecordsDirty} => Top10 , NO HTML generated!" );
+            Sup.LogTraceVerboseMessage( $"Thrifty: !Thrifty || ThriftyTop10RecordsDirty - {!CUtils.Thrifty || CUtils.ThriftyTop10RecordsDirty} => Top10 , NO HTML generated!" );
 
             return; //all done
         }
@@ -700,11 +700,11 @@ namespace CumulusUtils
                     of.WriteLine( "</tbody></table><br/>" );
                 }
 
-                of.WriteLine( $"<p>{Sup.GetCUstringValue( "Records", "RecordsSince", "Records registered since", false )} {CMXutils.StartOfObservations.Date:dd MMMM yyyy} - " +
-                             $"({( CMXutils.RunStarted.Date - CMXutils.StartOfObservations.Date ).TotalDays} {Sup.GetCUstringValue( "General", "Days", "Days", false )})</p>" );
+                of.WriteLine( $"<p>{Sup.GetCUstringValue( "Records", "RecordsSince", "Records registered since", false )} {CUtils.StartOfObservations.Date:dd MMMM yyyy} - " +
+                             $"({( CUtils.RunStarted.Date - CUtils.StartOfObservations.Date ).TotalDays} {Sup.GetCUstringValue( "General", "Days", "Days", false )})</p>" );
 
 
-                if ( !CMXutils.DoWebsite )
+                if ( !CUtils.DoWebsite )
                 {
                     of.WriteLine( $"<p style ='text-align: center; font-size: 12px;'>{CuSupport.FormattedVersion()} - {CuSupport.Copyright()}</p>" );
                 }

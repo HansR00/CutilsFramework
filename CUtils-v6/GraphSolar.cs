@@ -259,7 +259,7 @@ namespace CumulusUtils
             {
                 List<DaySolarValues> yearMonthlist = DailySolarValuesList.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == (int) thisMonth ).ToList();
 
-                Sup.LogTraceInfoMessage( $"Generating Year Month Solar Hours Statistics, doing year {i} and month {thisMonth}" );
+                //Sup.LogTraceInfoMessage( $"Generating Year Month Solar Hours Statistics, doing year {i} and month {thisMonth}" );
 
                 if ( yearMonthlist.Any() )
                 {
@@ -585,7 +585,7 @@ namespace CumulusUtils
             {
                 List<DaySolarValues> yearMonthlist = DailySolarValuesList.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == (int) thisMonth ).ToList();
 
-                Sup.LogTraceInfoMessage( $"Generating Year Month Solar Energy Statistics, doing year {i} and month {thisMonth}" );
+                //Sup.LogTraceInfoMessage( $"Generating Year Month Solar Energy Statistics, doing year {i} and month {thisMonth}" );
 
                 if ( yearMonthlist.Any() )
                 {

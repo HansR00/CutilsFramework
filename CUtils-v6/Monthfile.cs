@@ -187,8 +187,8 @@ namespace CumulusUtils
 
             Sup.LogTraceInfoMessage( $"Monthfile constructor: MonthfileType is {type}" );
             enumFieldTypeNames = Enum.GetNames( typeof( MonthfileFieldName ) );
-            IgnoreDataErrors = Sup.GetUtilsIniValue( "General", "IgnoreDataErrors", "true" ).Equals( "true" );
-            UseSQL = Sup.GetUtilsIniValue( "General", "UseSQL", "false" ).Equals( "true" );
+            IgnoreDataErrors = Sup.GetUtilsIniValue( "General", "IgnoreDataErrors", "true" ).Equals( "true", CUtils.cmp );
+            UseSQL = Sup.GetUtilsIniValue( "General", "UseSQL", "false" ).Equals( "true", CUtils.cmp );
 
             return;
         }

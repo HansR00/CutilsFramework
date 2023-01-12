@@ -130,7 +130,7 @@ namespace CumulusUtils
                 // That was the setting of everything in the Document Load function
                 // Now start the whole thing
 
-                if ( Sup.GetUtilsIniValue( "NOAA", "StartInCurrentMonth", "true" ).ToLowerInvariant().Equals( "false" ) )
+                if ( Sup.GetUtilsIniValue( "NOAA", "StartInCurrentMonth", "true" ).Equals( "false", CUtils.cmp ) )
                     of.WriteLine( "    $('#month').val('');" );  // Set the whole thing to only the year (the original)
 
                 of.WriteLine( "    $('#year').trigger('change');" );
@@ -255,7 +255,7 @@ namespace CumulusUtils
                 of.WriteLine( "<select id='month'>" );
                 of.WriteLine( $"<option value=''>---</option>" );
 
-                DateTime noaaDate = CMXutils.RunStarted;
+                DateTime noaaDate = CUtils.RunStarted;
                 if ( noaaDate.Day == 1 )
                     noaaDate = noaaDate.AddDays( -1 );
 
@@ -274,7 +274,7 @@ namespace CumulusUtils
                 of.WriteLine( "<pre id='NOAAplaceholder'></pre>" );
                 of.WriteLine( "</div>" ); // Format for table
 
-                if ( !CMXutils.DoWebsite )
+                if ( !CUtils.DoWebsite )
                 {
                     of.WriteLine( $"<p style='text-align:center;font-size: 12px;'>{CuSupport.FormattedVersion()} - {CuSupport.Copyright()}</p>" );
                 }

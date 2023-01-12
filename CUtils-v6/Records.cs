@@ -78,7 +78,7 @@ namespace CumulusUtils
             MonthsNotPresentAllYears = tmpIntArray.Except( Thislist.Select( x => x.ThisDate.Month ).Distinct() ).ToArray();
 
             GenerateYearlyRecords( YearMin, Thislist );
-            if ( !CMXutils.Thrifty || CMXutils.ThriftyRecordsDirty )
+            if ( !CUtils.Thrifty || CUtils.ThriftyRecordsDirty )
                 GenerateHTMLRecords( YearMin, YearMax );
 
             return;
@@ -140,14 +140,14 @@ namespace CumulusUtils
                 tmp = yearlist.Min( y => y.MinBarometer );
                 RecordsArray[ (int) MeasurementRecords.Plow ] = yearlist.Where( x => x.MinBarometer == tmp ).First();
 
-                if ( CMXutils.Thrifty && ( count == 0 || CMXutils.RunStarted.Year == thisYear ) ) // Check for alltime record or the current record 
+                if ( CUtils.Thrifty && ( count == 0 || CUtils.RunStarted.Year == thisYear ) ) // Check for alltime record or the current record 
                 {
                     for ( int i = 0; i < Enum.GetNames( typeof( MeasurementRecords ) ).Length; i++ )
                     {
                         if ( RecordsArray[ i ].ThisDate.Date == Yesterday.Date )
                         {
-                            CMXutils.ThriftyRecordsDirty = true;
-                            Sup.LogTraceInfoMessage( $"Generate Records: CMXutils.ThriftyRecordsDirty {CMXutils.ThriftyRecordsDirty} detected on {RecordsArray[ i ].ThisDate}" );
+                            CUtils.ThriftyRecordsDirty = true;
+                            Sup.LogTraceInfoMessage( $"Generate Records: CUtils.ThriftyRecordsDirty {CUtils.ThriftyRecordsDirty} detected on {RecordsArray[ i ].ThisDate}" );
 
                             break;
                         }
@@ -194,14 +194,14 @@ namespace CumulusUtils
                         tmp = monthlist.Min( y => y.MinBarometer );
                         RecordsArray[ (int) MeasurementRecords.Plow ] = monthlist.Where( x => x.MinBarometer == tmp ).First();
 
-                        if ( CMXutils.Thrifty && ( count == 0 || CMXutils.RunStarted.Year == thisYear ) ) // Check for alltime record or a thisyear record 
+                        if ( CUtils.Thrifty && ( count == 0 || CUtils.RunStarted.Year == thisYear ) ) // Check for alltime record or a thisyear record 
                         {
                             for ( int j = 0; j < Enum.GetNames( typeof( MeasurementRecords ) ).Length; j++ )
                             {
                                 if ( RecordsArray[ j ].ThisDate.Date == Yesterday.Date )
                                 {
-                                    CMXutils.ThriftyRecordsDirty = true;
-                                    Sup.LogTraceInfoMessage( $"Generate Records: CMXutils.ThriftyRecordsDirty {CMXutils.ThriftyRecordsDirty} detected on {RecordsArray[ j ].ThisDate}" );
+                                    CUtils.ThriftyRecordsDirty = true;
+                                    Sup.LogTraceInfoMessage( $"Generate Records: CUtils.ThriftyRecordsDirty {CUtils.ThriftyRecordsDirty} detected on {RecordsArray[ j ].ThisDate}" );
 
                                     break; // We have a record on yesterday so we need to generate and upload!
                                 }
@@ -238,7 +238,7 @@ namespace CumulusUtils
                 of.WriteLine( "<script>" );
                 of.WriteLine( "$(function() {" );
                 of.WriteLine( "  $('.jqueryOptions').hide();" );
-                of.WriteLine( $"  $('.AllYears{m[ now.Month-1 ]}').show();" );
+                of.WriteLine( $"  $('.AllYears{m[ now.Month - 1 ]}').show();" );
                 of.WriteLine( "  SetMonthsDisabled();" );
                 of.WriteLine( "  $('#year').change(function() {" );
                 of.WriteLine( "    SetMonthsDisabled();" );
@@ -614,10 +614,10 @@ namespace CumulusUtils
                 }
 
                 of.WriteLine( "<br/>" ); // #report
-                of.WriteLine( $"<p>{Sup.GetCUstringValue( "Records", "RecordsSince", "Records registered since", false )} {CMXutils.StartOfObservations.Date:dd MMMM yyyy} - " +
-                             $"({( CMXutils.RunStarted.Date - CMXutils.StartOfObservations.Date ).TotalDays} {Sup.GetCUstringValue( "General", "Days", "Days", false )})</p>" );
+                of.WriteLine( $"<p>{Sup.GetCUstringValue( "Records", "RecordsSince", "Records registered since", false )} {CUtils.StartOfObservations.Date:dd MMMM yyyy} - " +
+                             $"({( CUtils.RunStarted.Date - CUtils.StartOfObservations.Date ).TotalDays} {Sup.GetCUstringValue( "General", "Days", "Days", false )})</p>" );
 
-                if ( !CMXutils.DoWebsite )
+                if ( !CUtils.DoWebsite )
                 {
                     of.WriteLine( $"<p style='text-align:center;font-size: 12px;'>{CuSupport.FormattedVersion()} - {CuSupport.Copyright()}</p>" );
                 }

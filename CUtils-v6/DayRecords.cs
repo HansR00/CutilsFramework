@@ -117,7 +117,7 @@ namespace CumulusUtils
                 of.WriteLine( "   margin: auto;" );
                 of.WriteLine( "}" );
 
-                if ( Sup.GetUtilsIniValue( "General", "UseScrollableTables", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase ) )
+                if ( Sup.GetUtilsIniValue( "General", "UseScrollableTables", "true" ).Equals( "true", CUtils.cmp ) )
                 {
                     of.WriteLine( ".CUtable{" );
                     of.WriteLine( "  scrollbar-width: thin;" );
@@ -250,11 +250,11 @@ namespace CumulusUtils
 
                                 if ( thisEntry.ThisDate.Date == Yesterday.Date )
                                 {
-                                    CMXutils.ThriftyDayRecordsDirty = true;
-                                    Sup.LogTraceInfoMessage( $"Generate DayRecords: CMXutils.ThriftyDayRecordsDirty {CMXutils.ThriftyDayRecordsDirty} detected on {thisEntry.ThisDate.Date}." );
+                                    CUtils.ThriftyDayRecordsDirty = true;
+                                    Sup.LogTraceInfoMessage( $"Generate DayRecords: CUtils.ThriftyDayRecordsDirty {CUtils.ThriftyDayRecordsDirty} detected on {thisEntry.ThisDate.Date}." );
                                 }
 
-                                HighlightFormat = CMXutils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CMXutils.StartOfObservations.AddYears( 1 )
+                                HighlightFormat = CUtils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CUtils.StartOfObservations.AddYears( 1 )
                                   ? "style=\"color: Red\""
                                   : "";
                                 of.WriteLine( $"<td class=\"reportttl\"><table class=\"CUtable\">" );
@@ -266,11 +266,11 @@ namespace CumulusUtils
 
                                 if ( thisEntry.ThisDate.Date == Yesterday.Date )
                                 {
-                                    CMXutils.ThriftyDayRecordsDirty = true;
-                                    Sup.LogTraceInfoMessage( $"Generate DayRecords: CMXutils.ThriftyDayRecordsDirty {CMXutils.ThriftyDayRecordsDirty} detected on {thisEntry.ThisDate.Date}." );
+                                    CUtils.ThriftyDayRecordsDirty = true;
+                                    Sup.LogTraceInfoMessage( $"Generate DayRecords: CUtils.ThriftyDayRecordsDirty {CUtils.ThriftyDayRecordsDirty} detected on {thisEntry.ThisDate.Date}." );
                                 }
 
-                                HighlightFormat = CMXutils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CMXutils.StartOfObservations.AddYears( 1 )
+                                HighlightFormat = CUtils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CUtils.StartOfObservations.AddYears( 1 )
                                   ? "style=\"color: blue\""
                                   : "";
                                 of.WriteLine( $"<tr><td {HighlightFormat}>{Sup.StationTemp.Format( thisEntry.MaxTemp )} ({thisEntry.ThisDate.Year})</td></tr>" );
@@ -282,11 +282,11 @@ namespace CumulusUtils
 
                                 if ( thisEntry.ThisDate.Date == Yesterday.Date )
                                 {
-                                    CMXutils.ThriftyDayRecordsDirty = true;
-                                    Sup.LogTraceInfoMessage( $"Generate DayRecords: CMXutils.ThriftyDayRecordsDirty {CMXutils.ThriftyDayRecordsDirty} detected on {thisEntry.ThisDate.Date}." );
+                                    CUtils.ThriftyDayRecordsDirty = true;
+                                    Sup.LogTraceInfoMessage( $"Generate DayRecords: CUtils.ThriftyDayRecordsDirty {CUtils.ThriftyDayRecordsDirty} detected on {thisEntry.ThisDate.Date}." );
                                 }
 
-                                HighlightFormat = CMXutils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CMXutils.StartOfObservations.AddYears( 1 )
+                                HighlightFormat = CUtils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CUtils.StartOfObservations.AddYears( 1 )
                                   ? "style=\"color: Red\""
                                   : "";
                                 of.WriteLine( $"<td class=\"reportttl\"><table class=\"CUtable\">" );
@@ -298,11 +298,11 @@ namespace CumulusUtils
 
                                 if ( thisEntry.ThisDate.Date == Yesterday.Date )
                                 {
-                                    CMXutils.ThriftyDayRecordsDirty = true;
-                                    Sup.LogTraceInfoMessage( $"Generate DayRecords: CMXutils.ThriftyDayRecordsDirty {CMXutils.ThriftyDayRecordsDirty} detected on {thisEntry.ThisDate.Date}." );
+                                    CUtils.ThriftyDayRecordsDirty = true;
+                                    Sup.LogTraceInfoMessage( $"Generate DayRecords: CUtils.ThriftyDayRecordsDirty {CUtils.ThriftyDayRecordsDirty} detected on {thisEntry.ThisDate.Date}." );
                                 }
 
-                                HighlightFormat = CMXutils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CMXutils.StartOfObservations.AddYears( 1 )
+                                HighlightFormat = CUtils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CUtils.StartOfObservations.AddYears( 1 )
                                   ? "style=\"color: blue\""
                                   : "";
                                 of.WriteLine( $"<tr><td {HighlightFormat}>{Sup.StationTemp.Format( thisEntry.MinTemp )} ({thisEntry.ThisDate.Year})</td></tr>" );
@@ -313,11 +313,11 @@ namespace CumulusUtils
 
                                 if ( thisEntry.ThisDate.Date == Yesterday.Date )
                                 {
-                                    CMXutils.ThriftyDayRecordsDirty = true;
-                                    Sup.LogTraceInfoMessage( $"Generate DayRecords: CMXutils.ThriftyDayRecordsDirty {CMXutils.ThriftyDayRecordsDirty} detected on {thisEntry.ThisDate.Date}." );
+                                    CUtils.ThriftyDayRecordsDirty = true;
+                                    Sup.LogTraceInfoMessage( $"Generate DayRecords: CUtils.ThriftyDayRecordsDirty {CUtils.ThriftyDayRecordsDirty} detected on {thisEntry.ThisDate.Date}." );
                                 }
 
-                                HighlightFormat = CMXutils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CMXutils.StartOfObservations.AddYears( 1 )
+                                HighlightFormat = CUtils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CUtils.StartOfObservations.AddYears( 1 )
                                   ? "style=\"color: DeepSkyBlue\""
                                   : "";
                                 of.WriteLine( $"<td class=\"reportttl\" {HighlightFormat}>{Sup.StationRain.Format( thisEntry.TotalRainThisDay )} ({thisEntry.ThisDate.Year})</td>" );
@@ -327,11 +327,11 @@ namespace CumulusUtils
 
                                 if ( thisEntry.ThisDate.Date == Yesterday.Date )
                                 {
-                                    CMXutils.ThriftyDayRecordsDirty = true;
-                                    Sup.LogTraceInfoMessage( $"Generate DayRecords: CMXutils.ThriftyDayRecordsDirty {CMXutils.ThriftyDayRecordsDirty} detected on {thisEntry.ThisDate.Date}." );
+                                    CUtils.ThriftyDayRecordsDirty = true;
+                                    Sup.LogTraceInfoMessage( $"Generate DayRecords: CUtils.ThriftyDayRecordsDirty {CUtils.ThriftyDayRecordsDirty} detected on {thisEntry.ThisDate.Date}." );
                                 }
 
-                                HighlightFormat = CMXutils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CMXutils.StartOfObservations.AddYears( 1 )
+                                HighlightFormat = CUtils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CUtils.StartOfObservations.AddYears( 1 )
                                   ? "style=\"color: DeepSkyBlue\""
                                   : "";
                                 of.WriteLine( $"<td class=\"reportttl\" {HighlightFormat}>{Sup.StationRain.Format( thisEntry.MonthlyRain )} ({thisEntry.ThisDate.Year})</td>" );
@@ -341,11 +341,11 @@ namespace CumulusUtils
 
                                 if ( thisEntry.ThisDate.Date == Yesterday.Date )
                                 {
-                                    CMXutils.ThriftyDayRecordsDirty = true;
-                                    Sup.LogTraceInfoMessage( $"Generate DayRecords: CMXutils.ThriftyDayRecordsDirty {CMXutils.ThriftyDayRecordsDirty} detected on {thisEntry.ThisDate.Date}." );
+                                    CUtils.ThriftyDayRecordsDirty = true;
+                                    Sup.LogTraceInfoMessage( $"Generate DayRecords: CUtils.ThriftyDayRecordsDirty {CUtils.ThriftyDayRecordsDirty} detected on {thisEntry.ThisDate.Date}." );
                                 }
 
-                                HighlightFormat = CMXutils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CMXutils.StartOfObservations.AddYears( 1 )
+                                HighlightFormat = CUtils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CUtils.StartOfObservations.AddYears( 1 )
                                   ? "style=\"color: DeepSkyBlue\""
                                   : "";
                                 of.WriteLine( $"<td class=\"reportttl\" {HighlightFormat}>{Sup.StationRain.Format( thisEntry.YearToDateRain )} ({thisEntry.ThisDate.Year})</td>" );
@@ -355,11 +355,11 @@ namespace CumulusUtils
 
                                 if ( thisEntry.ThisDate.Date == Yesterday.Date )
                                 {
-                                    CMXutils.ThriftyDayRecordsDirty = true;
-                                    Sup.LogTraceInfoMessage( $"Generate DayRecords: CMXutils.ThriftyDayRecordsDirty {CMXutils.ThriftyDayRecordsDirty} detected on {thisEntry.ThisDate.Date}." );
+                                    CUtils.ThriftyDayRecordsDirty = true;
+                                    Sup.LogTraceInfoMessage( $"Generate DayRecords: CUtils.ThriftyDayRecordsDirty {CUtils.ThriftyDayRecordsDirty} detected on {thisEntry.ThisDate.Date}." );
                                 }
 
-                                HighlightFormat = CMXutils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CMXutils.StartOfObservations.AddYears( 1 )
+                                HighlightFormat = CUtils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CUtils.StartOfObservations.AddYears( 1 )
                                   ? "style=\"color: MediumSeaGreen\""
                                   : "";
                                 of.WriteLine( $"<td class=\"reportttl\" {HighlightFormat}>{Sup.StationWind.Format( thisEntry.HighAverageWindSpeed )} ({thisEntry.ThisDate.Year})</td>" );
@@ -369,11 +369,11 @@ namespace CumulusUtils
 
                                 if ( thisEntry.ThisDate.Date == Yesterday.Date )
                                 {
-                                    CMXutils.ThriftyDayRecordsDirty = true;
-                                    Sup.LogTraceInfoMessage( $"Generate DayRecords: CMXutils.ThriftyDayRecordsDirty {CMXutils.ThriftyDayRecordsDirty} detected on {thisEntry.ThisDate.Date}." );
+                                    CUtils.ThriftyDayRecordsDirty = true;
+                                    Sup.LogTraceInfoMessage( $"Generate DayRecords: CUtils.ThriftyDayRecordsDirty {CUtils.ThriftyDayRecordsDirty} detected on {thisEntry.ThisDate.Date}." );
                                 }
 
-                                HighlightFormat = CMXutils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CMXutils.StartOfObservations.AddYears( 1 )
+                                HighlightFormat = CUtils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CUtils.StartOfObservations.AddYears( 1 )
                                   ? "style=\"color: green\""
                                   : "";
                                 of.WriteLine( $"<td class=\"reportttl\" {HighlightFormat}>{Sup.StationWind.Format( thisEntry.HighWindGust )} ({thisEntry.ThisDate.Year})</td>" );
@@ -386,8 +386,8 @@ namespace CumulusUtils
                         of.WriteLine( $"<p>1) {Sup.GetCUstringValue( "DayRecords", "Footnote_1", "Highest Temperature /  Lowest High Temperature.", false )}<br/>" );
                         of.WriteLine( $"2) {Sup.GetCUstringValue( "DayRecords", "Footnote_2", "Lowest Temperature /  Highest Low Temperature.", false )}<br/>" );
                         of.WriteLine( $"3) {Sup.GetCUstringValue( "DayRecords", "Footnote_3", "Highlighted values are set within the last year (if more than a years data exist).", false )}<br/>" );
-                        of.WriteLine( $"4) {Sup.GetCUstringValue( "Records", "RecordsSince", "Records registered since", false )} {CMXutils.StartOfObservations.Date:dd MMMM yyyy} - " +
-                                       $"({( CMXutils.RunStarted.Date - CMXutils.StartOfObservations.Date ).TotalDays} {Sup.GetCUstringValue( "General", "Days", "Days", false )})</p>" );
+                        of.WriteLine( $"4) {Sup.GetCUstringValue( "Records", "RecordsSince", "Records registered since", false )} {CUtils.StartOfObservations.Date:dd MMMM yyyy} - " +
+                                       $"({( CUtils.RunStarted.Date - CUtils.StartOfObservations.Date ).TotalDays} {Sup.GetCUstringValue( "General", "Days", "Days", false )})</p>" );
                         of.WriteLine( "</td></tr>" );
                         of.WriteLine( "</tbody></table>" );
                         of.WriteLine( $"</div>" );
@@ -396,7 +396,7 @@ namespace CumulusUtils
 
                 of.WriteLine( $"<br/>" );
 
-                if ( !CMXutils.DoWebsite )
+                if ( !CUtils.DoWebsite )
                 {
                     of.WriteLine( $"<p style='text-align:center;font-size:11px;'>{CuSupport.FormattedVersion()} - {CuSupport.Copyright()}</p>" );
                 }

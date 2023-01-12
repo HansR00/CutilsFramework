@@ -62,8 +62,7 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( " GenerateStationMap: start" );
 
-            if ( !CMXutils.HasStationMapMenu )
-                return; // Don't generate, ignore everything, just get back.
+            if ( !CUtils.HasStationMapMenu ) return; // Don't generate, ignore everything, just get back.
 
             Latitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Latitude", "" ), CultureInfo.InvariantCulture );
             Longitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Longitude", "" ), CultureInfo.InvariantCulture );
@@ -78,7 +77,7 @@ namespace CumulusUtils
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.StationMapOutputFilename}", false, Encoding.UTF8 ) )
             {
-                if ( !CMXutils.DoWebsite && CMXutils.DoLibraryIncludes )
+                if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes )
                 {
                     of.WriteLine( Sup.GenLeafletIncludes().ToString() );
                 }
@@ -112,7 +111,7 @@ namespace CumulusUtils
                 of.WriteLine( "});" );
 
                 of.WriteLine( $"var markerWindArrow = L.marker([{ArrowLatitude.ToString( "F4", CultureInfo.InvariantCulture )}, " +
-                                       $"{ArrowLongitude.ToString( "F4", CultureInfo.InvariantCulture )}], " +
+                                       $"{ArrowLongitude.ToString( "F4", CultureInfo.InvariantCulture )} - 0.0200], " +
                                        $"{{  icon: thisWindArrow, zIndexOffset: 10, opacity: 0.8 }}).addTo(StationMap);" );
 
                 of.WriteLine( "markerWindArrow.setRotationOrigin('center center');" );
@@ -128,18 +127,22 @@ namespace CumulusUtils
                 of.WriteLine( $"markerStation.bindPopup(\"<b>{StationName}</b><br/>{StationDesc}<br/>Lat: {Latitude} / Lon: {Longitude}<br/>\");" );
 
                 // Position halfway the Rose and the Station marker
-                of.WriteLine( $"StationMap.setView([{( ( Latitude + ArrowLatitude ) / 2 ).ToString( "F4", CultureInfo.InvariantCulture )}, " +
-                                                 $"{( ( Longitude + ArrowLongitude ) / 2 ).ToString( "F4", CultureInfo.InvariantCulture )}], " +
+                //of.WriteLine( $"StationMap.setView([{( ( Latitude + ArrowLatitude ) / 2 ).ToString( "F4", CultureInfo.InvariantCulture )}, " +
+                //                                 $"{( ( Longitude + ArrowLongitude ) / 2 ).ToString( "F4", CultureInfo.InvariantCulture )}], " +
+                //                                 $"{Sup.GetUtilsIniValue( "StationMap", "Zoomlevel", "13" )});" );
+
+                of.WriteLine( $"StationMap.setView([{Latitude.ToString( "F4", CultureInfo.InvariantCulture )}, " +
+                                                 $"{Longitude.ToString( "F4", CultureInfo.InvariantCulture )}], " +
                                                  $"{Sup.GetUtilsIniValue( "StationMap", "Zoomlevel", "13" )});" );
 
                 of.WriteLine( "function UpdateWindArrow( newAngle, beaufort, temp, baro, humidity, rain ){" );
 #if !RELEASE
                 of.WriteLine( "  console.log('UpdateWindArrow (Angle)     : ' + newAngle);" );
                 of.WriteLine( "  console.log('UpdateWindArrow (Wind force): ' + beaufort);" );
-                //of.WriteLine("  console.log('UpdateWindArrow (Temperature): ' + temp);");
-                //of.WriteLine("  console.log('UpdateWindArrow (Barometer): ' + baro);");
-                //of.WriteLine("  console.log('UpdateWindArrow (Humidity): ' + humidity);");
-                //of.WriteLine("  console.log('UpdateWindArrow (Rain): ' + rain);");
+                of.WriteLine( "  console.log('UpdateWindArrow (Temperature): ' + temp);" );
+                of.WriteLine( "  console.log('UpdateWindArrow (Barometer): ' + baro);" );
+                of.WriteLine( "  console.log('UpdateWindArrow (Humidity): ' + humidity);" );
+                of.WriteLine( "  console.log('UpdateWindArrow (Rain): ' + rain);" );
 #endif
                 of.WriteLine( "  markerWindArrow.setRotationAngle(newAngle);" );
                 of.WriteLine( "  $('#TT1').html(beaufort);" );

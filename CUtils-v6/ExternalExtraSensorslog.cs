@@ -56,19 +56,19 @@ namespace CumulusUtils
             Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog constructor: Using fixed path: | data/ |; file: | *log.txt" );
 
             ThisSensorName = SensorName;
-            IgnoreDataErrors = Sup.GetUtilsIniValue( "General", "IgnoreDataErrors", "true" ).Equals( "true" );
+            IgnoreDataErrors = Sup.GetUtilsIniValue( "General", "IgnoreDataErrors", "true" ).Equals( "true", CUtils.cmp );
 
             // Get the list of monthly logfile in the datadirectory and check what type of delimeters we have
             ExternalExtraSensorslogList = Directory.GetFiles( "data/", $"{SensorName}*.txt" );
 
-            if ( ExternalExtraSensorslogList.Length >= 0 && Sup.GetUtilsIniValue( "ExtraSensors", "CleanupExtraSensorslog", "false" ).Equals( "true" ) )
+            if ( ExternalExtraSensorslogList.Length >= 0 && Sup.GetUtilsIniValue( "ExtraSensors", "CleanupExtraSensorslog", "false" ).Equals( "true", CUtils.cmp ) )
             {
                 // We keep two month of data, the rest can be discarded
                 Sup.LogTraceInfoMessage( $"ExternalExtraSensors constructor: Cleaning up Extra Sensors Logfiles..." );
 
                 foreach ( string thisFile in ExternalExtraSensorslogList )
                 {
-                    if ( CMXutils.RunStarted.Month - File.GetLastWriteTime( thisFile ).Month > 2 )
+                    if ( CUtils.RunStarted.Month - File.GetLastWriteTime( thisFile ).Month > 2 )
                     {
                         try { File.Delete( thisFile ); }
                         catch { Sup.LogTraceInfoMessage( $"ExternalExtraSensors constructor: Can't clean up / delete {thisFile}" ); }

@@ -291,7 +291,6 @@ namespace CumulusUtils
         readonly CuSupport Sup;
         readonly float MaxPressure, MinPressure;
         readonly CultureInfo ci = CultureInfo.InvariantCulture;
-        readonly StringComparison cmp = StringComparison.OrdinalIgnoreCase;
 
         internal string[] ClickEvents = new string[ 24 ] { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
 

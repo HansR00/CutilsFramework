@@ -188,14 +188,14 @@ namespace CumulusUtils
 
             Sup.LogTraceInfoMessage( $"Airlinklog constructor: AirlinklogType is {type}" );
             enumFieldTypeNames = Enum.GetNames( typeof( AirlinklogFieldName ) );
-            IgnoreDataErrors = Sup.GetUtilsIniValue( "General", "IgnoreDataErrors", "true" ).Equals( "true" );
+            IgnoreDataErrors = Sup.GetUtilsIniValue( "General", "IgnoreDataErrors", "true" ).Equals( "true", CUtils.cmp );
 
-            if ( AirlinklogList.Length >= 0 && Sup.GetUtilsIniValue( "AirLink", "CleanupAirlinkLogs", "false" ).Equals( "true" ) )
+            if ( AirlinklogList.Length >= 0 && Sup.GetUtilsIniValue( "AirLink", "CleanupAirlinkLogs", "false" ).Equals( "true", CUtils.cmp ) )
             {
                 // We keep two month of data, the rest can be discarded
                 foreach ( string thisFile in AirlinklogList )
                 {
-                    if ( CMXutils.RunStarted.Month - File.GetLastWriteTime( thisFile ).Month > 2 )
+                    if ( CUtils.RunStarted.Month - File.GetLastWriteTime( thisFile ).Month > 2 )
                     {
                         try { File.Delete( thisFile ); }
                         catch { Sup.LogTraceInfoMessage( $"Airlinklog constructor: Can't clean up / delete {thisFile}" ); }

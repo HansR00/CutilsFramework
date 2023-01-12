@@ -92,7 +92,7 @@ namespace CumulusUtils
 
             NormalUsage = Sup.GetUtilsIniValue( "Graphs", "UseNormalRainReference", "Normal" );
 
-            if ( NormalUsage.Equals( "Normal", StringComparison.OrdinalIgnoreCase ) || NormalUsage.Equals( "Both", StringComparison.OrdinalIgnoreCase ) )
+            if ( NormalUsage.Equals( "Normal", CUtils.cmp ) || NormalUsage.Equals( "Both", CUtils.cmp ) )
             {
                 StationNormal = true;
 
@@ -111,7 +111,7 @@ namespace CumulusUtils
             }
 
             // Use station Average
-            if ( NormalUsage.Equals( "StationAverage", StringComparison.OrdinalIgnoreCase ) || NormalUsage.Equals( "Both", StringComparison.OrdinalIgnoreCase ) )
+            if ( NormalUsage.Equals( "StationAverage", CUtils.cmp ) || NormalUsage.Equals( "Both", CUtils.cmp ) )
             {
                 List<float> tmp = new List<float>();
 
@@ -279,7 +279,7 @@ namespace CumulusUtils
 
             // Fill the Normal array - from tradition this is named after the NOAA but it can be from any Meteo organisation
 
-            if ( NormalUsage.Equals( "Normal", StringComparison.OrdinalIgnoreCase ) || NormalUsage.Equals( "Both", StringComparison.OrdinalIgnoreCase ) )
+            if ( NormalUsage.Equals( "Normal", CUtils.cmp ) || NormalUsage.Equals( "Both", CUtils.cmp ) )
             {
                 StationNormal = true;
 
@@ -296,7 +296,7 @@ namespace CumulusUtils
             }
 
             // Use station Average
-            if ( NormalUsage.Equals( "StationAverage", StringComparison.OrdinalIgnoreCase ) || NormalUsage.Equals( "Both", StringComparison.OrdinalIgnoreCase ) )
+            if ( NormalUsage.Equals( "StationAverage", CUtils.cmp ) || NormalUsage.Equals( "Both", CUtils.cmp ) )
             {
                 StationAverage = true;
 
@@ -506,8 +506,7 @@ namespace CumulusUtils
             {
                 List<DayfileValue> yearlist = Thislist.Where( x => x.ThisDate.Year == i ).ToList();
 
-                if ( yearlist.Count == 0 )
-                    continue;
+                if ( yearlist.Count == 0 ) continue;
 
                 Sup.LogTraceInfoMessage( $"Generating Year Rain Statistics, doing year {i}" );
 

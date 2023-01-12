@@ -60,8 +60,8 @@ namespace CumulusUtils
                 string Latitude = Sup.GetCumulusIniValue( "Station", "Latitude", "" );
                 string Longitude = Sup.GetCumulusIniValue( "Station", "Longitude", "" );
 
-                if ( !Website.StartsWith( "http:", StringComparison.OrdinalIgnoreCase ) &&
-                    !Website.StartsWith( "https:", StringComparison.OrdinalIgnoreCase ) &&
+                if ( !Website.StartsWith( "http:", CUtils.cmp ) &&
+                    !Website.StartsWith( "https:", CUtils.cmp ) &&
                     !string.IsNullOrEmpty( Website ) )
                 {
                     Website = "http://" + Website;
@@ -133,7 +133,7 @@ namespace CumulusUtils
 
                 string thisContent = $"filename#{FileToSend}&";
                 thisContent += "filecontent#" + File.ReadAllText( Sup.PathUtils + FileToSend, Encoding.UTF8 );
-                retval = await CMXutils.Isup.PostUrlDataAsync( new Uri( "https://meteo-wagenborgen.nl/cgi-bin/receive.pl" ), thisContent );
+                retval = await CUtils.Isup.PostUrlDataAsync( new Uri( "https://meteo-wagenborgen.nl/cgi-bin/receive.pl" ), thisContent );
                 Sup.LogTraceInfoMessage( $"MapsOn : Success" );
             }
             else retval = $"MapsOn: Must NOT send signature, has been done already : {DoneToday:dd/MM/yy}";
@@ -199,7 +199,7 @@ namespace CumulusUtils
             root = XElement.Load( dbName );
             Sup.LogTraceInfoMessage( $"CreateMap: {dbName} loaded" );
 
-            CMXutils.Isup.DownloadSignatureFiles();
+            CUtils.Isup.DownloadSignatureFiles();
 
             #endregion
 

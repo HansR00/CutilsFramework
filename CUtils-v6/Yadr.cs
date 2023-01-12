@@ -137,9 +137,9 @@ namespace CumulusUtils
             int YearMax = Thislist.Select( x => x.ThisDate.Year ).Max();
             int YearMin = Thislist.Select( x => x.ThisDate.Year ).Min();
 
-            if ( CMXutils.Thrifty )
+            if ( CUtils.Thrifty )
             {
-                if ( CMXutils.RunStarted.DayOfYear == 2 )
+                if ( CUtils.RunStarted.DayOfYear == 2 )
                     GenerateYadrTxtfile( YearMin, YearMax );
 
                 // So now, do only the current year
@@ -308,7 +308,7 @@ namespace CumulusUtils
                 of.WriteLine( "</p>" );
                 of.WriteLine( "<div id='Table'></div>" ); // placeholder for table
 
-                if ( !CMXutils.DoWebsite )
+                if ( !CUtils.DoWebsite )
                 {
                     of.WriteLine( $"<p style='text-align:center;font-size: 12px;'>{CuSupport.FormattedVersion()} - {CuSupport.Copyright()}</p>" );
                 }

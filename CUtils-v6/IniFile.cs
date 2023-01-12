@@ -120,7 +120,7 @@ namespace CumulusUtils
                         s = s.Trim();
 
                         // *** Check for section names ***
-                        if ( s.StartsWith( "[", StringComparison.OrdinalIgnoreCase ) && s.EndsWith( "]", StringComparison.OrdinalIgnoreCase ) )
+                        if ( s.StartsWith( "[", CUtils.cmp ) && s.EndsWith( "]", CUtils.cmp ) )
                         {
                             if ( s.Length > 2 )
                             {

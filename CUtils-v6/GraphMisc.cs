@@ -562,8 +562,8 @@ namespace CumulusUtils
             int WinterToSpringTemperatureLimit = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "WinterToSpringTemperatureLimit", "0" ) );
             int SpringToSummerTemperatureLimit = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "SpringToSummerTemperatureLimit", "10" ) );
 
-            Sup.LogDebugMessage( $"YearlySeasons : WinterToSpringTemperatureLimit = {WinterToSpringTemperatureLimit}" );
-            Sup.LogDebugMessage( $"YearlySeasons : SpringToSummerTemperatureLimit = {SpringToSummerTemperatureLimit}" );
+            Sup.LogTraceInfoMessage( $"YearlySeasons : WinterToSpringTemperatureLimit = {WinterToSpringTemperatureLimit}" );
+            Sup.LogTraceInfoMessage( $"YearlySeasons : SpringToSummerTemperatureLimit = {SpringToSummerTemperatureLimit}" );
 
             for ( int year = YearMin; year <= YearMax; year++ )
             {
@@ -614,7 +614,7 @@ namespace CumulusUtils
                                 Spring = true;
                                 changeCounter = 0;
                                 thisYearSeasonList.Winter1 = i - 10;
-                                Sup.LogDebugMessage( $"YearlySeasons : {year} Spring starting on day {i - 10}" );
+                                Sup.LogTraceInfoMessage( $"YearlySeasons : {year} Spring starting on day {i - 10}" );
                             }
                         }
                     }
@@ -634,7 +634,7 @@ namespace CumulusUtils
                                 Summer = true;
                                 changeCounter = 0;
                                 thisYearSeasonList.Spring = i - 10 - thisYearSeasonList.Winter1;
-                                Sup.LogDebugMessage( $"YearlySeasons : {year} Summer starting on day {i - 10}" );
+                                Sup.LogTraceInfoMessage( $"YearlySeasons : {year} Summer starting on day {i - 10}" );
                             }
                         }
                     }
@@ -654,7 +654,7 @@ namespace CumulusUtils
                                 Autumn = true;
                                 changeCounter = 0;
                                 thisYearSeasonList.Summer = i - 10 - thisYearSeasonList.Spring - thisYearSeasonList.Winter1;
-                                Sup.LogDebugMessage( $"YearlySeasons : {year} Autumn starting on day {i - 10}" );
+                                Sup.LogTraceInfoMessage( $"YearlySeasons : {year} Autumn starting on day {i - 10}" );
                             }
                         }
                     }
@@ -674,7 +674,7 @@ namespace CumulusUtils
                                 WinterEOY = true;
                                 changeCounter = 0;
                                 thisYearSeasonList.Autumn = i - 10 - thisYearSeasonList.Summer - thisYearSeasonList.Spring - thisYearSeasonList.Winter1;
-                                Sup.LogDebugMessage( $"YearlySeasons : {year} Winter starting on day {i - 10}" );
+                                Sup.LogTraceInfoMessage( $"YearlySeasons : {year} Winter starting on day {i - 10}" );
                             }
                         }
                     }

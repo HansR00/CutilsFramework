@@ -201,34 +201,40 @@ namespace CumulusUtils
                 thisculture = CultureInfo.GetCultureInfo( Locale );
                 CultureInfo.DefaultThreadCurrentCulture = thisculture;
 
-                if ( !CMXutils.Thrifty )
+                if ( !CUtils.Thrifty )
                 {
                     using ( StreamWriter of = new StreamWriter( $"{PathUtils}HighchartsLanguage.js", false, Encoding.UTF8 ) )
                     {
                         StringBuilder str = new StringBuilder();
 
-                        str.Append( "Highcharts.lang = {lang:{\nmonths:[" );
-
+                        str.AppendLine( "Highcharts.lang = {" );
+                        str.AppendLine( "  lang:{" );
+                        str.Append( "    months:[" );
                         for ( int i = 0; i < 12; i++ )
                         {
                             str.Append( $"'{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( i + 1 )}'," );
                         }
                         str.Remove( str.Length - 1, 1 );
-                        str.Append( "],\nshortMonths:[" );
+                        str.AppendLine( "]," );
 
+                        str.Append( "    shortMonths:[" );
                         for ( int i = 0; i < 12; i++ )
                         {
                             str.Append( $"'{CultureInfo.CurrentCulture.DateTimeFormat.AbbreviatedMonthNames[ i ]}'," );
                         }
                         str.Remove( str.Length - 1, 1 );
-                        str.Append( "],\nweekdays:[" );
+                        str.AppendLine( "]," );
 
+                        str.Append( "    weekdays:[" );
                         for ( int i = 0; i < 7; i++ )
                         {
                             str.Append( $"'{CultureInfo.CurrentCulture.DateTimeFormat.DayNames[ i ]}'," );
                         }
                         str.Remove( str.Length - 1, 1 );
-                        str.Append( "],\n}\n};\n" );
+                        str.AppendLine( "]," );
+                        str.AppendLine( "    thousandsSep: \"\"" );
+                        str.AppendLine( "  }" );
+                        str.AppendLine( "};" );
 
                         of.WriteLine( $"{str}" );
                         of.WriteLine( $"highchartsOptions = Highcharts.setOptions(Highcharts.lang);" );
@@ -279,7 +285,7 @@ namespace CumulusUtils
             {
                 // Not Empty string AND must contain a webtag only then we will go replace
                 // This will not be often and many so I take the performance risk to create the IPC object locally and use 
-                CmxIPC thisIPC = new CmxIPC( this, CMXutils.Isup );
+                CmxIPC thisIPC = new CmxIPC( this, CUtils.Isup );
 
                 // Prevent having to make this method async by using AsyncTask
                 Task<string> AsyncTask = thisIPC.ReplaceWebtagsGetAsync( tmp );
@@ -385,7 +391,7 @@ namespace CumulusUtils
 
             _ver = String.Format( CultureInfo.InvariantCulture, $"<a href='https://cumulus.hosiene.co.uk/viewtopic.php?f=44&t=17998' target='_blank'>CumulusUtils</a> " +
                                   $"Version {_ver} " + beta +
-                                  $" - generated at " + DateTime.Now.ToString("g") );  // .ToString( "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture )
+                                  $" - generated at " + DateTime.Now.ToString( "g" ) );  // .ToString( "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture )
 
             return _ver;
         }
@@ -403,25 +409,36 @@ namespace CumulusUtils
 
         public static string Copyright() => "&copy; Hans Rottier";
 
-        public string GenjQueryIncludestring() => ( CMXutils.DojQueryInclude && !CMXutils.DoWebsite ) ?
+        public string GenjQueryIncludestring() => ( CUtils.DojQueryInclude && !CUtils.DoWebsite ) ?
                 "<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js\" type=\"text/javascript\"></script>" : "";
 
         public StringBuilder GenHighchartsIncludes()
         {
             StringBuilder sb = new StringBuilder();
 
-            bool UseHighchartsBoostModule = GetUtilsIniValue( "Graphs", "UseHighchartsBoostModule", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
+            bool UseHighchartsBoostModule = GetUtilsIniValue( "Graphs", "UseHighchartsBoostModule", "true" ).Equals( "true", CUtils.cmp );
 
-            sb.AppendLine( "<script src='https://code.highcharts.com/stock/9.1.0/highstock.js'></script>" );
-            sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/9.1.0/highcharts-more.js\"></script>" );
-            sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/9.1.0/indicators/indicators.js\"></script>" );
-            sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/9.1.0/modules/exporting.js\" ></script>" );
-            sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/9.1.0/modules/heatmap.js\"></script>" );
-            sb.AppendLine( "<script src='https://code.highcharts.com/stock/9.1.0/modules/windbarb.js'></script>" );
-            sb.AppendLine( "<script defer src='https://code.highcharts.com/9.1.0/modules/accessibility.js'></script>" );
+            //sb.AppendLine( "<script src='https://code.highcharts.com/stock/highstock.js'></script>" );
+            //sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/highcharts-more.js\"></script>" );
+            //sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/indicators/indicators.js\"></script>" );
+            //sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/modules/exporting.js\" ></script>" );
+            //sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/modules/heatmap.js\"></script>" );
+            //sb.AppendLine( "<script src='https://code.highcharts.com/stock/modules/windbarb.js'></script>" );
+            //sb.AppendLine( "<script defer src='https://code.highcharts.com/modules/accessibility.js'></script>" );
+
+            //if ( UseHighchartsBoostModule )
+            //    sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/modules/boost.js\"></script>" );
+
+            sb.AppendLine( "<script src='https://code.highcharts.com/stock/10.3.2/highstock.js'></script>" );
+            sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/10.3.2/highcharts-more.js\"></script>" );
+            sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/10.3.2/indicators/indicators.js\"></script>" );
+            sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/10.3.2/modules/exporting.js\" ></script>" );
+            sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/10.3.2/modules/heatmap.js\"></script>" );
+            sb.AppendLine( "<script src='https://code.highcharts.com/stock/10.3.2/modules/windbarb.js'></script>" );
+            sb.AppendLine( "<script defer src='https://code.highcharts.com/10.3.2/modules/accessibility.js'></script>" );
 
             if ( UseHighchartsBoostModule )
-                sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/9.1.0/modules/boost.js\"></script>" );
+                sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/10.3.2/modules/boost.js\"></script>" );
 
             sb.AppendLine( "  <script src='lib/HighchartsLanguage.js'></script>" );
             sb.AppendLine( "  <script src='lib/HighchartsDefaults.js'></script>" );
@@ -456,8 +473,8 @@ namespace CumulusUtils
                 Level = TraceLevel.Verbose
             };
 
-            LoggingOn = GetUtilsIniValue( "General", "LoggingOn", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
-            NormalMessageToConsole = GetUtilsIniValue( "General", "NormalMessageToConsole", "true" ).Equals( "true" );
+            LoggingOn = GetUtilsIniValue( "General", "LoggingOn", "true" ).Equals( "true", CUtils.cmp );
+            NormalMessageToConsole = GetUtilsIniValue( "General", "NormalMessageToConsole", "true" ).Equals( "true", CUtils.cmp );
             string thisTrace = GetUtilsIniValue( "General", "TraceInfoLevel", "Info" );     // Verbose, Information, Warning, Error, Off
 
             LogTraceInfoMessage( $"Initial {CUTraceSwitch} => Error: {CUTraceSwitch.TraceError}, Warning: {CUTraceSwitch.TraceWarning}, Info: {CUTraceSwitch.TraceInfo}, Verbose: {CUTraceSwitch.TraceInfo}" );

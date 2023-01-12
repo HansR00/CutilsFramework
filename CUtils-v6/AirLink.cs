@@ -318,19 +318,26 @@ namespace CumulusUtils
             //ReferenceColours = ... not required because hardcoded - too complex to parameterize
 
             // What doe we want to see? Now, 1 hr, 3 hr, 24 hr and NowCast
-            WantToSeeNow = Sup.GetUtilsIniValue( "AirLink", "WantToSeeNow", "true" ).Equals( "true" );
-            WantToSeeNowCast = Sup.GetUtilsIniValue( "AirLink", "WantToSeeNowCast", "false" ).Equals( "true" );
-            WantToSee1hr = Sup.GetUtilsIniValue( "AirLink", "WantToSee1hr", "false" ).Equals( "true" );
-            WantToSee3hr = Sup.GetUtilsIniValue( "AirLink", "WantToSee3hr", "false" ).Equals( "true" );
-            WantToSee24hr = Sup.GetUtilsIniValue( "AirLink", "WantToSee24hr", "false" ).Equals( "true" );
-            WantToSeeWind = Sup.GetUtilsIniValue( "AirLink", "WantToSeeWind", "false" ).Equals( "true" );
+            WantToSeeNow = Sup.GetUtilsIniValue( "AirLink", "WantToSeeNow", "true" ).Equals( "true", CUtils.cmp );
+            WantToSeeNowCast = Sup.GetUtilsIniValue( "AirLink", "WantToSeeNowCast", "false" ).Equals( "true", CUtils.cmp );
+            WantToSee1hr = Sup.GetUtilsIniValue( "AirLink", "WantToSee1hr", "false" ).Equals( "true", CUtils.cmp );
+            WantToSee3hr = Sup.GetUtilsIniValue( "AirLink", "WantToSee3hr", "false" ).Equals( "true", CUtils.cmp );
+            WantToSee24hr = Sup.GetUtilsIniValue( "AirLink", "WantToSee24hr", "false" ).Equals( "true", CUtils.cmp );
+            WantToSeeWind = Sup.GetUtilsIniValue( "AirLink", "WantToSeeWind", "false" ).Equals( "true", CUtils.cmp );
 
-            AirLinkIn = Sup.GetCumulusIniValue( "AirLink", "In-Enabled", "0" ).Equals( "1", StringComparison.OrdinalIgnoreCase );
-            AirLinkOut = Sup.GetCumulusIniValue( "AirLink", "Out-Enabled", "0" ).Equals( "1", StringComparison.OrdinalIgnoreCase );
+            AirLinkIn = Sup.GetCumulusIniValue( "AirLink", "In-Enabled", "0" ).Equals( "1", CUtils.cmp );
+            AirLinkOut = Sup.GetCumulusIniValue( "AirLink", "Out-Enabled", "0" ).Equals( "1", CUtils.cmp );
 
             TwoSensors = AirLinkIn & AirLinkOut;
 
-            StandAloneModule = Sup.GetUtilsIniValue( "AirLink", "StandAloneModule", "false" ).Equals( "true" );
+            StandAloneModule = Sup.GetUtilsIniValue( "AirLink", "StandAloneModule", "false" ).Equals( "true", CUtils.cmp );
+
+            Sup.LogTraceInfoMessage( $"WantToSeeNow = {WantToSeeNow}" );
+            Sup.LogTraceInfoMessage( $"WantToSeeNowCast = {WantToSeeNowCast}" );
+            Sup.LogTraceInfoMessage( $"WantToSee1hr = {WantToSee1hr}" );
+            Sup.LogTraceInfoMessage( $"WantToSee3hr = {WantToSee3hr}" );
+            Sup.LogTraceInfoMessage( $"WantToSee24hr = {WantToSee24hr}" );
+            Sup.LogTraceInfoMessage( $"WantToSeeWind = {WantToSeeWind}" );
 
             Sup.LogTraceInfoMessage( "AirLink Contructor: stop" );
 
@@ -434,15 +441,15 @@ namespace CumulusUtils
                 //of.AppendLine( "</Style>" );
 
 
-                CMXutils.DojQueryInclude = true;
-                CMXutils.DoLibraryIncludes = true;
-                CMXutils.DoWebsite = false;
+                CUtils.DojQueryInclude = true;
+                CUtils.DoLibraryIncludes = true;
+                CUtils.DoWebsite = false;
             }
 
 
             of.AppendLine( $"{Sup.GenjQueryIncludestring()}" );
 
-            if ( !CMXutils.DoWebsite && CMXutils.DoLibraryIncludes )
+            if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes )
             {
                 of.AppendLine( Sup.GenHighchartsIncludes().ToString() );
             }
@@ -840,7 +847,7 @@ namespace CumulusUtils
             of.AppendLine( $"<div><b>{Sup.GetCUstringValue( "AirQuality", "AirQuality", "Air Quality", false )} / {Sup.GetCUstringValue( "AirQuality", "NormativeCountry", "Normative country selected", true )}: {CountrySelected}</b>" +
                          $"&nbsp;-&nbsp;<b>{Sup.GetCumulusIniValue( "Station", "LocName", "" )}</b></div><br/>" );
 
-            if ( CMXutils.DoWebsite && !StandAloneModule )
+            if ( CUtils.DoWebsite && !StandAloneModule )
             {
                 // The Help info
                 of.AppendLine( "<div class='modal fade' id='Help' tabindex='-1' role='dialog' aria-hidden='true'>" );
@@ -1021,7 +1028,7 @@ namespace CumulusUtils
                 of.AppendLine( "</div><br/>" ); // from div report
             }
 
-            if ( !CMXutils.DoWebsite )
+            if ( !CUtils.DoWebsite )
             {
                 of.AppendLine( $"<p style='text-align:center;font-size: 12px;'>{CuSupport.FormattedVersion()} - {CuSupport.Copyright()}</p>" );
             }

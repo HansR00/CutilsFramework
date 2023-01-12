@@ -79,8 +79,9 @@ namespace CumulusUtils
         //  "'#C00000', '#00C000', '#0000C0', '#C0C000', '#C000C0', '#00C0C0', '#C0C0C0', '#400000', '#004000', '#000040', '#404000', '#400040', '#004040', '#404040', '#200000', '#002000', '#000020', " +
         //  "'#202000', '#200020', '#002020', '#202020', '#600000', '#006000', '#000060', '#606000', '#600060', '#006060', '#606060', '#A00000', '#00A000', '#0000A0', '#A0A000', '#A000A0', '#00A0A0', " +
         //  "'#A0A0A0', '#E00000', '#00E000', '#0000E0', '#E0E000', '#E000E0', '#00E0E0', '#E0E0E0']";
+        // Version 4: private const string graphColors = "['#058DC7', '#50B432', '#ED561B', '#DDDF00', '#24CBE5', '#64E572', '#FF9655', '#FFF263', '#6AF9C4']";
         // Below are the defaults from the template and for the time being that will be default from the app as well 
-        private const string graphColors = "['#058DC7', '#50B432', '#ED561B', '#DDDF00', '#24CBE5', '#64E572', '#FF9655', '#FFF263', '#6AF9C4']";
+        private const string graphColors = "['#058DC7', '#50B432', '#ED561B', '#ed9b00', '#24CBE5', '#64E572', '#FF9655', '#FFF263', '#6AF9C4']";
 
         // make sure the utils dir exists
         private readonly CuSupport Sup;
@@ -105,48 +106,48 @@ namespace CumulusUtils
         {
             Sup = s;
 
-            GraphDailyRain = Sup.GetUtilsIniValue( "Graphs", "DailyRain", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
-            GraphMonthlyRain = Sup.GetUtilsIniValue( "Graphs", "MonthlyRain", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
-            GraphYearRainStats = Sup.GetUtilsIniValue( "Graphs", "YearRainstats", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
-            GraphYearMonthRainStats = Sup.GetUtilsIniValue( "Graphs", "YearMonthRainstats", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
+            GraphDailyRain = Sup.GetUtilsIniValue( "Graphs", "DailyRain", "true" ).Equals( "true", CUtils.cmp );
+            GraphMonthlyRain = Sup.GetUtilsIniValue( "Graphs", "MonthlyRain", "true" ).Equals( "true", CUtils.cmp );
+            GraphYearRainStats = Sup.GetUtilsIniValue( "Graphs", "YearRainstats", "true" ).Equals( "true", CUtils.cmp );
+            GraphYearMonthRainStats = Sup.GetUtilsIniValue( "Graphs", "YearMonthRainstats", "true" ).Equals( "true", CUtils.cmp );
 
-            CMXutils.HasRainGraphMenu = GraphDailyRain || GraphMonthlyRain || GraphYearMonthRainStats || GraphYearRainStats;
+            CUtils.HasRainGraphMenu = GraphDailyRain || GraphMonthlyRain || GraphYearMonthRainStats || GraphYearRainStats;
 
-            GraphMonthlyTemperature = Sup.GetUtilsIniValue( "Graphs", "MonthlyTemp", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
-            GraphYearTempStats = Sup.GetUtilsIniValue( "Graphs", "YearTempstats", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
-            GraphYearMonthTempStats = Sup.GetUtilsIniValue( "Graphs", "YearMonthTempstats", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
-            GraphWarmerDays = Sup.GetUtilsIniValue( "Graphs", "WarmerDays", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
-            GraphHeatmap = Sup.GetUtilsIniValue( "Graphs", "HeatMap", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
+            GraphMonthlyTemperature = Sup.GetUtilsIniValue( "Graphs", "MonthlyTemp", "true" ).Equals( "true", CUtils.cmp );
+            GraphYearTempStats = Sup.GetUtilsIniValue( "Graphs", "YearTempstats", "true" ).Equals( "true", CUtils.cmp );
+            GraphYearMonthTempStats = Sup.GetUtilsIniValue( "Graphs", "YearMonthTempstats", "true" ).Equals( "true", CUtils.cmp );
+            GraphWarmerDays = Sup.GetUtilsIniValue( "Graphs", "WarmerDays", "true" ).Equals( "true", CUtils.cmp );
+            GraphHeatmap = Sup.GetUtilsIniValue( "Graphs", "HeatMap", "true" ).Equals( "true", CUtils.cmp );
 
-            CMXutils.HasTempGraphMenu = GraphMonthlyTemperature || GraphYearTempStats || GraphYearMonthTempStats || GraphHeatmap || GraphWarmerDays;
+            CUtils.HasTempGraphMenu = GraphMonthlyTemperature || GraphYearTempStats || GraphYearMonthTempStats || GraphHeatmap || GraphWarmerDays;
 
-            GraphWindrun = Sup.GetUtilsIniValue( "Graphs", "Windrun", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
-            GraphWindRose = Sup.GetUtilsIniValue( "Graphs", "WindRose", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
+            GraphWindrun = Sup.GetUtilsIniValue( "Graphs", "Windrun", "true" ).Equals( "true", CUtils.cmp );
+            GraphWindRose = Sup.GetUtilsIniValue( "Graphs", "WindRose", "true" ).Equals( "true", CUtils.cmp );
 
-            CMXutils.HasWindGraphMenu = GraphWindRose || GraphWindrun;
+            CUtils.HasWindGraphMenu = GraphWindRose || GraphWindrun;
 
-            if ( CMXutils.HasSolar )
+            if ( CUtils.HasSolar )
             {
-                GraphSolarHours = Sup.GetUtilsIniValue( "Graphs", "SolarHours", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
-                GraphYearMonthSolarHoursStats = Sup.GetUtilsIniValue( "Graphs", "SolarHoursYearMonth", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
-                GraphSolarEnergy = Sup.GetUtilsIniValue( "Graphs", "SolarEnergy", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
-                GraphYearMonthSolarEnergyStats = Sup.GetUtilsIniValue( "Graphs", "SolarEnergyYearMonth", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
+                GraphSolarHours = Sup.GetUtilsIniValue( "Graphs", "SolarHours", "true" ).Equals( "true", CUtils.cmp );
+                GraphYearMonthSolarHoursStats = Sup.GetUtilsIniValue( "Graphs", "SolarHoursYearMonth", "true" ).Equals( "true", CUtils.cmp );
+                GraphSolarEnergy = Sup.GetUtilsIniValue( "Graphs", "SolarEnergy", "true" ).Equals( "true", CUtils.cmp );
+                GraphYearMonthSolarEnergyStats = Sup.GetUtilsIniValue( "Graphs", "SolarEnergyYearMonth", "true" ).Equals( "true", CUtils.cmp );
 
-                CMXutils.HasSolarGraphMenu = GraphSolarHours || GraphSolarEnergy || GraphYearMonthSolarHoursStats || GraphYearMonthSolarEnergyStats;
+                CUtils.HasSolarGraphMenu = GraphSolarHours || GraphSolarEnergy || GraphYearMonthSolarHoursStats || GraphYearMonthSolarEnergyStats;
             }
             else
             {
-                GraphSolarHours = GraphSolarEnergy = GraphYearMonthSolarHoursStats = GraphYearMonthSolarEnergyStats = CMXutils.HasSolarGraphMenu = false;
+                GraphSolarHours = GraphSolarEnergy = GraphYearMonthSolarHoursStats = GraphYearMonthSolarEnergyStats = CUtils.HasSolarGraphMenu = false;
             }
 
-            GraphTempSum = Sup.GetUtilsIniValue( "Graphs", "TempSum", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
-            GraphGrowingDegreeDays = Sup.GetUtilsIniValue( "Graphs", "GrowingDegreeDays", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
-            GraphSeasons = Sup.GetUtilsIniValue( "Graphs", "Seasons", "false" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
-            GraphDailyEVT = Sup.GetUtilsIniValue( "Graphs", "DailyEVT", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
-            GraphMonthlyEVT = Sup.GetUtilsIniValue( "Graphs", "MonthlyEVT", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
-            GraphAverageClash = Sup.GetUtilsIniValue( "Graphs", "AverageClash", "false" ).Equals( "true", StringComparison.OrdinalIgnoreCase ); // So default is false!!!
+            GraphTempSum = Sup.GetUtilsIniValue( "Graphs", "TempSum", "true" ).Equals( "true", CUtils.cmp );
+            GraphGrowingDegreeDays = Sup.GetUtilsIniValue( "Graphs", "GrowingDegreeDays", "true" ).Equals( "true", CUtils.cmp );
+            GraphSeasons = Sup.GetUtilsIniValue( "Graphs", "Seasons", "false" ).Equals( "true", CUtils.cmp );
+            GraphDailyEVT = Sup.GetUtilsIniValue( "Graphs", "DailyEVT", "true" ).Equals( "true", CUtils.cmp );
+            GraphMonthlyEVT = Sup.GetUtilsIniValue( "Graphs", "MonthlyEVT", "true" ).Equals( "true", CUtils.cmp );
+            GraphAverageClash = Sup.GetUtilsIniValue( "Graphs", "AverageClash", "false" ).Equals( "true", CUtils.cmp ); // So default is false!!!
 
-            CMXutils.HasMiscGraphMenu = GraphTempSum || GraphGrowingDegreeDays || GraphSeasons || GraphDailyEVT || GraphMonthlyEVT || GraphAverageClash;
+            CUtils.HasMiscGraphMenu = GraphTempSum || GraphGrowingDegreeDays || GraphSeasons || GraphDailyEVT || GraphMonthlyEVT || GraphAverageClash;
 
             // For windrose
             NrOfCompassSectors = Convert.ToInt32( Sup.GetCumulusIniValue( "Display", "NumWindRosePoints", "" ), inv );
@@ -165,7 +166,7 @@ namespace CumulusUtils
                 WindrunClasses[ i ] = WindrunClassWidth + WindrunClassWidth * i;
 
             // For scatter graph
-            UseHighchartsBoostModule = Sup.GetUtilsIniValue( "Graphs", "UseHighchartsBoostModule", "true" ).Equals( "true", StringComparison.OrdinalIgnoreCase );
+            UseHighchartsBoostModule = Sup.GetUtilsIniValue( "Graphs", "UseHighchartsBoostModule", "true" ).Equals( "true", CUtils.cmp );
 
             if ( UseHighchartsBoostModule )
                 Sup.LogTraceInfoMessage( "Graphx: Using Highcharts Boost Module!" );
@@ -197,10 +198,10 @@ namespace CumulusUtils
             StringBuilder thisBuffer = new StringBuilder();
 
             #region Rain
-            if ( CMXutils.HasRainGraphMenu && ( !CMXutils.Thrifty || ThisList.Last().TotalRainThisDay > 0.0 || CMXutils.RunStarted.DayOfYear % CMXutils.ThriftyRainGraphsPeriod == 0 ) )
+            if ( CUtils.HasRainGraphMenu && ( !CUtils.Thrifty || ThisList.Last().TotalRainThisDay > 0.0 || CUtils.RunStarted.DayOfYear % CUtils.ThriftyRainGraphsPeriod == 0 ) )
             {
                 // Rain has been detected so it is worth to update the Rain graphs
-                CMXutils.ThriftyRainGraphsDirty = true;
+                CUtils.ThriftyRainGraphsDirty = true;
 
                 Sup.LogTraceInfoMessage( "Graphs : Start Rain section" );
 
@@ -220,7 +221,7 @@ namespace CumulusUtils
 
                     thisBuffer.AppendLine( $"{Sup.GenjQueryIncludestring()}" );
 
-                    if ( !CMXutils.DoWebsite && CMXutils.DoLibraryIncludes )
+                    if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes )
                     {
                         thisBuffer.AppendLine( Sup.GenHighchartsIncludes().ToString() );
                     }
@@ -242,7 +243,7 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( $"  if (w1 == 'MonthlyRain') {{ graph{GraphNr++}(); }}" );
                     thisBuffer.AppendLine( $"  if (w1 == 'YearRainstatistics') {{ graph{GraphNr++}(); }}" );
                     GraphNrForYearMonthRainStats = GraphNr;
-                    thisBuffer.AppendLine( $"  if (w1 == 'YearMonthRainstatistics') {{ $('[id*=\"YMR\"]').show(); graph{GraphNr++}{CMXutils.RunStarted.Month}(); }}" );
+                    thisBuffer.AppendLine( $"  if (w1 == 'YearMonthRainstatistics') {{ $('[id*=\"YMR\"]').show(); graph{GraphNr++}{CUtils.RunStarted.Month}(); }}" );
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
                     thisBuffer.AppendLine( "<style>" );
@@ -284,7 +285,7 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( $"  <div id='chartcontainer' " +
                         $"style='min-height:{Convert.ToInt32( Sup.GetUtilsIniValue( "General", "ChartContainerHeight", "650" ) )}px;margin-top: 10px;margin-bottom: 5px;'></div>" );
 
-                    if ( !CMXutils.DoWebsite )
+                    if ( !CUtils.DoWebsite )
                     {
                         thisBuffer.AppendLine( $"<p style='text-align:center;font-size: 12px;'>{CuSupport.FormattedVersion()} - {CuSupport.Copyright()}</p>" );
                     }
@@ -361,10 +362,10 @@ namespace CumulusUtils
 
             #region Temp
 
-            if ( CMXutils.HasTempGraphMenu && ( !CMXutils.Thrifty || CMXutils.RunStarted.DayOfYear % CMXutils.ThriftyTempGraphsPeriod == 0 ) )
+            if ( CUtils.HasTempGraphMenu && ( !CUtils.Thrifty || CUtils.RunStarted.DayOfYear % CUtils.ThriftyTempGraphsPeriod == 0 ) )
             {
                 // Temp graphs are written
-                CMXutils.ThriftyTempGraphsDirty = true;
+                CUtils.ThriftyTempGraphsDirty = true;
 
                 Sup.LogTraceInfoMessage( "Graphs : Start Temp section" );
 
@@ -384,7 +385,7 @@ namespace CumulusUtils
 
                     of.WriteLine( $"{Sup.GenjQueryIncludestring()}" );
 
-                    if ( !CMXutils.DoWebsite && CMXutils.DoLibraryIncludes )
+                    if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes )
                     {
                         thisBuffer.AppendLine( Sup.GenHighchartsIncludes().ToString() );
                     }
@@ -405,7 +406,7 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( $"  if (w1 == 'MonthlyTemp') {{ graph{GraphNr++}(); }}" );
                     thisBuffer.AppendLine( $"  if (w1 == 'YearTempstatistics') {{ graph{GraphNr++}(); }}" );
                     GraphNrForYearMonthTempStats = GraphNr;
-                    thisBuffer.AppendLine( $"  if (w1 == 'YearMonthTempstatistics') {{ $('[id*=\"YMT\"]').show(); graph{GraphNr++}{CMXutils.RunStarted.Month}(); }}" );
+                    thisBuffer.AppendLine( $"  if (w1 == 'YearMonthTempstatistics') {{ $('[id*=\"YMT\"]').show(); graph{GraphNr++}{CUtils.RunStarted.Month}(); }}" );
                     thisBuffer.AppendLine( $"  if (w1 == 'WarmerDays') {{ graph{GraphNr++}(); }}" );
                     thisBuffer.AppendLine( $"  if (w1 == 'Heatmap') {{ $('[id*=\"Heatmap\"]').show(); graph{GraphNr++}(); }}" );
                     thisBuffer.AppendLine( "}" );
@@ -459,7 +460,7 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( $"  <div id='chartcontainer' " +
                         $"style='min-height:{Convert.ToInt32( Sup.GetUtilsIniValue( "General", "ChartContainerHeight", "650" ) )}px;margin-top: 10px;margin-bottom: 5px;'></div>" );
 
-                    if ( !CMXutils.DoWebsite )
+                    if ( !CUtils.DoWebsite )
                     {
                         thisBuffer.AppendLine( $"<p style='text-align:center;font-size: 12px;'>{CuSupport.FormattedVersion()} - {CuSupport.Copyright()}</p>" );
                     }
@@ -576,10 +577,10 @@ namespace CumulusUtils
             #endregion
 
             #region Wind
-            if ( CMXutils.HasWindGraphMenu && ( !CMXutils.Thrifty || CMXutils.RunStarted.DayOfYear % CMXutils.ThriftyWindGraphsPeriod == 0 ) )
+            if ( CUtils.HasWindGraphMenu && ( !CUtils.Thrifty || CUtils.RunStarted.DayOfYear % CUtils.ThriftyWindGraphsPeriod == 0 ) )
             {
                 // Temp graphs are written
-                CMXutils.ThriftyWindGraphsDirty = true;
+                CUtils.ThriftyWindGraphsDirty = true;
 
                 Sup.LogTraceInfoMessage( "Graphs : Start Wind section" );
 
@@ -599,7 +600,7 @@ namespace CumulusUtils
 
                     thisBuffer.AppendLine( $"{Sup.GenjQueryIncludestring()}" );
 
-                    if ( !CMXutils.DoWebsite && CMXutils.DoLibraryIncludes )
+                    if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes )
                     {
                         thisBuffer.AppendLine( Sup.GenHighchartsIncludes().ToString() );
                     }
@@ -663,7 +664,7 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( $"<div id='chartcontainer' " +
                         $"style='min-height:{Convert.ToInt32( Sup.GetUtilsIniValue( "General", "ChartContainerHeight", "650" ) )}px;margin-top: 10px;margin-bottom: 5px;'></div>" );
 
-                    if ( !CMXutils.DoWebsite )
+                    if ( !CUtils.DoWebsite )
                     {
                         thisBuffer.AppendLine( $"<p style='text-align:center;font-size: 12px;'>{CuSupport.FormattedVersion()} - {CuSupport.Copyright()}</p>" );
                     }
@@ -752,10 +753,10 @@ namespace CumulusUtils
 
             #region Solar
 
-            if ( CMXutils.HasSolar && CMXutils.HasSolarGraphMenu && ( !CMXutils.Thrifty || CMXutils.RunStarted.DayOfYear % CMXutils.ThriftySolarGraphsPeriod == 0 ) )
+            if ( CUtils.HasSolar && CUtils.HasSolarGraphMenu && ( !CUtils.Thrifty || CUtils.RunStarted.DayOfYear % CUtils.ThriftySolarGraphsPeriod == 0 ) )
             {
                 // Solar graphs are written
-                CMXutils.ThriftySolarGraphsDirty = true;
+                CUtils.ThriftySolarGraphsDirty = true;
                 List<MonthfileValue> thisMonthList;
 
                 Sup.LogDebugMessage( "Graphs : Start Solar section" );
@@ -784,7 +785,7 @@ namespace CumulusUtils
 
                     thisBuffer.AppendLine( $"{Sup.GenjQueryIncludestring()}" );
 
-                    if ( !CMXutils.DoWebsite && CMXutils.DoLibraryIncludes )
+                    if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes )
                     {
                         thisBuffer.AppendLine( Sup.GenHighchartsIncludes().ToString() );
                     }
@@ -805,10 +806,10 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "  var w1 = $('#graph option:selected').val();" );
                     thisBuffer.AppendLine( $"  if (w1 == 'SolarHoursStats') {{ graph{GraphNr++}(); }}" );
                     GraphNrForYearMonthSolarHoursStats = GraphNr;
-                    thisBuffer.AppendLine( $"  if (w1 == 'YearMonthSolarHoursStats') {{ $('[id*=\"YMSH\"]').show(); graph{GraphNr++}{CMXutils.RunStarted.Month}(); }}" );
+                    thisBuffer.AppendLine( $"  if (w1 == 'YearMonthSolarHoursStats') {{ $('[id*=\"YMSH\"]').show(); graph{GraphNr++}{CUtils.RunStarted.Month}(); }}" );
                     thisBuffer.AppendLine( $"  if (w1 == 'InsolationStats') {{ graph{GraphNr++}(); }}" );
                     GraphNrForYearMonthSolarEnergyStats = GraphNr;
-                    thisBuffer.AppendLine( $"  if (w1 == 'YearMonthInsolationStats') {{ $('[id*=\"YMSE\"]').show(); graph{GraphNr++}{CMXutils.RunStarted.Month}(); }}" );
+                    thisBuffer.AppendLine( $"  if (w1 == 'YearMonthInsolationStats') {{ $('[id*=\"YMSE\"]').show(); graph{GraphNr++}{CUtils.RunStarted.Month}(); }}" );
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
                     thisBuffer.AppendLine( "<style>" );
@@ -853,7 +854,7 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( $"<div id='chartcontainer' " +
                         $"style='min-height:{Convert.ToInt32( Sup.GetUtilsIniValue( "General", "ChartContainerHeight", "650" ) )}px;margin-top: 10px;margin-bottom: 5px;'></div>" );
 
-                    if ( !CMXutils.DoWebsite )
+                    if ( !CUtils.DoWebsite )
                     {
                         thisBuffer.AppendLine( $"<p style='text-align:center;font-size: 12px;'>{CuSupport.FormattedVersion()} - {CuSupport.Copyright()}</p>" );
                     }
@@ -934,10 +935,10 @@ namespace CumulusUtils
 
             #region Misc
 
-            if ( CMXutils.HasMiscGraphMenu && ( !CMXutils.Thrifty || CMXutils.RunStarted.DayOfYear % CMXutils.ThriftyMiscGraphsPeriod == 0 ) )
+            if ( CUtils.HasMiscGraphMenu && ( !CUtils.Thrifty || CUtils.RunStarted.DayOfYear % CUtils.ThriftyMiscGraphsPeriod == 0 ) )
             {
                 // Temp graphs are written
-                CMXutils.ThriftyMiscGraphsDirty = true;
+                CUtils.ThriftyMiscGraphsDirty = true;
 
                 using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.GraphsMiscOutputFilename}", false, Encoding.UTF8 ) )
                 {
@@ -955,7 +956,7 @@ namespace CumulusUtils
 
                     thisBuffer.AppendLine( $"{Sup.GenjQueryIncludestring()}" );
 
-                    if ( !CMXutils.DoWebsite && CMXutils.DoLibraryIncludes )
+                    if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes )
                     {
                         thisBuffer.AppendLine( Sup.GenHighchartsIncludes().ToString() );
                     }
@@ -1018,7 +1019,7 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( $"<div id='chartcontainer' " +
                         $"style='min-height:{Convert.ToInt32( Sup.GetUtilsIniValue( "General", "ChartContainerHeight", "650" ) )}px;margin-top: 10px;margin-bottom: 5px;'></div>" );
 
-                    if ( !CMXutils.DoWebsite )
+                    if ( !CUtils.DoWebsite )
                     {
                         thisBuffer.AppendLine( $"<p style='text-align:center;font-size: 12px;'>{CuSupport.FormattedVersion()} - {CuSupport.Copyright()}</p>" );
                     }
@@ -1118,7 +1119,7 @@ namespace CumulusUtils
             {
                 chartId = "HT_" + chartId;
 
-                if ( string.IsNullOrEmpty( CMXutils.ChartHelp.GetHelpText( chartId ) ) )
+                if ( string.IsNullOrEmpty( CUtils.ChartHelp.GetHelpText( chartId ) ) )
                 {
                     return ""; // No helptext present so do nothing
                 }
@@ -1145,14 +1146,14 @@ namespace CumulusUtils
             {
                 chartId = "HT_" + chartId;
 
-                if ( string.IsNullOrEmpty( CMXutils.ChartHelp.GetHelpText( chartId ) ) )
+                if ( string.IsNullOrEmpty( CUtils.ChartHelp.GetHelpText( chartId ) ) )
                 {
                     return ""; // No helptext present so do nothing
                 }
 
                 StringBuilder tmp = new StringBuilder();
 
-                if ( !CMXutils.DoWebsite && CMXutils.DoLibraryIncludes )
+                if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes )
                 {
                     // Use the jQuery modal, by setting the DoLibraryIncludes to false the user has control whether or not to use the 
                     // supplied includes or do it all by her/himself
@@ -1162,7 +1163,7 @@ namespace CumulusUtils
                         $"        <h5 class='modal-title'>{Title}</h5>" +
                         "      </div>" +
                         "      <div style='text-align: left;'>" +
-                        $"        {CMXutils.ChartHelp.GetHelpText( chartId )}" +
+                        $"        {CUtils.ChartHelp.GetHelpText( chartId )}" +
                         "      </div>" +
                         "</div>" );
                 }
@@ -1177,7 +1178,7 @@ namespace CumulusUtils
                     "        <button type='button' class='close' data-bs-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>" +
                     "      </div>" +
                     "      <div class='modal-body text-start'>" +
-                    $"       {CMXutils.ChartHelp.GetHelpText( chartId )}" +
+                    $"       {CUtils.ChartHelp.GetHelpText( chartId )}" +
                     "      </div>" +
                     "      <div class='modal-footer'>" +
                     $"       <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>{Sup.GetCUstringValue( "Website", "Close", "Close", false )}</button>" +

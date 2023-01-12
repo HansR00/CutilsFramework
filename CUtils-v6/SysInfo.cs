@@ -305,7 +305,7 @@ namespace CumulusUtils
 
                 StartProcess( "lsb_release", "-a" );
                 foreach ( string line in returnValues )
-                    if ( line.StartsWith( "Description", StringComparison.OrdinalIgnoreCase ) )
+                    if ( line.StartsWith( "Description", CUtils.cmp ) )
                         of.WriteLine( CuSupport.StringRemoveWhiteSpace( line, " " ) );
             }
             catch ( Exception e )
@@ -403,7 +403,7 @@ namespace CumulusUtils
 
                 StartProcess( "lsb_release", "-a" );
                 foreach ( string line in returnValues )
-                    if ( line.StartsWith( "Description", StringComparison.OrdinalIgnoreCase ) )
+                    if ( line.StartsWith( "Description", CUtils.cmp ) )
                         of.WriteLine( CuSupport.StringRemoveWhiteSpace( line, " " ) );
             }
             catch ( Exception e )

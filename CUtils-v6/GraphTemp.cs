@@ -52,7 +52,7 @@ namespace CumulusUtils
 
             // Fill the Normal array - from tradition this is named after the NOAA but it can be from any Meteo organisation
 
-            if ( NormalUsage.Equals( "Normal", StringComparison.OrdinalIgnoreCase ) || NormalUsage.Equals( "Both", StringComparison.OrdinalIgnoreCase ) )
+            if ( NormalUsage.Equals( "Normal", CUtils.cmp ) || NormalUsage.Equals( "Both", CUtils.cmp ) )
             {
                 StationNormal = true;
 
@@ -71,7 +71,7 @@ namespace CumulusUtils
                 StationNormal = false;
 
             // Use station Average
-            if ( NormalUsage.Equals( "StationAverage", StringComparison.OrdinalIgnoreCase ) || NormalUsage.Equals( "Both", StringComparison.OrdinalIgnoreCase ) )
+            if ( NormalUsage.Equals( "StationAverage", CUtils.cmp ) || NormalUsage.Equals( "Both", CUtils.cmp ) )
             {
                 StationAverage = true;
 
@@ -405,14 +405,17 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "Generate Heat Map Start" );
 
+            // From : https://bobbyhadz.com/blog/javascript-convert-day-of-year-to-date
+            //
+            thisBuffer.AppendLine( "function DayNumber2Date(dayNumber, year){" );
+            thisBuffer.AppendLine( "  const date = new Date( year, 0, dayNumber );" );
+            thisBuffer.AppendLine( "  return date.toLocaleDateString();" );
+            thisBuffer.AppendLine( "}" );
+
             thisBuffer.AppendLine( "chart = thisHeatmap = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "chart:" );
             thisBuffer.AppendLine( "{" );
             thisBuffer.AppendLine( "  type: 'heatmap'" );
-            thisBuffer.AppendLine( "}," );
-            thisBuffer.AppendLine( "lang:" );
-            thisBuffer.AppendLine( "{" );
-            thisBuffer.AppendLine( "  thousandsSep: \"\"" );
             thisBuffer.AppendLine( "}," );
 
             if ( UseHighchartsBoostModule )
@@ -476,7 +479,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "    [1, '#ff0000']" );
             thisBuffer.AppendLine( "  ]," );
 
-            if (Sup.StationTemp.Dim == TempDim.celsius)
+            if ( Sup.StationTemp.Dim == TempDim.celsius )
             {
                 thisBuffer.AppendLine( $"  min: -20," );
                 thisBuffer.AppendLine( $"  max: 50," );
@@ -491,10 +494,14 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "series: [{" );
             thisBuffer.AppendLine( "  boostThreshold: 100," );
             thisBuffer.AppendLine( "  lineWidth: 0," );
+
+            // Note that the thousandsSep is set to empty string in the HighchartsLanguage.js because we want '2023' and not '2 023'
+            //
             thisBuffer.AppendLine( "  tooltip: {" );
-            thisBuffer.AppendLine( $"    headerFormat: '{Sup.GetCUstringValue( "Graphs", "HMTTtemperatureTXT", "Temperature", true )}<br/>'," );
-            thisBuffer.AppendLine( $"    pointFormat: ' {{point.x}} {{point.y}} {{point.value}} {Sup.StationTemp.Text()}'" );
+            thisBuffer.AppendLine( $"    headerFormat: '<b>{Sup.GetCUstringValue( "Graphs", "HMTTtemperatureTXT", "Temperature", true )}:</b><br/>'," );
+            thisBuffer.AppendLine( $"    pointFormatter() {{ return DayNumber2Date(this.x, this.y) + ': ' + this.value + '{Sup.StationTemp.Text()}' }}" );
             thisBuffer.AppendLine( "  }," );
+
             thisBuffer.AppendLine( "data: [" );
 
             sb.Clear();

@@ -54,7 +54,7 @@ namespace CumulusUtils
                     return false;
                 else
                     AllEquations.Add( thisEq );
-            } while ( !Keywords[ CurrPosition ].Equals( "Chart", cmp ) && CurrPosition < Keywords.Count - 1 );
+            } while ( !Keywords[ CurrPosition ].Equals( "Chart", CUtils.cmp ) && CurrPosition < Keywords.Count - 1 );
 
             Equationblock = false;  // Checked by the parser when substituting
 
@@ -67,10 +67,10 @@ namespace CumulusUtils
         internal string ParseSingleEval( string Id ) // Returns the expression parsed or empty
         {
             // Do the EVAL:
-            if ( Keywords[ CurrPosition ].Equals( "Eval", cmp ) )
+            if ( Keywords[ CurrPosition ].Equals( "Eval", CUtils.cmp ) )
             {
                 if ( !Equationblock )
-                    if ( Array.Exists( PlotvarKeyword, word => word.Equals( Id, cmp ) ) )
+                    if ( Array.Exists( PlotvarKeyword, word => word.Equals( Id, CUtils.cmp ) ) )
                     {
                         Sup.LogTraceInfoMessage( $"Parsing User Charts: Invalid Plotvariable Name for Eval function" );
                         Sup.LogTraceInfoMessage( $"Parsing User Charts: Plotvariable Name may not be reserved Keyword: {Id}" );
@@ -239,11 +239,11 @@ namespace CumulusUtils
                     {
                         string tmpWord = Exp[ i ];
 
-                        if ( Array.Exists( Functions, word => word.Equals( tmpWord, cmp ) ) )
+                        if ( Array.Exists( Functions, word => word.Equals( tmpWord, CUtils.cmp ) ) )
                         {
                             // It is a function so translate to the javascript equivalent. To do so we must know its argument so we continue in Term
                             // Expecting ( and ) with an expression in between
-                            tmp += Functions[ Array.FindIndex( Functions, word => word.Equals( tmpWord, cmp ) ) ];
+                            tmp += Functions[ Array.FindIndex( Functions, word => word.Equals( tmpWord, CUtils.cmp ) ) ];
 
                             i++;
                             if ( Exp[ i ] == "(" )
@@ -266,7 +266,7 @@ namespace CumulusUtils
 
                                 subExpArr = subExp.ToArray();
 
-                                bool commaPermitted = "pow".Equals( tmpWord, cmp ) || "max".Equals( tmpWord, cmp ) || "min".Equals( tmpWord, cmp );
+                                bool commaPermitted = "pow".Equals( tmpWord, CUtils.cmp ) || "max".Equals( tmpWord, CUtils.cmp ) || "min".Equals( tmpWord, CUtils.cmp );
                                 tmpTerm = Expression( subExpArr, ref EquationSubstitution, commaPermitted );
 
                                 if ( tmpTerm != null )
@@ -288,9 +288,9 @@ namespace CumulusUtils
                             // not a function so must be a variable and we're done, return to expression
                             if ( !Equationblock )
                             {
-                                if ( Array.Exists( PlotvarKeyword, word => word.Equals( tmpWord, cmp ) ) )
+                                if ( Array.Exists( PlotvarKeyword, word => word.Equals( tmpWord, CUtils.cmp ) ) )
                                 {
-                                    int index = Array.FindIndex( PlotvarKeyword, word => word.Equals( tmpWord, cmp ) );
+                                    int index = Array.FindIndex( PlotvarKeyword, word => word.Equals( tmpWord, CUtils.cmp ) );
                                     tmp += PlotvarKeyword[ index ];
                                 }
                                 else

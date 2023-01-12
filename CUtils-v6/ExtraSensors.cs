@@ -139,7 +139,7 @@ namespace CumulusUtils
 
                 sb.AppendLine( $"{Sup.GenjQueryIncludestring()}" );
 
-                if ( !CMXutils.DoWebsite && CMXutils.DoLibraryIncludes )
+                if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes )
                 {
                     sb.AppendLine( Sup.GenHighchartsIncludes().ToString() );
                 }
@@ -377,7 +377,7 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( $"GenerateExtraSensorsCharts: Testing UserModificationExtraSensorCharts: {Sup.GetUtilsIniValue( "ExtraSensors", "UserModificationExtraSensorCharts", "false" )}" );
 
-            if ( Sup.GetUtilsIniValue( "ExtraSensors", "UserModificationExtraSensorCharts", "false" ).Equals( "true" ) )
+            if ( Sup.GetUtilsIniValue( "ExtraSensors", "UserModificationExtraSensorCharts", "false" ).Equals( "true", CUtils.cmp ) )
                 return;
 
             CutilsCharts = File.ReadAllLines( $"{Sup.PathUtils}{Sup.CutilsChartsDef}" );
@@ -419,7 +419,7 @@ namespace CumulusUtils
                     $"{ExtraSensorList[ i ].Type} " +
                     $"{Sup.GetCUstringValue( "ExtraSensors", "Sensors", "Sensors", true )}" );
 
-                while ( i < ExtraSensorList.Count && ( ExtraSensorList[ i ].Type == currentType || thisKeyword.Substring( 0, 3 ).Equals( "CO2" ) ) )
+                while ( i < ExtraSensorList.Count && ( ExtraSensorList[ i ].Type == currentType || thisKeyword.Substring( 0, 3 ).Equals( "CO2", CUtils.cmp ) ) )
                 {
                     if ( ExtraSensorList[ i ].Type == ExtraSensorType.External ) thisKeyword = ExtraSensorList[ i ].Name;
                     else thisKeyword = ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ];
@@ -661,7 +661,7 @@ namespace CumulusUtils
             // Extra Temperature sensors
             ActiveSensors = GetActiveSensors( "ExtraTemp" );
 
-            foreach( int i in ActiveSensors)
+            foreach ( int i in ActiveSensors )
             {
                 thisSensor = Sup.GetStringsIniValue( "ExtraTempCaptions", $"Sensor{i}", "" );
                 registerSensor( thisSensor, i, ExtraSensorType.Temperature );
@@ -760,7 +760,7 @@ namespace CumulusUtils
             if ( ActiveSensors.Length > 1 )  // 
             {
                 Sup.LogTraceErrorMessage( $"GetActiveSensors: CO2 sensors - There can be only one! Please check configuration." );
-            } 
+            }
             else
             {
                 foreach ( int i in ActiveSensors )
@@ -768,7 +768,7 @@ namespace CumulusUtils
                     string[] theseLines;            // I need the last line to be sure, so read all and take last
                     string[] thislineFields;
 
-                    DateTime timeStart = CMXutils.RunStarted;
+                    DateTime timeStart = CUtils.RunStarted;
                     string Filename = $"data/ExtraLog{timeStart:yyyy}{timeStart:MM}.txt";
 
                     if ( !File.Exists( Filename ) )
@@ -880,8 +880,8 @@ namespace CumulusUtils
                 {
                     Name = thisSensor,
                     Type = sensorType,
-                    PlotvarIndex =  PlotvarStartindex + sensorIndex,
-                    PlotvarType = sensorType== ExtraSensorType.External ? thisSensor : ChartsCompiler.PlotvarTypesEXTRA[ PlotvarStartindex + sensorIndex ],
+                    PlotvarIndex = PlotvarStartindex + sensorIndex,
+                    PlotvarType = sensorType == ExtraSensorType.External ? thisSensor : ChartsCompiler.PlotvarTypesEXTRA[ PlotvarStartindex + sensorIndex ],
                     SensorIndex = sensorIndex,
                     RTposition = RTindex++,
                 };

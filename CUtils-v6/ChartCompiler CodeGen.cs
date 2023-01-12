@@ -67,8 +67,7 @@ namespace CumulusUtils
 
         internal void GenerateUserDefinedCharts( List<ChartDef> theseCharts, string filename, int UniqueOutputId )
         {
-            if ( theseCharts.Count == 0 )
-                return;
+            if ( theseCharts.Count == 0 ) return;
 
             StringBuilder Html = new StringBuilder();
             StringBuilder MenuJavascript = new StringBuilder();
@@ -90,7 +89,7 @@ namespace CumulusUtils
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{filename}", false, Encoding.UTF8 ) )
             {
-                bool UseHighchartsBoostModule = Sup.GetUtilsIniValue( "Graphs", "UseHighchartsBoostModule", "true" ).Equals( "true", cmp );
+                bool UseHighchartsBoostModule = Sup.GetUtilsIniValue( "Graphs", "UseHighchartsBoostModule", "true" ).Equals( "true", CUtils.cmp );
 
                 Html.AppendLine( "<!--" );
                 Html.AppendLine( $" This file is generated as part of CumulusUtils - {DateTime.Now}" );
@@ -102,11 +101,11 @@ namespace CumulusUtils
 
                 Html.AppendLine( Sup.GenjQueryIncludestring() );
 
-                if ( !CMXutils.DoWebsite && CMXutils.DoLibraryIncludes && TheseChartsUseInfo )
+                if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes && TheseChartsUseInfo )
                     Html.AppendLine( "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.2/jquery.modal.min.js\"  crossorigin=\"anonymous\" referrerpolicy=\"no-referrer\"></script>" +
                        "<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.2/jquery.modal.css\" crossorigin=\"anonymous\" referrerpolicy=\"no-referrer\" />" );
 
-                if ( !CMXutils.DoWebsite && CMXutils.DoLibraryIncludes ) Html.AppendLine( Sup.GenHighchartsIncludes().ToString() );
+                if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes ) Html.AppendLine( Sup.GenHighchartsIncludes().ToString() );
 
                 Html.AppendLine( "<style>" );
                 Html.AppendLine( "#report{" );
@@ -132,12 +131,12 @@ namespace CumulusUtils
 
                 // This complex conditional must make sure the initialisation of the chart is done and is done only once.
                 //   1) !website means we are doing compileonly (modular) but that maybe for use in the CUtils website or really for another website
-                //   2) CMXutils.DojQueryInclude || CMXutils.DoLibraryIncludes is used to determine compileonly is used for another website
+                //   2) CUtils.DojQueryInclude || CUtils.DoLibraryIncludes is used to determine compileonly is used for another website
                 //   3) If UniqueOutputId > 0 the Init is not called by the runtime system and needs to be done here
                 //   4) If the condition is true, the chart needs the initialisation on itself
                 //      --- this must be a rewrite: initialisation should always be done from the runtime such that we know what the last chart is and that the timer can 
                 //      refresh whatever chart is loaded
-                if ( ( !CMXutils.DoWebsite && ( CMXutils.DojQueryInclude || CMXutils.DoLibraryIncludes ) ) || UniqueOutputId > 0 )
+                if ( ( !CUtils.DoWebsite && ( CUtils.DojQueryInclude || CUtils.DoLibraryIncludes ) ) || UniqueOutputId > 0 )
                     GenericJavascript.Append( "InitCumulusCharts();" );
 
                 GenericJavascript.AppendLine( " } );" );
@@ -146,7 +145,7 @@ namespace CumulusUtils
                 GenericJavascript.Append( "function InitCumulusCharts() {" );
                 GenericJavascript.Append( "  ChartsType = 'compiler';" );
 
-                if ( CMXutils.DoWebsite && UniqueOutputId == 0 )
+                if ( CUtils.DoWebsite && UniqueOutputId == 0 )
                     GenericJavascript.AppendLine( $"  if (CurrentChart{UniqueOutputId} === 'Temp') {{" );   // Temp is the default when no compiler is used
 
                 GenericJavascript.Append( "    ClickEventChart = [" );
@@ -157,7 +156,7 @@ namespace CumulusUtils
                 GenericJavascript.AppendLine( "     console.log('Cumuluscharts Compiler version has been initialised');" );
                 GenericJavascript.AppendLine( $"    CurrentChart{UniqueOutputId} = '{theseCharts[ 0 ].Id}';" );
 
-                if ( CMXutils.DoWebsite && UniqueOutputId == 0 )
+                if ( CUtils.DoWebsite && UniqueOutputId == 0 )
                     GenericJavascript.AppendLine( "  }" );
 
                 GenericJavascript.AppendLine( $"  $.when( Promise.all([GraphconfigAjax()" );
@@ -187,6 +186,7 @@ namespace CumulusUtils
                 GenericJavascript.AppendLine( "};" );
 
                 GenericJavascript.AppendLine( "function GraphconfigAjax(){" );
+                GenericJavascript.AppendLine( "  console.log( 'Highcharts version : ' + Highcharts.version );" );
                 GenericJavascript.AppendLine( "  return $.ajax({" );
                 GenericJavascript.AppendLine( $"    url: '{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}graphconfig.json', cache: true, datatype: 'json'}})" );
                 GenericJavascript.AppendLine( "    .done( function(resp) {" +
@@ -307,7 +307,7 @@ namespace CumulusUtils
                             $"{( Graphx.UseHighchartsBoostModule ? "boostThreshold: 200," : "" )} lineWidth:0," +
                             $"marker: {{radius: {thisChart.PlotVars.First().LineWidth} }}, " +
                             "}}," );
-                        TheCharts.AppendLine( "      tooltip: { xDateFormat: '%A, %b %e %H:%M', " +
+                        TheCharts.AppendLine( "      tooltip: { xDateFormat: '%A, %b %e %H:%M ', " +
                             "pointFormatter() {return this.series.name + ': ' + this.y}," +
                             "headerFormat: '{point.key}' }," );
                     }
@@ -420,7 +420,7 @@ namespace CumulusUtils
                                 tmpEquation = tmp.Insert( startSum, "sumResult[i][1]" );
 
                                 foreach ( AllVarInfo avi in thisPlotvar.EqAllVarList )
-                                    if ( sumExpr.Contains( avi.KeywordName, cmp ) )
+                                    if ( sumExpr.Contains( avi.KeywordName, CUtils.cmp ) )
                                         sumExpr = sumExpr.Replace( avi.KeywordName, $"{avi.KeywordName}[i][1]" );
 
                                 GenerateSumFunction( GenericJavascript );
@@ -442,7 +442,7 @@ namespace CumulusUtils
                             if ( thisPlotvar.EqAllVarList.Count > 0 )
                             {
                                 foreach ( AllVarInfo avi in thisPlotvar.EqAllVarList )
-                                    if ( tmpEquation.Contains( avi.KeywordName, cmp ) )
+                                    if ( tmpEquation.Contains( avi.KeywordName, CUtils.cmp ) )
                                         tmpEquation = tmpEquation.Replace( avi.KeywordName, $"{avi.KeywordName}[i][1]" );
 
                                 // Now write out the values in the array at runtime.
@@ -564,7 +564,7 @@ namespace CumulusUtils
                 {
                     if ( thisChart.HasInfo )
                     {
-                        if ( !CMXutils.DoWebsite && CMXutils.DoLibraryIncludes )
+                        if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes )
                         {
                             // Use the jQuery modal, by setting the DoLibraryIncludes to false the user has control whether or not to use the 
                             // supplied includes or do it all by her/himself
@@ -628,8 +628,7 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( $"Compiler - Creating Axis for {thisChart.Id} " );
 
-            if ( AxisSet.Equals( AxisType.None ) )
-                NoClosingAddAxis = true;
+            if ( AxisSet.Equals( AxisType.None ) ) NoClosingAddAxis = true;
 
             // Check if Rain/RainRate are the only Plotvars in this chart in which case the horizontal gridlines will be set for that axis
             // If any other Plotvar is present, the horizontal gridlines will be invisible (width = 0)
@@ -981,15 +980,15 @@ namespace CumulusUtils
                                 All.Append( $"\"{thisVar.PlotVar}\":[" );
 
                                 if ( thisVar.PlotVar.Equals( "heatingdegreedays" ) )
-                                    foreach ( DayfileValue entry in CMXutils.MainList )
+                                    foreach ( DayfileValue entry in CUtils.MainList )
                                         All.Append( $"[{CuSupport.DateTimeToJS( entry.ThisDate )},{entry.HeatingDegreeDays.ToString( "F1", ci )}]," );
 
                                 else if ( thisVar.PlotVar.Equals( "coolingdegreedays" ) )
-                                    foreach ( DayfileValue entry in CMXutils.MainList )
+                                    foreach ( DayfileValue entry in CUtils.MainList )
                                         All.Append( $"[{CuSupport.DateTimeToJS( entry.ThisDate )},{entry.CoolingDegreeDays.ToString( "F1", ci )}]," );
 
                                 else if ( thisVar.PlotVar.Equals( "evapotranspiration" ) )
-                                    foreach ( DayfileValue entry in CMXutils.MainList )
+                                    foreach ( DayfileValue entry in CUtils.MainList )
                                         All.Append( $"[{CuSupport.DateTimeToJS( entry.ThisDate )},{entry.EvapoTranspiration.ToString( "F1", ci )}]," );
 
                                 All.Remove( All.Length - 1, 1 );
@@ -1046,7 +1045,7 @@ namespace CumulusUtils
                     {
                         foreach ( AllVarInfo avi in AllVars )
                         {
-                            if ( p.Keyword.Equals( avi.KeywordName, cmp ) )
+                            if ( p.Keyword.Equals( avi.KeywordName, CUtils.cmp ) )
                             {
                                 found = true;
                                 break;
@@ -1124,15 +1123,15 @@ namespace CumulusUtils
 
                         foreach ( string pt in PlotvarTypes )
                         {
-                            string pk = PlotvarKeyword[ Array.FindIndex( PlotvarTypes, word => word.Equals( pt, cmp ) ) ];
-                            string df = Datafiles[ Array.FindIndex( PlotvarTypes, word => word.Equals( pt, cmp ) ) ];
+                            string pk = PlotvarKeyword[ Array.FindIndex( PlotvarTypes, word => word.Equals( pt, CUtils.cmp ) ) ];
+                            string df = Datafiles[ Array.FindIndex( PlotvarTypes, word => word.Equals( pt, CUtils.cmp ) ) ];
 
-                            if ( p.Equation.Contains( pk, cmp ) )
+                            if ( p.Equation.Contains( pk, CUtils.cmp ) )
                             {
                                 found = false;
 
                                 foreach ( AllVarInfo a in AllVars )
-                                    if ( a.KeywordName.Equals( pk, cmp ) )
+                                    if ( a.KeywordName.Equals( pk, CUtils.cmp ) )
                                     {
                                         tmpVarInfo = a;
                                         found = true;
