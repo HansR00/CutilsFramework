@@ -94,7 +94,7 @@ namespace CumulusUtils
             TypesUnits[ (int) Top10Types.highWind ] = Sup.StationWind.Text();
             TypesUnits[ (int) Top10Types.highGust ] = Sup.StationWind.Text();
             TypesUnits[ (int) Top10Types.totalWindrun ] = Sup.StationDistance.Text();
-            TypesUnits[ (int) Top10Types.highRainRate ] = Sup.StationRain.Text() + "/hr";
+            TypesUnits[ (int) Top10Types.highRainRate ] = Sup.StationRain.Text() + Sup.PerHour;
             TypesUnits[ (int) Top10Types.highHourlyRain ] = Sup.StationRain.Text();
             TypesUnits[ (int) Top10Types.highDailyRain ] = Sup.StationRain.Text();
             TypesUnits[ (int) Top10Types.highestMonthlyRain ] = Sup.StationRain.Text();

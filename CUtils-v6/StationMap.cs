@@ -67,7 +67,7 @@ namespace CumulusUtils
             Latitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Latitude", "" ), CultureInfo.InvariantCulture );
             Longitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Longitude", "" ), CultureInfo.InvariantCulture );
             ArrowLatitude = Convert.ToSingle( Sup.GetUtilsIniValue( "StationMap", "ArrowLatitude", Latitude.ToString( "F4", CultureInfo.InvariantCulture ) ), CultureInfo.InvariantCulture );
-            ArrowLongitude = Convert.ToSingle( Sup.GetUtilsIniValue( "StationMap", "ArrowLongitude", Longitude.ToString( "F4", CultureInfo.InvariantCulture ) ), CultureInfo.InvariantCulture );
+            ArrowLongitude = Convert.ToSingle( Sup.GetUtilsIniValue( "StationMap", "ArrowLongitude", Longitude.ToString( "F4", CultureInfo.InvariantCulture ) ), CultureInfo.InvariantCulture ) - (float) 0.0200;
 
             CompassRoseType = Convert.ToInt32( Sup.GetUtilsIniValue( "StationMap", "CompassRoseType", "1" ), CultureInfo.InvariantCulture );
             WindArrowType = Convert.ToInt32( Sup.GetUtilsIniValue( "StationMap", "WindArrowType", "1" ), CultureInfo.InvariantCulture );
@@ -111,7 +111,7 @@ namespace CumulusUtils
                 of.WriteLine( "});" );
 
                 of.WriteLine( $"var markerWindArrow = L.marker([{ArrowLatitude.ToString( "F4", CultureInfo.InvariantCulture )}, " +
-                                       $"{ArrowLongitude.ToString( "F4", CultureInfo.InvariantCulture )} - 0.0200], " +
+                                       $"{ArrowLongitude.ToString( "F4", CultureInfo.InvariantCulture )}], " +
                                        $"{{  icon: thisWindArrow, zIndexOffset: 10, opacity: 0.8 }}).addTo(StationMap);" );
 
                 of.WriteLine( "markerWindArrow.setRotationOrigin('center center');" );
@@ -125,11 +125,6 @@ namespace CumulusUtils
 
                 of.WriteLine( $"var markerStation = L.marker([{Latitude.ToString( CultureInfo.InvariantCulture )}, {Longitude.ToString( CultureInfo.InvariantCulture )}]).addTo(StationMap);" );
                 of.WriteLine( $"markerStation.bindPopup(\"<b>{StationName}</b><br/>{StationDesc}<br/>Lat: {Latitude} / Lon: {Longitude}<br/>\");" );
-
-                // Position halfway the Rose and the Station marker
-                //of.WriteLine( $"StationMap.setView([{( ( Latitude + ArrowLatitude ) / 2 ).ToString( "F4", CultureInfo.InvariantCulture )}, " +
-                //                                 $"{( ( Longitude + ArrowLongitude ) / 2 ).ToString( "F4", CultureInfo.InvariantCulture )}], " +
-                //                                 $"{Sup.GetUtilsIniValue( "StationMap", "Zoomlevel", "13" )});" );
 
                 of.WriteLine( $"StationMap.setView([{Latitude.ToString( "F4", CultureInfo.InvariantCulture )}, " +
                                                  $"{Longitude.ToString( "F4", CultureInfo.InvariantCulture )}], " +

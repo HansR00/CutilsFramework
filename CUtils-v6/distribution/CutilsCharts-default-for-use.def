@@ -25,7 +25,7 @@
 Chart Overview Title Overview of the  current weather status 
 ConnectsTo 2 4 15 20
 Has WindBarbs Above colour black
-Zoom 2
+Zoom 3
   PLOT Temperature Colour #058DC7 zindex 90
   PLOT DewPoint Colour #50B432 zindex 80
   PLOT pressure Colour red zindex 70

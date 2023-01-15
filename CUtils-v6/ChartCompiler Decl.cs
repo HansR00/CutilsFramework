@@ -324,7 +324,7 @@ namespace CumulusUtils
             PlotvarUnitsRECENT[ 14 ] = "W/m²";
 
             PlotvarUnitsRECENT[ 15 ] = Sup.StationRain.Text();
-            PlotvarUnitsRECENT[ 16 ] = Sup.StationRain.Text() + "/hr";
+            PlotvarUnitsRECENT[ 16 ] = Sup.StationRain.Text() + Sup.PerHour;
 
             PlotvarUnitsRECENT[ 17 ] = Sup.StationPressure.Text();
 
@@ -353,7 +353,7 @@ namespace CumulusUtils
             PlotvarUnitsALL[ 13 ] = "";
 
             PlotvarUnitsALL[ 14 ] = Sup.StationRain.Text();
-            PlotvarUnitsALL[ 15 ] = Sup.StationRain.Text() + "/hr";
+            PlotvarUnitsALL[ 15 ] = Sup.StationRain.Text() + Sup.PerHour;
 
             PlotvarUnitsALL[ 16 ] = Sup.StationPressure.Text();
             PlotvarUnitsALL[ 17 ] = Sup.StationPressure.Text();

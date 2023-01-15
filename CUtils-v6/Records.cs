@@ -465,7 +465,7 @@ namespace CumulusUtils
 
                     tmp = ( now.Subtract( YearRecords[ j ][ (int) MeasurementRecords.Rrate ].TimeMaxRainRate ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                     of.WriteLine( $"<tr>" );
-                    of.WriteLine( $"<td {tmp}>R<sub>rate</sub> ({Sup.StationRain.Text()}/hr)</td>" );
+                    of.WriteLine( $"<td {tmp}>R<sub>rate</sub> ({Sup.StationRain.Text()}{Sup.PerHour})</td>" );
                     of.WriteLine( $"<td {tmp}>{Sup.StationRain.Format( YearRecords[ j ][ (int) MeasurementRecords.Rrate ].MaxRainRate )}</td><td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Rrate ].TimeMaxRainRate:dd/MM/yyyy HH:mm}</td>" );
                     of.WriteLine( "</tr>" );
 
@@ -573,7 +573,7 @@ namespace CumulusUtils
 
                             tmp = ( now.Subtract( MonthlyRecords[ i ][ (int) MeasurementRecords.Rrate ].TimeMaxRainRate ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                             of.WriteLine( $"<tr>" );
-                            of.WriteLine( $"<td {tmp}>R<sub>rate</sub> ({Sup.StationRain.Text()}/hr)</td>" );
+                            of.WriteLine( $"<td {tmp}>R<sub>rate</sub> ({Sup.StationRain.Text()}{Sup.PerHour})</td>" );
                             of.WriteLine( $"<td {tmp}>{Sup.StationRain.Format( MonthlyRecords[ i ][ (int) MeasurementRecords.Rrate ].MaxRainRate )}</td><td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Rrate ].TimeMaxRainRate:dd/MM/yyyy HH:mm}</td>" );
                             of.WriteLine( "</tr>" );
 

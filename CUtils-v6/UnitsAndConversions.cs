@@ -81,7 +81,7 @@ namespace CumulusUtils
 
         readonly public WindDim Dim;
 
-        public Wind( WindDim w ) { Dim = w; }
+        public Wind( WindDim w, CuSupport s ) { Dim = w; UnitWindText[ 2 ] = $"km{s.PerHour}"; }
 
         public string Text() { return UnitWindText[ (int) Dim ]; }
         public string Text( WindDim w ) { return UnitWindText[ (int) w ]; }

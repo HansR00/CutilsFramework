@@ -509,7 +509,7 @@ namespace CumulusUtils
                     of.WriteLine( "<tr>" ); //style=\"background-color: #b0b0b0;\"
                     of.WriteLine( $"<th style='width: 16%;text-align: center;'>{Sup.GetCUstringValue( "pwsFWI", "Date", "Date", false )}</th>" );
                     of.WriteLine( $"<th style='width: 14%;text-align: center;'>{Sup.GetCUstringValue( "pwsFWI", "Temperature", "Temp.", false )}\n(&deg;C)</th>" );
-                    of.WriteLine( $"<th style='width: 14%;text-align: center;'>{Sup.GetCUstringValue( "pwsFWI", "WindSpeed", "Wind Speed", false )}\n(km/h)</th>" );
+                    of.WriteLine( $"<th style='width: 14%;text-align: center;'>{Sup.GetCUstringValue( "pwsFWI", "WindSpeed", "Wind Speed", false )}\n(km{Sup.PerHour})</th>" );
                     of.WriteLine( $"<th style='width: 14%;text-align: center;'>{Sup.GetCUstringValue( "pwsFWI", "Rain", "Rain", false )}\n(mm)</th>" );
                     of.WriteLine( $"<th style='width: 14%;text-align: center;'>{Sup.GetCUstringValue( "pwsFWI", "RelativeHumidity", "RH", false )}\n</th>" );
                     of.WriteLine( $"<th style='width: 14%;text-align: center;'>{Sup.GetCUstringValue( "pwsFWI", "DaysSinceRain", "Days since Rain", false )}</th>" );
@@ -797,7 +797,7 @@ namespace CumulusUtils
                     of.WriteLine( "<tr >" );
                     of.WriteLine( $"<th style=\"text-align:center;border-radius: 13px 0px 0px 0px; \">{Sup.GetCUstringValue( "pwsFWI", "Date", "Date", false )}</th>" );
                     of.WriteLine( $"<th style=\"text-align:center;\">{Sup.GetCUstringValue( "pwsFWI", "Temperature", "Temp.", false )} (&deg;C)</th>" );
-                    of.WriteLine( $"<th style=\"text-align:center;\">{Sup.GetCUstringValue( "pwsFWI", "WindSpeed", "Wind Speed", false )} (km/h)</th >" );
+                    of.WriteLine( $"<th style=\"text-align:center;\">{Sup.GetCUstringValue( "pwsFWI", "WindSpeed", "Wind Speed", false )} (km{Sup.PerHour})</th >" );
                     of.WriteLine( $"<th style=\"text-align:center;\">{Sup.GetCUstringValue( "pwsFWI", "Rain", "Rain", false )} (mm)</th>" );
                     of.WriteLine( $"<th style=\"text-align:center;\">{Sup.GetCUstringValue( "pwsFWI", "RelativeHumidity", "RH", false )}</th>" );
                     of.WriteLine( $"<th style=\"text-align:center;\">{Sup.GetCUstringValue( "pwsFWI", "DaysSinceRain", "Days since Rain", false )}</th>" );
@@ -1000,7 +1000,7 @@ namespace CumulusUtils
                         // assign it to the FWIValue structure element which assignment converts it back to Celsius
                         // For Wind and Rain similar 
                         Temp t = new Temp( TempDim.celsius );
-                        Wind w = new Wind( WindDim.kmh );
+                        Wind w = new Wind( WindDim.kmh, Sup );
                         Rain r = new Rain( RainDim.millimeter );
 
                         ThisValue.MaxTemp = (float) Sup.StationTemp.Convert( TempDim.celsius, Sup.StationTemp.Dim, Convert.ToSingle( el.Element( "tempmax" ).Attribute( "value" ).Value, CultureInfo.InvariantCulture ) );

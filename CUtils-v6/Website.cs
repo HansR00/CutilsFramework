@@ -810,7 +810,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
                 CUlibFile.Append( "" +
                           "  let realtime = tmpInput.split(' '); " +
-                          $"  let UnitWind = realtime[{(int) RealtimeFields.windunit}];" +
+                          $"  let UnitWind = '{Sup.StationWind.Text()}';" +
                           $"  let UnitDegree = realtime[{(int) RealtimeFields.tempunitnodeg}] == 'C' ? '°C' : '°F';" +
                           $"  let UnitPress = realtime[{(int) RealtimeFields.pressunit}] == 'in' ? 'ínHg' : realtime[{(int) RealtimeFields.pressunit}];" +
                           $"  let UnitRain = realtime[{(int) RealtimeFields.rainunit}];" +
@@ -830,7 +830,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                           "  }" +
                           $"  if (oldobs[{(int) RealtimeFields.temptrend}] != realtime[{(int) RealtimeFields.temptrend}]) {{" +
                           $"    oldobs[{(int) RealtimeFields.temptrend}] = realtime[{(int) RealtimeFields.temptrend}];" +
-                          $"    tmp = realtime[{(int) RealtimeFields.temptrend}] + '&nbsp;' + UnitDegree + '/hr';" +
+                          $"    tmp = realtime[{(int) RealtimeFields.temptrend}] + '&nbsp;' + UnitDegree + '{Sup.PerHour}';" +
                           $"    $('#ajxTempChange').html(tmp);" +
                           $"    $('#ajxTempChange').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
                           "  }" +
@@ -858,7 +858,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                           "  }" +
                           $"  if (oldobs[{(int) RealtimeFields.presstrendval}] != realtime[{(int) RealtimeFields.presstrendval}]) {{" +
                           $"    oldobs[{(int) RealtimeFields.presstrendval}] = realtime[{(int) RealtimeFields.presstrendval}];" +
-                          $"    tmp = realtime[{(int) RealtimeFields.presstrendval}] + '&nbsp;' + UnitPress + '/hr';" +
+                          $"    tmp = realtime[{(int) RealtimeFields.presstrendval}] + '&nbsp;' + UnitPress + '{Sup.PerHour}';" +
                           $"    $('#ajxBarChange').html(tmp);" +
                           $"    $('#ajxBarChange').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
                           "  }" +
@@ -888,7 +888,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                           "  }" +
                           $"  if (oldobs[{(int) RealtimeFields.rrate}] != realtime[{(int) RealtimeFields.rrate}]) {{" +
                           $"    oldobs[{(int) RealtimeFields.rrate}] = realtime[{(int) RealtimeFields.rrate}];" +
-                          $"    tmp = '{Sup.GetCUstringValue( "Website", "Rainrate", "Rain Rate", true )}: ' + realtime[{(int) RealtimeFields.rrate}] + '&nbsp;' + UnitRain + '/hr';" +
+                          $"    tmp = '{Sup.GetCUstringValue( "Website", "Rainrate", "Rain Rate", true )}: ' + realtime[{(int) RealtimeFields.rrate}] + '&nbsp;' + UnitRain + '{Sup.PerHour}';" +
                           $"    $('#ajxRainRateNow').html(tmp);" +
                           $"    $('#ajxRainRateNow').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
                           "  }" +
@@ -1917,7 +1917,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                      "yAxis:" +
                      "[" +
                      "  {" +
-                     $"   title:{{text:'{Sup.GetCUstringValue( "Website", "RainfallRate", "Rainfall Rate", true )} ('+config.rain.units+'/hr)'}}," +
+                     $"   title:{{text:'{Sup.GetCUstringValue( "Website", "RainfallRate", "Rainfall Rate", true )} ('+config.rain.units+'{Sup.PerHour})'}}," +
                      "    min:0," +
                      "    opposite:false," +
                      "    labels:{align:'right',x:-5}" +
@@ -1945,7 +1945,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                      "    type:'line'," +
                     $"    color: '{Sup.GetUtilsIniValue( "Website", "HomeGraphRainRateColor", "#058DC7" )}'," +
                      "    yAxis:0," +
-                     "    tooltip:{valueSuffix:config.rain.units+'/hr'}" +
+                    $"    tooltip:{{valueSuffix:config.rain.units+'{Sup.PerHour}'}}" +
                      "  }" +
                      "]," +
                      "rangeSelector:{buttons:[{count:6,type:'hour',text:'6h'},{count:12,type:'hour',text:'12h'},{type:'all',text:'All'}],inputEnabled:false}};" +
