@@ -162,9 +162,10 @@ namespace CumulusUtils
             AxisType.AQ,AxisType.AQ,AxisType.AQ,AxisType.AQ,
             AxisType.AQ,AxisType.AQ,AxisType.AQ,AxisType.AQ,
             AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,
-            AxisType.Temp,AxisType.Temp,
-            AxisType.Free,AxisType.Free,
-            AxisType.ppm,AxisType.ppm,AxisType.AQ,AxisType.AQ,AxisType.AQ,AxisType.AQ,AxisType.Temp,AxisType.Humidity
+            AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,
+            AxisType.Free,AxisType.Free,AxisType.Free,AxisType.Free,AxisType.Free,AxisType.Free,AxisType.Free,AxisType.Free,
+            AxisType.ppm,AxisType.ppm,AxisType.AQ,AxisType.AQ,AxisType.AQ,AxisType.AQ,AxisType.Temp,AxisType.Humidity,
+            AxisType.Free
         };
 
         internal readonly string[] PlotvarTypesRECENT = {
@@ -198,8 +199,10 @@ namespace CumulusUtils
             "AirQuality1","AirQuality2","AirQuality3","AirQuality4",
             "AirQualityAvg1","AirQualityAvg2","AirQualityAvg3","AirQualityAvg4",
             "UserTemp1","UserTemp2","UserTemp3","UserTemp4","UserTemp5","UserTemp6","UserTemp7","UserTemp8",
-            "LeafTemp1","LeafTemp2", "LeafWetness1","LeafWetness2",
-            "CO2", "CO2_24h", "CO2_pm2p5", "CO2_pm2p5_24h","CO2_pm10","CO2_pm10_24h","CO2_temp","CO2_hum"
+            "LeafTemp1","LeafTemp2", "LeafTemp3","LeafTemp4",
+            "LeafWetness1","LeafWetness2","LeafWetness3","LeafWetness4","LeafWetness5","LeafWetness6","LeafWetness7","LeafWetness8",
+            "CO2", "CO2_24h", "CO2_pm2p5", "CO2_pm2p5_24h","CO2_pm10","CO2_pm10_24h","CO2_temp","CO2_hum",
+            "Lightning"
         };
 
         internal readonly string[] DatafilesRECENT = {
@@ -235,6 +238,8 @@ namespace CumulusUtils
             "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
             "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
             "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
+            "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
+            "extrasensorsdata.json"
         };
 
         internal readonly string[] PlotvarKeywordRECENT = {
@@ -267,8 +272,10 @@ namespace CumulusUtils
             "AirQuality1","AirQuality2","AirQuality3","AirQuality4",
             "AirQualityAvg1","AirQualityAvg2","AirQualityAvg3","AirQualityAvg4",
             "UserTemp1","UserTemp2","UserTemp3","UserTemp4","UserTemp5","UserTemp6","UserTemp7","UserTemp8",
-            "LeafTemp1","LeafTemp2","LeafWetness1","LeafWetness2",
-            "CO2", "CO2_24h", "CO2_pm2p5", "CO2_pm2p5_24h","CO2_pm10","CO2_pm10_24h","CO2_temp","CO2_hum"
+            "LeafTemp1","LeafTemp2","LeafTemp3","LeafTemp4",
+            "LeafWetness1","LeafWetness2","LeafWetness3","LeafWetness4","LeafWetness5","LeafWetness6","LeafWetness7","LeafWetness8",
+            "CO2", "CO2_24h", "CO2_pm2p5", "CO2_pm2p5_24h","CO2_pm10","CO2_pm10_24h","CO2_temp","CO2_hum",
+            "Lightning"
         };
 
         internal readonly string[] ValidColumnRangeVars = {
@@ -544,7 +551,9 @@ namespace CumulusUtils
             double HeightOfSun = Math.Asin( Math.Sin( Latitude * Deg2Rad ) * Math.Sin( Delta * Deg2Rad ) + Math.Cos( Latitude * Deg2Rad ) * Math.Cos( Delta * Deg2Rad ) );
             double ExponentialComponent = Math.Exp( -0.13 / Math.Sin( HeightOfSun ) ) * Math.Sin( HeightOfSun );
 
-            Estimation = (int) ( SolarConstant * Gamma * EarthSunDist * ExponentialComponent );
+            // Return the total estimation and add 50 to make sure the scaling has some space
+            //
+            Estimation = (int) ( SolarConstant * Gamma * EarthSunDist * ExponentialComponent ) + 50;
 
             return Estimation;
         }

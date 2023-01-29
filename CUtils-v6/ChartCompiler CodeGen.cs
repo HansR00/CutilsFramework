@@ -700,7 +700,7 @@ namespace CumulusUtils
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Pressure", "Pressure", true )} ({thisPlotvar.Unit})'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     _ = Sup.StationPressure.Dim == PressureDim.inchHg ? buf.Append( "allowDecimals: true," ) : buf.Append( "allowDecimals: false," );
-                    buf.Append( $"softMin: {Sup.StationPressure.Format( MinPressure )}, softMax: {Sup.StationPressure.Format( MaxPressure )}," );
+                    buf.Append( $"softMin: {Sup.StationPressure.Format( MinPressure ).Replace(',','.')}, softMax: {Sup.StationPressure.Format( MaxPressure ).Replace( ',', '.' )}," );
                     buf.Append( $"labels: {{ formatter: function () {{return Highcharts.numberFormat(this.value, {NrOfDecimals}, '.', '');}}, " +
                         $"{( opposite ? "align: 'left',x: 5,y: -2}" : "align: 'right',x: -5, y: -2}" )}" );
                     AxisSet |= AxisType.Pressure;
@@ -754,7 +754,7 @@ namespace CumulusUtils
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "SolarRadiation", "Solar Radiation", true )} (W/m²)'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( "allowDecimals: false," );
-                    buf.Append( $"softMax: {ApproximateSolarMax() + 150},min: 0," );
+                    buf.Append( $"softMax: {ApproximateSolarMax()},min: 0," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}" );
                     AxisSet |= AxisType.Solar;
                 }

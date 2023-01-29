@@ -147,7 +147,7 @@ namespace CumulusUtils
         public string Format( float value )
         {
             if ( Dim == PressureDim.inchHg ) return $"{value:F2}";
-            else return $"{value:F0}";
+            else return $"{value:F1}";
         }
     }
 
@@ -176,5 +176,14 @@ namespace CumulusUtils
         }
 
         public string Format( float value ) => $"{value:F1}";
+    }
+    public class CO2conc
+    {
+        public static string Text() => "ppm";
+    }
+
+    public class PMconc
+    {
+        public static string Text() => "μg/m3";
     }
 }

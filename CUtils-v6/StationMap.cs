@@ -88,6 +88,9 @@ namespace CumulusUtils
                 of.WriteLine( "<div id='CUStationMap'></div>" );
 
                 of.WriteLine( "<script>" );
+
+                of.WriteLine( $"{GenerateLocalLeafletPluginRotatedMarker()}" );
+
                 of.WriteLine( $"var StationMap = L.map('CUStationMap', {{scrollWheelZoom: false, zoomControl: false }});" );
 
                 of.WriteLine( "L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', " +
@@ -154,5 +157,32 @@ namespace CumulusUtils
 
             return;
         }
+
+        #region MapObjectRotation
+
+        static string GenerateLocalLeafletPluginRotatedMarker()
+        {
+            StringBuilder transport = new StringBuilder();
+
+            transport.Append( "(function() {" );
+            transport.Append( "var proto_initIcon = L.Marker.prototype._initIcon;" );
+            transport.Append( "var proto_setPos = L.Marker.prototype._setPos;" );
+            transport.Append( "var oldIE = (L.DomUtil.TRANSFORM === 'msTransform');" );
+            transport.Append( "L.Marker.addInitHook(function() {var iconOptions = this.options.icon && this.options.icon.options;" );
+            transport.Append( "var iconAnchor = iconOptions && this.options.icon.options.iconAnchor;if (iconAnchor){iconAnchor = (iconAnchor[0] + 'px ' + iconAnchor[1] + 'px');}" );
+            transport.Append( "this.options.rotationOrigin = this.options.rotationOrigin || iconAnchor || 'center bottom';this.options.rotationAngle = this.options.rotationAngle || 0;this.on('drag', function(e) { e.target._applyRotation(); });});" );
+            transport.Append( "L.Marker.include({_initIcon: function() {proto_initIcon.call(this);}," );
+            transport.Append( "  _setPos: function(pos) {proto_setPos.call(this, pos);this._applyRotation();}," );
+            transport.Append( "_applyRotation: function() {if (this.options.rotationAngle){this._icon.style[L.DomUtil.TRANSFORM + 'Origin'] = this.options.rotationOrigin;" );
+            transport.Append( "if (oldIE){this._icon.style[L.DomUtil.TRANSFORM] = 'rotate(' + this.options.rotationAngle + 'deg)';}" );
+            transport.Append( "else{this._icon.style[L.DomUtil.TRANSFORM] += ' rotateZ(' + this.options.rotationAngle + 'deg)';}}}," );
+            transport.Append( "setRotationAngle: function(angle) {this.options.rotationAngle = angle;this.update();return this;}," );
+            transport.Append( "setRotationOrigin: function(origin) {this.options.rotationOrigin = origin;this.update();return this;}});})();" );
+
+            return transport.ToString();
+        }
+
+        #endregion
+
     }
 }
