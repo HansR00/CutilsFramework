@@ -210,7 +210,7 @@ namespace CumulusUtils
                         case (int) ExtraSensorType.SoilMoisture:
                             sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
                             sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    $('#ajxSoilMoisture{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' %');" );
+                            sb.AppendLine( $"    $('#ajxSoilMoisture{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ]);" );
                             sb.AppendLine( $"    $('#ajxSoilMoisture{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
                             sb.AppendLine( "  }" );
                             break;
@@ -231,57 +231,57 @@ namespace CumulusUtils
                         case (int) ExtraSensorType.CO2:
                             sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
                             sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    $('#ajxCO2{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {CO2conc.Text()}');" );
-                            sb.AppendLine( $"    $('#ajxCO2{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                            sb.AppendLine( $"    $('#ajxCO2').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {CO2conc.Text()}');" );
+                            sb.AppendLine( $"    $('#ajxCO2').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
                             sb.AppendLine( "  }" );
                             break;
                         case (int) ExtraSensorType.CO2avg:
                             sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
                             sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    $('#ajxCO2-24h{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {CO2conc.Text()}');" );
-                            sb.AppendLine( $"    $('#ajxCO2-24h{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                            sb.AppendLine( $"    $('#ajxCO2-24h').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {CO2conc.Text()}');" );
+                            sb.AppendLine( $"    $('#ajxCO2-24h').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
                             sb.AppendLine( "  }" );
                             break;
                         case (int) ExtraSensorType.CO2pm2p5:
                             sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
                             sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    $('#ajxCO2pm2p5{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {PMconc.Text()}');" );
-                            sb.AppendLine( $"    $('#ajxCO2pm2p5{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                            sb.AppendLine( $"    $('#ajxCO2pm2p5').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {PMconc.Text()}');" );
+                            sb.AppendLine( $"    $('#ajxCO2pm2p5').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
                             sb.AppendLine( "  }" );
                             break;
                         case (int) ExtraSensorType.CO2pm2p5avg:
                             sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
                             sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    $('#ajxCO2pm2p5-24h{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {PMconc.Text()}');" );
-                            sb.AppendLine( $"    $('#ajxCO2pm2p5-24h{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                            sb.AppendLine( $"    $('#ajxCO2pm2p5-24h').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {PMconc.Text()}');" );
+                            sb.AppendLine( $"    $('#ajxCO2pm2p5-24h').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
                             sb.AppendLine( "  }" );
                             break;
                         case (int) ExtraSensorType.CO2pm10:
                             sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
                             sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    $('#ajxCO2pm10{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {PMconc.Text()} ');" );
-                            sb.AppendLine( $"    $('#ajxCO2pm10{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                            sb.AppendLine( $"    $('#ajxCO2pm10').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {PMconc.Text()} ');" );
+                            sb.AppendLine( $"    $('#ajxCO2pm10').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
                             sb.AppendLine( "  }" );
                             break;
                         case (int) ExtraSensorType.CO2pm10avg:
                             sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
                             sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    $('#ajxCO2pm10-24h{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {PMconc.Text()} ');" );
-                            sb.AppendLine( $"    $('#ajxCO2pm10-24h{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                            sb.AppendLine( $"    $('#ajxCO2pm10-24h').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {PMconc.Text()} ');" );
+                            sb.AppendLine( $"    $('#ajxCO2pm10-24h').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
                             sb.AppendLine( "  }" );
                             break;
                         case (int) ExtraSensorType.CO2temp:
                             sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
                             sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    $('#ajxCO2-temp{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {Sup.StationTemp.Text()}');" );
-                            sb.AppendLine( $"    $('#ajxCO2-temp{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                            sb.AppendLine( $"    $('#ajxCO2temp').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {Sup.StationTemp.Text()}');" );
+                            sb.AppendLine( $"    $('#ajxCO2temp').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
                             sb.AppendLine( "  }" );
                             break;
                         case (int) ExtraSensorType.CO2hum:
                             sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
                             sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    $('#ajxCO2-hum{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' %');" );
-                            sb.AppendLine( $"    $('#ajxCO2-hum{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                            sb.AppendLine( $"    $('#ajxCO2hum').html(ExtraSensorRT[ {tmp.RTposition} ] + ' %');" );
+                            sb.AppendLine( $"    $('#ajxCO2hum').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
                             sb.AppendLine( "  }" );
                             break;
                         case (int) ExtraSensorType.UserTemp:
@@ -301,7 +301,7 @@ namespace CumulusUtils
                         case (int) ExtraSensorType.LeafWetness:
                             sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
                             sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    $('#ajxLeafWetness{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {Sup.StationTemp.Text()}');" );
+                            sb.AppendLine( $"    $('#ajxLeafWetness{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ]);" );
                             sb.AppendLine( $"    $('#ajxLeafWetness{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
                             sb.AppendLine( "  }" );
                             break;
@@ -315,11 +315,11 @@ namespace CumulusUtils
                             sb.AppendLine( $"    $('#ajxLightningStrikesToday').html(ExtraSensorRT[ {tmp.RTposition} ] + tmp);" );
                             sb.AppendLine( $"    $('#ajxLightningStrikesToday').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
 
-                            sb.AppendLine( $"    $('#ajxLightningTime').html(ExtraSensorRT[ {tmp.RTposition + 1} ]);" );
+                            sb.AppendLine( $"    $('#ajxLightningTime').html(ExtraSensorRT[ {tmp.RTposition + 1} ] + ' ' + ExtraSensorRT[ {tmp.RTposition + 2} ]);" );
                             sb.AppendLine( $"    $('#ajxLightningTime').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
 
-                            sb.AppendLine( $"    tmpDistance = ExtraSensorRT[ {tmp.RTposition + 2} ] * {Sup.StationDistance.Convert( Sup.StationDistance.Dim, DistanceDim.kilometer, 1 ).ToString( "F5", CultureInfo.InvariantCulture )};" );
-                            sb.AppendLine( $"    $('#ajxLightningDistance').html(tmpDistance);" );
+                            //sb.AppendLine( $"    tmpDistance = ExtraSensorRT[ {tmp.RTposition + 3} ] * {Sup.StationDistance.Convert( Sup.StationDistance.Dim, DistanceDim.kilometer, 1 ).ToString( "F5", CultureInfo.InvariantCulture )};" );
+                            sb.AppendLine( $"    $('#ajxLightningDistance').html(Math.round(ExtraSensorRT[ {tmp.RTposition + 3} ]) + ' {Sup.StationDistance.Text()}');" );
                             sb.AppendLine( $"    $('#ajxLightningDistance').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
                             sb.AppendLine( "  }" );
 
@@ -400,22 +400,22 @@ namespace CumulusUtils
                             buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxCO2-24h'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.CO2pm2p5:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxCO2-pm2p5'></td></tr>" );
+                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxCO2pm2p5'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.CO2pm2p5avg:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxCO2-pm2p5-24h'></td></tr>" );
+                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxCO2pm2p5-24h'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.CO2pm10:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxCO2-pm10'></td></tr>" );
+                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxCO2pm10'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.CO2pm10avg:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxCO2-pm10-24h'></td></tr>" );
+                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxCO2pm10-24h'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.CO2temp:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxCO2-temp'></td></tr>" );
+                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxCO2temp'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.CO2hum:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxCO2-hum'></td></tr>" );
+                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxCO2hum'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.UserTemp:
                             buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxUserTemp{tmp.SensorIndex}'></td></tr>" );
@@ -738,7 +738,7 @@ namespace CumulusUtils
                             Sup.LogTraceWarningMessage( $"DoExtraSensorsWork: No ExtraSensorsRealTime for {tmp.Name} ({tmp.Type}) - has no realtime value." );
                             break;
                         case (int) ExtraSensorType.Lightning:
-                            sb.Append( $"<#LightningStrikesToday> <#LightningTime> <#LightningDistance rc=y> " );
+                            sb.Append( $"<#LightningStrikesToday> <#LightningTime format=\"g\"> <#LightningDistance rc=y> " );
                             break;
                         default:
                             Sup.LogTraceErrorMessage( $"DoExtraSensorsWork: Illegal ExtraSensor type {tmp.Type} - no realtime value." );
@@ -992,7 +992,7 @@ namespace CumulusUtils
                 return theseSensors;
             }
 
-            // 1) registerSensor : Create an entry in the ExtraSensorList for a configured sensor
+            // 2) registerSensor : Create an entry in the ExtraSensorList for a configured sensor
             //
             void registerSensor( string thisSensor, int sensorIndex, ExtraSensorType sensorType )
             {
@@ -1012,7 +1012,7 @@ namespace CumulusUtils
 
                 // Do some corrections for the deviative sensors
                 if ( sensorType == ExtraSensorType.AirQualityAvg ) { tmp.PlotvarIndex += 4; tmp.PlotvarType = ChartsCompiler.PlotvarTypesEXTRA[ tmp.PlotvarIndex ]; }
-                //if ( sensorType == ExtraSensorType.External ) tmp.PlotvarType = thisSensor;
+                if ( sensorType == ExtraSensorType.Lightning ) { RTindex += 3; } // Compensate for 
 
                 // And immediately set the name as default in the Language file so the chart legend becomes comprehensible
                 // and does not require additional user action

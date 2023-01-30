@@ -374,6 +374,7 @@ namespace CumulusUtils
 
 
             PlotvarUnitsEXTRA = new string[ PlotvarTypesEXTRA.Length ];
+            //"Temp1","Temp2","Temp3","Temp4","Temp5","Temp6","Temp7","Temp8","Temp9","Temp10",
             PlotvarUnitsEXTRA[ 0 ] = Sup.StationTemp.Text();
             PlotvarUnitsEXTRA[ 1 ] = Sup.StationTemp.Text();
             PlotvarUnitsEXTRA[ 2 ] = Sup.StationTemp.Text();
@@ -385,6 +386,7 @@ namespace CumulusUtils
             PlotvarUnitsEXTRA[ 8 ] = Sup.StationTemp.Text();
             PlotvarUnitsEXTRA[ 9 ] = Sup.StationTemp.Text();
 
+            //"Humidity1","Humidity2","Humidity3","Humidity4","Humidity5","Humidity6","Humidity7","Humidity8","Humidity9","Humidity10",
             PlotvarUnitsEXTRA[ 10 ] = "%";
             PlotvarUnitsEXTRA[ 11 ] = "%";
             PlotvarUnitsEXTRA[ 12 ] = "%";
@@ -396,6 +398,7 @@ namespace CumulusUtils
             PlotvarUnitsEXTRA[ 18 ] = "%";
             PlotvarUnitsEXTRA[ 19 ] = "%";
 
+            //"Dewpoint1","Dewpoint2","Dewpoint3","Dewpoint4","Dewpoint5","Dewpoint6","Dewpoint7","Dewpoint8","Dewpoint9","Dewpoint10",
             PlotvarUnitsEXTRA[ 20 ] = Sup.StationTemp.Text();
             PlotvarUnitsEXTRA[ 21 ] = Sup.StationTemp.Text();
             PlotvarUnitsEXTRA[ 22 ] = Sup.StationTemp.Text();
@@ -407,6 +410,7 @@ namespace CumulusUtils
             PlotvarUnitsEXTRA[ 28 ] = Sup.StationTemp.Text();
             PlotvarUnitsEXTRA[ 29 ] = Sup.StationTemp.Text();
 
+            //"SoilTemp1","SoilTemp2","SoilTemp3","SoilTemp4","SoilTemp5","SoilTemp6","SoilTemp7","SoilTemp8","SoilTemp9","SoilTemp10","SoilTemp11","SoilTemp12","SoilTemp13","SoilTemp14","SoilTemp15","SoilTemp16",
             PlotvarUnitsEXTRA[ 30 ] = Sup.StationTemp.Text();
             PlotvarUnitsEXTRA[ 31 ] = Sup.StationTemp.Text();
             PlotvarUnitsEXTRA[ 32 ] = Sup.StationTemp.Text();
@@ -424,6 +428,7 @@ namespace CumulusUtils
             PlotvarUnitsEXTRA[ 44 ] = Sup.StationTemp.Text();
             PlotvarUnitsEXTRA[ 45 ] = Sup.StationTemp.Text();
 
+            //"SoilMoisture1","SoilMoisture2","SoilMoisture3","SoilMoisture4","SoilMoisture5","SoilMoisture6","SoilMoisture7","SoilMoisture8","SoilMoisture9","SoilMoisture10","SoilMoisture11","SoilMoisture12","SoilMoisture13","SoilMoisture14","SoilMoisture15","SoilMoisture16",
             PlotvarUnitsEXTRA[ 46 ] = "%";
             PlotvarUnitsEXTRA[ 47 ] = "%";
             PlotvarUnitsEXTRA[ 48 ] = "%";
@@ -441,6 +446,8 @@ namespace CumulusUtils
             PlotvarUnitsEXTRA[ 60 ] = "%";
             PlotvarUnitsEXTRA[ 61 ] = "%";
 
+            //"AirQuality1","AirQuality2","AirQuality3","AirQuality4",
+            //"AirQualityAvg1","AirQualityAvg2","AirQualityAvg3","AirQualityAvg4",
             PlotvarUnitsEXTRA[ 62 ] = "μg/m3";
             PlotvarUnitsEXTRA[ 63 ] = "μg/m3";
             PlotvarUnitsEXTRA[ 64 ] = "μg/m3";
@@ -450,6 +457,7 @@ namespace CumulusUtils
             PlotvarUnitsEXTRA[ 68 ] = "μg/m3";
             PlotvarUnitsEXTRA[ 69 ] = "μg/m3";
 
+            //"UserTemp1","UserTemp2","UserTemp3","UserTemp4","UserTemp5","UserTemp6","UserTemp7","UserTemp8",
             PlotvarUnitsEXTRA[ 70 ] = Sup.StationTemp.Text();
             PlotvarUnitsEXTRA[ 71 ] = Sup.StationTemp.Text();
             PlotvarUnitsEXTRA[ 72 ] = Sup.StationTemp.Text();
@@ -459,20 +467,33 @@ namespace CumulusUtils
             PlotvarUnitsEXTRA[ 76 ] = Sup.StationTemp.Text();
             PlotvarUnitsEXTRA[ 77 ] = Sup.StationTemp.Text();
 
+            //"LeafTemp1","LeafTemp2","LeafTemp3","LeafTemp4",
             PlotvarUnitsEXTRA[ 78 ] = Sup.StationTemp.Text();
             PlotvarUnitsEXTRA[ 79 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 80 ] = "%";
-            PlotvarUnitsEXTRA[ 81 ] = "%";
+            PlotvarUnitsEXTRA[ 80 ] = Sup.StationTemp.Text();
+            PlotvarUnitsEXTRA[ 81 ] = Sup.StationTemp.Text();
 
-            PlotvarUnitsEXTRA[ 82 ] = "ppm";
-            PlotvarUnitsEXTRA[ 83 ] = "ppm";
+            //"LeafWetness1","LeafWetness2","LeafWetness3","LeafWetness4","LeafWetness5","LeafWetness6","LeafWetness7","LeafWetness8",
+            PlotvarUnitsEXTRA[ 82 ] = "";
+            PlotvarUnitsEXTRA[ 83 ] = "";
+            PlotvarUnitsEXTRA[ 84 ] = "";
+            PlotvarUnitsEXTRA[ 85 ] = "";
+            PlotvarUnitsEXTRA[ 86 ] = "";
+            PlotvarUnitsEXTRA[ 87 ] = "";
+            PlotvarUnitsEXTRA[ 88 ] = "";
+            PlotvarUnitsEXTRA[ 89 ] = "";
 
-            PlotvarUnitsEXTRA[ 84 ] = "μg/m3";
-            PlotvarUnitsEXTRA[ 85 ] = "μg/m3";
-            PlotvarUnitsEXTRA[ 86 ] = "μg/m3";
-            PlotvarUnitsEXTRA[ 87 ] = "μg/m3";
-            PlotvarUnitsEXTRA[ 88 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 89 ] = "%";
+            //"CO2", "CO2_24h", "CO2_pm2p5", "CO2_pm2p5_24h","CO2_pm10","CO2_pm10_24h","CO2_temp","CO2_hum",
+            PlotvarUnitsEXTRA[ 90 ] = CO2conc.Text();
+            PlotvarUnitsEXTRA[ 91 ] = CO2conc.Text();
+            PlotvarUnitsEXTRA[ 92 ] = PMconc.Text();
+            PlotvarUnitsEXTRA[ 93 ] = PMconc.Text();
+            PlotvarUnitsEXTRA[ 94 ] = PMconc.Text();
+            PlotvarUnitsEXTRA[ 95 ] = PMconc.Text();
+            PlotvarUnitsEXTRA[ 96 ] = Sup.StationTemp.Text();
+            PlotvarUnitsEXTRA[ 97 ] = "%";
+
+            //"Lightning"
 
             // Init the Compiler section in language file for the keywords just to  make sure they are there
             // Even if it is the millionth time or more... Certainly when adding more keywords later on.
