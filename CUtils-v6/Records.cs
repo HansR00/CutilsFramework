@@ -1,25 +1,24 @@
 ﻿/*
  * Records - Part of CumulusUtils
  *
- * © Copyright 2019 - 2021 Hans Rottier <hans.rottier@gmail.com>
+ * © Copyright 2019-2023 Hans Rottier <hans.rottier@gmail.com>
  *
- * When the code is made public domain the licence will be changed to the GNU 
- * General Public License as published by the Free Software Foundation;
- * Until then, the code of CumulusUtils is not public domain and only the executable is 
- * distributed under the  Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
- * As a consequence, this code should not be in your posession unless with explicit permission by Hans Rottier
+ * The code of CumulusUtils is public domain and distributed under the  
+ * Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
  * 
  * Author:      Hans Rottier <hans.rottier@gmail.com>
  * Project:     CumulusUtils meteo-wagenborgen.nl
- * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI
- *              Initial release: pwsFWI             (version 1.0)
- *                               Website Generator  (version 3.0)
- *                               ChartsCompiler     (version 5.0)
+ * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI .NET Framework 4.8
+ *              Initial release: pwsFWI                 (version 1.0)
+ *                               Website Generator      (version 3.0)
+ *                               ChartsCompiler         (version 5.0)
+ *                               Maintenance releases   (version 6.x)
+ *              Startdate : 16 november 2021 start of conversion to .NET 5, 6 and 7
  *              
- * Environment: Raspberry 3B+
- *              Raspbian / Linux 
- *              C# / Visual Studio
- *              
+ * Environment: Raspberry Pi 3B+ and up
+ *              Raspberry Pi OS  for testruns
+ *              C# / Visual Studio / Windows for development
+ * 
  */
 using System;
 using System.Collections.Generic;
@@ -430,13 +429,13 @@ namespace CumulusUtils
                     tmp = ( now.Subtract( YearRecords[ j ][ (int) MeasurementRecords.Tmax ].TimeMaxTemp ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                     of.WriteLine( $"<tr>" );
                     of.WriteLine( $"<td {tmp}>T<sub>max</sub> ({Sup.StationTemp.Text()})</td>" );
-                    of.WriteLine( $"<td {tmp}>{Sup.StationTemp.Format( YearRecords[ j ][ (int) MeasurementRecords.Tmax ].MaxTemp )}</td><td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Tmax ].TimeMaxTemp:dd/MM/yyyy HH:mm}</td>" );
+                    of.WriteLine( $"<td {tmp}>{Temp.Format( YearRecords[ j ][ (int) MeasurementRecords.Tmax ].MaxTemp )}</td><td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Tmax ].TimeMaxTemp:dd/MM/yyyy HH:mm}</td>" );
                     of.WriteLine( "</tr>" );
 
                     tmp = ( now.Subtract( YearRecords[ j ][ (int) MeasurementRecords.Tmin ].TimeMinTemp ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                     of.WriteLine( $"<tr>" );
                     of.WriteLine( $"<td {tmp}>T<sub>min</sub> ({Sup.StationTemp.Text()})</td>" );
-                    of.WriteLine( $"<td {tmp}>{Sup.StationTemp.Format( YearRecords[ j ][ (int) MeasurementRecords.Tmin ].MinTemp )}</td><td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Tmin ].TimeMinTemp:dd/MM/yyyy HH:mm}</td>" );
+                    of.WriteLine( $"<td {tmp}>{Temp.Format( YearRecords[ j ][ (int) MeasurementRecords.Tmin ].MinTemp )}</td><td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Tmin ].TimeMinTemp:dd/MM/yyyy HH:mm}</td>" );
                     of.WriteLine( "</tr>" );
 
                     tmp = ( now.Subtract( YearRecords[ j ][ (int) MeasurementRecords.Rhour ].TimeHighHourlyRain ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
@@ -472,19 +471,19 @@ namespace CumulusUtils
                     tmp = ( now.Subtract( YearRecords[ j ][ (int) MeasurementRecords.Waverage ].TimeHighAverageWindSpeed ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                     of.WriteLine( $"<tr>" );
                     of.WriteLine( $"<td {tmp}>W<sub>average</sub> ({Sup.StationWind.Text()})</td>" );
-                    of.WriteLine( $"<td {tmp}>{Sup.StationWind.Format( YearRecords[ j ][ (int) MeasurementRecords.Waverage ].HighAverageWindSpeed )}</td><td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Waverage ].TimeHighAverageWindSpeed:dd/MM/yyyy HH:mm}</td>" );
+                    of.WriteLine( $"<td {tmp}>{Wind.Format( YearRecords[ j ][ (int) MeasurementRecords.Waverage ].HighAverageWindSpeed )}</td><td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Waverage ].TimeHighAverageWindSpeed:dd/MM/yyyy HH:mm}</td>" );
                     of.WriteLine( "</tr>" );
 
                     tmp = ( now.Subtract( YearRecords[ j ][ (int) MeasurementRecords.Wgust ].TimeHighWindGust ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                     of.WriteLine( $"<tr>" );
                     of.WriteLine( $"<td {tmp}>W<sub>gust</sub> ({Sup.StationWind.Text()})</td>" );
-                    of.WriteLine( $"<td {tmp}>{Sup.StationWind.Format( YearRecords[ j ][ (int) MeasurementRecords.Wgust ].HighWindGust )}</td><td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Wgust ].TimeHighWindGust:dd/MM/yyyy HH:mm}</td>" );
+                    of.WriteLine( $"<td {tmp}>{Wind.Format( YearRecords[ j ][ (int) MeasurementRecords.Wgust ].HighWindGust )}</td><td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Wgust ].TimeHighWindGust:dd/MM/yyyy HH:mm}</td>" );
                     of.WriteLine( "</tr>" );
 
                     tmp = ( now.Subtract( YearRecords[ j ][ (int) MeasurementRecords.Wrun ].ThisDate ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                     of.WriteLine( $"<tr>" );
                     of.WriteLine( $"<td {tmp}>W<sub>day run</sub> ({Sup.StationDistance.Text()})</td>" );
-                    of.WriteLine( $"<td {tmp}>{Sup.StationDistance.Format( YearRecords[ j ][ (int) MeasurementRecords.Wrun ].TotalWindRun )}</td><td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Wrun ].ThisDate:dd/MM/yyyy}</td>" );
+                    of.WriteLine( $"<td {tmp}>{Distance.Format( YearRecords[ j ][ (int) MeasurementRecords.Wrun ].TotalWindRun )}</td><td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Wrun ].ThisDate:dd/MM/yyyy}</td>" );
                     of.WriteLine( "</tr>" );
 
                     tmp = ( now.Subtract( YearRecords[ j ][ (int) MeasurementRecords.Phigh ].TimeMaxBarometer ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
@@ -538,13 +537,13 @@ namespace CumulusUtils
                             tmp = ( now.Subtract( MonthlyRecords[ i ][ (int) MeasurementRecords.Tmax ].TimeMaxTemp ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                             of.WriteLine( $"<tr>" );
                             of.WriteLine( $"<td {tmp}>T<sub>max</sub> ({Sup.StationTemp.Text()})</td>" );
-                            of.WriteLine( $"<td {tmp}>{Sup.StationTemp.Format( MonthlyRecords[ i ][ (int) MeasurementRecords.Tmax ].MaxTemp )}</td><td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Tmax ].TimeMaxTemp:dd/MM/yyyy HH:mm}</td>" );
+                            of.WriteLine( $"<td {tmp}>{Temp.Format( MonthlyRecords[ i ][ (int) MeasurementRecords.Tmax ].MaxTemp )}</td><td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Tmax ].TimeMaxTemp:dd/MM/yyyy HH:mm}</td>" );
                             of.WriteLine( "</tr>" );
 
                             tmp = ( now.Subtract( MonthlyRecords[ i ][ (int) MeasurementRecords.Tmin ].TimeMinTemp ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                             of.WriteLine( $"<tr>" );
                             of.WriteLine( $"<td {tmp}>T<sub>min</sub> ({Sup.StationTemp.Text()})</td>" );
-                            of.WriteLine( $"<td {tmp}>{Sup.StationTemp.Format( MonthlyRecords[ i ][ (int) MeasurementRecords.Tmin ].MinTemp )}</td><td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Tmin ].TimeMinTemp:dd/MM/yyyy HH:mm}</td>" );
+                            of.WriteLine( $"<td {tmp}>{Temp.Format( MonthlyRecords[ i ][ (int) MeasurementRecords.Tmin ].MinTemp )}</td><td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Tmin ].TimeMinTemp:dd/MM/yyyy HH:mm}</td>" );
                             of.WriteLine( "</tr>" );
 
                             tmp = ( now.Subtract( MonthlyRecords[ i ][ (int) MeasurementRecords.Rhour ].TimeHighHourlyRain ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
@@ -580,7 +579,7 @@ namespace CumulusUtils
                             tmp = ( now.Subtract( MonthlyRecords[ i ][ (int) MeasurementRecords.Waverage ].TimeHighAverageWindSpeed ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                             of.WriteLine( $"<tr>" );
                             of.WriteLine( $"<td {tmp}>W<sub>average</sub> ({Sup.StationWind.Text()})</td>" );
-                            of.WriteLine( $"<td {tmp}>{Sup.StationWind.Format( MonthlyRecords[ i ][ (int) MeasurementRecords.Waverage ].HighAverageWindSpeed )}</td><td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Waverage ].TimeHighAverageWindSpeed:dd/MM/yyyy HH:mm}</td>" );
+                            of.WriteLine( $"<td {tmp}>{Wind.Format( MonthlyRecords[ i ][ (int) MeasurementRecords.Waverage ].HighAverageWindSpeed )}</td><td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Waverage ].TimeHighAverageWindSpeed:dd/MM/yyyy HH:mm}</td>" );
                             of.WriteLine( "</tr>" );
 
                             tmp = ( now.Subtract( MonthlyRecords[ i ][ (int) MeasurementRecords.Wgust ].TimeHighWindGust ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
@@ -592,7 +591,7 @@ namespace CumulusUtils
                             tmp = ( now.Subtract( MonthlyRecords[ i ][ (int) MeasurementRecords.Wrun ].ThisDate ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                             of.WriteLine( $"<tr>" );
                             of.WriteLine( $"<td {tmp}>W<sub>day run</sub> ({Sup.StationDistance.Text()})</td>" );
-                            of.WriteLine( $"<td {tmp}>{Sup.StationDistance.Format( MonthlyRecords[ i ][ (int) MeasurementRecords.Wrun ].TotalWindRun )}</td><td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Wrun ].ThisDate:dd/MM/yyyy}</td>" );
+                            of.WriteLine( $"<td {tmp}>{Distance.Format( MonthlyRecords[ i ][ (int) MeasurementRecords.Wrun ].TotalWindRun )}</td><td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Wrun ].ThisDate:dd/MM/yyyy}</td>" );
                             of.WriteLine( "</tr>" );
 
                             tmp = ( now.Subtract( MonthlyRecords[ i ][ (int) MeasurementRecords.Phigh ].TimeMaxBarometer ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";

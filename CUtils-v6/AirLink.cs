@@ -1,25 +1,26 @@
 ﻿/*
  * DayRecords - Part of CumulusUtils
  *
- * © Copyright 2019 - 2021 Hans Rottier <hans.rottier@gmail.com>
+ * © Copyright 2019-2023 Hans Rottier <hans.rottier@gmail.com>
  *
- * When the code is made public domain the licence will be changed to the GNU 
- * General Public License as published by the Free Software Foundation;
- * Until then, the code of CumulusUtils is not public domain and only the executable is 
- * distributed under the  Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
- * As a consequence, this code should not be in your posession unless with explicit permission by Hans Rottier
+ * The code of CumulusUtils is public domain and distributed under the  
+ * Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
  * 
  * Author:      Hans Rottier <hans.rottier@gmail.com>
  * Project:     CumulusUtils meteo-wagenborgen.nl
- * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI
- *              Initial release: pwsFWI             (version 1.0)
- *                               Website Generator  (version 3.0)
- *                               ChartsCompiler     (version 5.0)
+ * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI .NET Framework 4.8
+ *              Initial release: pwsFWI                 (version 1.0)
+ *                               Website Generator      (version 3.0)
+ *                               ChartsCompiler         (version 5.0)
+ *                               Maintenance releases   (version 6.x)
+ *              Startdate : 16 november 2021 start of conversion to .NET 5, 6 and 7
  *              
- * Environment: Raspberry 3B+
- *              Raspbian / Linux 
- *              C# / Visual Studio
- * 
+ * Environment: Raspberry Pi 3B+ and up
+ *              Raspberry Pi OS  for testruns
+ *              C# / Visual Studio / Windows for development
+ */
+
+/*
  * // How the AirLink sensor system works.
  * There are three components: 
  *   1) The historic data in the datafile AirLinkYYYYMMlog.txt
@@ -68,7 +69,7 @@
  *  9) https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4213258/
  *  10) http://www.airqualityontario.com/science/aqhi_description.php
  *  
- *  It seems as if Canada simply has no unifying AQI. Maybe because they have clean air and don't thing it a big deal. But if air quality is objective
+ *  It seems as if Canada simply has no unifying AQI. Maybe because they have clean air and don't think it a big deal. But if air quality is objective
  *  they could measure their clean air. Couldn't they?
  */
 

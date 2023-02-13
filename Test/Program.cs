@@ -1,65 +1,90 @@
 ﻿using System;
-using System.Globalization;
-using System.Web.UI.WebControls;
-using FluentFTP.Proxy;
-using static System.Collections.Specialized.BitVector32;
+using System.IO;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Test
 {
-    internal class Program
+    class Test
     {
-
-        static void Main()
+        public static async Task Main( string[] args )
         {
-            Distance TestDistance = new Distance( DistanceDim.kilometer );
-            Temp TestTemp = new Temp( TempDim.celsius );
-            //Wind TestWind = new Wind( WindDim.kmh );
-            Rain TestRain = new Rain( RainDim.millimeter );
-            Pressure TestPress = new Pressure( PressureDim.inchHg );
+            Console.WriteLine( "TEST: Start" );
 
-            //string s = "test";
-            //for (int i=0; i<100; i++)
+            string FileToSend = "Test-CNETFramenwork-HTTPclient";
+
+            using ( StreamWriter of = new StreamWriter( $"{FileToSend}", false, Encoding.UTF8 ) )
+            {
+                string Website = "https://meteo-wagenborgen.nl";
+                of.WriteLine( $"Test content for .NET HTTPclient transfer...to {Website}" );
+            }
+
+            string thisContent = $"filename#{FileToSend}&";
+            thisContent += "filecontent#" + File.ReadAllText( FileToSend, Encoding.UTF8 );
+            _ = await PostUrlDataAsync( new Uri( "https://meteo-wagenborgen.nl/CMX4/upload.php" ), thisContent );
+
+            Console.WriteLine( $"TEST : Success" );
+
+            return;
+        }
+
+        static async Task<string> PostUrlDataAsync( Uri thisURL, string data )
+        {
+            string retval;
+
+            // Note: I use 'using' because it is easier and it gets only called for UserReports so 
+            //       there is no risk - I don't see a risk - of socket exhaustion
+            // Prevent issues with OpenSSL so bypass the certificate for the CGI
+            // https://stackoverflow.com/questions/52939211/the-ssl-connection-could-not-be-established
+
+            // This does no longer seem necessary:
+            //HttpClientHandler clientHandler = new HttpClientHandler
             //{
-            //    Console.Write( s + i.ToString() + "\r");
-            //    Thread.Sleep( 100 );
-            //}
+            //    ServerCertificateCustomValidationCallback = ( sender, cert, chain, sslPolicyErrors ) => { return true; }
+            //};
 
-            //Console.WriteLine("");
+            //using ( HttpClient PostClient = new HttpClient( clientHandler, true ) )
+            using ( HttpClient PostClient = new HttpClient() )
+            {
+                Console.WriteLine( $"PostUrlData Calling PostAsync" );
 
-            //Environment.Exit( 0 );
+                try
+                {
+                    using ( StringContent requestData = new StringContent( data, Encoding.UTF8 ) )
+                    {
+                        using ( HttpResponseMessage response = await PostClient.PostAsync( thisURL, requestData ) )
+                        {
+                            if ( response.IsSuccessStatusCode )
+                            {
+                                retval = await response.Content.ReadAsStringAsync();
+                                Console.WriteLine( $"PostUrlData success response : {response.StatusCode} - {response.ReasonPhrase}" );
+                            }
+                            else
+                            {
+                                Console.WriteLine( $"PostUrlData : Error: {response.StatusCode} - {response.ReasonPhrase}" );
+                                retval = "";
+                            }
+                        } // End using response -> dispose
+                    } // End using requestData -> dispose
+                }
+                catch ( Exception e ) when ( e is HttpRequestException )
+                {
+                    Console.WriteLine( $"PostUrlData : Exception - {e.Message}" );
+                    if ( e.InnerException != null )
+                        Console.WriteLine( $"PostUrlData: Inner Exception: {e.InnerException}" );
+                    retval = "";
+                }
+                catch ( Exception e )
+                {
+                    Console.WriteLine( $"PostUrlData : General exception - {e.Message}" );
+                    retval = "";
+                }
+            }
 
-            Console.WriteLine( $"TestRain: {TestRain.Dim}" );
-            Console.WriteLine( $"TestRain Converting from 25.4 mm to inch: {TestRain.Convert( RainDim.millimeter, RainDim.inch, 25.4 ):F4}" );
-            Console.WriteLine( $"TestRain Converting from 1 inch to mm: {TestRain.Convert( RainDim.inch, RainDim.millimeter, 1 ):F4}" );
-            Console.WriteLine( $"TestRain converting from 10 mm to inch: {TestRain.Convert( RainDim.millimeter, RainDim.inch, 10 )}" );
-            Console.WriteLine( $"TestRain converting from 10 inch to mm: {TestRain.Convert( RainDim.inch, RainDim.millimeter, 10 )}" );
-            Console.WriteLine( "" );
-
-            Console.WriteLine( $"TestPressure: {TestPress.Dim}" );
-            Console.WriteLine( $"TestPressure Converting from 1000 mb to inHg: {TestPress.Convert( PressureDim.millibar, PressureDim.inchHg, 1000 ):F4}" );
-            Console.WriteLine( $"TestPressure Converting from 1000 mb to hPa: {TestPress.Convert( PressureDim.millibar, PressureDim.hectopascal, 1000 ):F4}" );
-            Console.WriteLine( $"TestPressure Converting from 76 inHg to hPa: {TestPress.Convert( PressureDim.inchHg, PressureDim.hectopascal, 76 ):F4}" );
-            Console.WriteLine( "" );
-
-            Console.WriteLine( $"TestDistance: {TestDistance.Dim}" );
-            Console.WriteLine( $"TestDistance converting from 1 km to mi: {TestDistance.Convert( DistanceDim.kilometer, DistanceDim.mile, 1 )}" );
-            Console.WriteLine( $"TestDistance converting from 1 km to nm: {TestDistance.Convert( DistanceDim.kilometer, DistanceDim.nauticalmile, 1 )}" );
-            Console.WriteLine( $"TestDistance converting from 1 km to m: {TestDistance.Convert( DistanceDim.kilometer, DistanceDim.meter, 1 )}" );
-            Console.WriteLine( $"TestDistance converting from 1 mi to km: {TestDistance.Convert( DistanceDim.mile, DistanceDim.kilometer, 1 )}" );
-            Console.WriteLine( $"" );
-
-            Console.WriteLine( $"TestTemp: {TestTemp.Dim}" );
-            Console.WriteLine( $"TestTemp converting from 0 C to F: {TestTemp.Convert( TempDim.celsius, TempDim.fahrenheit, 0 )}" );
-            Console.WriteLine( $"TestTemp converting from 32 F to C: {TestTemp.Convert( TempDim.fahrenheit, TempDim.celsius, 32 )}" );
-            Console.WriteLine( $"TestTemp converting from 100 C to F: {TestTemp.Convert( TempDim.celsius, TempDim.fahrenheit, 100 )}" );
-            Console.WriteLine( $"TestTemp converting from 0 F to C: {TestTemp.Convert( TempDim.fahrenheit, TempDim.celsius, 0 )}" );
-            Console.WriteLine( $"" );
-            Console.WriteLine( $"" );
-            Console.WriteLine( $"" );
-            Console.WriteLine( $"" );
-            Console.WriteLine( $"" );
-            Console.WriteLine( $"" );
             Console.ReadKey();
+
+            return retval;
         }
     }
 }

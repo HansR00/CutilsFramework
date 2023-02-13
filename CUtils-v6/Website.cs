@@ -1,25 +1,24 @@
 ﻿/*
  * Website - Part of CumulusUtils
  *
- * © Copyright 2019 - 2021 Hans Rottier <hans.rottier@gmail.com>
+ * © Copyright 2019-2023 Hans Rottier <hans.rottier@gmail.com>
  *
- * When the code is made public domain the licence will be changed to the GNU 
- * General Public License as published by the Free Software Foundation;
- * Until then, the code of CumulusUtils is not public domain and only the executable is 
- * distributed under the  Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
- * As a consequence, this code should not be in your posession unless with explicit permission by Hans Rottier
+ * The code of CumulusUtils is public domain and distributed under the  
+ * Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
  * 
  * Author:      Hans Rottier <hans.rottier@gmail.com>
  * Project:     CumulusUtils meteo-wagenborgen.nl
- * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI
- *              Initial release: pwsFWI             (version 1.0)
- *                               Website Generator  (version 3.0)
- *                               ChartsCompiler     (version 5.0)
+ * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI .NET Framework 4.8
+ *              Initial release: pwsFWI                 (version 1.0)
+ *                               Website Generator      (version 3.0)
+ *                               ChartsCompiler         (version 5.0)
+ *                               Maintenance releases   (version 6.x)
+ *              Startdate : 16 november 2021 start of conversion to .NET 5, 6 and 7
  *              
- * Environment: Raspberry 3B+
- *              Raspbian / Linux 
- *              C# / Visual Studio
- *              
+ * Environment: Raspberry Pi 3B+ and up
+ *              Raspberry Pi OS  for testruns
+ *              C# / Visual Studio / Windows for development
+ * 
  */
 using System;
 using System.Collections.Generic;
@@ -174,6 +173,14 @@ namespace CumulusUtils
                   "<meta name=\"theme-color\" content=\"#ffffff\" />" +
                  $"<title>{Sup.GetCumulusIniValue( "Station", "LocName", "" )} - CumulusUtils</title>" +
                   "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" );
+
+#if !RELEASE
+                //
+                // https://stackoverflow.com/questions/25753708/how-to-view-javascript-console-on-android-and-ios
+                //
+                indexFile.Append( "<script src=\"https://cdn.jsdelivr.net/npm/eruda\"></script>" +
+                    "<script>eruda.init();</script>" );
+#endif
 
                 if ( DoGoogleStats )
                 {
@@ -494,7 +501,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
                 indexFile.Append( "  </div>" +
                   "</section>" +
-                  "<section id='ExtraSensors'>" +
+                  "<section id='ExtraAndCustom'>" +
                   //"  <div class='col border rounded-lg CUCellBody' style='overflow - y: scroll;'></div>" +
                   "</section>" +
                   "  </div>" + // id='NormalDashboard' 
@@ -556,9 +563,9 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
             return;
         }
 
-        #endregion
+#endregion
 
-        #region cumulusutils.js
+#region cumulusutils.js
         private void GenerateCUlib()
         {
             StringBuilder CUlibFile = new StringBuilder();
@@ -602,7 +609,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "$(function () {" +
                   "  $('#Dashboard').show();" +
                   "  $('#Gauges').hide();" +
-                  "  $('#ExtraSensors').hide();" +
+                  "  $('#ExtraAndCustom').hide();" +
                   "  Promise.allSettled([ $.getScript('lib/gauges.js'), LoadCUsermenu('CUsermenu.txt'), LoadCUserAbout('CUserAbout.txt'), LoadUtilsReport('cumuluscharts.txt', true)])" +
                   "    .then(() => { " +
                   "      loadRealtimeTxt();" +
@@ -670,7 +677,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   $"  return pad(hr) + '{TimeSeparator}' + pad(min) + '{TimeSeparator}' + pad(sec);" +
                   "}" +
                   "function ToggleDashboard() {" +
-                  "  if ($( '#ExtraSensors' ).is ( ':visible' ) ) $('#ExtraSensors').hide();" +
+                  "  if ($( '#ExtraAndCustom' ).is ( ':visible' ) ) $('#ExtraAndCustom').hide();" +
                   "  if ($('#Gauges').is (':visible')) {" +
                   "    $('#WindRoseContent').prependTo('#WindRoseGauge1');" +
                   "    $('#WindDirContent').prependTo('#WindDirGauge1');" +
@@ -729,20 +736,20 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "    ajaxLoadReportObject = null;" +
                   "    console.log('LoadUtilsReport was busy, current is aborted for ' + ReportName);" +
                   "  }" +
-                  "" +
+                  "  console.log('LoadUtilsReport... ' + ReportName);" +
                  $"  if (ReportName == '{Sup.StationMapOutputFilename}') DoStationMap = true;" +
                   "  else DoStationMap = false;" +
                  $"  if (ReportName == '{Sup.MeteoCamOutputFilename}') DoWebCam = true;" +
                   "  else DoWebCam = false;" +
                  $"  if (ReportName != '{Sup.ExtraSensorsOutputFilename}' && ReportName != '{Sup.ExtraSensorsCharts}') {{ " +
-                  "    if ($('#ExtraSensors').is (':visible') ) {" +
-                  "      $('#ExtraSensors').hide();" +
+                  "    if ($('#ExtraAndCustom').is (':visible') ) {" +
+                  "      $('#ExtraAndCustom').hide();" +
                   "      $('#Dashboard').show();" +
                   "    }" +
                   "  } else {" +
                   "    $('#Dashboard').hide();" +
                   "    $('#Gauges').hide();" +
-                  "    $('#ExtraSensors').show();" +
+                  "    $('#ExtraAndCustom').show();" +
                   "  }" +
                   "" +
                   "  ajaxLoadReportObject = $.ajax({" +
@@ -1544,9 +1551,9 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
             return;
         }
 
-        #endregion
+#endregion
 
-        #region cumuluscharts.txt
+#region cumuluscharts.txt
         private void GenerateCumulusChartsTxt()
         {
             List<OutputDef> theseCharts;
@@ -2252,9 +2259,9 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
             } // If then else of uning the CutilsCharts.def or just generate the old defaults
         }
 
-        #endregion
+#endregion
 
-        #region Package Upload
+#region Package Upload
         public bool CheckPackageAndCopy()
         {
             bool MustUpload = false;
@@ -2340,9 +2347,9 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
             return true;
         }
 
-        #endregion
+#endregion
 
-        #region Panelcode
+#region Panelcode
 
         private string GeneratePanelCode( string thisPanel )
         {
@@ -2619,9 +2626,9 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
             return thisPanelCode;
         }
 
-        #endregion
+#endregion
 
-        #region GenerateMenu
+#region GenerateMenu
 
         enum ItemTypes : int { None, External, Internal, Image, Report, Separator };
 
@@ -2685,7 +2692,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                             break;
                         case "Extra":
                             // Prevent the menu to be generated if it is not required.
-                            if ( CUtils.HasAirLink || CUtils.HasExtraSensors )
+                            if ( CUtils.HasAirLink || CUtils.HasExtraSensors || CUtils.HasCustomLogs )
                             {
                                 WriteExtraMenu( tmpMenu );
                                 WriteUserItems( Keywords, true, tmpMenu, ref i );
@@ -2958,6 +2965,9 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 if ( CUtils.HasExtraSensors )
                     s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('extrasensors.txt', false);\">{Sup.GetCUstringValue( "Website", "ExtraSensors", "Extra Sensors", false )}</li>" );
 
+                if ( CUtils.HasCustomLogs )
+                    s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('customlogs.txt', false);\">{Sup.GetCUstringValue( "Website", "CustomLogs", "Custom Logs", false )}</li>" );
+
                 if ( CUtils.ParticipatesSensorCommunity )
                     s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('sensorcommunity.txt', false);\">{Sup.GetCUstringValue( "Website", "SC map", "SC map", false )}</li>" );
 
@@ -3017,9 +3027,9 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
         }
 
 
-        #endregion
+#endregion
 
-        #region Other Functions
+#region Other Functions
         // Note that these colors contain transparency in the first two HEX digits. If not it is NOT OK
         private string GetAreaGradientColors( string Color1, string Color2, string Color3 )
         {
@@ -3058,9 +3068,9 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
             return result.ToString();
         }
 
-        #endregion
+#endregion
 
-        #region Useful NOTUSED (cookie function)
+#region Useful NOTUSED (cookie function)
 
         // From Mark Crossley in Select a Graph of CumulusMX 3.9.7 (b3105) and up
         //
@@ -3091,6 +3101,6 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
         //    }
         //  };
 
-        #endregion
+#endregion
     }
 }

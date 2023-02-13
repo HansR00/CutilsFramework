@@ -1,40 +1,29 @@
 ﻿/* 
  * CmxIPC - Part of CumulusUtils
  *
- * © Copyright 2019 - 2021 Hans Rottier <hans.rottier@gmail.com>
+ * © Copyright 2019-2023 Hans Rottier <hans.rottier@gmail.com>
  *
- * When the code is made public domain the licence will be changed to the GNU 
- * General Public License as published by the Free Software Foundation;
- * Until then, the code of CumulusUtils is not public domain and only the executable is 
- * distributed under the  Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
- * As a consequence, this code should not be in your posession unless with explicit permission by Hans Rottier
+ * The code of CumulusUtils is public domain and distributed under the  
+ * Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
  * 
  * Author:      Hans Rottier <hans.rottier@gmail.com>
  * Project:     CumulusUtils meteo-wagenborgen.nl
- * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI
- *              Initial release: pwsFWI             (version 1.0)
- *                               Website Generator  (version 3.0)
- *                               ChartsCompiler     (version 5.0)
+ * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI .NET Framework 4.8
+ *              Initial release: pwsFWI                 (version 1.0)
+ *                               Website Generator      (version 3.0)
+ *                               ChartsCompiler         (version 5.0)
+ *                               Maintenance releases   (version 6.x)
+ *              Startdate : 16 november 2021 start of conversion to .NET 5, 6 and 7
  *              
- * Environment: Raspberry 3B+
- *              Raspbian / Linux 
- *              C# / Visual Studio
- *              
+ * Environment: Raspberry Pi 3B+ and up
+ *              Raspberry Pi OS  for testruns
+ *              C# / Visual Studio / Windows for development
+ *
  * Module for serialising / deserialising JSON structures and files 
  * Started with the possibility of IPC with CumulusMX over the HTTP with WebTags in CMX 3.7.0
  * Usage can not be with lower versions of CMX so this is means a new CumulusUtils branch.
  * 
- * Newtonsoft JSON library is uses as this is already in the CMX directory ready for use.
- * Documentation:  https://www.newtonsoft.com/json/help/html/Introduction.htm
- * 
- * Well: changed to ServiceStack.Text.dll
- *   
- * (and for the Microsoft version of the JSON interface - much harder)
- * On JSON handling because of the new interface with CumulusMX:
- *   https://docs.microsoft.com/en-us/dotnet/standard/serialization/system-text-json-how-to
- *   https://www.codementor.io/@andrewbuchan/how-to-parse-json-into-a-c-object-4ui1o0bx8
- *   https://www.softwaretestinghelp.com/create-json-structure-using-c/
- *   Search : https://www.google.com/search?client=firefox-b-d&q=reading+json+formatted+data+into+variables+c%23
+ * Changed to ServiceStack.Text.dll
  * 
  */
 

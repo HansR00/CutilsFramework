@@ -1,25 +1,24 @@
 ﻿/*
  * DayRecords - Part of CumulusUtils
  *
- * © Copyright 2019 - 2021 Hans Rottier <hans.rottier@gmail.com>
+ * © Copyright 2019-2023 Hans Rottier <hans.rottier@gmail.com>
  *
- * When the code is made public domain the licence will be changed to the GNU 
- * General Public License as published by the Free Software Foundation;
- * Until then, the code of CumulusUtils is not public domain and only the executable is 
- * distributed under the  Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
- * As a consequence, this code should not be in your posession unless with explicit permission by Hans Rottier
+ * The code of CumulusUtils is public domain and distributed under the  
+ * Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
  * 
  * Author:      Hans Rottier <hans.rottier@gmail.com>
  * Project:     CumulusUtils meteo-wagenborgen.nl
- * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI
- *              Initial release: pwsFWI             (version 1.0)
- *                               Website Generator  (version 3.0)
- *                               ChartsCompiler     (version 5.0)
+ * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI .NET Framework 4.8
+ *              Initial release: pwsFWI                 (version 1.0)
+ *                               Website Generator      (version 3.0)
+ *                               ChartsCompiler         (version 5.0)
+ *                               Maintenance releases   (version 6.x)
+ *              Startdate : 16 november 2021 start of conversion to .NET 5, 6 and 7
  *              
- * Environment: Raspberry 3B+
- *              Raspbian / Linux 
- *              C# / Visual Studio
- * 
+ * Environment: Raspberry Pi 3B+ and up
+ *              Raspberry Pi OS  for testruns
+ *              C# / Visual Studio / Windows for development
+ *              
  */
 using System;
 using System.Collections.Generic;
@@ -258,7 +257,7 @@ namespace CumulusUtils
                                   ? "style=\"color: Red\""
                                   : "";
                                 of.WriteLine( $"<td class=\"reportttl\"><table class=\"CUtable\">" );
-                                of.WriteLine( $"<tr><td {HighlightFormat}>{Sup.StationTemp.Format( thisEntry.MaxTemp )} ({thisEntry.ThisDate.Year})</td></tr>" );
+                                of.WriteLine( $"<tr><td {HighlightFormat}>{Temp.Format( thisEntry.MaxTemp )} ({thisEntry.ThisDate.Year})</td></tr>" );
 
                                 // Do LowHighTemp
                                 tmp = DayList.Select( x => x.MaxTemp ).Min();
@@ -273,7 +272,7 @@ namespace CumulusUtils
                                 HighlightFormat = CUtils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CUtils.StartOfObservations.AddYears( 1 )
                                   ? "style=\"color: blue\""
                                   : "";
-                                of.WriteLine( $"<tr><td {HighlightFormat}>{Sup.StationTemp.Format( thisEntry.MaxTemp )} ({thisEntry.ThisDate.Year})</td></tr>" );
+                                of.WriteLine( $"<tr><td {HighlightFormat}>{Temp.Format( thisEntry.MaxTemp )} ({thisEntry.ThisDate.Year})</td></tr>" );
                                 of.WriteLine( "</table></td>" );
 
                                 // Do HighLowTemp
@@ -290,7 +289,7 @@ namespace CumulusUtils
                                   ? "style=\"color: Red\""
                                   : "";
                                 of.WriteLine( $"<td class=\"reportttl\"><table class=\"CUtable\">" );
-                                of.WriteLine( $"<tr><td {HighlightFormat}>{Sup.StationTemp.Format( thisEntry.MinTemp )} ({thisEntry.ThisDate.Year})</td></tr>" );
+                                of.WriteLine( $"<tr><td {HighlightFormat}>{Temp.Format( thisEntry.MinTemp )} ({thisEntry.ThisDate.Year})</td></tr>" );
 
                                 // Do LowLowTemp
                                 tmp = DayList.Select( x => x.MinTemp ).Min();
@@ -305,7 +304,7 @@ namespace CumulusUtils
                                 HighlightFormat = CUtils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CUtils.StartOfObservations.AddYears( 1 )
                                   ? "style=\"color: blue\""
                                   : "";
-                                of.WriteLine( $"<tr><td {HighlightFormat}>{Sup.StationTemp.Format( thisEntry.MinTemp )} ({thisEntry.ThisDate.Year})</td></tr>" );
+                                of.WriteLine( $"<tr><td {HighlightFormat}>{Temp.Format( thisEntry.MinTemp )} ({thisEntry.ThisDate.Year})</td></tr>" );
                                 of.WriteLine( "</table></td>" );
 
                                 tmp = DayList.Select( x => x.TotalRainThisDay ).Max();
@@ -362,7 +361,7 @@ namespace CumulusUtils
                                 HighlightFormat = CUtils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CUtils.StartOfObservations.AddYears( 1 )
                                   ? "style=\"color: MediumSeaGreen\""
                                   : "";
-                                of.WriteLine( $"<td class=\"reportttl\" {HighlightFormat}>{Sup.StationWind.Format( thisEntry.HighAverageWindSpeed )} ({thisEntry.ThisDate.Year})</td>" );
+                                of.WriteLine( $"<td class=\"reportttl\" {HighlightFormat}>{Wind.Format( thisEntry.HighAverageWindSpeed )} ({thisEntry.ThisDate.Year})</td>" );
 
                                 tmp = DayList.Select( x => x.HighWindGust ).Max();
                                 thisEntry = DayList.Where( x => x.HighWindGust == tmp ).First();
@@ -376,7 +375,7 @@ namespace CumulusUtils
                                 HighlightFormat = CUtils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CUtils.StartOfObservations.AddYears( 1 )
                                   ? "style=\"color: green\""
                                   : "";
-                                of.WriteLine( $"<td class=\"reportttl\" {HighlightFormat}>{Sup.StationWind.Format( thisEntry.HighWindGust )} ({thisEntry.ThisDate.Year})</td>" );
+                                of.WriteLine( $"<td class=\"reportttl\" {HighlightFormat}>{Wind.Format( thisEntry.HighWindGust )} ({thisEntry.ThisDate.Year})</td>" );
 
                                 of.WriteLine( $"</tr>" );
                             } // else no day (e.g. a gap in the first month) so skip nonexisting days

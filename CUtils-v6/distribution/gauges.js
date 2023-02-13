@@ -36,6 +36,8 @@
  *   - Went back to the original release to account for a positiong issue of the odometer. All mods required for 
  *     CumulusUtils were ported to  the original source with this file as result. 
  *     Afaik this version does not go well with FF on Android. All other browsers seem to go.
+ * Version 2.0.1 HR (based on Marks gauges.js v 2.7.6) - Updated: 11 February 2023 / (Went with CU 6.15.7)
+ *   - call to init after loading was too early, init is called from DoGaugeSettings().
  *
  */
 
@@ -4306,7 +4308,8 @@ gauges = (function () {
     //
     $(document).ready(function () {
       // Kick it all off - false for web page, true for dashboard
-      init(config.dashboardMode);
+      // The init is called from DoGaugeSettings()
+      // init(config.dashboardMode);
     });
   }
 

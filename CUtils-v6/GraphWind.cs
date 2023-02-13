@@ -1,25 +1,24 @@
 ﻿/*
  * GraphWind - Part of CumulusUtils
  *
- * © Copyright 2019 - 2021 Hans Rottier <hans.rottier@gmail.com>
+ * © Copyright 2019-2023 Hans Rottier <hans.rottier@gmail.com>
  *
- * When the code is made public domain the licence will be changed to the GNU 
- * General Public License as published by the Free Software Foundation;
- * Until then, the code of CumulusUtils is not public domain and only the executable is 
- * distributed under the  Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
- * As a consequence, this code should not be in your posession unless with explicit permission by Hans Rottier
+ * The code of CumulusUtils is public domain and distributed under the  
+ * Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
  * 
  * Author:      Hans Rottier <hans.rottier@gmail.com>
  * Project:     CumulusUtils meteo-wagenborgen.nl
- * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI
- *              Initial release: pwsFWI             (version 1.0)
- *                               Website Generator  (version 3.0)
- *                               ChartsCompiler     (version 5.0)
+ * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI .NET Framework 4.8
+ *              Initial release: pwsFWI                 (version 1.0)
+ *                               Website Generator      (version 3.0)
+ *                               ChartsCompiler         (version 5.0)
+ *                               Maintenance releases   (version 6.x)
+ *              Startdate : 16 november 2021 start of conversion to .NET 5, 6 and 7
  *              
- * Environment: Raspberry 3B+
- *              Raspbian / Linux 
- *              C# / Visual Studio
- *              
+ * Environment: Raspberry Pi 3B+ and up
+ *              Raspberry Pi OS  for testruns
+ *              C# / Visual Studio / Windows for development
+ * 
  */
 using System.Collections.Generic;
 using System.Globalization;
@@ -98,15 +97,15 @@ namespace CumulusUtils
                 if ( i == 1 )
                 {
                     thisBuffer.AppendLine( $"      {{ 'name': '{Sup.GetCUstringValue( "Graphs", "ZeroWind", "Zero Wind", true )} ' + ZeroWind + ' %'}}," );
-                    thisBuffer.AppendLine( $"      {{ 'name': '&lt; {Sup.StationWind.Format( i * SpeedForRoseInterval )} {Sup.StationWind.Text()}', 'data': data{i} }}," );
+                    thisBuffer.AppendLine( $"      {{ 'name': '&lt; {Wind.Format( i * SpeedForRoseInterval )} {Sup.StationWind.Text()}', 'data': data{i} }}," );
                 }
                 else if ( i == NrOfWindforceClasses )
                 {
-                    thisBuffer.AppendLine( $"      {{ 'name': '&gt; {Sup.StationWind.Format( ( NrOfWindforceClasses - 1 ) * SpeedForRoseInterval )} {Sup.StationWind.Text()}', 'data': data{i} }}," );
+                    thisBuffer.AppendLine( $"      {{ 'name': '&gt; {Wind.Format( ( NrOfWindforceClasses - 1 ) * SpeedForRoseInterval )} {Sup.StationWind.Text()}', 'data': data{i} }}," );
                 }
                 else
                 {
-                    thisBuffer.AppendLine( $"      {{ 'name': '{Sup.StationWind.Format( ( i - 1 ) * SpeedForRoseInterval )} - {Sup.StationWind.Format( i * SpeedForRoseInterval )} {Sup.StationWind.Text()}', 'data': data{i} }}," );
+                    thisBuffer.AppendLine( $"      {{ 'name': '{Wind.Format( ( i - 1 ) * SpeedForRoseInterval )} - {Wind.Format( i * SpeedForRoseInterval )} {Sup.StationWind.Text()}', 'data': data{i} }}," );
                 }
             }
             thisBuffer.AppendLine( "          ]" );

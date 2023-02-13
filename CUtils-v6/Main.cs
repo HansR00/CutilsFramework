@@ -1,28 +1,23 @@
 ﻿/*
- * CumulusUtils/Main
+ * CumulusUtils/Main version 4 for .NET
  *
- * © Copyright 2019 - 2021 Hans Rottier <hans.rottier@gmail.com>
+ * © Copyright 2019-2023 Hans Rottier <hans.rottier@gmail.com>
  *
- * If/When the code is made public domain the licence will be changed to the GNU 
- * General Public License as published by the Free Software Foundation;
- * Until then, the code of CumulusUtils is not public domain and only the executable is 
- * distributed under the  Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
- * As a consequence, this code should not be in your posession unless with explicit permission of the author
- * 
- * Remarks  with release: (keep one stable and one daring release)
- *   1) For users who like new things and take the risk of bugs
- *   2) For users who do not wish to be in the frontline
+ * The code of CumulusUtils is public domain and distributed under the  
+ * Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
  * 
  * Author:      Hans Rottier <hans.rottier@gmail.com>
  * Project:     CumulusUtils meteo-wagenborgen.nl
- * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI
- *              Initial release: pwsFWI             (version 1.0)
- *                               Website Generator  (version 3.0)
- *                               ChartsCompiler     (version 5.0)
+ * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI .NET Framework 4.8
+ *              Initial release: pwsFWI                 (version 1.0)
+ *                               Website Generator      (version 3.0)
+ *                               ChartsCompiler         (version 5.0)
+ *                               Maintenance releases   (version 6.x)
+ *              Startdate : 16 november 2021 start of conversion to .NET 5, 6 and 7
  *              
- * Environment: Raspberry 3B+
- *              Raspbian / Linux 
- *              C# / Visual Studio / Windows
+ * Environment: Raspberry Pi 3B+ and up
+ *              Raspberry Pi OS  for testruns
+ *              C# / Visual Studio / Windows for development
  * 
  * Files:       Main.cs
  *              Airlinklog.cs
@@ -34,6 +29,7 @@
  *              CmxIPC.cs
  *              Dayfile.cs
  *              DayRecords.cs
+ *              ExternalExtraSensorslog.cs
  *              ExtraSensors.cs
  *              ExtraSensorslog.cs
  *              Forecast.cs
@@ -47,9 +43,11 @@
  *              InetSupport.cs
  *              IniFile.cs
  *              Maps.cs
+ *              MeteoCam.cs
  *              Monthfile.cs
  *              NOAAdisplay.cs
  *              PwsFWI.cs
+ *              receive.pl
  *              Records.cs
  *              StationMap.cs
  *              Support.cs
@@ -59,21 +57,22 @@
  *              UserReports.cs
  *              Website.cs
  *              Yadr.cs
+ *              LinkCollection.txt
  *              
  * Beside this direct C# code there are also supporting files:
  * Distribution:
- *              CUserAbout-example.txt
- *              CUsermenu-example.txt
  *              CutilsCharts-default-for-use.def
- *              CutilsCharts-examples.def
+ *              CutilsMenu-example-for-use.def
  *              gauges.js
  *              gauges-ss.css
+ *              CUsermenu-example.txt
  *              HighchartsDefaults.js
+ *              CutilsCharts-examples.def
  *              language.js
  *              LICENCE
+ *              CUserAbout-example.txt
  *              
- * Not owned or maintained by CUtils but distributed because required:
- * 
+ * External but in distribution:
  *              RGraph.common.core.js
  *              RGraph.rose.js
  *              steelseries.min.js
@@ -150,8 +149,10 @@ namespace CumulusUtils
         private bool DoCompileOnly;
         private bool DoUserAskedData;
         private bool DoExtraSensors;
+        private bool DoCustomLogs;
 
         public const StringComparison cmp = StringComparison.OrdinalIgnoreCase;
+        public CultureInfo inv = CultureInfo.InvariantCulture;
 
         public static CuSupport Sup { get; set; }
         public static InetSupport Isup { get; set; }
@@ -189,8 +190,9 @@ namespace CumulusUtils
         static public bool HasSolar { get; set; }
         static public bool ShowUV { get; set; }
         static public bool HasAirLink { get; set; }
-        static public bool ParticipatesSensorCommunity { get; set; }
         static public bool HasExtraSensors { get; set; }
+        static public bool HasCustomLogs { get; set; }
+        static public bool ParticipatesSensorCommunity { get; set; }
         static public DateTime RunStarted { get; private set; }
         static public DateTime StartOfObservations { get; set; }
         static public bool CanDoMap { get; set; }
@@ -239,7 +241,7 @@ namespace CumulusUtils
 
                 // So, here we go... for FluentFTP
                 // The only time CuSupport is instantiated; Can't be in the different classes
-                if ( Sup.GetUtilsIniValue( "FTP site", "FtpLog", "Off" ).Equals( "On", CUtils.cmp ) )
+                if ( Sup.GetUtilsIniValue( "FTP site", "FtpLog", "Off" ).Equals( "On", cmp ) )
                 {
                     FtpTrace.LogPassword = false;
                     FtpTrace.LogUserName = false;
@@ -286,15 +288,18 @@ namespace CumulusUtils
                     CanDoMap = true;
 
 
-                HasStationMapMenu = Sup.GetUtilsIniValue( "StationMap", "StationMapMenu", "true" ).Equals( "true", CUtils.cmp );
-                HasMeteoCamMenu = Sup.GetUtilsIniValue( "MeteoCam", "MeteoCamMenu", "true" ).Equals( "true", CUtils.cmp );
-                HasExtraSensors = Sup.GetUtilsIniValue( "ExtraSensors", "ExtraSensors", "false" ).Equals( "true", CUtils.cmp ) &&
+                HasStationMapMenu = Sup.GetUtilsIniValue( "StationMap", "StationMapMenu", "true" ).Equals( "true", cmp );
+                HasMeteoCamMenu = Sup.GetUtilsIniValue( "MeteoCam", "MeteoCamMenu", "true" ).Equals( "true", cmp );
+                HasExtraSensors = Sup.GetUtilsIniValue( "ExtraSensors", "ExtraSensors", "false" ).Equals( "true", cmp ) &&
                     Sup.GetCumulusIniValue( "Station", "LogExtraSensors", "" ).Equals( "1" );
-                ParticipatesSensorCommunity = Sup.GetUtilsIniValue( "ExtraSensors", "ParticipatesSensorCommunity", "false" ).Equals( "true", CUtils.cmp );
-                MapParticipant = Sup.GetUtilsIniValue( "Maps", "Participant", "true" ).Equals( "true", CUtils.cmp );
-                HasSolar = Sup.GetUtilsIniValue( "Website", "ShowSolar", "true" ).Equals( "true", CUtils.cmp ); // Is an indirect determination set by the user only in  cutils
-                DoLibraryIncludes = Sup.GetUtilsIniValue( "General", "DoLibraryIncludes", "false" ).Equals( "true", CUtils.cmp ); // Do we need the libs??
-                DojQueryInclude = Sup.GetUtilsIniValue( "General", "GeneratejQueryInclude", "false" ).Equals( "true", CUtils.cmp );
+                HasCustomLogs = Sup.GetUtilsIniValue( "CustomLogs", "CustomLogs", "false" ).Equals( "true", cmp ) &&
+                    ( Sup.GetCumulusIniValue( "CustomLogs", "IntervalEnabled0", "" ).Equals( "1" ) || Sup.GetCumulusIniValue( "CustomLogs", "DailyEnabled0", "" ).Equals( "1" ) );
+
+                ParticipatesSensorCommunity = Sup.GetUtilsIniValue( "ExtraSensors", "ParticipatesSensorCommunity", "false" ).Equals( "true", cmp );
+                MapParticipant = Sup.GetUtilsIniValue( "Maps", "Participant", "true" ).Equals( "true", cmp );
+                HasSolar = Sup.GetUtilsIniValue( "Website", "ShowSolar", "true" ).Equals( "true", cmp ); // Is an indirect determination set by the user only in  cutils
+                DoLibraryIncludes = Sup.GetUtilsIniValue( "General", "DoLibraryIncludes", "false" ).Equals( "true", cmp ); // Do we need the libs??
+                DojQueryInclude = Sup.GetUtilsIniValue( "General", "GeneratejQueryInclude", "false" ).Equals( "true", cmp );
 
                 bool AirLinkIn = Sup.GetCumulusIniValue( "AirLink", "In-Enabled", "0" ).Equals( "1" );
                 bool AirLinkOut = Sup.GetCumulusIniValue( "AirLink", "Out-Enabled", "0" ).Equals( "1" );
@@ -355,7 +360,7 @@ namespace CumulusUtils
             // Here we start the actual program Handle commandline arguments
             CommandLineArgs( args );
 
-            if ( !DoPwsFWI && !DoTop10 && !DoSystemChk && !DoGraphs && !DoCreateMap && !DoYadr && !DoRecords && !DoCompileOnly && !DoUserAskedData &&
+            if ( !DoPwsFWI && !DoTop10 && !DoSystemChk && !DoGraphs && !DoCreateMap && !DoYadr && !DoRecords && !DoCompileOnly && !DoUserAskedData && !DoCustomLogs &&
                 !DoNOAA && !DoDayRecords && !DoCheckOnly && !DoWebsite && !DoForecast && !DoUserReports && !DoStationMap && !DoMeteoCam && !DoAirLink && !DoExtraSensors )
             {
                 Sup.LogTraceErrorMessage( "CumulusUtils : No Arguments, nothing to do. Exiting." );
@@ -516,6 +521,21 @@ namespace CumulusUtils
                 watch.Stop();
                 Sup.LogTraceInfoMessage( $"Timing of ExtraSensors generation = {watch.ElapsedMilliseconds} ms" );
 #endif
+            }
+
+            if ( DoCustomLogs && HasCustomLogs )
+            {
+//#if TIMING
+//                watch = Stopwatch.StartNew();
+//#endif
+
+//                CustomLogs fncs = new CustomLogs( Sup );
+//                fncs.DoCustomLogs();
+
+//#if TIMING
+//                watch.Stop();
+//                Sup.LogTraceInfoMessage( $"Timing of CustomLogs generation = {watch.ElapsedMilliseconds} ms" );
+//#endif
             }
 
             // These were the tasks without [weather]data.
@@ -1006,7 +1026,7 @@ namespace CumulusUtils
             {
                 Sup.LogDebugMessage( $" CommandLineArgs : handling arg: {s}" );
 
-                if ( s.Equals( "Website", CUtils.cmp ) )
+                if ( s.Equals( "Website", cmp ) )
                 {
                     DoSystemChk = true;
                     DoTop10 = true;
@@ -1023,39 +1043,41 @@ namespace CumulusUtils
                     DoMeteoCam = true;
                     DoAirLink = true;
                     DoExtraSensors = true;
+                    DoCustomLogs = true;
 
                     break;
                 }
                 else
                 {
-                    if ( s.Equals( "Thrifty", CUtils.cmp ) )
+                    if ( s.Equals( "Thrifty", cmp ) )
                     {
                         Thrifty = true;
                     }
                     else
                     {
-                        if ( s.Equals( "Top10", CUtils.cmp ) ) DoTop10 = true;
-                        if ( s.Equals( "pwsFWI", CUtils.cmp ) ) DoPwsFWI = true;
-                        if ( s.Equals( "Sysinfo", CUtils.cmp ) ) DoSystemChk = true;
-                        if ( s.Equals( "Graphs", CUtils.cmp ) ) DoGraphs = true;
-                        if ( s.Equals( "CreateMap", CUtils.cmp ) ) DoCreateMap = true;    // Undocumented feature only for the keeper of the map
-                        if ( s.Equals( "Yadr", CUtils.cmp ) ) DoYadr = true;
-                        if ( s.Equals( "Records", CUtils.cmp ) ) DoRecords = true;
-                        if ( s.Equals( "NOAA", CUtils.cmp ) ) DoNOAA = true;
-                        if ( s.Equals( "DayRecords", CUtils.cmp ) ) DoDayRecords = true;
-                        if ( s.Equals( "CheckOnly", CUtils.cmp ) ) DoCheckOnly = true;
-                        if ( s.Equals( "Forecast", CUtils.cmp ) ) DoForecast = true;
-                        if ( s.Equals( "UserReports", CUtils.cmp ) ) DoUserReports = true;
-                        if ( s.Equals( "StationMap", CUtils.cmp ) ) DoStationMap = true;
-                        if ( s.Equals( "MeteoCam", CUtils.cmp ) ) DoMeteoCam = true;
-                        if ( s.Equals( "AirLink", CUtils.cmp ) ) DoAirLink = true;
-                        if ( s.Equals( "CompileOnly", CUtils.cmp ) ) DoCompileOnly = true;
-                        if ( s.Equals( "ExtraSensors", CUtils.cmp ) )
+                        if ( s.Equals( "Top10", cmp ) ) DoTop10 = true;
+                        if ( s.Equals( "pwsFWI", cmp ) ) DoPwsFWI = true;
+                        if ( s.Equals( "Sysinfo", cmp ) ) DoSystemChk = true;
+                        if ( s.Equals( "Graphs", cmp ) ) DoGraphs = true;
+                        if ( s.Equals( "CreateMap", cmp ) ) DoCreateMap = true;    // Undocumented feature only for the keeper of the map
+                        if ( s.Equals( "Yadr", cmp ) ) DoYadr = true;
+                        if ( s.Equals( "Records", cmp ) ) DoRecords = true;
+                        if ( s.Equals( "NOAA", cmp ) ) DoNOAA = true;
+                        if ( s.Equals( "DayRecords", cmp ) ) DoDayRecords = true;
+                        if ( s.Equals( "CheckOnly", cmp ) ) DoCheckOnly = true;
+                        if ( s.Equals( "Forecast", cmp ) ) DoForecast = true;
+                        if ( s.Equals( "UserReports", cmp ) ) DoUserReports = true;
+                        if ( s.Equals( "StationMap", cmp ) ) DoStationMap = true;
+                        if ( s.Equals( "MeteoCam", cmp ) ) DoMeteoCam = true;
+                        if ( s.Equals( "AirLink", cmp ) ) DoAirLink = true;
+                        if ( s.Equals( "CompileOnly", cmp ) ) DoCompileOnly = true;
+                        if ( s.Equals( "ExtraSensors", cmp ) )
                         {
                             DoExtraSensors = true;
                             DoCompileOnly = true;  // Implicit for Extra Sensors
                         }
-                        if ( s.Equals( "UserAskedData", CUtils.cmp ) ) DoUserAskedData = true;
+                        if ( s.Equals( "UserAskedData", cmp ) ) DoUserAskedData = true;
+                        if ( s.Equals( "CustomLogs", cmp ) ) DoCustomLogs = true;
                     }
                 }
             }

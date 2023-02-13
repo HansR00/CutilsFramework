@@ -1,24 +1,23 @@
 ﻿/*
  * DayRecords - Part of CumulusUtils
  *
- * © Copyright 2019 - 2021 Hans Rottier <hans.rottier@gmail.com>
+ * © Copyright 2019-2023 Hans Rottier <hans.rottier@gmail.com>
  *
- * When the code is made public domain the licence will be changed to the GNU 
- * General Public License as published by the Free Software Foundation;
- * Until then, the code of CumulusUtils is not public domain and only the executable is 
- * distributed under the  Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
- * As a consequence, this code should not be in your posession unless with explicit permission by Hans Rottier
+ * The code of CumulusUtils is public domain and distributed under the  
+ * Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
  * 
  * Author:      Hans Rottier <hans.rottier@gmail.com>
  * Project:     CumulusUtils meteo-wagenborgen.nl
- * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI
- *              Initial release: pwsFWI             (version 1.0)
- *                               Website Generator  (version 3.0)
- *                               ChartsCompiler     (version 5.0)
+ * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI .NET Framework 4.8
+ *              Initial release: pwsFWI                 (version 1.0)
+ *                               Website Generator      (version 3.0)
+ *                               ChartsCompiler         (version 5.0)
+ *                               Maintenance releases   (version 6.x)
+ *              Startdate : 16 november 2021 start of conversion to .NET 5, 6 and 7
  *              
- * Environment: Raspberry 3B+
- *              Raspbian / Linux 
- *              C# / Visual Studio
+ * Environment: Raspberry Pi 3B+ and up
+ *              Raspberry Pi OS  for testruns
+ *              C# / Visual Studio / Windows for development
  *              
  * Design / Structure:
  *              1) create the  list of actual sensors being logged based on 
@@ -28,12 +27,12 @@
  *                             - [section ExtraDPCaptions] - all entry value != "Sensor i", i is 10  max
  *                             - [section SoilTempCaptions] - all entry value != "Sensor i", i is 16  max
  *                             - [section SoilMoistureCaptions] - all entry value != "Sensor i", i is 16  max
- *                             - [section LeafTempCaptions] - all entry value != "Sensor i", i is 8  max
+ *                             - [section LeafTempCaptions] - all entry value != "Sensor i", i is 4  max
  *                             - [section LeafWetnessCaptions] - all entry value != "Sensor i", i is 8  max
  *                             - [section AirQualityCaptions] - all entry value != "Sensor i", i is 4 max (must have their equal for the avg entries)
  *                             - [section UserTempCaptions] - all entry value != "Sensor i", i is 8  max
- *                             - [section CO2Captions] - If (has a value in the  logfile on the current CO2 value) THEN is sensor present
- *                             - Lightning sensor - Is present IF (distance to last strike && Time of last strike differ from default values)
+ *                             - [section CO2Captions] - If set in Parameters AND (has a value in the  logfile on the current CO2 value) THEN is sensor present
+ *                             - Lightning sensor - Is present If set true in ExtraSensors parameter section
  *                             
  *              2) Each sensorsection gets its own RECENT graph, written in CDL. So two extra temp sensors are displayed in one chart. 
  *                 The cutilscharts.def file is written with the extrasenso charts at the end. Optimisation: detect changes, if none then skip this step.
@@ -107,7 +106,7 @@ namespace CumulusUtils
         {
             Sup.LogDebugMessage( "DoExtraSensors - Start" );
 
-            // I: create the extrasensorsrealtime.txt which has to be processes by CMX and transferred to the webroot.
+            // I: create the extrasensorsrealtime.txt which has to be processed by CMX and transferred to the webroot.
             // 
             GenerateExtraSensorsRealtime();
             GenerateExtraSensorsCharts();
@@ -151,7 +150,7 @@ namespace CumulusUtils
                 sb.AppendLine( $"  SetupExtraSensorsTable();" );
                 sb.AppendLine( $"  $('#Dashboard').hide();" );
                 sb.AppendLine( $"  $('#Gauges').hide();" );
-                sb.AppendLine( $"  $('#ExtraSensors').show();" );
+                sb.AppendLine( $"  $('#ExtraAndCustom').show();" );
                 sb.AppendLine( "  loadExtraSensorsRealtime();" );
                 sb.AppendLine( "  if (ExtraSensorTimer == null) ExtraSensorTimer = setInterval(loadExtraSensorsRealtime, 60 * 1000);" );
                 sb.AppendLine( $"  LoadUtilsReport( '{Sup.ExtraSensorsCharts}', false );" );
@@ -388,7 +387,7 @@ namespace CumulusUtils
                             buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxSoilMoisture{tmp.SensorIndex}'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.AirQuality:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxAirquality{tmp.SensorIndex}'></td></tr>" );
+                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxAirQuality{tmp.SensorIndex}'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.AirQualityAvg:
                             buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxAirQualityAvg{tmp.SensorIndex}'></td></tr>" );
@@ -442,7 +441,7 @@ namespace CumulusUtils
                 }
 
                 buf.Append( "</table></div>" );
-                sb.AppendLine( $"  $('#ExtraSensors').html(\"{buf}\");" );
+                sb.AppendLine( $"  $('#ExtraAndCustom').html(\"{buf}\");" );
                 sb.AppendLine( "}" );
                 sb.AppendLine( "</script>" );
 
@@ -481,8 +480,7 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( $"GenerateExtraSensorsCharts: Testing UserModificationExtraSensorCharts: {Sup.GetUtilsIniValue( "ExtraSensors", "UserModificationExtraSensorCharts", "false" )}" );
 
-            if ( Sup.GetUtilsIniValue( "ExtraSensors", "UserModificationExtraSensorCharts", "false" ).Equals( "true", CUtils.cmp ) )
-                return;
+            if ( Sup.GetUtilsIniValue( "ExtraSensors", "UserModificationExtraSensorCharts", "false" ).Equals( "true", CUtils.cmp ) ) return;
 
             CutilsCharts = File.ReadAllLines( $"{Sup.PathUtils}{Sup.CutilsChartsDef}" );
 
@@ -496,8 +494,7 @@ namespace CumulusUtils
                 }
 
             CutilsChartsMods = CutilsCharts.ToList();
-            if ( !DemarcationLineFound )
-                CutilsChartsMods.Add( DemarcationLine );
+            if ( !DemarcationLineFound ) CutilsChartsMods.Add( DemarcationLine );
 
             // Now the road is clear to add the charts from the list of plotparameters per class (Temp, Humidity etc....
             ExtraSensorType currentType;

@@ -1,25 +1,24 @@
 ﻿/*
  * Dayfile - Part of CumulusUtils
  *
- * © Copyright 2019 - 2021 Hans Rottier <hans.rottier@gmail.com>
+ * © Copyright 2019-2023 Hans Rottier <hans.rottier@gmail.com>
  *
- * When the code is made public domain the licence will be changed to the GNU 
- * General Public License as published by the Free Software Foundation;
- * Until then, the code of CumulusUtils is not public domain and only the executable is 
- * distributed under the  Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
- * As a consequence, this code should not be in your posession unless with explicit permission by Hans Rottier
+ * The code of CumulusUtils is public domain and distributed under the  
+ * Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
  * 
  * Author:      Hans Rottier <hans.rottier@gmail.com>
  * Project:     CumulusUtils meteo-wagenborgen.nl
- * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI
- *              Initial release: pwsFWI             (version 1.0)
- *                               Website Generator  (version 3.0)
- *                               ChartsCompiler     (version 5.0)
+ * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI .NET Framework 4.8
+ *              Initial release: pwsFWI                 (version 1.0)
+ *                               Website Generator      (version 3.0)
+ *                               ChartsCompiler         (version 5.0)
+ *                               Maintenance releases   (version 6.x)
+ *              Startdate : 16 november 2021 start of conversion to .NET 5, 6 and 7
  *              
- * Environment: Raspberry 3B+
- *              Raspbian / Linux 
- *              C# / Visual Studio
- * 
+ * Environment: Raspberry Pi 3B+ and up
+ *              Raspberry Pi OS  for testruns
+ *              C# / Visual Studio / Windows for development
+ *              
  */
 using System;
 using System.Collections.Generic;
@@ -408,37 +407,37 @@ namespace CumulusUtils
                 //FieldInUse = (int)FieldName.timeofhighHumidex;
                 //ThisValue.TimeHighHumidex = DateTime.ParseExact(tmpDatestring + " " + lineSplit[FieldInUse], "dd/MM/yy HH:mm", provider);
 
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values:" );
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values: Original Line " + line );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values:" );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values: Original Line " + line );
 
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values: _thisDate: " + ThisValue.ThisDate.ToString( CultureInfo.CurrentCulture ) );
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values:_highWindGust: " + ThisValue.HighWindGust.ToString( CultureInfo.CurrentCulture ) );
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values:_timeHighWindGust: " + ThisValue.TimeHighWindGust.ToString( CultureInfo.CurrentCulture ) );
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values:_minTemp :" + ThisValue.MinTemp.ToString( CultureInfo.CurrentCulture ) );
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values: _timeMinTemp: " + ThisValue.TimeMinTemp.ToString( CultureInfo.CurrentCulture ) );
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values: _maxTemp: " + ThisValue.MaxTemp.ToString( CultureInfo.CurrentCulture ) );
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values: _timeMaxTemp: " + ThisValue.TimeMaxTemp.ToString( CultureInfo.CurrentCulture ) );
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values: _minBarometer: " + ThisValue.MinBarometer.ToString( CultureInfo.CurrentCulture ) );
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values: _timeMinBarometer: " + ThisValue.TimeMinBarometer.ToString( CultureInfo.CurrentCulture ) );
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values: _maxBarometer: " + ThisValue.MaxBarometer.ToString( CultureInfo.CurrentCulture ) );
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values: _timeMaxBarometer: " + ThisValue.TimeMaxBarometer.ToString( CultureInfo.CurrentCulture ) );
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values: _maxRainRate: " + ThisValue.MaxRainRate.ToString( CultureInfo.CurrentCulture ) );
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values: _timeMaxRainRate: " + ThisValue.TimeMaxRainRate.ToString( CultureInfo.CurrentCulture ) );
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values: _totalRainThisDay: " + ThisValue.TotalRainThisDay.ToString( CultureInfo.CurrentCulture ) );
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values:  _dryPeriod: " + ThisValue.DryPeriod.ToString( CultureInfo.CurrentCulture ) );
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values: _wetPeriod: " + ThisValue.WetPeriod.ToString( CultureInfo.CurrentCulture ) );
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values: _monthlyRain: " + ThisValue.MonthlyRain.ToString( CultureInfo.CurrentCulture ) );
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values: _averageTempThisDay: " + ThisValue.AverageTempThisDay.ToString( CultureInfo.CurrentCulture ) );
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values: _totalWindRun: " + ThisValue.TotalWindRun.ToString( CultureInfo.CurrentCulture ) );
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values: _highAverageWindSpeed: " + ThisValue.HighAverageWindSpeed.ToString( CultureInfo.CurrentCulture ) );
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values: _timeHighAverageWindSpeed: " + ThisValue.TimeHighAverageWindSpeed.ToString( CultureInfo.CurrentCulture ) );
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values: _lowHumidity: " + ThisValue.LowHumidity.ToString( CultureInfo.CurrentCulture ) );
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values: _timeLowHumidity: " + ThisValue.TimeLowHumidity.ToString( CultureInfo.CurrentCulture ) );
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values: _highHumidity: " + ThisValue.HighHumidity.ToString( CultureInfo.CurrentCulture ) );
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values: _timeMinTemp: " + ThisValue.TimeHighHumidity.ToString( CultureInfo.CurrentCulture ) );
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values: _evapotranspiration: " + ThisValue.EvapoTranspiration.ToString( CultureInfo.CurrentCulture ) );
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values: _highHourlyRain: " + ThisValue.HighHourlyRain.ToString( CultureInfo.CurrentCulture ) );
-                Sup.LogTraceVerboseMessage( "SetValues after adding the values: _timeHighHourlyRain : " + ThisValue.TimeHighHourlyRain.ToString( CultureInfo.CurrentCulture ) );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values: _thisDate: " + ThisValue.ThisDate.ToString( CultureInfo.CurrentCulture ) );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values:_highWindGust: " + ThisValue.HighWindGust.ToString( CultureInfo.CurrentCulture ) );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values:_timeHighWindGust: " + ThisValue.TimeHighWindGust.ToString( CultureInfo.CurrentCulture ) );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values:_minTemp :" + ThisValue.MinTemp.ToString( CultureInfo.CurrentCulture ) );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values: _timeMinTemp: " + ThisValue.TimeMinTemp.ToString( CultureInfo.CurrentCulture ) );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values: _maxTemp: " + ThisValue.MaxTemp.ToString( CultureInfo.CurrentCulture ) );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values: _timeMaxTemp: " + ThisValue.TimeMaxTemp.ToString( CultureInfo.CurrentCulture ) );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values: _minBarometer: " + ThisValue.MinBarometer.ToString( CultureInfo.CurrentCulture ) );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values: _timeMinBarometer: " + ThisValue.TimeMinBarometer.ToString( CultureInfo.CurrentCulture ) );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values: _maxBarometer: " + ThisValue.MaxBarometer.ToString( CultureInfo.CurrentCulture ) );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values: _timeMaxBarometer: " + ThisValue.TimeMaxBarometer.ToString( CultureInfo.CurrentCulture ) );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values: _maxRainRate: " + ThisValue.MaxRainRate.ToString( CultureInfo.CurrentCulture ) );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values: _timeMaxRainRate: " + ThisValue.TimeMaxRainRate.ToString( CultureInfo.CurrentCulture ) );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values: _totalRainThisDay: " + ThisValue.TotalRainThisDay.ToString( CultureInfo.CurrentCulture ) );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values:  _dryPeriod: " + ThisValue.DryPeriod.ToString( CultureInfo.CurrentCulture ) );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values: _wetPeriod: " + ThisValue.WetPeriod.ToString( CultureInfo.CurrentCulture ) );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values: _monthlyRain: " + ThisValue.MonthlyRain.ToString( CultureInfo.CurrentCulture ) );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values: _averageTempThisDay: " + ThisValue.AverageTempThisDay.ToString( CultureInfo.CurrentCulture ) );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values: _totalWindRun: " + ThisValue.TotalWindRun.ToString( CultureInfo.CurrentCulture ) );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values: _highAverageWindSpeed: " + ThisValue.HighAverageWindSpeed.ToString( CultureInfo.CurrentCulture ) );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values: _timeHighAverageWindSpeed: " + ThisValue.TimeHighAverageWindSpeed.ToString( CultureInfo.CurrentCulture ) );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values: _lowHumidity: " + ThisValue.LowHumidity.ToString( CultureInfo.CurrentCulture ) );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values: _timeLowHumidity: " + ThisValue.TimeLowHumidity.ToString( CultureInfo.CurrentCulture ) );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values: _highHumidity: " + ThisValue.HighHumidity.ToString( CultureInfo.CurrentCulture ) );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values: _timeMinTemp: " + ThisValue.TimeHighHumidity.ToString( CultureInfo.CurrentCulture ) );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values: _evapotranspiration: " + ThisValue.EvapoTranspiration.ToString( CultureInfo.CurrentCulture ) );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values: _highHourlyRain: " + ThisValue.HighHourlyRain.ToString( CultureInfo.CurrentCulture ) );
+                //Sup.LogTraceVerboseMessage( "SetValues after adding the values: _timeHighHourlyRain : " + ThisValue.TimeHighHourlyRain.ToString( CultureInfo.CurrentCulture ) );
 
                 ThisValue.Valid = true;
             }

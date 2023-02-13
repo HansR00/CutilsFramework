@@ -1,4 +1,26 @@
-﻿using System;
+﻿/*
+ * GraphWind - Part of CumulusUtils
+ *
+ * © Copyright 2019-2023 Hans Rottier <hans.rottier@gmail.com>
+ *
+ * The code of CumulusUtils is public domain and distributed under the  
+ * Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
+ * 
+ * Author:      Hans Rottier <hans.rottier@gmail.com>
+ * Project:     CumulusUtils meteo-wagenborgen.nl
+ * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI .NET Framework 4.8
+ *              Initial release: pwsFWI                 (version 1.0)
+ *                               Website Generator      (version 3.0)
+ *                               ChartsCompiler         (version 5.0)
+ *                               Maintenance releases   (version 6.x)
+ *              Startdate : 16 november 2021 start of conversion to .NET 5, 6 and 7
+ *              
+ * Environment: Raspberry Pi 3B+ and up
+ *              Raspberry Pi OS  for testruns
+ *              C# / Visual Studio / Windows for development
+ * 
+ */
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

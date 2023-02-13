@@ -1,25 +1,24 @@
 ﻿/*
  * YADR - Part of CumulusUtils
  *
- * © Copyright 2019 - 2021 Hans Rottier <hans.rottier@gmail.com>
+ * © Copyright 2019-2023 Hans Rottier <hans.rottier@gmail.com>
  *
- * When the code is made public domain the licence will be changed to the GNU 
- * General Public License as published by the Free Software Foundation;
- * Until then, the code of CumulusUtils is not public domain and only the executable is 
- * distributed under the  Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
- * As a consequence, this code should not be in your posession unless with explicit permission by Hans Rottier
+ * The code of CumulusUtils is public domain and distributed under the  
+ * Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
  * 
  * Author:      Hans Rottier <hans.rottier@gmail.com>
  * Project:     CumulusUtils meteo-wagenborgen.nl
- * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI
- *              Initial release: pwsFWI             (version 1.0)
- *                               Website Generator  (version 3.0)
- *                               ChartsCompiler     (version 5.0)
+ * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI .NET Framework 4.8
+ *              Initial release: pwsFWI                 (version 1.0)
+ *                               Website Generator      (version 3.0)
+ *                               ChartsCompiler         (version 5.0)
+ *                               Maintenance releases   (version 6.x)
+ *              Startdate : 16 november 2021 start of conversion to .NET 5, 6 and 7
  *              
- * Environment: Raspberry 3B+
- *              Raspbian / Linux 
- *              C# / Visual Studio
- *              
+ * Environment: Raspberry Pi 3B+ and up
+ *              Raspberry Pi OS  for testruns
+ *              C# / Visual Studio / Windows for development
+ * 
  */
 using System;
 using System.Collections.Generic;
@@ -365,8 +364,8 @@ namespace CumulusUtils
                             }
                             else
                             {
-                                sb.Append( $"<td {GetTempColourFormat( currentItem.MaxTemp )}>{Sup.StationTemp.Format( currentItem.MaxTemp )}</td>" );
-                                sb.Append( $"<td {GetTempColourFormat( currentItem.MinTemp )}>{Sup.StationTemp.Format( currentItem.MinTemp )}</td>" );
+                                sb.Append( $"<td {GetTempColourFormat( currentItem.MaxTemp )}>{Temp.Format( currentItem.MaxTemp )}</td>" );
+                                sb.Append( $"<td {GetTempColourFormat( currentItem.MinTemp )}>{Temp.Format( currentItem.MinTemp )}</td>" );
                             }
                         }// for loop over months
 
@@ -450,7 +449,7 @@ namespace CumulusUtils
                             }
                             else
                             {
-                                sb.Append( $"<td colspan=\"2\" {GetTempColourFormat( values[ statistic, thisMonth ] )}>{Sup.StationTemp.Format( values[ statistic, thisMonth ] )}</td>" );
+                                sb.Append( $"<td colspan=\"2\" {GetTempColourFormat( values[ statistic, thisMonth ] )}>{Temp.Format( values[ statistic, thisMonth ] )}</td>" );
                             }
                         }
 
@@ -532,7 +531,7 @@ namespace CumulusUtils
                             }
                             else
                             {
-                                sb.Append( $"<td {GetRainColourFormat( currentItem.TotalRainThisDay )}>{Sup.StationTemp.Format( currentItem.TotalRainThisDay )}</td>" );
+                                sb.Append( $"<td {GetRainColourFormat( currentItem.TotalRainThisDay )}>{Sup.StationRain.Format( currentItem.TotalRainThisDay )}</td>" );
                             }
                         }// for loop over months
 
@@ -700,8 +699,8 @@ namespace CumulusUtils
                                 sb.Append( "<td class=\"reportday\">---</td><td class=\"reportday\">---</td>" );
                             else
                             {
-                                sb.Append( $"<td {GetWindColourFormat( currentItem.HighAverageWindSpeed )}>{Sup.StationWind.Format( currentItem.HighAverageWindSpeed )}</td>" );
-                                sb.Append( $"<td {GetWindColourFormat( currentItem.HighWindGust )}>{Sup.StationTemp.Format( currentItem.HighWindGust )}</td>" );
+                                sb.Append( $"<td {GetWindColourFormat( currentItem.HighAverageWindSpeed )}>{Wind.Format( currentItem.HighAverageWindSpeed )}</td>" );
+                                sb.Append( $"<td {GetWindColourFormat( currentItem.HighWindGust )}>{Wind.Format( currentItem.HighWindGust )}</td>" );
                             }
                         }// for loop over months
 
@@ -773,8 +772,8 @@ namespace CumulusUtils
                             }
                             else
                             {
-                                sb.Append( $"<td {GetWindColourFormat( values[ statistic, thisMonth ] )}>{Sup.StationWind.Format( values[ statistic, thisMonth ] )}</td>" +
-                                  $"<td {GetWindColourFormat( values[ statistic + 2, thisMonth ] )}>{Sup.StationWind.Format( values[ statistic + 2, thisMonth ] )}</td>" );
+                                sb.Append( $"<td {GetWindColourFormat( values[ statistic, thisMonth ] )}>{Wind.Format( values[ statistic, thisMonth ] )}</td>" +
+                                  $"<td {GetWindColourFormat( values[ statistic + 2, thisMonth ] )}>{Wind.Format( values[ statistic + 2, thisMonth ] )}</td>" );
                             }
                         }
 
@@ -802,11 +801,11 @@ namespace CumulusUtils
                         sb.Append( $"<tr class='beaufort' style='text-align:left;{GetWindColourFormat( i )}'><td colspan='2'>{i}</td><td colspan='5'>{WindDescr[ i ]}</td>" );
 
                         if ( i == 0 )
-                            sb.Append( $"<td colspan='6'>&lt;&nbsp;{Sup.StationWind.Format( WindRanges[ i ] )}</td></tr>" );
+                            sb.Append( $"<td colspan='6'>&lt;&nbsp;{Wind.Format( WindRanges[ i ] )}</td></tr>" );
                         else if ( i == 12 )
-                            sb.Append( $"<td colspan='6'>{Sup.StationWind.Format( WindRanges[ i ] )}&nbsp;&gt;</td></tr>" );
+                            sb.Append( $"<td colspan='6'>{Wind.Format( WindRanges[ i ] )}&nbsp;&gt;</td></tr>" );
                         else
-                            sb.Append( $"<td colspan='6'>{Sup.StationWind.Format( WindRanges[ i - 1 ] )} - {Sup.StationWind.Format( WindRanges[ i ] )}</td></tr>" );
+                            sb.Append( $"<td colspan='6'>{Wind.Format( WindRanges[ i - 1 ] )} - {Wind.Format( WindRanges[ i ] )}</td></tr>" );
 
                         of.WriteLine( sb.ToString() );
                     }
@@ -859,7 +858,7 @@ namespace CumulusUtils
                             }
                             else
                             {
-                                sb.Append( $"<td  {GetWindrunColourFormat( currentItem.TotalWindRun )}>{Sup.StationDistance.Format( currentItem.TotalWindRun )}</td>" );
+                                sb.Append( $"<td  {GetWindrunColourFormat( currentItem.TotalWindRun )}>{Distance.Format( currentItem.TotalWindRun )}</td>" );
                             }
                         }// for loop over months
 
@@ -934,7 +933,7 @@ namespace CumulusUtils
                             }
                             else
                             {
-                                sb.Append( $"<td {GetWindrunColourFormat( values[ statistic, thisMonth ] )}>{Sup.StationDistance.Format( values[ statistic, thisMonth ] )}</td>" );
+                                sb.Append( $"<td {GetWindrunColourFormat( values[ statistic, thisMonth ] )}>{Distance.Format( values[ statistic, thisMonth ] )}</td>" );
                             }
                         }
 
@@ -958,9 +957,9 @@ namespace CumulusUtils
                     for ( int i = 0; i < 13; i++ )
                     {
                         if ( i == 12 )
-                            sb.Append( $"<td {GetWindrunColourFormat( WindrunRanges[ i ] )}>{Sup.StationDistance.Format( WindrunRanges[ i ] )}&gt;</td>" );
+                            sb.Append( $"<td {GetWindrunColourFormat( WindrunRanges[ i ] )}>{Distance.Format( WindrunRanges[ i ] )}&gt;</td>" );
                         else
-                            sb.Append( $"<td {GetWindrunColourFormat( WindrunRanges[ i ] )}>&lt;{Sup.StationDistance.Format( WindrunRanges[ i ] )}</td>" );
+                            sb.Append( $"<td {GetWindrunColourFormat( WindrunRanges[ i ] )}>&lt;{Distance.Format( WindrunRanges[ i ] )}</td>" );
 
                     }
 

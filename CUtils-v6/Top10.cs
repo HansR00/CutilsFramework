@@ -1,25 +1,24 @@
 ﻿/*
  * Top10 - Part of CumulusUtils
  *
- * © Copyright 2019 - 2021 Hans Rottier <hans.rottier@gmail.com>
+ * © Copyright 2019-2023 Hans Rottier <hans.rottier@gmail.com>
  *
- * When the code is made public domain the licence will be changed to the GNU 
- * General Public License as published by the Free Software Foundation;
- * Until then, the code of CumulusUtils is not public domain and only the executable is 
- * distributed under the  Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
- * As a consequence, this code should not be in your posession unless with explicit permission by Hans Rottier
+ * The code of CumulusUtils is public domain and distributed under the  
+ * Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
  * 
  * Author:      Hans Rottier <hans.rottier@gmail.com>
  * Project:     CumulusUtils meteo-wagenborgen.nl
- * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI
- *              Initial release: pwsFWI             (version 1.0)
- *                               Website Generator  (version 3.0)
- *                               ChartsCompiler     (version 5.0)
+ * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI .NET Framework 4.8
+ *              Initial release: pwsFWI                 (version 1.0)
+ *                               Website Generator      (version 3.0)
+ *                               ChartsCompiler         (version 5.0)
+ *                               Maintenance releases   (version 6.x)
+ *              Startdate : 16 november 2021 start of conversion to .NET 5, 6 and 7
  *              
- * Environment: Raspberry 3B+
- *              Raspbian / Linux 
- *              C# / Visual Studio
- *              
+ * Environment: Raspberry Pi 3B+ and up
+ *              Raspberry Pi OS  for testruns
+ *              C# / Visual Studio / Windows for development
+ * 
  */
 using System;
 using System.Collections.Generic;
@@ -44,7 +43,7 @@ namespace CumulusUtils
         private enum Top10Types
         {
             maxTemp, minTemp, minHumidity, highPressure, lowPressure, highWind, highGust, totalWindrun, highRainRate, highHourlyRain, highDailyRain,
-            highestMonthlyRain, longestDryPeriod, longestWetPeriod
+            highestMonthlyRain, lowestMonthlyRain, longestDryPeriod, longestWetPeriod
         };
 
         private readonly string[] enumNames;
@@ -98,6 +97,7 @@ namespace CumulusUtils
             TypesUnits[ (int) Top10Types.highHourlyRain ] = Sup.StationRain.Text();
             TypesUnits[ (int) Top10Types.highDailyRain ] = Sup.StationRain.Text();
             TypesUnits[ (int) Top10Types.highestMonthlyRain ] = Sup.StationRain.Text();
+            TypesUnits[ (int) Top10Types.lowestMonthlyRain ] = Sup.StationRain.Text();
             TypesUnits[ (int) Top10Types.longestDryPeriod ] = Sup.GetCUstringValue( "General", "Days", "Days", false );
             TypesUnits[ (int) Top10Types.longestWetPeriod ] = Sup.GetCUstringValue( "General", "Days", "Days", false );
 
@@ -125,6 +125,8 @@ namespace CumulusUtils
                                                       $"<br/>({TypesUnits[ (int) Top10Types.highDailyRain ]})";
             TypesHeaders[ (int) Top10Types.highestMonthlyRain ] = Sup.GetCUstringValue( "Top10", "HighestMonthlyRain", "highestMonthlyRain", false ) +
                                                       $"<br/>({TypesUnits[ (int) Top10Types.highestMonthlyRain ]})";
+            TypesHeaders[ (int) Top10Types.lowestMonthlyRain ] = Sup.GetCUstringValue( "Top10", "LowestMonthlyRain", "lowestMonthlyRain", false ) +
+                                                      $"<br/>({TypesUnits[ (int) Top10Types.lowestMonthlyRain ]})";
             TypesHeaders[ (int) Top10Types.longestDryPeriod ] = Sup.GetCUstringValue( "Top10", "LongestDryPeriod", "longestDryPeriod", false ) +
                                                       $"<br/>({TypesUnits[ (int) Top10Types.longestDryPeriod ]})";
             TypesHeaders[ (int) Top10Types.longestWetPeriod ] = Sup.GetCUstringValue( "Top10", "LongestWetPeriod", "longestWetPeriod", false ) +
@@ -134,44 +136,23 @@ namespace CumulusUtils
                 Top10List[ i ] = new List<DayfileValue>();
         }
 
-        // Below are the comparers
-
-        private class compareHighestMonthlyRain : Comparer<DayfileValue>
+        private class CompareLongestDryPeriod : Comparer<DayfileValue>
         {
             public override int Compare( DayfileValue x, DayfileValue y )
             {
-                if ( x.MonthlyRain > y.MonthlyRain )
-                    return ( -1 );
-                else if ( x.MonthlyRain < y.MonthlyRain )
-                    return ( 1 );
-                else
-                    return ( 0 );
+                if ( x.DryPeriod > y.DryPeriod ) return ( -1 );
+                else if ( x.DryPeriod < y.DryPeriod ) return ( 1 );
+                else return ( 0 );
             }
         }
 
-        private class compareLongestDryPeriod : Comparer<DayfileValue>
+        private class CompareLongestWetPeriod : Comparer<DayfileValue>
         {
             public override int Compare( DayfileValue x, DayfileValue y )
             {
-                if ( x.DryPeriod > y.DryPeriod )
-                    return ( -1 );
-                else if ( x.DryPeriod < y.DryPeriod )
-                    return ( 1 );
-                else
-                    return ( 0 );
-            }
-        }
-
-        private class compareLongestWetPeriod : Comparer<DayfileValue>
-        {
-            public override int Compare( DayfileValue x, DayfileValue y )
-            {
-                if ( x.WetPeriod > y.WetPeriod )
-                    return ( -1 );
-                else if ( x.WetPeriod < y.WetPeriod )
-                    return ( 1 );
-                else
-                    return ( 0 );
+                if ( x.WetPeriod > y.WetPeriod ) return ( -1 );
+                else if ( x.WetPeriod < y.WetPeriod ) return ( 1 );
+                else return ( 0 );
             }
         }
 
@@ -181,22 +162,16 @@ namespace CumulusUtils
             Top10List[ (int) Top10Types.maxTemp ] = ThisList.OrderByDescending( x => x.MaxTemp ).Take( 10 ).ToList();
 
             //MinTemp
-            Top10List[ (int) Top10Types.minTemp ] = ThisList.OrderByDescending( x => x.MinTemp ).ToList();
-            Top10List[ (int) Top10Types.minTemp ].Reverse();
-            Top10List[ (int) Top10Types.minTemp ] = Top10List[ (int) Top10Types.minTemp ].Take( 10 ).ToList();
+            Top10List[ (int) Top10Types.minTemp ] = ThisList.OrderBy( x => x.MinTemp ).Take( 10 ).ToList();
 
-            //MinHumidity
-            Top10List[ (int) Top10Types.minHumidity ] = ThisList.OrderByDescending( x => x.LowHumidity ).ToList();
-            Top10List[ (int) Top10Types.minHumidity ].Reverse();
-            Top10List[ (int) Top10Types.minHumidity ] = Top10List[ (int) Top10Types.minHumidity ].Take( 10 ).ToList();
+            //LowHumidity
+            Top10List[ (int) Top10Types.minHumidity ] = ThisList.OrderBy( x => x.LowHumidity ).Take( 10 ).ToList();
 
             //HighPressure
             Top10List[ (int) Top10Types.highPressure ] = ThisList.OrderByDescending( x => x.MaxBarometer ).Take( 10 ).ToList();
 
             //LowPressure
-            Top10List[ (int) Top10Types.lowPressure ] = ThisList.OrderByDescending( x => x.MinBarometer ).ToList();
-            Top10List[ (int) Top10Types.lowPressure ].Reverse();
-            Top10List[ (int) Top10Types.lowPressure ] = Top10List[ (int) Top10Types.lowPressure ].Take( 10 ).ToList();
+            Top10List[ (int) Top10Types.lowPressure ] = ThisList.OrderBy( x => x.MinBarometer ).Take( 10 ).ToList();
 
             //HighWind
             Top10List[ (int) Top10Types.highWind ] = ThisList.OrderByDescending( x => x.HighAverageWindSpeed ).Take( 10 ).ToList();
@@ -216,48 +191,27 @@ namespace CumulusUtils
             //HighDailyRain
             Top10List[ (int) Top10Types.highDailyRain ] = ThisList.OrderByDescending( x => x.TotalRainThisDay ).Take( 10 ).ToList();
 
-            int i, j;
+            //HighMonthlyRain
+            List<DayfileValue> tmpList = new();
 
-            // Still looking for a nice LINQ query to solve the last three top10 lists
-            //
-            ThisList.Sort( new compareHighestMonthlyRain() );
-
-            Top10List[ (int) Top10Types.highestMonthlyRain ].Add( ThisList[ 0 ] );
-
-            foreach ( DayfileValue element in ThisList )
-            {
-                bool FoundInTop10 = false;
-
-                for ( j = 0; j < Top10List[ (int) Top10Types.highestMonthlyRain ].Count; j++ )
-                {
-                    if ( ( element.ThisDate.Year == Top10List[ (int) Top10Types.highestMonthlyRain ][ j ].ThisDate.Year ) &&
-                        ( element.ThisDate.Month == Top10List[ (int) Top10Types.highestMonthlyRain ][ j ].ThisDate.Month ) )
+            for ( int thisYear = ThisList.Select( x => x.ThisDate.Year ).Min(); thisYear <= ThisList.Select( x => x.ThisDate.Year ).Max(); thisYear++ )
+                for ( int thisMonth = 1; thisMonth <= 12; thisMonth++ )
+                    //try { tmpList.Add( ThisList.Where( x => x.ThisDate.Year == thisYear ).Where( x => x.ThisDate.Month == thisMonth ).MaxBy( x => x.MonthlyRain ) ); }
+                    try
                     {
-                        FoundInTop10 = true;
+                        tmpList.Add( ThisList.Where( x => x.ThisDate.Year == thisYear ).Where( x => x.ThisDate.Month == thisMonth ).OrderByDescending( x => x.MonthlyRain ).First() );
                     }
-                }
+                    catch ( Exception ) { continue; }
 
-                if ( FoundInTop10 )
-                    continue;
-                else
-                {
-                    Top10List[ (int) Top10Types.highestMonthlyRain ].Add( element );
-                    if ( Top10List[ (int) Top10Types.highestMonthlyRain ].Count == 10 )
-                        break;
-                }
-            }
+            Top10List[ (int) Top10Types.highestMonthlyRain ] = tmpList.OrderByDescending( x => x.MonthlyRain ).Take( 10 ).ToList();
+            Top10List[ (int) Top10Types.lowestMonthlyRain ] = tmpList.OrderBy( x => x.MonthlyRain ).Take( 10 ).ToList();
 
             MonthlyRainNrOfMonths = Top10List[ (int) Top10Types.highestMonthlyRain ].Count;
 
-            if ( Top10List[ (int) Top10Types.highestMonthlyRain ].Count < 10 )
-            {
-                for ( j = Top10List[ (int) Top10Types.highestMonthlyRain ].Count; j < 10; j++ )
-                {
-                    Top10List[ (int) Top10Types.highestMonthlyRain ].Add( ThisList[ Top10List[ (int) Top10Types.highestMonthlyRain ].Count - 1 ] );
-                }
-            }
+            //DryPeriod
+            int i, j;
 
-            ThisList.Sort( new compareLongestDryPeriod() );
+            ThisList.Sort( new CompareLongestDryPeriod() );
 
             Top10List[ (int) Top10Types.longestDryPeriod ].Add( ThisList[ 0 ] );
 
@@ -275,17 +229,16 @@ namespace CumulusUtils
                     }
                 }
 
-                if ( FoundInTop10 )
-                    continue;
+                if ( FoundInTop10 ) continue;
                 else
                 {
                     Top10List[ (int) Top10Types.longestDryPeriod ].Add( element );
-                    if ( Top10List[ (int) Top10Types.longestDryPeriod ].Count == 10 )
-                        break;
+                    if ( Top10List[ (int) Top10Types.longestDryPeriod ].Count == 10 ) break;
                 }
             }
 
-            ThisList.Sort( new compareLongestWetPeriod() );
+            //WetPeriod
+            ThisList.Sort( new CompareLongestWetPeriod() );
             Top10List[ (int) Top10Types.longestWetPeriod ].Add( ThisList[ 0 ] );
 
             foreach ( DayfileValue element in ThisList )
@@ -302,13 +255,11 @@ namespace CumulusUtils
                     }
                 }
 
-                if ( FoundInTop10 )
-                    continue;
+                if ( FoundInTop10 ) continue;
                 else
                 {
                     Top10List[ (int) Top10Types.longestWetPeriod ].Add( element );
-                    if ( Top10List[ (int) Top10Types.longestWetPeriod ].Count == 10 )
-                        break;
+                    if ( Top10List[ (int) Top10Types.longestWetPeriod ].Count == 10 ) break;
                 }
             }
 
@@ -488,6 +439,20 @@ namespace CumulusUtils
             for ( j = 0; j < Top10List[ i ].Count; j++ )
             {
                 Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
+                  $"{Top10List[ i ][ j ].ThisDate:MM/yyyy} {Top10List[ i ][ j ].MonthlyRain:F2}" );  // Lowest monthly rain, inverted from previous list
+
+                if ( Top10List[ i ][ j ].ThisDate.Date == Yesterday.Date )
+                {
+                    CUtils.ThriftyTop10RecordsDirty = true;
+                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
+                }
+            }
+
+            i++;
+            Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
+            for ( j = 0; j < Top10List[ i ].Count; j++ )
+            {
+                Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
                   $"{Top10List[ i ][ j ].ThisDate:dd/MM/yyyy} {Top10List[ i ][ j ].DryPeriod:F2}" );
 
                 if ( Top10List[ i ][ j ].ThisDate.Date == Yesterday.Date )
@@ -512,11 +477,9 @@ namespace CumulusUtils
             }
 
             // If the cycle is true then set records dirty so it is always uploaded; required to release accented records when 30 day period has  passed
-            if ( CUtils.RunStarted.DayOfYear % CUtils.ThriftyTop10RecordsPeriod == 0 )
-                CUtils.ThriftyTop10RecordsDirty = true;
+            if ( CUtils.RunStarted.DayOfYear % CUtils.ThriftyTop10RecordsPeriod == 0 ) CUtils.ThriftyTop10RecordsDirty = true;
 
-            if ( !CUtils.Thrifty || CUtils.ThriftyTop10RecordsDirty )
-                HTMLexportTop10();
+            if ( !CUtils.Thrifty || CUtils.ThriftyTop10RecordsDirty ) HTMLexportTop10();
             Sup.LogTraceVerboseMessage( $"Thrifty: !Thrifty || ThriftyTop10RecordsDirty - {!CUtils.Thrifty || CUtils.ThriftyTop10RecordsDirty} => Top10 , NO HTML generated!" );
 
             return; //all done
@@ -532,7 +495,7 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "HTMLexportTop10 : starting Style" );
 
-            using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.Top10OutputFilename}", false, Encoding.UTF8 ) )
+            using ( StreamWriter of = new( $"{Sup.PathUtils}{Sup.Top10OutputFilename}", false, Encoding.UTF8 ) )
             {
                 of.WriteLine( "<style>" );
                 of.WriteLine( "#report{" );
@@ -540,7 +503,14 @@ namespace CumulusUtils
                 of.WriteLine( "  border-radius: 15px;" );
                 of.WriteLine( "  border-spacing: 0;" );
                 of.WriteLine( "  border: 1px solid #b0b0b0;" );
+
+                if ( Sup.GetUtilsIniValue( "General", "UseScrollableTables", "true" ).Equals( "true", CUtils.cmp ) )
+                {
+                    of.WriteLine( "  height: 80vh; overflow: auto;" );
+                }
+
                 of.WriteLine( "}" );
+
                 of.WriteLine( "#report .CUtable{" );
                 of.WriteLine( "   border-collapse: collapse;" );
                 of.WriteLine( "   border-spacing: 0;" );
@@ -549,12 +519,14 @@ namespace CumulusUtils
                 of.WriteLine( "   max-width:1000px;" );
                 of.WriteLine( "   margin: auto;" );
                 of.WriteLine( "}" );
+
                 of.WriteLine( "#report th{" );
                 of.WriteLine( "   border: 1px solid #b0b0b0;" );
                 of.WriteLine( "   text-align: center;" );
                 of.WriteLine( $"   background-color: {Top10TableFormat.BgcolorHeader};" );
                 of.WriteLine( "   padding: 4px;" );
                 of.WriteLine( "}" );
+
                 of.WriteLine( "#report td{" );
                 of.WriteLine( "  border: 1px solid #b0b0b0;" );
                 of.WriteLine( "  text-align: center;" );
@@ -562,6 +534,7 @@ namespace CumulusUtils
                 of.WriteLine( "  padding: 4px;" );
                 of.WriteLine( "}" );
                 of.WriteLine( "</style>" );
+                of.WriteLine( "<div id=\"reportBox\">" );
                 of.WriteLine( "<div id=\"report\">" );
                 of.WriteLine( "<br/>" );
 
@@ -575,9 +548,8 @@ namespace CumulusUtils
 
                     for ( k = 0; k < Top10TableFormat.NrOfColumns; k++ )
                     {
-                        if ( i + k >= NrOfRecordTypes )
-                            break;
-                        of.WriteLine( "<th style=\"color:{0};\">{1}</th>", Top10TableFormat.TxtcolorHeader, TypesHeaders[ i + k ] ); //enumNames[i + k]
+                        if ( i + k >= NrOfRecordTypes ) break;
+                        of.WriteLine( $"<th style=\"color:{Top10TableFormat.TxtcolorHeader};\">{TypesHeaders[ i + k ]}</th>" ); //enumNames[i + k]
                     }
 
                     of.WriteLine( "</tr>\n</thead>" );
@@ -589,10 +561,8 @@ namespace CumulusUtils
 
                         for ( k = 0; k < Top10TableFormat.NrOfColumns; k++ )
                         {
-                            if ( i + k >= NrOfRecordTypes )
-                                break;
-                            if ( j >= Top10List[ i + k ].Count )
-                                break;
+                            if ( i + k >= NrOfRecordTypes ) break;
+                            if ( j >= Top10List[ i + k ].Count ) break;
                             if ( Math.Abs( Top10List[ i + k ][ j ].ThisDate.Subtract( DateTime.Now ).Days ) < AttentionPeriod )
                             {
                                 /*
@@ -605,19 +575,18 @@ namespace CumulusUtils
 
                                 buf = string.Format( $"style=\"color:{Top10TableFormat.TxtAccentTable};\"" );
                             }
-                            else
-                                buf = "";
+                            else buf = "";
 
                             switch ( i + k )
                             {
                                 case (int) Top10Types.maxTemp:
                                     timebuf = string.Format( inv, $"{Top10List[ i + k ][ j ].TimeMaxTemp:dd/MM/yyyy HH:mm}" );
-                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Sup.StationTemp.Format( Top10List[ i + k ][ j ].MaxTemp )}</b></td>" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Temp.Format( Top10List[ i + k ][ j ].MaxTemp )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.minTemp:
                                     timebuf = string.Format( inv, $"{Top10List[ i + k ][ j ].TimeMinTemp:dd/MM/yyyy HH:mm}" );
-                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Sup.StationTemp.Format( Top10List[ i + k ][ j ].MinTemp )}</b></td>" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Temp.Format( Top10List[ i + k ][ j ].MinTemp )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.minHumidity:
@@ -637,17 +606,17 @@ namespace CumulusUtils
 
                                 case (int) Top10Types.highWind:
                                     timebuf = string.Format( inv, $"{Top10List[ i + k ][ j ].TimeHighAverageWindSpeed:dd/MM/yyyy HH:mm}" );
-                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Sup.StationWind.Format( Top10List[ i + k ][ j ].HighAverageWindSpeed )}</b></td>" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Wind.Format( Top10List[ i + k ][ j ].HighAverageWindSpeed )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.highGust:
                                     timebuf = string.Format( inv, $"{Top10List[ i + k ][ j ].TimeHighWindGust:dd/MM/yyyy HH:mm}" );
-                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Sup.StationWind.Format( Top10List[ i + k ][ j ].HighWindGust )}</b></td>" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Wind.Format( Top10List[ i + k ][ j ].HighWindGust )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.totalWindrun:
                                     timebuf = string.Format( inv, $"{Top10List[ i + k ][ j ].ThisDate:dd/MM/yyyy}" );
-                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Sup.StationDistance.Format( Top10List[ i + k ][ j ].TotalWindRun )}</b></td>" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Distance.Format( Top10List[ i + k ][ j ].TotalWindRun )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.highRainRate:
@@ -666,6 +635,7 @@ namespace CumulusUtils
                                     break;
 
                                 case (int) Top10Types.highestMonthlyRain:
+                                case (int) Top10Types.lowestMonthlyRain:
                                     if ( j < MonthlyRainNrOfMonths )
                                     {
                                         timebuf = string.Format( inv, $"{Top10List[ i + k ][ j ].ThisDate:MMM yyyy}" );
@@ -710,6 +680,7 @@ namespace CumulusUtils
                 }
 
                 of.WriteLine( "</div>" ); // (id=report)
+                of.WriteLine( "</div>" ); // (id=reportBox)
             } // End using of (output file)
         }
 
