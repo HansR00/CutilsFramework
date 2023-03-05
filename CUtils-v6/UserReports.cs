@@ -75,7 +75,7 @@ namespace CumulusUtils
 
                 // Always upload, they're user reports so the user wants them there
                 Sup.LogTraceInfoMessage( $"USerReports: Uploading {bareFilename}" );
-                Isup.UploadFile( bareFilename, Sup.PathUtils + bareFilename );
+                await Isup.UploadFileAsync( bareFilename, Sup.PathUtils + bareFilename );
             }
 
             return;

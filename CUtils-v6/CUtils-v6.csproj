@@ -70,6 +70,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InetPHP.cs" />
     <Compile Include="ExternalExtraSensorslog.cs" />
     <Compile Include="CustomLogs.cs" />
     <Compile Include="ExtraSensorslog.cs" />
@@ -142,9 +143,6 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Temp.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

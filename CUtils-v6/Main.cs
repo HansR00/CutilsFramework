@@ -1,10 +1,11 @@
 ﻿/*
- * CumulusUtils/Main version 4 for .NET
+ * CumulusUtils/Main
  *
  * © Copyright 2019-2023 Hans Rottier <hans.rottier@gmail.com>
  *
  * The code of CumulusUtils is public domain and distributed under the  
  * Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
+ * (Note: this is different license than for CumulusMX itself, it is basically is usage license)
  * 
  * Author:      Hans Rottier <hans.rottier@gmail.com>
  * Project:     CumulusUtils meteo-wagenborgen.nl
@@ -20,6 +21,7 @@
  *              C# / Visual Studio / Windows for development
  * 
  * Files:       Main.cs
+ *              AirLink.cs
  *              Airlinklog.cs
  *              AirQuality.cs
  *              ChartsCompiler CodeGen.cs
@@ -27,12 +29,14 @@
  *              ChartsCompiler Eval.cs
  *              ChartsCompiler Parser.cs
  *              CmxIPC.cs
+ *              CustomLogs.cs
  *              Dayfile.cs
  *              DayRecords.cs
  *              ExternalExtraSensorslog.cs
  *              ExtraSensors.cs
  *              ExtraSensorslog.cs
  *              Forecast.cs
+ *              GlobalSuppression.cs
  *              Graphs.cs
  *              GraphMisc.cs
  *              GraphRain.cs
@@ -57,7 +61,6 @@
  *              UserReports.cs
  *              Website.cs
  *              Yadr.cs
- *              LinkCollection.txt
  *              
  * Beside this direct C# code there are also supporting files:
  * Distribution:
@@ -151,8 +154,8 @@ namespace CumulusUtils
         private bool DoExtraSensors;
         private bool DoCustomLogs;
 
-        public const StringComparison cmp = StringComparison.OrdinalIgnoreCase;
-        public CultureInfo inv = CultureInfo.InvariantCulture;
+        public static StringComparison cmp = StringComparison.OrdinalIgnoreCase;
+        public static CultureInfo inv = CultureInfo.InvariantCulture;
 
         public static CuSupport Sup { get; set; }
         public static InetSupport Isup { get; set; }
@@ -197,6 +200,12 @@ namespace CumulusUtils
         static public DateTime StartOfObservations { get; set; }
         static public bool CanDoMap { get; set; }
         static internal HelpTexts ChartHelp { get; private set; }
+        static public int HoursInGraph { get; set; }
+        static public int DaysInGraph { get; set; }
+        static public int LogIntervalInMinutes { get; set; }
+        static public int FTPIntervalInMinutes { get; set; }
+
+        static public int[] PossibleIntervals = { 1, 5, 10, 15, 20, 30 };
 
         static internal List<DayfileValue> MainList = new List<DayfileValue>();
 
@@ -247,7 +256,7 @@ namespace CumulusUtils
                     FtpTrace.LogUserName = false;
                     FtpTrace.LogIP = false;
 
-                    FtpListener = new TextWriterTraceListener( $"utils/utilslog/{DateTime.Now.ToString( "yyMMddHHmm", CultureInfo.InvariantCulture )}FTPlog.txt" );
+                    FtpListener = new TextWriterTraceListener( $"utils/utilslog/{DateTime.Now.ToString( "yyMMddHHmm", inv )}FTPlog.txt" );
                     FtpTrace.AddListener( FtpListener );
                 }
 
@@ -270,12 +279,12 @@ namespace CumulusUtils
                 ThriftyWindGraphsDirty = false;
                 ThriftyMiscGraphsDirty = false;
 
-                ThriftyTop10RecordsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "Top10RecordsPeriod", "1" ), CultureInfo.InvariantCulture );
-                ThriftyRainGraphsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "RainGraphsPeriod", "1" ), CultureInfo.InvariantCulture );
-                ThriftyTempGraphsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "TempGraphsPeriod", "1" ), CultureInfo.InvariantCulture );
-                ThriftyWindGraphsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "WindGraphsPeriod", "1" ), CultureInfo.InvariantCulture );
-                ThriftySolarGraphsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "SolarGraphsPeriod", "1" ), CultureInfo.InvariantCulture );
-                ThriftyMiscGraphsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "MiscGraphsPeriod", "1" ), CultureInfo.InvariantCulture );
+                ThriftyTop10RecordsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "Top10RecordsPeriod", "1" ), inv );
+                ThriftyRainGraphsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "RainGraphsPeriod", "1" ), inv );
+                ThriftyTempGraphsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "TempGraphsPeriod", "1" ), inv );
+                ThriftyWindGraphsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "WindGraphsPeriod", "1" ), inv );
+                ThriftySolarGraphsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "SolarGraphsPeriod", "1" ), inv );
+                ThriftyMiscGraphsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "MiscGraphsPeriod", "1" ), inv );
 
                 if ( Environment.OSVersion.Platform.Equals( PlatformID.Unix ) )
                 {
@@ -304,6 +313,14 @@ namespace CumulusUtils
                 bool AirLinkIn = Sup.GetCumulusIniValue( "AirLink", "In-Enabled", "0" ).Equals( "1" );
                 bool AirLinkOut = Sup.GetCumulusIniValue( "AirLink", "Out-Enabled", "0" ).Equals( "1" );
                 HasAirLink = AirLinkIn || AirLinkOut;
+
+                HoursInGraph = Convert.ToInt32( Sup.GetCumulusIniValue( "Graphs", "GraphHours", "" ) );
+                DaysInGraph = Convert.ToInt32( Sup.GetCumulusIniValue( "Graphs", "ChartMaxDays", "" ) );
+                //int[] PossibleIntervals = { 1, 5, 10, 15, 20, 30 }; see declaration
+                LogIntervalInMinutes = PossibleIntervals[ Convert.ToInt32( Sup.GetCumulusIniValue( "Station", "DataLogInterval", "" ), CUtils.inv ) ];
+                FTPIntervalInMinutes = Convert.ToInt32( Sup.GetCumulusIniValue( "FTP site", "UpdateInterval", "" ) );
+                DaysInGraph = Convert.ToInt32( Sup.GetCumulusIniValue( "Graphs", "ChartMaxDays", "" ) );
+
 
                 // Now start doing things
                 CUtils p = new CUtils();
@@ -388,6 +405,19 @@ namespace CumulusUtils
             MainList = ThisDayfile.DayfileRead();
             ThisDayfile.Dispose();
 
+            // Adjust if RecordsBeganDate is set
+            //
+            string tmp = Sup.GetUtilsIniValue( "General", "RecordsBeganDate", "" );
+
+            if ( string.IsNullOrEmpty( tmp ) ) StartOfObservations = MainList.Select( x => x.ThisDate ).Min();
+            else
+            {
+                StartOfObservations = DateTime.ParseExact( tmp, "dd/MM/yy", inv );
+
+                int i = MainList.RemoveAll( p => p.ThisDate < StartOfObservations );
+                Sup.LogTraceInfoMessage( $"CumulusUtils : RecordsBeganDate used: {StartOfObservations}, Number of days removed from list: {i}" );
+            }
+
             // Reading the Monthly logfile has no Async and is independent of InetSupport!!
             if ( DoCheckOnly )
             {
@@ -395,11 +425,13 @@ namespace CumulusUtils
                 watch = Stopwatch.StartNew();
 #endif
 
-                CheckOnlyAsked = DoCheckOnly;
+                //_ = await Isup.UploadFileAsync( "TagsToReplace.txt", $"{Sup.PathUtils}TagsToReplace.txt" );
 
-                Monthfile fncs = new Monthfile( Sup );
-                fncs.ReadMonthlyLogs();
-                fncs.Dispose();
+                //CheckOnlyAsked = DoCheckOnly;
+
+                //Monthfile fncs = new Monthfile( Sup );
+                //fncs.ReadMonthlyLogs();
+                //fncs.Dispose();
 
 #if TIMING
                 watch.Stop();
@@ -525,17 +557,17 @@ namespace CumulusUtils
 
             if ( DoCustomLogs && HasCustomLogs )
             {
-//#if TIMING
-//                watch = Stopwatch.StartNew();
-//#endif
+                //#if TIMING
+                //                watch = Stopwatch.StartNew();
+                //#endif
 
-//                CustomLogs fncs = new CustomLogs( Sup );
-//                fncs.DoCustomLogs();
+                //                CustomLogs fncs = new CustomLogs( Sup );
+                //                fncs.DoCustomLogs();
 
-//#if TIMING
-//                watch.Stop();
-//                Sup.LogTraceInfoMessage( $"Timing of CustomLogs generation = {watch.ElapsedMilliseconds} ms" );
-//#endif
+                //#if TIMING
+                //                watch.Stop();
+                //                Sup.LogTraceInfoMessage( $"Timing of CustomLogs generation = {watch.ElapsedMilliseconds} ms" );
+                //#endif
             }
 
             // These were the tasks without [weather]data.
@@ -544,7 +576,6 @@ namespace CumulusUtils
             if ( DoPwsFWI || DoTop10 || DoGraphs || DoYadr || DoRecords || DoNOAA || DoDayRecords || DoCheckOnly || DoWebsite || DoCreateMap || DoUserAskedData )
             {
                 //StartOfObservations = MainList.Select( x => x.ThisDate ).Min();
-                StartOfObservations = MainList.Select( x => x.ThisDate ).Min();
                 const int NrOfDaysForUsefulResults = 32;
 
                 if ( MainList.Count < NrOfDaysForUsefulResults )
@@ -685,7 +716,7 @@ namespace CumulusUtils
 
                     Website fncs = new Website( Sup, Isup );
                     await fncs.GenerateWebsite();
-                    fncs.CheckPackageAndCopy();
+                    await fncs.CheckPackageAndCopy();
 
 #if TIMING
                     watch.Stop();
@@ -769,6 +800,8 @@ namespace CumulusUtils
 
                 if ( DoUserAskedData )
                 {
+                    DateTime tmpTimeEnd = DateTime.Now;
+
                     Sup.LogTraceInfoMessage( $"UserAskedData Start..." );
 
 #if TIMING
@@ -794,7 +827,16 @@ namespace CumulusUtils
                                         tmpChartsList.Add( tmpChart );
                             }
 
-                            fncs.GenerateUserAskedData( tmpChartsList );
+                            try
+                            {
+                                tmpTimeEnd = fncs.GenerateUserAskedData( thisList: tmpChartsList );  // 
+                            }
+                            catch( Exception e )
+                            {
+                                Sup.LogTraceInfoMessage( $"UserAskedData: Failing in GenerateUSerAskedData - i.e. Compiler data)" );
+                                Sup.LogTraceInfoMessage( $"UserAskedData: Message {e.Message})" );
+                                Sup.LogTraceInfoMessage( $"UserAskedData: Continuing" );
+                            }
                         }
                     }
 
@@ -803,21 +845,44 @@ namespace CumulusUtils
                     {
                         Sup.LogTraceInfoMessage( $"UserAskedData Doing the AirQuality stuff..." );
                         AirLink fncs = new AirLink( Sup );
-                        fncs.GenAirLinkDataJson();
+
+                        try
+                        {
+                            await fncs.GenAirLinkDataJson();
+                        }
+                        catch ( Exception e )
+                        {
+                            Sup.LogTraceInfoMessage( $"UserAskedData: Failing in GenAirLinkDataJson - i.e. Airlink data)" );
+                            Sup.LogTraceInfoMessage( $"UserAskedData: Message {e.Message})" );
+                            Sup.LogTraceInfoMessage( $"UserAskedData: Continuing" );
+                        }
                     }
 
                     if ( HasExtraSensors )
                     {
                         Sup.LogTraceInfoMessage( $"UserAskedData Doing the ExtraSensor stuff..." );
                         ExtraSensors fncs = new ExtraSensors( Sup );
-                        fncs.GenerateExtraSensorDataJson();
+                        try
+                        {
+                            fncs.GenerateExtraSensorDataJson();
+                        }
+                        catch ( Exception e )
+                        {
+                            Sup.LogTraceInfoMessage( $"UserAskedData: Failing in GenerateExtraSensorDataJson - i.e. ExtraSensors (incl External) data)" );
+                            Sup.LogTraceInfoMessage( $"UserAskedData: Message {e.Message})" );
+                            Sup.LogTraceInfoMessage( $"UserAskedData: Continuing" );
+                        }
                     }
+
+                    // No matter what happened, set the upload date/time
+                    Sup.SetUtilsIniValue( "General", "LastUploadTime", tmpTimeEnd.ToString( "dd/MM/yy HH:mm", CUtils.inv ) );
+
 
 #if TIMING
                     watch.Stop();
                     Sup.LogTraceInfoMessage( $"Timing of UserAskedData = {watch.ElapsedMilliseconds} ms" );
 #endif
-                }
+                } // DoUserAskedData
             }
 
             // Make this the last part to be able to overwrite default file output for the graphs when that will be implemented
@@ -844,7 +909,7 @@ namespace CumulusUtils
 
                         // and Upload
                         Sup.LogTraceInfoMessage( $"Uploading = {thisDef.Filename}" );
-                        Isup.UploadFile( $"{thisDef.Filename}", $"{Sup.PathUtils}{thisDef.Filename}" );
+                        await Isup.UploadFileAsync( $"{thisDef.Filename}", $"{Sup.PathUtils}{thisDef.Filename}" );
                     }
                 }
                 else
@@ -863,17 +928,17 @@ namespace CumulusUtils
             if ( DoPwsFWI )
             {
                 Sup.LogTraceInfoMessage( $"Uploading = {Sup.PwsFWIOutputFilename}" );
-                Isup.UploadFile( $"{Sup.PwsFWIOutputFilename}", $"{Sup.PathUtils}{Sup.PwsFWIOutputFilename}" );
+                await Isup.UploadFileAsync( $"{Sup.PwsFWIOutputFilename}", $"{Sup.PathUtils}{Sup.PwsFWIOutputFilename}" );
 
                 Sup.LogTraceInfoMessage( $"Uploading = {Sup.PwsFWICurrentOutputFilename}" );
-                Isup.UploadFile( $"{Sup.PwsFWICurrentOutputFilename}", $"{Sup.PathUtils}{Sup.PwsFWICurrentOutputFilename}" );
+                await Isup.UploadFileAsync( $"{Sup.PwsFWICurrentOutputFilename}", $"{Sup.PathUtils}{Sup.PwsFWICurrentOutputFilename}" );
             }
 
             if ( DoTop10 && ( !Thrifty || ThriftyTop10RecordsDirty ) )
             {
                 Sup.LogTraceInfoMessage( $"Thrifty: DoTop10 && (!Thrifty || ThriftyTop10RecordsDirty ) - " +
                   $"{DoTop10 && ( !Thrifty || ThriftyTop10RecordsDirty )} | Uploading = {Sup.Top10OutputFilename}" );
-                Isup.UploadFile( $"{Sup.Top10OutputFilename}", $"{Sup.PathUtils}{Sup.Top10OutputFilename}" );
+                await Isup.UploadFileAsync( $"{Sup.Top10OutputFilename}", $"{Sup.PathUtils}{Sup.Top10OutputFilename}" );
             }
 
             if ( DoGraphs )
@@ -881,73 +946,73 @@ namespace CumulusUtils
                 if ( HasRainGraphMenu && ( !Thrifty || ThriftyRainGraphsDirty ) )
                 {
                     Sup.LogTraceInfoMessage( $"Thrifty: !Thrifty || ThriftyRainGraphsDirty - {!Thrifty || ThriftyRainGraphsDirty} => Uploading = {Path.GetFileName( Sup.GraphsRainOutputFilename )}" );
-                    Isup.UploadFile( Path.GetFileName( Sup.GraphsRainOutputFilename ), Sup.PathUtils + Path.GetFileName( Sup.GraphsRainOutputFilename ) );
+                    await Isup.UploadFileAsync( Path.GetFileName( Sup.GraphsRainOutputFilename ), Sup.PathUtils + Path.GetFileName( Sup.GraphsRainOutputFilename ) );
                 }
 
                 if ( HasTempGraphMenu && ( !Thrifty || ThriftyTempGraphsDirty ) )
                 {
                     Sup.LogTraceInfoMessage( $"Thrifty: !Thrifty || ThriftyTempGraphsDirty - {!Thrifty || ThriftyTempGraphsDirty} => Uploading = {Path.GetFileName( Sup.GraphsTempOutputFilename )}" );
-                    Isup.UploadFile( Path.GetFileName( Sup.GraphsTempOutputFilename ), Sup.PathUtils + Path.GetFileName( Sup.GraphsTempOutputFilename ) );
+                    await Isup.UploadFileAsync( Path.GetFileName( Sup.GraphsTempOutputFilename ), Sup.PathUtils + Path.GetFileName( Sup.GraphsTempOutputFilename ) );
                 }
 
                 if ( HasWindGraphMenu && ( !Thrifty || ThriftyWindGraphsDirty ) )
                 {
                     Sup.LogTraceInfoMessage( $"Thrifty: !Thrifty || ThriftyWindGraphsDirty) - {!Thrifty || ThriftyWindGraphsDirty} => Uploading = {Path.GetFileName( Sup.GraphsWindOutputFilename )}" );
-                    Isup.UploadFile( Path.GetFileName( Sup.GraphsWindOutputFilename ), Sup.PathUtils + Path.GetFileName( Sup.GraphsWindOutputFilename ) );
+                    await Isup.UploadFileAsync( Path.GetFileName( Sup.GraphsWindOutputFilename ), Sup.PathUtils + Path.GetFileName( Sup.GraphsWindOutputFilename ) );
                 }
 
                 if ( HasSolarGraphMenu && ( !Thrifty || ThriftySolarGraphsDirty ) )
                 {
                     Sup.LogTraceInfoMessage( $"Thrifty: !Thrifty || ThriftySolarGraphsDirty) - {!Thrifty || ThriftySolarGraphsDirty} => Uploading = {Path.GetFileName( Sup.GraphsSolarOutputFilename )}" );
-                    Isup.UploadFile( Path.GetFileName( Sup.GraphsSolarOutputFilename ), Sup.PathUtils + Path.GetFileName( Sup.GraphsSolarOutputFilename ) );
+                    await Isup.UploadFileAsync( Path.GetFileName( Sup.GraphsSolarOutputFilename ), Sup.PathUtils + Path.GetFileName( Sup.GraphsSolarOutputFilename ) );
                 }
 
                 if ( HasMiscGraphMenu && ( !Thrifty || ThriftyMiscGraphsDirty ) )
                 {
                     Sup.LogTraceInfoMessage( $"Thrifty: !Thrifty || ThriftyMiscGraphsDirty - {!Thrifty || ThriftyMiscGraphsDirty} => Uploading = {Path.GetFileName( Sup.GraphsMiscOutputFilename )}" );
-                    Isup.UploadFile( Path.GetFileName( Sup.GraphsMiscOutputFilename ), Sup.PathUtils + Path.GetFileName( Sup.GraphsMiscOutputFilename ) );
+                    await Isup.UploadFileAsync( Path.GetFileName( Sup.GraphsMiscOutputFilename ), Sup.PathUtils + Path.GetFileName( Sup.GraphsMiscOutputFilename ) );
                 }
             }
 
             if ( MapParticipant || DoWebsite )
             {
                 Sup.LogTraceInfoMessage( $"Uploading = {Sup.MapsOutputFilename}" );
-                Isup.UploadFile( $"{Sup.MapsOutputFilename}", $"{Sup.PathUtils}{Sup.MapsOutputFilename}" );
+                await Isup.UploadFileAsync( $"{Sup.MapsOutputFilename}", $"{Sup.PathUtils}{Sup.MapsOutputFilename}" );
             }
 
             if ( DoRecords && ( !Thrifty || ThriftyRecordsDirty ) )
             {
                 Sup.LogTraceInfoMessage( $"Thrifty: DoRecords && (!Thrifty || ThriftyRecordsDirty) - {DoRecords && ( !Thrifty || ThriftyRecordsDirty )} => Uploading = {Sup.RecordsOutputFilename}" );
-                Isup.UploadFile( $"{Sup.RecordsOutputFilename}", $"{Sup.PathUtils}{Sup.RecordsOutputFilename}" );
+                await Isup.UploadFileAsync( $"{Sup.RecordsOutputFilename}", $"{Sup.PathUtils}{Sup.RecordsOutputFilename}" );
             }
 
             if ( DoNOAA && ( !Thrifty || RunStarted.Day == 2 ) ) // Only useful on second day of month
             {
                 Sup.LogTraceInfoMessage( $"Thrifty: DoNOAA && (!Thrifty || RunStarted.Day == 2) - {!Thrifty || RunStarted.Day == 2} => Uploading = {Sup.NOAAOutputFilename}" );
-                Isup.UploadFile( $"{Sup.NOAAOutputFilename}", $"{Sup.PathUtils}{Sup.NOAAOutputFilename}" );
+                await Isup.UploadFileAsync( $"{Sup.NOAAOutputFilename}", $"{Sup.PathUtils}{Sup.NOAAOutputFilename}" );
             }
 
             if ( DoDayRecords && ( !Thrifty || ThriftyDayRecordsDirty ) )
             {
                 Sup.LogTraceInfoMessage( $"Thrifty: DoDayRecords && (!Thrifty || ThriftyDayRecordsDirty) - {DoDayRecords && ( !Thrifty || ThriftyDayRecordsDirty )} => Uploading = {Sup.DayRecordsOutputFilename}" );
-                Isup.UploadFile( $"{Sup.DayRecordsOutputFilename}", $"{Sup.PathUtils}{Sup.DayRecordsOutputFilename}" );
+                await Isup.UploadFileAsync( $"{Sup.DayRecordsOutputFilename}", $"{Sup.PathUtils}{Sup.DayRecordsOutputFilename}" );
             }
 
-            if ( DoForecast ) { Isup.UploadFile( $"{Sup.ForecastOutputFilename}", $"{Sup.PathUtils}{Sup.ForecastOutputFilename}" ); }
+            if ( DoForecast ) { await Isup.UploadFileAsync( $"{Sup.ForecastOutputFilename}", $"{Sup.PathUtils}{Sup.ForecastOutputFilename}" ); }
 
-            if ( DoStationMap && ( !Thrifty || RunStarted.DayOfYear == 2 ) ) { Isup.UploadFile( $"{Sup.StationMapOutputFilename}", $"{Sup.PathUtils}{Sup.StationMapOutputFilename}" ); }
-            if ( DoMeteoCam && HasMeteoCamMenu && ( !Thrifty || RunStarted.DayOfYear == 2 ) ) { Isup.UploadFile( $"{Sup.MeteoCamOutputFilename}", $"{Sup.PathUtils}{Sup.MeteoCamOutputFilename}" ); }
+            if ( DoStationMap && ( !Thrifty || RunStarted.DayOfYear == 2 ) ) { await Isup.UploadFileAsync( $"{Sup.StationMapOutputFilename}", $"{Sup.PathUtils}{Sup.StationMapOutputFilename}" ); }
+            if ( DoMeteoCam && HasMeteoCamMenu && ( !Thrifty || RunStarted.DayOfYear == 2 ) ) { await Isup.UploadFileAsync( $"{Sup.MeteoCamOutputFilename}", $"{Sup.PathUtils}{Sup.MeteoCamOutputFilename}" ); }
 
             if ( DoAirLink && !Thrifty )
             {
-                Isup.UploadFile( $"{Sup.AirLinkOutputFilename}", $"{Sup.PathUtils}{Sup.AirLinkOutputFilename}" );
+                await Isup.UploadFileAsync( $"{Sup.AirLinkOutputFilename}", $"{Sup.PathUtils}{Sup.AirLinkOutputFilename}" );
             }
 
             if ( DoExtraSensors && HasExtraSensors && !Thrifty )
             {
-                Isup.UploadFile( $"{Sup.ExtraSensorsOutputFilename}", $"{Sup.PathUtils}{Sup.ExtraSensorsOutputFilename}" );
+                await Isup.UploadFileAsync( $"{Sup.ExtraSensorsOutputFilename}", $"{Sup.PathUtils}{Sup.ExtraSensorsOutputFilename}" );
                 if ( ParticipatesSensorCommunity )
-                    Isup.UploadFile( $"{Sup.SensorCommunityOutputFilename}", $"{Sup.PathUtils}{Sup.SensorCommunityOutputFilename}" );
+                    await Isup.UploadFileAsync( $"{Sup.SensorCommunityOutputFilename}", $"{Sup.PathUtils}{Sup.SensorCommunityOutputFilename}" );
             }
 
             if ( DoYadr )
@@ -960,7 +1025,7 @@ namespace CumulusUtils
 
                     foreach ( string file in filelist )
                     {
-                        Isup.UploadFile( Path.GetFileName( file ), Sup.PathUtils + Path.GetFileName( file ) );
+                        await Isup.UploadFileAsync( Path.GetFileName( file ), Sup.PathUtils + Path.GetFileName( file ) );
                     }
                 }
                 else
@@ -975,13 +1040,13 @@ namespace CumulusUtils
                     if ( RunStarted.DayOfYear == 2 )
                     {
                         Sup.LogTraceInfoMessage( $"Thrifty: {Thrifty} - YADR - Upload for 2 January" );
-                        Isup.UploadFile( Path.GetFileName( "Yadr.txt" ), Sup.PathUtils + Path.GetFileName( "Yadr.txt" ) );
+                        await Isup.UploadFileAsync( Path.GetFileName( "Yadr.txt" ), Sup.PathUtils + Path.GetFileName( "Yadr.txt" ) );
                     }
 
                     Sup.LogTraceInfoMessage( $"Thrifty: {Thrifty} - YADR - Upload for only current year {RunStarted.Year}" );
                     foreach ( string file in filelist )
                     {
-                        Isup.UploadFile( Path.GetFileName( file ), Sup.PathUtils + Path.GetFileName( file ) );
+                        await Isup.UploadFileAsync( Path.GetFileName( file ), Sup.PathUtils + Path.GetFileName( file ) );
                     }
                 }
             }
@@ -998,14 +1063,14 @@ namespace CumulusUtils
                     FileInfo fi = new FileInfo( file );
 
                     Sup.LogTraceInfoMessage( $"Uploading => {fi.Name} from {Sup.PathUtils}{fi.Name}" );
-                    if ( Isup.UploadFile( $"{fi.Name}", $"{Sup.PathUtils}{fi.Name}" ) )
-                        fi.Delete();
+                    if ( await Isup.UploadFileAsync( $"{fi.Name}", $"{Sup.PathUtils}{fi.Name}" ) ) fi.Delete();
+                    //await Isup.UploadFileAsync( $"{fi.Name}", $"{Sup.PathUtils}{fi.Name}" ); // For DEBUG purposes we might want to leave the files
                     // else leave the files so they can be uploaded manually
                 }
             }
 
             // Before v4.0.0 SysInfo must be processed by Cumulus so not handy to do the uploading here but now we do
-            if ( DoSystemChk ) { Isup.UploadFile( $"{Sup.SysInfoOutputFilename}", $"{Sup.PathUtils}{Sup.SysInfoOutputFilename}" ); }
+            if ( DoSystemChk ) { await Isup.UploadFileAsync( $"{Sup.SysInfoOutputFilename}", $"{Sup.PathUtils}{Sup.SysInfoOutputFilename}" ); }
 
 #if TIMING
             OverallWatch.Stop();

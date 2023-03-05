@@ -58,19 +58,15 @@ namespace CumulusUtils
 
             string CMXport = Sup.GetUtilsIniValue( "SysInfo", "CMXport", "8998" );
 
-#if RELEASE
-            CmxBaseURL = $"http://localhost:{CMXport}/api/tags/";
-#else
-            CmxBaseURL = $"http://localhost:{CMXport}/api/tags/";
-            //CmxBaseURL = $"http://192.168.178.144:{CMXport}/api/tags/";
-#endif
+            CmxBaseURL = $"http://localhost:{CMXport}";
+            //CmxBaseURL = $"http://192.168.178.143:{CMXport}";
         }
 
         public async Task<InfoFromCMX> GetCMXInfoAsync()
         {
             InfoFromCMX thisInfo;
 
-            string CMXinfoURL = $"{CmxBaseURL}process.json?version&build&ProgramUpTime&NewBuildAvailable&NewBuildNumber&CpuCount&CPUTemp";
+            string CMXinfoURL = $"{CmxBaseURL}/api/tags/process.json?version&build&ProgramUpTime&NewBuildAvailable&NewBuildNumber&CpuCount&CPUTemp";
             string JSONstring = await Isup.GetUrlDataAsync( new Uri( CMXinfoURL ) );
 
             if ( string.IsNullOrEmpty( JSONstring ) )
@@ -89,11 +85,19 @@ namespace CumulusUtils
             return thisInfo;
         }
 
+        public async Task<string> GetCMXGraphdataAsync( string thisGraphDef )
+        {
+            string GraphDataUrl = $"{CmxBaseURL}/api/graphdata/{thisGraphDef}.json";
+            string JSONstring = await Isup.GetUrlDataAsync( new Uri( GraphDataUrl ) );
+
+            return JSONstring;
+        }
+
         private async Task<string> GetSingleWebtagValueFromCMXAsync( string tagName )
         {
             string retval;
 
-            string SingleWebtagURL = $"{CmxBaseURL}process.json?{tagName}";
+            string SingleWebtagURL = $"{CmxBaseURL}/api/tags/process.json?{tagName}";
             string JSONstring = await Isup.GetUrlDataAsync( new Uri( SingleWebtagURL ) );
 
             // Well, there may be some double testing on the validity of the JSON/Webtag validity
@@ -106,8 +110,7 @@ namespace CumulusUtils
             {
                 // https://stackoverflow.com/questions/21600968/using-servicestack-text-to-deserialize-a-json-string-to-object
                 //
-                if ( JSONstring[ 0 ] == '}' )
-                    return "";
+                if ( JSONstring[ 0 ] == '}' ) return "";
 
                 var o = JsonObject.Parse( JSONstring );
 
@@ -116,6 +119,8 @@ namespace CumulusUtils
 
             return retval;
         } // End GetSingleWebtagValueFromCMX
+
+
 
         public async Task<string> ReplaceWebtagsGetAsync( string thisString )
         {
@@ -164,7 +169,7 @@ namespace CumulusUtils
 
             Sup.LogTraceInfoMessage( $"ReplaceWebtagsPostAsync start:" );
 
-            string MultipleWebtagURL = $"{CmxBaseURL}process.txt";
+            string MultipleWebtagURL = $"{CmxBaseURL}/api/tags/process.txt";
             retval = await Isup.PostUrlDataAsync( new Uri( MultipleWebtagURL ), content );
 
             Sup.LogTraceVerboseMessage( $"ReplaceWebtagsPostAsync End. Returning {retval}" );

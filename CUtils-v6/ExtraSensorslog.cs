@@ -260,26 +260,28 @@ namespace CumulusUtils
             bool PeriodComplete = false;
 
             string Filename;
-            double HoursInGraph = Convert.ToDouble( Sup.GetCumulusIniValue( "Graphs", "GraphHours", "" ) );
 
-            // This is shared with GraphSolar... should become some common function to get this interval from the Cumulus.ini file
-            // Also shared with ChartsCompiler... have to clean this up and do a shared function somewhere
-            // Will do at some time.
-            int[] PossibleIntervals = { 1, 5, 10, 15, 20, 30 };
-            int LogIntervalInMinutes = PossibleIntervals[ Convert.ToInt32( Sup.GetCumulusIniValue( "Station", "DataLogInterval", "" ), CultureInfo.InvariantCulture ) ];
-            int FTPIntervalInMinutes = Convert.ToInt32( Sup.GetCumulusIniValue( "FTP site", "UpdateInterval", "" ) );
-
-            //
-            // Take the FTP frequency or the LogInterval (whichever is the largest) and use the minute value being a multiple of that one cycle below the now time as the end time
-            // Then go the hours in Graphs back to complete the full cycle. 
-            // So with a 10 min FTP cycle and Now = 08h09 the endtime must be 08h00 -> the minute value MOD FTP frequency
-            // This should give it the same starttime as the CMX JSONS, this is relevant for the wind addition later on.
-            // This is also shared with the ChartsCompiler -> make some shared function for start and endtime related to the intervals.
-            //
             DateTime Now = DateTime.Now;
             Now = new DateTime( Now.Year, Now.Month, Now.Day, Now.Hour, Now.Minute, 0 );
-            DateTime timeEnd = Now.AddMinutes( -Now.Minute % Math.Max( FTPIntervalInMinutes, LogIntervalInMinutes ) );
-            DateTime timeStart = timeEnd.AddHours( -HoursInGraph );
+            DateTime timeEnd = Now.AddMinutes( -Now.Minute % Math.Max( CUtils.FTPIntervalInMinutes, CUtils.LogIntervalInMinutes ) );
+            DateTime timeStart;
+
+            if ( CUtils.Isup.IsIncrementalAllowed() )
+            {
+                try
+                {
+                    timeStart = DateTime.ParseExact( Sup.GetUtilsIniValue( "General", "LastUploadTime", "" ), "dd/MM/yy HH:mm", CUtils.inv ).AddMinutes( 1 );
+                }
+                catch
+                {
+                    timeStart = timeEnd.AddHours( -CUtils.HoursInGraph );
+                }
+
+            }
+            else
+            {
+                timeStart = timeEnd.AddHours( -CUtils.HoursInGraph );
+            }
 
             Sup.LogTraceInfoMessage( $"ExtraSensorslog: timeStart = {timeStart}; timeEnd = {timeEnd}" );
 
@@ -313,7 +315,8 @@ namespace CumulusUtils
                         tmp = SetValues( line, timeStart );
                         if ( tmp.Valid )
                             MainExtraSensorsValuesList.Add( tmp );
-                        if ( tmp.ThisDate >= timeEnd ) break; // we have our set of data required
+                        if ( tmp.ThisDate >= timeEnd ) 
+                            break; // we have our set of data required
                         line = ReadLine( af, false );
                     } while ( !string.IsNullOrEmpty( line ) );
                 } // End Using the ExtraSensorslog to Read

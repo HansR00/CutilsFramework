@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -8,83 +9,48 @@ namespace Test
 {
     class Test
     {
-        public static async Task Main( string[] args )
+        public static void Main()
         {
-            Console.WriteLine( "TEST: Start" );
+            bool DoMapsOn;
+            string retval;
 
-            string FileToSend = "Test-CNETFramenwork-HTTPclient";
+            CultureInfo thisculture;
 
-            using ( StreamWriter of = new StreamWriter( $"{FileToSend}", false, Encoding.UTF8 ) )
+            string Locale = "nb-NO";  // or nn-NO
+
+            thisculture = CultureInfo.GetCultureInfo( Locale );
+            CultureInfo.DefaultThreadCurrentCulture = thisculture;
+
+
+            if ( DateTime.TryParse( "03.03.23", out DateTime DoneToday ) )
             {
-                string Website = "https://meteo-wagenborgen.nl";
-                of.WriteLine( $"Test content for .NET HTTPclient transfer...to {Website}" );
+                DoMapsOn = DateIsToday( DoneToday );
             }
+            else DoMapsOn = true;
 
-            string thisContent = $"filename#{FileToSend}&";
-            thisContent += "filecontent#" + File.ReadAllText( FileToSend, Encoding.UTF8 );
-            _ = await PostUrlDataAsync( new Uri( "https://meteo-wagenborgen.nl/CMX4/upload.php" ), thisContent );
-
-            Console.WriteLine( $"TEST : Success" );
+            if ( DoMapsOn )
+            {
+                Console.WriteLine( $"MapsOn: Must send signature: {DoneToday:dd/MM/yy} / Setting DoneToday to now." );
+                Console.WriteLine( $"{DateTime.Now:dd/MM/yy}" );
+            }
+            else retval = $"MapsOn: Must NOT send signature, has been done already : {DoneToday:dd/MM/yy}";
 
             return;
         }
 
-        static async Task<string> PostUrlDataAsync( Uri thisURL, string data )
+        static bool DateIsToday( DateTime thisDate )
         {
-            string retval;
+            bool retval = true;
 
-            // Note: I use 'using' because it is easier and it gets only called for UserReports so 
-            //       there is no risk - I don't see a risk - of socket exhaustion
-            // Prevent issues with OpenSSL so bypass the certificate for the CGI
-            // https://stackoverflow.com/questions/52939211/the-ssl-connection-could-not-be-established
-
-            // This does no longer seem necessary:
-            //HttpClientHandler clientHandler = new HttpClientHandler
-            //{
-            //    ServerCertificateCustomValidationCallback = ( sender, cert, chain, sslPolicyErrors ) => { return true; }
-            //};
-
-            //using ( HttpClient PostClient = new HttpClient( clientHandler, true ) )
-            using ( HttpClient PostClient = new HttpClient() )
+            if ( Math.Abs( DateTime.Now.DayOfYear - thisDate.DayOfYear ) > 0 )
             {
-                Console.WriteLine( $"PostUrlData Calling PostAsync" );
-
-                try
-                {
-                    using ( StringContent requestData = new StringContent( data, Encoding.UTF8 ) )
-                    {
-                        using ( HttpResponseMessage response = await PostClient.PostAsync( thisURL, requestData ) )
-                        {
-                            if ( response.IsSuccessStatusCode )
-                            {
-                                retval = await response.Content.ReadAsStringAsync();
-                                Console.WriteLine( $"PostUrlData success response : {response.StatusCode} - {response.ReasonPhrase}" );
-                            }
-                            else
-                            {
-                                Console.WriteLine( $"PostUrlData : Error: {response.StatusCode} - {response.ReasonPhrase}" );
-                                retval = "";
-                            }
-                        } // End using response -> dispose
-                    } // End using requestData -> dispose
-                }
-                catch ( Exception e ) when ( e is HttpRequestException )
-                {
-                    Console.WriteLine( $"PostUrlData : Exception - {e.Message}" );
-                    if ( e.InnerException != null )
-                        Console.WriteLine( $"PostUrlData: Inner Exception: {e.InnerException}" );
-                    retval = "";
-                }
-                catch ( Exception e )
-                {
-                    Console.WriteLine( $"PostUrlData : General exception - {e.Message}" );
-                    retval = "";
-                }
+                retval = false;
             }
-
-            Console.ReadKey();
 
             return retval;
         }
+
+
     }
+
 }

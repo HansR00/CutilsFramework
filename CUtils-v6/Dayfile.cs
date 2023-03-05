@@ -286,51 +286,49 @@ namespace CumulusUtils
             string[] lineSplit = line.Split( ',' );
             int FieldInUse = (int) FieldName.thisDate;
 
-            CultureInfo provider = CultureInfo.InvariantCulture;
-
             try
             {
                 tmpDatestring = lineSplit[ FieldInUse ];
-                ThisValue.ThisDate = DateTime.ParseExact( tmpDatestring, "dd/MM/yy", provider );
+                ThisValue.ThisDate = DateTime.ParseExact( tmpDatestring, "dd/MM/yy", CUtils.inv );
 
                 FieldInUse = (int) FieldName.highWindGust;
-                ThisValue.HighWindGust = Convert.ToSingle( lineSplit[ FieldInUse ], provider );
+                ThisValue.HighWindGust = Convert.ToSingle( lineSplit[ FieldInUse ], CUtils.inv );
 
                 FieldInUse = (int) FieldName.timeHighWindGust;
-                ThisValue.TimeHighWindGust = DateTime.ParseExact( tmpDatestring + " " + lineSplit[ FieldInUse ], "dd/MM/yy HH:mm", provider );
+                ThisValue.TimeHighWindGust = DateTime.ParseExact( tmpDatestring + " " + lineSplit[ FieldInUse ], "dd/MM/yy HH:mm", CUtils.inv );
 
                 FieldInUse = (int) FieldName.minTemp;
-                ThisValue.MinTemp = Convert.ToSingle( lineSplit[ FieldInUse ], provider );
+                ThisValue.MinTemp = Convert.ToSingle( lineSplit[ FieldInUse ], CUtils.inv );
 
                 FieldInUse = (int) FieldName.timeMinTemp;
-                ThisValue.TimeMinTemp = DateTime.ParseExact( tmpDatestring + " " + lineSplit[ FieldInUse ], "dd/MM/yy HH:mm", provider );
+                ThisValue.TimeMinTemp = DateTime.ParseExact( tmpDatestring + " " + lineSplit[ FieldInUse ], "dd/MM/yy HH:mm", CUtils.inv );
 
                 FieldInUse = (int) FieldName.maxTemp;
-                ThisValue.MaxTemp = Convert.ToSingle( lineSplit[ FieldInUse ], provider );
+                ThisValue.MaxTemp = Convert.ToSingle( lineSplit[ FieldInUse ], CUtils.inv );
 
                 FieldInUse = (int) FieldName.timeMaxTemp;
-                ThisValue.TimeMaxTemp = DateTime.ParseExact( tmpDatestring + " " + lineSplit[ FieldInUse ], "dd/MM/yy HH:mm", provider );
+                ThisValue.TimeMaxTemp = DateTime.ParseExact( tmpDatestring + " " + lineSplit[ FieldInUse ], "dd/MM/yy HH:mm", CUtils.inv );
 
                 FieldInUse = (int) FieldName.minBarometer;
-                ThisValue.MinBarometer = Convert.ToSingle( lineSplit[ FieldInUse ], provider );
+                ThisValue.MinBarometer = Convert.ToSingle( lineSplit[ FieldInUse ], CUtils.inv );
 
                 FieldInUse = (int) FieldName.timeMinBarometer;
-                ThisValue.TimeMinBarometer = DateTime.ParseExact( tmpDatestring + " " + lineSplit[ FieldInUse ], "dd/MM/yy HH:mm", provider );
+                ThisValue.TimeMinBarometer = DateTime.ParseExact( tmpDatestring + " " + lineSplit[ FieldInUse ], "dd/MM/yy HH:mm", CUtils.inv );
 
                 FieldInUse = (int) FieldName.maxBarometer;
-                ThisValue.MaxBarometer = Convert.ToSingle( lineSplit[ FieldInUse ], provider );
+                ThisValue.MaxBarometer = Convert.ToSingle( lineSplit[ FieldInUse ], CUtils.inv );
 
                 FieldInUse = (int) FieldName.timeMaxBarometer;
-                ThisValue.TimeMaxBarometer = DateTime.ParseExact( tmpDatestring + " " + lineSplit[ FieldInUse ], "dd/MM/yy HH:mm", provider );
+                ThisValue.TimeMaxBarometer = DateTime.ParseExact( tmpDatestring + " " + lineSplit[ FieldInUse ], "dd/MM/yy HH:mm", CUtils.inv );
 
                 FieldInUse = (int) FieldName.maxRainRate;
-                ThisValue.MaxRainRate = Convert.ToSingle( lineSplit[ FieldInUse ], provider );
+                ThisValue.MaxRainRate = Convert.ToSingle( lineSplit[ FieldInUse ], CUtils.inv );
 
                 FieldInUse = (int) FieldName.timeMaxRainRate;
-                ThisValue.TimeMaxRainRate = DateTime.ParseExact( tmpDatestring + " " + lineSplit[ FieldInUse ], "dd/MM/yy HH:mm", provider );
+                ThisValue.TimeMaxRainRate = DateTime.ParseExact( tmpDatestring + " " + lineSplit[ FieldInUse ], "dd/MM/yy HH:mm", CUtils.inv );
 
                 FieldInUse = (int) FieldName.totalRainThisDay;
-                ThisValue.TotalRainThisDay = Convert.ToSingle( lineSplit[ FieldInUse ], provider );
+                ThisValue.TotalRainThisDay = Convert.ToSingle( lineSplit[ FieldInUse ], CUtils.inv );
 
                 // Special handling of the rain periods, finished after the caller gets control back;
                 if ( ThisValue.TotalRainThisDay >= (float) Sup.StationRain.Convert( RainDim.millimeter, Sup.StationRain.Dim, 0.2 ) ) { ThisValue.DryPeriod = 0; ThisValue.WetPeriod = 1; }
@@ -343,49 +341,49 @@ namespace CumulusUtils
 
                 //  v 1.8.9 build 907
                 FieldInUse = (int) FieldName.averageTempThisDay;
-                ThisValue.AverageTempThisDay = Convert.ToSingle( lineSplit[ FieldInUse ], provider );
+                ThisValue.AverageTempThisDay = Convert.ToSingle( lineSplit[ FieldInUse ], CUtils.inv );
 
                 FieldInUse = (int) FieldName.totalWindRunThisDay;
-                ThisValue.TotalWindRun = Convert.ToSingle( lineSplit[ FieldInUse ], provider );
+                ThisValue.TotalWindRun = Convert.ToSingle( lineSplit[ FieldInUse ], CUtils.inv );
 
                 //  v 1.9.0
                 FieldInUse = (int) FieldName.highAverageWindSpeed;
-                ThisValue.HighAverageWindSpeed = Convert.ToSingle( lineSplit[ FieldInUse ], provider );
+                ThisValue.HighAverageWindSpeed = Convert.ToSingle( lineSplit[ FieldInUse ], CUtils.inv );
 
                 FieldInUse = (int) FieldName.timeHighAverageWindSpeed;
-                ThisValue.TimeHighAverageWindSpeed = DateTime.ParseExact( tmpDatestring + " " + lineSplit[ FieldInUse ], "dd/MM/yy HH:mm", provider );
+                ThisValue.TimeHighAverageWindSpeed = DateTime.ParseExact( tmpDatestring + " " + lineSplit[ FieldInUse ], "dd/MM/yy HH:mm", CUtils.inv );
 
                 //  v 1.9.1
                 FieldInUse = (int) FieldName.lowHumidity;
-                ThisValue.LowHumidity = Convert.ToSingle( lineSplit[ FieldInUse ], provider );
+                ThisValue.LowHumidity = Convert.ToSingle( lineSplit[ FieldInUse ], CUtils.inv );
 
                 FieldInUse = (int) FieldName.timeLowHumidity;
-                ThisValue.TimeLowHumidity = DateTime.ParseExact( tmpDatestring + " " + lineSplit[ FieldInUse ], "dd/MM/yy HH:mm", provider );
+                ThisValue.TimeLowHumidity = DateTime.ParseExact( tmpDatestring + " " + lineSplit[ FieldInUse ], "dd/MM/yy HH:mm", CUtils.inv );
 
                 FieldInUse = (int) FieldName.highHumidity;
-                ThisValue.HighHumidity = Convert.ToSingle( lineSplit[ FieldInUse ], provider );
+                ThisValue.HighHumidity = Convert.ToSingle( lineSplit[ FieldInUse ], CUtils.inv );
 
                 FieldInUse = (int) FieldName.timeHighHumidity;
-                ThisValue.TimeHighHumidity = DateTime.ParseExact( tmpDatestring + " " + lineSplit[ FieldInUse ], "dd/MM/yy HH:mm", provider );
+                ThisValue.TimeHighHumidity = DateTime.ParseExact( tmpDatestring + " " + lineSplit[ FieldInUse ], "dd/MM/yy HH:mm", CUtils.inv );
 
                 // 3 floats, 1 time, 1 float, 1 time, 1 float, 1 time
                 FieldInUse = (int) FieldName.evapotranspiration;
-                ThisValue.EvapoTranspiration = Convert.ToSingle( lineSplit[ FieldInUse ], provider );
+                ThisValue.EvapoTranspiration = Convert.ToSingle( lineSplit[ FieldInUse ], CUtils.inv );
 
                 FieldInUse = (int) FieldName.hrsofsunshine;
-                ThisValue.HrsOfSunshine = Convert.ToSingle( lineSplit[ FieldInUse ], provider );
+                ThisValue.HrsOfSunshine = Convert.ToSingle( lineSplit[ FieldInUse ], CUtils.inv );
 
                 FieldInUse = (int) FieldName.highHourlyRain;
-                ThisValue.HighHourlyRain = Convert.ToSingle( lineSplit[ FieldInUse ], provider );
+                ThisValue.HighHourlyRain = Convert.ToSingle( lineSplit[ FieldInUse ], CUtils.inv );
 
                 FieldInUse = (int) FieldName.timeHighHourlyRain;
-                ThisValue.TimeHighHourlyRain = DateTime.ParseExact( tmpDatestring + " " + lineSplit[ FieldInUse ], "dd/MM/yy HH:mm", provider );
+                ThisValue.TimeHighHourlyRain = DateTime.ParseExact( tmpDatestring + " " + lineSplit[ FieldInUse ], "dd/MM/yy HH:mm", CUtils.inv );
 
                 FieldInUse = (int) FieldName.heatingdegreedays;
-                ThisValue.HeatingDegreeDays = Convert.ToSingle( lineSplit[ FieldInUse ], provider );
+                ThisValue.HeatingDegreeDays = Convert.ToSingle( lineSplit[ FieldInUse ], CUtils.inv );
 
                 FieldInUse = (int) FieldName.coolingdegreedays;
-                ThisValue.CoolingDegreeDays = Convert.ToSingle( lineSplit[ FieldInUse ], provider );
+                ThisValue.CoolingDegreeDays = Convert.ToSingle( lineSplit[ FieldInUse ], CUtils.inv );
 
                 // The fields below are actually already in the JSON delivered by CMX so don't bother for the time being.
                 //

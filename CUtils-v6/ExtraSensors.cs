@@ -571,9 +571,9 @@ namespace CumulusUtils
             // When we are generating the module, the JSON is automatically generated and uploaded (in the main loop) as well
             // So here we go: it has already been determined that an Airlink is present and that we need the data
 
-            StringBuilder sb = new StringBuilder( 300000 );
+            StringBuilder sb = new StringBuilder();
 
-            sb.AppendLine( "{" );
+            sb.Append( "{" );
 
             List<ExtraSensorslogValue> thisList;
             string VariableName;

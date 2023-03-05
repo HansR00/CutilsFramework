@@ -43,11 +43,10 @@ using FluentFTP;
 using FluentFTP.Helpers;
 using Renci.SshNet;
 using Renci.SshNet.Common;
-using Renci.SshNet.Sftp;
 
 namespace CumulusUtils
 {
-    enum FtpProtocols { FTP, FTPS, SFTP }  // Defined 1,2,3 inn CumulusMX and as such stored in the Cumulus.ini!!
+    enum FtpProtocols { FTP, FTPS, SFTP, PHP }  // Defined 1,2,3 inn CumulusMX and as such stored in the Cumulus.ini!!
 
     public class InetSupport : IDisposable
     {
@@ -66,7 +65,11 @@ namespace CumulusUtils
         readonly string SshftpPskFile;
 
         SftpClient clientRenci;
+        readonly InetPHP clientPhp;
+
         bool FTPvalid;                         // Indication whether a connection could be made and filetransfer is possible.
+
+        public bool IsIncrementalAllowed() => ProtocolUsed == FtpProtocols.PHP;
 
         #region Initialiser
 
@@ -244,6 +247,11 @@ namespace CumulusUtils
                     FTPvalid = false;
                 }
             }
+            else if ( ProtocolUsed == FtpProtocols.PHP )
+            {
+                clientPhp = new InetPHP( Sup );
+                FTPvalid = false; // Init needs to be done. Because of async needs to be done in Upload first time
+            }
             else
             {
                 Sup.LogTraceErrorMessage( $"InetSupport: Protocol not implemented {ProtocolUsed}. Files will not be transferred" );
@@ -257,14 +265,18 @@ namespace CumulusUtils
 
         #region UploadFile
 
-        public bool UploadFile( string remotefile, string localfile )
+        public async Task<bool> UploadFileAsync( string remotefile, string localfile )
         {
             // On Async FTP: https://social.msdn.microsoft.com/Forums/vstudio/en-US/994fa6e8-e345-4d10-97e6-e540bec0cb76/what-is-asynchronous-ftp?forum=csharpgeneral
             //     Read the first answer, I understand async FTP does not really have large effects and is only really important with UI interaction.
             //     So I leave this as is (and also all FTPs in the project)
-            bool Upload;
 
             // Immediately return if something was wrong at contructor time
+            if ( !FTPvalid && ProtocolUsed == FtpProtocols.PHP )
+            {
+                FTPvalid = await clientPhp.PhpInit();
+            }
+
             if ( !FTPvalid )
             {
                 Sup.LogTraceErrorMessage( $"UploadFile: Nothing uploaded because of connection error." );
@@ -274,17 +286,17 @@ namespace CumulusUtils
             string URL = "";
             string Dir = "";
 
-            Sup.LogDebugMessage( $"UploadFile: Start {localfile} => {remotefile}" );
+            //Sup.LogDebugMessage( $"UploadFile: Start {localfile} => {remotefile}" );
 
-            if ( string.IsNullOrEmpty( remotefile ) || string.IsNullOrEmpty( localfile ) ) { Sup.LogTraceErrorMessage( $"UploadFile: Nothing uploaded either in or outfile are empty." ); return false; }           // No reason to upload if there is  no file or destination
+            // No reason to upload if there is  no file or destination
+            if ( string.IsNullOrEmpty( remotefile ) || string.IsNullOrEmpty( localfile ) ) { Sup.LogTraceErrorMessage( $"UploadFile: Nothing uploaded either in or outfile are empty." ); return false; }
 
-            Upload = Sup.GetUtilsIniValue( "FTP site", "DoUploadFTP", "false" ).ToLower() == "true";
+            bool Upload = Sup.GetUtilsIniValue( "FTP site", "DoUploadFTP", "false" ).ToLower() == "true";
+            if ( !Upload ) { Sup.LogTraceInfoMessage( $"UploadFile: DoUploadFTP configured false => No Upload." ); return false; }      // No reason to do the whole procedure if we don't have to upload
 
             string CumulusURL = Sup.GetCumulusIniValue( "FTP site", "Host", "" );
             string CumulusDir = Sup.GetCumulusIniValue( "FTP site", "Directory", "" );
             string CumulusUtilsDir = Sup.GetUtilsIniValue( "FTP site", "UploadDir", "" );
-
-            if ( !Upload ) { Sup.LogTraceInfoMessage( $"UploadFile: DoUploadFTP configured false => No Upload." ); return false; }      // No reason to do the whole procedure if we don't have to upload
 
             if ( string.IsNullOrEmpty( CumulusURL ) ) Upload = false; // Kind of paranoia check but well,you never know :|
             else
@@ -297,34 +309,25 @@ namespace CumulusUtils
 
             if ( Upload )
             {
-                Sup.LogTraceInfoMessage( $"Upload File values: DoUploadFTP: {Upload}" );
-                Sup.LogTraceInfoMessage( $"Upload File values: URL: {CumulusURL}" );
-                Sup.LogTraceInfoMessage( $"Upload File values: Dir: {CumulusDir}" );
-                Sup.LogTraceInfoMessage( $"Upload File values: UtilsDir: {CumulusUtilsDir}" );
-                Sup.LogTraceInfoMessage( $"Upload File values: remotefile: {remotefile}" );
-
-                // Get the object used to communicate with the server.
-                string requestname = Dir + "/" + remotefile;
-
-                Sup.LogTraceInfoMessage( $"UploadFile: uploading {requestname}" );
+                //Sup.LogTraceInfoMessage( $"Upload File values: URL: {CumulusURL}" );
+                //Sup.LogTraceInfoMessage( $"Upload File values: CMX Dir: {CumulusDir}" );
+                //Sup.LogTraceInfoMessage( $"Upload File values: UtilsDir: {CumulusUtilsDir}" );
+                //Sup.LogTraceInfoMessage( $"Upload File values: remotefile: {remotefile}" );
+                //Sup.LogTraceInfoMessage( $"Upload File values: requestname: {Dir}/{remotefile}" );
 
                 if ( ProtocolUsed == FtpProtocols.FTP || ProtocolUsed == FtpProtocols.FTPS )
                 {
+                    string requestname = Dir + "/" + remotefile;
+
+                    Sup.LogTraceInfoMessage( $"Upload File values: URL: {CumulusURL}" );
+                    Sup.LogTraceInfoMessage( $"Upload File values: CMX Dir: {CumulusDir}" );
+                    Sup.LogTraceInfoMessage( $"Upload File values: UtilsDir: {CumulusUtilsDir}" );
+                    Sup.LogTraceInfoMessage( $"Upload File values: remotefile: {remotefile}" );
+                    Sup.LogTraceInfoMessage( $"Upload File values: requestname: {Dir}/{remotefile}" );
+
                     try
                     {
-                        clientFluentFTP.UploadFile( localfile, requestname, FtpRemoteExists.Overwrite, false, FtpVerify.Throw );
-                    }
-                    catch ( Exception e ) when ( e is TimeoutException )
-                    {
-                        Sup.LogTraceErrorMessage( $"UploadFile ERROR: Timeout Exception: {e.Message}" );
-                        if ( e.InnerException != null ) Sup.LogTraceErrorMessage( $"UploadFile ERROR: Inner Exception: {e.InnerException}" );
-                        return false;
-                    }
-                    catch ( Exception e ) when ( e is FtpAuthenticationException || e is FtpCommandException || e is FtpSecurityNotAvailableException )
-                    {
-                        Sup.LogTraceErrorMessage( $"UploadFile ERROR: Exception: {e.Message}" );
-                        if ( e.InnerException != null ) Sup.LogTraceErrorMessage( $"UploadFile ERROR: Inner Exception: {e.InnerException}" );
-                        return false;
+                        await clientFluentFTP.UploadFileAsync( localfile, requestname, FtpRemoteExists.Overwrite, false, FtpVerify.Throw );
                     }
                     catch ( Exception e )
                     {
@@ -332,9 +335,20 @@ namespace CumulusUtils
                         if ( e.InnerException != null ) Sup.LogTraceErrorMessage( $"UploadFile ERROR: Inner Exception: {e.InnerException}" );
                         return false;
                     }
+
+                    Sup.LogTraceInfoMessage( $"FTP/FTPS UploadFile: Done" );
+
                 }
                 else if ( ProtocolUsed == FtpProtocols.SFTP )
                 {
+                    string requestname = Dir + "/" + remotefile;
+
+                    Sup.LogTraceInfoMessage( $"Upload File values: URL: {CumulusURL}" );
+                    Sup.LogTraceInfoMessage( $"Upload File values: CMX Dir: {CumulusDir}" );
+                    Sup.LogTraceInfoMessage( $"Upload File values: UtilsDir: {CumulusUtilsDir}" );
+                    Sup.LogTraceInfoMessage( $"Upload File values: remotefile: {remotefile}" );
+                    Sup.LogTraceInfoMessage( $"Upload File values: requestname: {Dir}/{remotefile}" );
+
                     using ( Stream istream = new FileStream( localfile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite ) )
                     {
                         try
@@ -372,7 +386,7 @@ namespace CumulusUtils
                                     return false;
                                 }
 
-                                // From CMX, take care of ECDSA ciphers not implemented in mono
+                                // From CMX / Mark Crossley, take care of ECDSA ciphers not implemented in mono
                                 try
                                 {
 #pragma warning disable CS0642 // Possible mistaken empty statement
@@ -405,12 +419,6 @@ namespace CumulusUtils
                                 clientRenci.UploadFile( istream, requestname, true );
                             }
                         }
-                        catch ( Exception e ) when ( e is SshException )
-                        {
-                            Sup.LogTraceErrorMessage( $"Upload SFTP: Error uploading {localfile} to {remotefile} : {e.Message}" );
-                            if ( e.InnerException != null ) Sup.LogTraceErrorMessage( $"UploadFile SFTP ERROR: Inner Exception: {e.InnerException}" );
-                            return false;
-                        }
                         catch ( Exception e )
                         {
                             Sup.LogTraceErrorMessage( $"Upload SFTP: ERROR General Exception: {e.Message}" );
@@ -418,11 +426,22 @@ namespace CumulusUtils
                             return false;
                         }
                     }
-                } // if else on basis of protocol
 
-                Sup.LogTraceInfoMessage( $"UploadFile: Done" );
+                    Sup.LogTraceInfoMessage( $"SFTP UploadFile: Done" );
+
+                } // if else on basis of protocol
+                else if ( ProtocolUsed == FtpProtocols.PHP )
+                {
+                    Sup.LogTraceInfoMessage( $"Upload File values: localfile: {localfile}" );
+                    Sup.LogTraceInfoMessage( $"Upload File values: remotefile: {remotefile}" );
+
+                    await clientPhp.UploadAsync( localfile: localfile, remotefile: remotefile );
+
+                    Sup.LogTraceInfoMessage( $"PHP UploadFile: Done" );
+                }
+
             }
-            else // Upload = false
+            else // Upload == false
             {
                 Sup.LogTraceInfoMessage( $"UploadFile Upload=false -> No file(s) uploaded." );
                 return false;
@@ -437,110 +456,113 @@ namespace CumulusUtils
 
         public void DownloadSignatureFiles()
         {
-            const string localDir = "utils/maps";
-
-            bool Download;
-
-            if ( !FTPvalid )
-            {
-                Sup.LogTraceErrorMessage( $"DownloadSignatureFiles: Nothing downloaded because of connection error." );
-                return;
-            }
-
             Sup.LogDebugMessage( $"DownloadSignatureFiles: Start" );
 
-            Download = Sup.GetUtilsIniValue( "FTP site", "DoUploadFTP", "false" ).ToLower() == "true";
+            string localDir = "utils/maps";
 
             string CumulusURL = Sup.GetCumulusIniValue( "FTP site", "Host", "" );
             string CumulusDir = Sup.GetCumulusIniValue( "FTP site", "Directory", "" );
             CumulusDir += "/maps";
 
-            if ( !Download ) // No reason to do the whole procedure if we don't have to Download
+            Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: URL: {CumulusURL}" );
+            Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: Dir: {CumulusDir}" );
+
+            string username = Sup.GetCumulusIniValue( "FTP site", "Username", "" );
+            string password = Sup.GetCumulusIniValue( "FTP site", "Password", "" );
+            string hostname = Sup.GetCumulusIniValue( "FTP site", "Host", "" );
+            int port = Convert.ToInt32( Sup.GetCumulusIniValue( "FTP site", "Port", "21" ) );
+            bool PassiveFTP = Sup.GetCumulusIniValue( "FTP site", "ActiveFTP", "" ).Equals( "0" );
+
+            // Choose whatever I want as this may deviate from the general setup and depends on provider of the map hoster
+            FtpProtocols ProtocolUsed = (FtpProtocols) Convert.ToInt32( "0" );
+            FtpClient localFluentFTP = null;
+
+            //
+            // Now do the initialisation thing for the protocol selected.
+            //
+
+            FtpTrace.LogPassword = false;
+            FtpTrace.LogUserName = false;
+            FtpTrace.LogIP = false;
+
+            if ( ProtocolUsed == FtpProtocols.FTP )
             {
-                Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: DoUploadFTP configured false => No DownloadSignatureFiles." );
+                try
+                {
+                    localFluentFTP = new FtpClient( hostname,
+                                                    port,
+                                                    username,
+                                                    password )
+                    {
+                        EncryptionMode = FtpEncryptionMode.None,
+                        SslProtocols = SslProtocols.None,
+                        DataConnectionType = PassiveFTP ? FtpDataConnectionType.AutoPassive : FtpDataConnectionType.PORT,
+                        Encoding = Encoding.UTF8,
+
+                        SocketKeepAlive = true,
+                        UploadDataType = FtpDataType.Binary
+                    };
+
+                    localFluentFTP.Connect();
+                }
+                catch ( Exception e )
+                {
+                    Sup.LogTraceErrorMessage( $"DownloadSignatureFiles: Exception on FTP connecting to {hostname}: {e.Message}" );
+                    Sup.LogTraceErrorMessage( $"DownloadSignatureFiles: Failed FTP connecting to {hostname}. Files will not be transferred" );
+                    return;
+                }
+            }
+            else if ( ProtocolUsed == FtpProtocols.FTPS )
+            {
+                try
+                {
+                    localFluentFTP = new FtpClient( hostname,
+                                                    port,
+                                                    username,
+                                                    password )
+                    {
+                        EncryptionMode = FtpEncryptionMode.Explicit,
+                        DataConnectionEncryption = true,
+                        SslProtocols = SslProtocols.None, //SslProtocols.Default | SslProtocols.Tls11 | SslProtocols.Tls12,
+                        DataConnectionType = PassiveFTP ? FtpDataConnectionType.AutoPassive : FtpDataConnectionType.PORT,
+                        Encoding = Encoding.UTF8,
+
+                        SocketKeepAlive = true,
+                        ValidateAnyCertificate = true,
+                        UploadDataType = FtpDataType.Binary
+                    };
+
+                    localFluentFTP.Connect();
+                }
+                catch ( Exception e )
+                {
+                    Sup.LogTraceErrorMessage( $"DownloadSignatureFiles: Exception on FTPS connecting to {hostname}: {e.Message}" );
+                    Sup.LogTraceErrorMessage( $"DownloadSignatureFiles: Failed FTPS connecting to {hostname}. Files will not be transferred" );
+                    return;
+                }
+            }
+
+            // 
+            List<FtpResult> remoteFiles;
+
+            try
+            {
+                remoteFiles = localFluentFTP.DownloadDirectory( localDir, CumulusDir );
+                localFluentFTP.DeleteDirectory( CumulusDir );
+                localFluentFTP.CreateDirectory( CumulusDir );
+
+                Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: {remoteFiles.Count} Signature files successfully Downloaded to {localDir}" );
+            }
+            catch ( Exception e )
+            {
+                Sup.LogTraceErrorMessage( $"DownloadSignatureFiles ERROR: General Exception: {e.Message}" );
+                if ( e.InnerException != null ) Sup.LogTraceErrorMessage( $"DownloadSignatureFiles ERROR: Inner Exception: {e.InnerException}" );
                 return;
             }
-            else
-            {
-                Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: DoUploadFTP: {Download}" );
-                Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: URL: {CumulusURL}" );
-                Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: Dir: {CumulusDir}" );
 
-                if ( ProtocolUsed == FtpProtocols.FTP || ProtocolUsed == FtpProtocols.FTPS )
-                {
-                    List<FtpResult> remoteFiles;
+            localFluentFTP?.Dispose();
 
-                    try
-                    {
-                        remoteFiles = clientFluentFTP.DownloadDirectory( localDir, CumulusDir );    //.UploadFile( localfile, requestname, FtpRemoteExists.Overwrite, false, FtpVerify.Throw );
-                        clientFluentFTP.DeleteDirectory( CumulusDir );
-                        clientFluentFTP.CreateDirectory( CumulusDir );
-
-                        Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: {remoteFiles.Count} Signature files successfully Downloaded to {localDir}" );
-                    }
-                    catch ( Exception e ) when ( e is TimeoutException )
-                    {
-                        Sup.LogTraceErrorMessage( $"DownloadSignatureFiles ERROR: Timeout Exception: {e.Message}" );
-                        if ( e.InnerException != null ) Sup.LogTraceErrorMessage( $"DownloadSignatureFiles ERROR: Inner Exception: {e.InnerException}" );
-                        return;
-                    }
-                    catch ( Exception e ) when ( e is FtpAuthenticationException || e is FtpCommandException || e is FtpSecurityNotAvailableException )
-                    {
-                        Sup.LogTraceErrorMessage( $"DownloadSignatureFiles ERROR: Exception: {e.Message}" );
-                        if ( e.InnerException != null ) Sup.LogTraceErrorMessage( $"DownloadSignatureFiles ERROR: Inner Exception: {e.InnerException}" );
-                        return;
-                    }
-                    catch ( Exception e )
-                    {
-                        Sup.LogTraceErrorMessage( $"DownloadSignatureFiles ERROR: General Exception: {e.Message}" );
-                        if ( e.InnerException != null ) Sup.LogTraceErrorMessage( $"DownloadSignatureFiles ERROR: Inner Exception: {e.InnerException}" );
-                        return;
-                    }
-                }
-                else if ( ProtocolUsed == FtpProtocols.SFTP )
-                {
-                    List<SftpFile> remoteFiles;
-
-                    try
-                    {
-                        if ( !clientRenci.IsConnected )
-                        {
-                            Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: FTPSConnection lost; return" );
-                            return;
-                        }
-
-                        remoteFiles = clientRenci.ListDirectory( CumulusDir ).ToList();
-
-                        foreach ( SftpFile thisFile in remoteFiles )
-                        {
-                            if ( thisFile.Name.Contains( "Maps" ) )
-                            {
-                                using ( Stream ostream = new FileStream( $"{localDir}{thisFile.Name}", FileMode.Create, FileAccess.Write, FileShare.ReadWrite ) )
-                                {
-                                    clientRenci.DownloadFile( thisFile.FullName, ostream );
-                                    clientRenci.DeleteFile( thisFile.FullName );
-                                    Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: Signaturefile {thisFile.Name} downloaded" );
-                                }
-                            }
-                        }
-
-                        Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: {remoteFiles.Count} Signature files successfully Downloaded to {localDir}" );
-                    }
-                    catch ( Exception e )
-                    {
-                        Sup.LogTraceErrorMessage( $"DownloadSignatureFiles: SFTP Signature Files failed to Downloaded" );
-                        Sup.LogTraceErrorMessage( $"DownloadSignatureFiles: Could not create Map, using previous one." );
-                        Sup.LogTraceErrorMessage( $"DownloadSignatureFiles: Exception {e.Message}" );
-                        return;
-                    }
-                }
-                else
-                {
-                    Sup.LogTraceErrorMessage( $"DownloadSignatureFiles: internal protocol error" );
-                }
-
-                Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: Done" );
-            }
+            Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: Done" );
 
             return;
         } // EndOf DownloadSignatureFiles
@@ -551,7 +573,7 @@ namespace CumulusUtils
 
         public async Task<string> GetUrlDataAsync( Uri thisURL )
         {
-            Sup.LogDebugMessage( $"GetUrlData Start: URL - {thisURL} " );
+            Sup.LogTraceInfoMessage( $"GetUrlData Start: URL - {thisURL} " );
 
             // Note: I use 'using' because it is easier and it gets only called for UserReports, MAps and yourweather.co.uk so 
             //       there is no risk - I don't see a risk - of socket exhaustion
@@ -562,23 +584,16 @@ namespace CumulusUtils
             };
 
             using ( HttpClient GetClient = new HttpClient( clientHandler, true ) )
-            //using ( HttpClient GetClient = new HttpClient() )
             {
                 try
                 {
-                    Sup.LogTraceInfoMessage( $"GetUrlData Calling GetAsync" );
                     return await GetClient.GetStringAsync( thisURL );
                 }
-                catch ( Exception e ) when ( e is HttpRequestException )
+                catch ( Exception e )
                 {
                     Sup.LogTraceErrorMessage( $"GetUrlData : Exception - {e.Message}" );
                     if ( e.InnerException != null )
                         Sup.LogTraceErrorMessage( $"GetUrlData: Inner Exception: {e.InnerException}" );
-                    return "";
-                }
-                catch ( Exception e )
-                {
-                    Sup.LogTraceErrorMessage( $"GetUrlData : General exception - {e.Message}" );
                     return "";
                 }
             }
@@ -589,7 +604,7 @@ namespace CumulusUtils
         {
             string retval;
 
-            Sup.LogDebugMessage( $" PostUrlData Start " );
+            Sup.LogTraceInfoMessage( $" PostUrlData Start: {thisURL} " );
 
             // Note: I use 'using' because it is easier and it gets only called for UserReports so 
             //       there is no risk - I don't see a risk - of socket exhaustion
@@ -603,7 +618,6 @@ namespace CumulusUtils
             };
 
             using ( HttpClient PostClient = new HttpClient( clientHandler, true ) )
-            //using ( HttpClient PostClient = new HttpClient() )
             {
                 Sup.LogTraceInfoMessage( $"PostUrlData Calling PostAsync" );
 
@@ -626,16 +640,11 @@ namespace CumulusUtils
                         } // End using response -> dispose
                     } // End using requestData -> dispose
                 }
-                catch ( Exception e ) when ( e is HttpRequestException )
+                catch ( Exception e )
                 {
                     Sup.LogTraceErrorMessage( $"PostUrlData : Exception - {e.Message}" );
                     if ( e.InnerException != null )
                         Sup.LogTraceErrorMessage( $"PostUrlData: Inner Exception: {e.InnerException}" );
-                    retval = "";
-                }
-                catch ( Exception e )
-                {
-                    Sup.LogTraceErrorMessage( $"PostUrlData : General exception - {e.Message}" );
                     retval = "";
                 }
             }

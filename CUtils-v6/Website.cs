@@ -33,7 +33,6 @@ using System.Threading.Tasks;
 //    2) https://nugetmusthaves.com/Tag/minify
 //
 
-
 namespace CumulusUtils
 {
     // RealtimeFields is used in cumulusutils.js library to index realtime.txt
@@ -54,8 +53,6 @@ namespace CumulusUtils
 
     class Website
     {
-        const StringComparison cmp = CUtils.cmp;
-
         readonly private string[] Package = new string[] {"index.html", "cumulusutils.js","cumuluscharts.txt","gauges.js","HighchartsDefaults.js","HighchartsLanguage.js",
                                      "suncalc.js","tween.min.js", "steelseries.min.js","RGraph.rose.js","RGraph.common.core.js","language.js",
                                      "gauges-ss.css"};
@@ -91,10 +88,10 @@ namespace CumulusUtils
             // ShowSolar and HasSolar are the same for now, but it may be different as HasSolar determines whether there is a sensor, ShowSolar is to show it on screen....
             // Difficult. May change into one variable (which must be global then: also used in Graphs
             ShowSolar = CUtils.HasSolar;
-            ShowUV = Sup.GetUtilsIniValue( "Website", "ShowUV", "true" ).Equals( "true", cmp );
+            ShowUV = Sup.GetUtilsIniValue( "Website", "ShowUV", "true" ).Equals( "true", CUtils.cmp );
 
             DoGoogleStats = !string.IsNullOrEmpty( Sup.GetUtilsIniValue( "Website", "GoogleStatsId", "" ) );
-            PermitGoogleOptOut = Sup.GetUtilsIniValue( "Website", "PermitGoogleOptout", "false" ).Equals( "true", cmp );
+            PermitGoogleOptOut = Sup.GetUtilsIniValue( "Website", "PermitGoogleOptout", "false" ).Equals( "true", CUtils.cmp );
 
             PanelsConfiguration = new string[ 24 ]
             {
@@ -142,7 +139,7 @@ namespace CumulusUtils
                 GenerateCUlib();
 
                 Sup.LogDebugMessage( $"Generating Website: Generating cumuluscharts.txt (only emergency fall back for the Compiler when syntax errors)" );
-                GenerateCumulusChartsTxt();
+                await GenerateCumulusChartsTxt();
             }
             else
                 Sup.LogDebugMessage( $"Generating Website: Only index.html done because Thrifty active" );
@@ -175,11 +172,11 @@ namespace CumulusUtils
                   "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" );
 
 #if !RELEASE
-                //
-                // https://stackoverflow.com/questions/25753708/how-to-view-javascript-console-on-android-and-ios
-                //
-                indexFile.Append( "<script src=\"https://cdn.jsdelivr.net/npm/eruda\"></script>" +
-                    "<script>eruda.init();</script>" );
+                ////
+                //// https://stackoverflow.com/questions/25753708/how-to-view-javascript-console-on-android-and-ios
+                ////
+                //indexFile.Append( "<script src=\"https://cdn.jsdelivr.net/npm/eruda\"></script>" +
+                //    "<script>eruda.init();</script>" );
 #endif
 
                 if ( DoGoogleStats )
@@ -303,7 +300,7 @@ namespace CumulusUtils
 
                 // Start writing the menu
                 //
-                indexFile.Append( GenerateMenu() );
+                indexFile.Append( await GenerateMenu() );
 
                 indexFile.Append(
                   "<div class='modal fade' id='CUabout' tabindex='-1' role='dialog' aria-hidden='true'>" +
@@ -563,9 +560,9 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
             return;
         }
 
-#endregion
+        #endregion
 
-#region cumulusutils.js
+        #region cumulusutils.js
         private void GenerateCUlib()
         {
             StringBuilder CUlibFile = new StringBuilder();
@@ -1541,6 +1538,25 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 CUlibFile.Append( $"  gauges.init(false);" ); // The false is to indicate the CumulusMX dashboard mode
                 CUlibFile.Append( '}' );
 
+                // See the Menu choice Print
+                CUlibFile.Append( "function PrintScreen( DIVname ){" +
+                    "  if (DIVname == 'Dashboard'){" +
+                    "    if ($('#ExtraAndCustom').is(':visible')) DIVname = 'ExtraAndCustom';" +
+                    "    else return;" +
+                    "  }" +
+                    "  var prtContent = document.getElementById( DIVname );" +
+                    "  var WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');" +
+                    "" +
+                    "  WinPrint.document.write('<link rel=\"stylesheet\" type=\"text/css\" href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css\">');" +
+                    "  WinPrint.document.write(prtContent.innerHTML);" +
+                    "  WinPrint.document.close();" +
+                    "  WinPrint.setTimeout(function(){" +
+                    "    WinPrint.focus();" +
+                    "    WinPrint.print();" +
+                    "    WinPrint.close(); " +
+                    "  }, 1000);" +
+                    "}" );
+
 #if !RELEASE
                 of.WriteLine( CUlibFile );
 #else
@@ -1551,10 +1567,10 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
             return;
         }
 
-#endregion
+        #endregion
 
-#region cumuluscharts.txt
-        private void GenerateCumulusChartsTxt()
+        #region cumuluscharts.txt
+        private async Task GenerateCumulusChartsTxt()
         {
             List<OutputDef> theseCharts;
 
@@ -1581,7 +1597,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
                         // and Upload
                         Sup.LogTraceInfoMessage( $"Uploading = {thisDef.Filename}" );
-                        Isup.UploadFile( $"{thisDef.Filename}", $"{Sup.PathUtils}{thisDef.Filename}" );
+                        _ = await Isup.UploadFileAsync( $"{thisDef.Filename}", $"{Sup.PathUtils}{thisDef.Filename}" );
                     }
                 }
                 else
@@ -2259,10 +2275,10 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
             } // If then else of uning the CutilsCharts.def or just generate the old defaults
         }
 
-#endregion
+        #endregion
 
-#region Package Upload
-        public bool CheckPackageAndCopy()
+        #region Package Upload
+        public async Task<bool> CheckPackageAndCopy()
         {
             bool MustUpload = false;
 
@@ -2310,7 +2326,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     {
                         if ( !CUtils.Thrifty || ( CUtils.Thrifty && MustUpload ) )
                         {
-                            if ( Isup.UploadFile( FTPfilename, filename ) )
+                            if ( await Isup.UploadFileAsync( FTPfilename, filename ) )
                                 Sup.LogTraceInfoMessage( $"CheckPackageAndCopy: Uploaded {filename} to {FTPfilename}" );
                             else
                             {
@@ -2347,9 +2363,9 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
             return true;
         }
 
-#endregion
+        #endregion
 
-#region Panelcode
+        #region Panelcode
 
         private string GeneratePanelCode( string thisPanel )
         {
@@ -2626,15 +2642,16 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
             return thisPanelCode;
         }
 
-#endregion
+        #endregion
 
-#region GenerateMenu
+        #region GenerateMenu
 
         enum ItemTypes : int { None, External, Internal, Image, Report, Separator };
 
-        private string GenerateMenu()
+        private async Task<string> GenerateMenu()
         {
             StringBuilder tmpMenu = new StringBuilder();
+            List<string> AllMenuFiles = new List<string>();
 
             if ( File.Exists( $"{Sup.PathUtils}{Sup.CutilsMenuDef}" ) )
             {
@@ -2672,22 +2689,22 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                             break;
                         case "About":
                             WriteAboutMenu( tmpMenu );
-                            WriteUserItems( Keywords, true, tmpMenu, ref i );
+                            AllMenuFiles.AddRange( WriteUserItems( Keywords, true, tmpMenu, ref i ) );
                             tmpMenu.Append( "</ul></li>" );
                             break;
                         case "Reports":
                             WriteReportsMenu( tmpMenu );
-                            WriteUserItems( Keywords, true, tmpMenu, ref i );
+                            AllMenuFiles.AddRange( WriteUserItems( Keywords, true, tmpMenu, ref i ) );
                             tmpMenu.Append( "</ul></li>" );
                             break;
                         case "Graphs":
                             WriteGraphsMenu( tmpMenu );
-                            WriteUserItems( Keywords, true, tmpMenu, ref i );
+                            AllMenuFiles.AddRange( WriteUserItems( Keywords, true, tmpMenu, ref i ) );
                             tmpMenu.Append( "</ul></li>" );
                             break;
                         case "Records":
                             WriteRecordsMenu( tmpMenu );
-                            WriteUserItems( Keywords, true, tmpMenu, ref i );
+                            AllMenuFiles.AddRange( WriteUserItems( Keywords, true, tmpMenu, ref i ) );
                             tmpMenu.Append( "</ul></li>" );
                             break;
                         case "Extra":
@@ -2695,14 +2712,22 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                             if ( CUtils.HasAirLink || CUtils.HasExtraSensors || CUtils.HasCustomLogs )
                             {
                                 WriteExtraMenu( tmpMenu );
-                                WriteUserItems( Keywords, true, tmpMenu, ref i );
+                                AllMenuFiles.AddRange( WriteUserItems( Keywords, true, tmpMenu, ref i ) );
                                 tmpMenu.Append( "</ul></li>" );
                             }
                             break;
                         case "Misc":
                             WriteMiscellaneousMenu( tmpMenu );
-                            WriteUserItems( Keywords, true, tmpMenu, ref i );
+                            AllMenuFiles.AddRange( WriteUserItems( Keywords, true, tmpMenu, ref i ) );
                             tmpMenu.Append( "</ul></li>" );
+                            break;
+                        case "Print":
+                            // https://stackoverflow.com/questions/12997123/print-specific-part-of-webpage => looks best
+                            // https://jsfiddle.net/jdavidzapatab/6sctvg2z/
+
+                            WritePrintMenu( tmpMenu );
+                            //AllMenuFiles.AddRange( WriteUserItems( Keywords, true, tmpMenu, ref i ) );
+                            //tmpMenu.Append( "</ul></li>" );
                             break;
                         case "ToggleDashboard":
                             WriteToggleMenu( tmpMenu );
@@ -2713,13 +2738,17 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                                 $"          {thisKeyword}" +
                                 "        </a>" );
                             tmpMenu.Append( "        <ul class='dropdown-menu' aria-labelledby='navbarDropdown'>" );
-                            WriteUserItems( Keywords, false, tmpMenu, ref i );
+                            AllMenuFiles.AddRange( WriteUserItems( Keywords, false, tmpMenu, ref i ) );
                             tmpMenu.Append( "</ul></li>" );
                             break;
                     }
                 }
 
                 WriteMenuEnd( tmpMenu );
+
+                //Write out all menufiles in the list
+                foreach ( string thisFile in AllMenuFiles )
+                    await Isup.UploadFileAsync( $"{thisFile}", $"{Sup.PathUtils}{thisFile}" );
 
                 Sup.LogTraceInfoMessage( $"Website Menu generator: Menu generation finished." );
             }
@@ -2738,10 +2767,11 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 WriteExtraMenu( tmpMenu ); tmpMenu.Append( "</ul></li>" );
                 WriteMiscellaneousMenu( tmpMenu ); tmpMenu.Append( "</ul></li>" );
                 WriteToggleMenu( tmpMenu );
+                WritePrintMenu( tmpMenu );
                 WriteMenuEnd( tmpMenu );
             }
 
-            void WriteUserItems( string[] K, bool UseDivider, StringBuilder s, ref int i )
+            List<string> WriteUserItems( string[] K, bool UseDivider, StringBuilder s, ref int i )
             {
                 bool ItemNameIsURL = false;
 
@@ -2750,12 +2780,13 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
                 string Destination = "";
                 string ItemName, ItemNameURL, baseName, MenuFile;
+                List<string> thisMenuFileList = new List<string>();
 
                 ItemTypes thisType = ItemTypes.None;
 
                 baseName = K[ i++ ]; // Get the Menu name and advance to the first item (if any)
 
-                if ( i >= K.Length ) return;
+                if ( i >= K.Length ) return thisMenuFileList;
                 if ( K[ i ].ToLower() == "item" && UseDivider ) s.AppendLine( "<div class='dropdown-divider'></div>" );
 
                 while ( K[ i ].ToLower() == "item" )
@@ -2776,8 +2807,8 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                         {
                             while ( !Enum.IsDefined( typeof( ItemTypes ), K[ i ] ) ) ItemName += ' ' + K[ i++ ];  // Get all words before the Itemtype
 
-                            if ( ItemName.StartsWith( "../", cmp ) || ItemName.StartsWith( "./", cmp ) ||
-                                 ItemName.StartsWith( "http", cmp ) || ItemName.StartsWith( "https", cmp ) ) ItemNameIsURL = true;
+                            if ( ItemName.StartsWith( "../", CUtils.cmp ) || ItemName.StartsWith( "./", CUtils.cmp ) ||
+                                 ItemName.StartsWith( "http", CUtils.cmp ) || ItemName.StartsWith( "https", CUtils.cmp ) ) ItemNameIsURL = true;
 
                             thisType = (ItemTypes) Enum.Parse( typeof( ItemTypes ), K[ i++ ], true );
                             Destination = K[ i++ ];
@@ -2818,7 +2849,9 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                                     sw.WriteLine( $"<iframe src='{Destination}' frameborder='0' style='border: 0; width:100%; height: 75vh;'></iframe>" );
 
                                 Sup.LogTraceInfoMessage( $"Website Menu generator: Created Iframe file {MenuFile}" );
-                                Isup.UploadFile( $"{MenuFile}", $"{Sup.PathUtils}{MenuFile}" );
+
+                                //Isup.UploadFile( $"{MenuFile}", $"{Sup.PathUtils}{MenuFile}" );
+                                thisMenuFileList.Add( MenuFile );
 
                                 s.AppendLine( $"<li class='nav-link' onclick=\"LoadUtilsReport('{MenuFile}');\" {WidthStyleString}>{ItemNameURL}</li>" );
                                 break;
@@ -2831,8 +2864,9 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                                 using ( StreamWriter sw = new StreamWriter( $"{Sup.PathUtils}{MenuFile}" ) )
                                     sw.WriteLine( $"<image src='{Destination}' style='width:100%; height:100%; border:0;'>" );
 
-                                Sup.LogTraceInfoMessage( $"Website Menu generator: Created Iframe file {MenuFile}" );
-                                Isup.UploadFile( $"{MenuFile}", $"{Sup.PathUtils}{MenuFile}" );
+                                Sup.LogTraceInfoMessage( $"Website Menu generator: Created Image-link file {MenuFile}" );
+                                //Isup.UploadFile( $"{MenuFile}", $"{Sup.PathUtils}{MenuFile}" );
+                                thisMenuFileList.Add( MenuFile );
 
                                 s.AppendLine( $"<li class='nav-link' onclick=\"LoadUtilsReport('{MenuFile}');\" {WidthStyleString}>{ItemNameURL}</li>" );
                                 break;
@@ -2853,7 +2887,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 }
 
                 i--;        // Correct for the position (we had to preview the next keyword
-                return;     // return if no more items found
+                return thisMenuFileList; // return if no more items found
             }
 
             void WriteMenuStart( StringBuilder s )
@@ -2997,6 +3031,18 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 return;
             }
 
+            void WritePrintMenu( StringBuilder s )
+            {
+                s.Append(
+                    "      <li class='nav-item'>" +
+                    $"        <span class='nav-link' onclick=\"PrintScreen('CUReportView');\">{Sup.GetCUstringValue( "Website", "Print", "Print", false )}</span>" +
+                    "      </li>" );
+
+                //s.Append( $"<li class='nav-link' onclick=\"PrintScreen('CUReportView');\">{Sup.GetCUstringValue( "Website", "ReportView", "ReportView", false )}</li>" );
+                //s.Append( $"<li class='nav-link' onclick=\"PrintScreen('Dashboard');\">{Sup.GetCUstringValue( "Website", "Dashboard", "Dashboard", false )}</li>" );
+
+            }
+
             void WriteToggleMenu( StringBuilder s )
             {
                 s.Append(
@@ -3027,9 +3073,9 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
         }
 
 
-#endregion
+        #endregion
 
-#region Other Functions
+        #region Other Functions
         // Note that these colors contain transparency in the first two HEX digits. If not it is NOT OK
         private string GetAreaGradientColors( string Color1, string Color2, string Color3 )
         {
@@ -3068,9 +3114,9 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
             return result.ToString();
         }
 
-#endregion
+        #endregion
 
-#region Useful NOTUSED (cookie function)
+        #region Useful NOTUSED (cookie function)
 
         // From Mark Crossley in Select a Graph of CumulusMX 3.9.7 (b3105) and up
         //
@@ -3101,6 +3147,6 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
         //    }
         //  };
 
-#endregion
+        #endregion
     }
 }

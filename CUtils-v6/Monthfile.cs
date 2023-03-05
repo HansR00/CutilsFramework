@@ -254,6 +254,11 @@ namespace CumulusUtils
                 MonthlyLogsRead = true;
             } // else [from: if (MonthlyLogsRead) ]
 
+            // Adjust for RecordsBeganDate
+            //
+            int i = MainMonthList.RemoveAll( p => p.ThisDate < CUtils.StartOfObservations );
+            Sup.LogTraceInfoMessage( $"Monthfile : RecordsBeganDate used: {CUtils.StartOfObservations}, Number of days removed from list: {i}" );
+
             Sup.LogTraceInfoMessage( $"ReadMonthlyLogs: MainMonthList created/fetched: {MainMonthList.Count} records." );
             Sup.LogTraceInfoMessage( $"ReadMonthlyLogs: End" );
 
@@ -304,6 +309,15 @@ namespace CumulusUtils
             } // Loop over all files in FilesToRead
 
             Sup.LogTraceInfoMessage( $"ReadMonthlyLogs: End" );
+
+
+            // Adjust for RecordsBeganDate
+            //
+            if ( Start < CUtils.StartOfObservations )
+            {
+                int i = thisList.RemoveAll( p => p.ThisDate < CUtils.StartOfObservations );
+                Sup.LogTraceInfoMessage( $"Monthfile : RecordsBeganDate used: {CUtils.StartOfObservations}, Number of entries removed from list: {i}" );
+            }
 
             return thisList;
         } // End ReadMonthlyLogs

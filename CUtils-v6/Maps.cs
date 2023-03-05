@@ -119,9 +119,13 @@ namespace CumulusUtils
             bool DoMapsOn;
             string retval;
 
+            Sup.LogTraceInfoMessage( $"MapsOn: Before testing DoneToday: {Sup.GetUtilsIniValue( "Maps", "DoneToday", $"{DateTime.Now.AddDays( -1 ):dd/MM/yy}")}" );
+
             if ( DateTime.TryParse( Sup.GetUtilsIniValue( "Maps", "DoneToday", $"{DateTime.Now.AddDays( -1 ):dd/MM/yy}" ), out DateTime DoneToday ) )
             {
+                Sup.LogTraceInfoMessage( $"MapsOn: Before testing DoneToday: {DoneToday:dd/MM/yy} " );
                 DoMapsOn = !Sup.DateIsToday( DoneToday );
+                Sup.LogTraceInfoMessage( $"MapsOn: After testing DoneToday: {DoneToday:dd/MM/yy} DoMApsOn = {DoMapsOn}" );
             }
             else DoMapsOn = true;
 

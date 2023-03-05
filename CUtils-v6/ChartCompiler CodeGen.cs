@@ -77,8 +77,6 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( $"Compiler - CodeGen: {filename}" );
 
-            int HoursInGraph = Convert.ToInt32( Sup.GetCumulusIniValue( "Graphs", "GraphHours", "" ), ci );
-
             List<AllVarInfo> AllVars = CheckAllVariablesInThisSetOfCharts( theseCharts );
             GenerateSeriesVariables( GenericJavascript, AllVars );
 
@@ -326,8 +324,8 @@ namespace CumulusUtils
                         if ( thisChart.HasWindBarbs && !thisChart.WindBarbsBelow ) TheCharts.AppendLine( "    floating: true, y: -50," );
 
                         TheCharts.AppendLine( "      buttons:[{" );
-                        TheCharts.AppendLine( $"       count: {HoursInGraph / 4},type: 'hour',text: '{HoursInGraph / 4}h'}}, {{" );
-                        TheCharts.AppendLine( $"       count: {HoursInGraph / 2},type: 'hour',text: '{HoursInGraph / 2}h'}}, {{" );
+                        TheCharts.AppendLine( $"       count: {CUtils.HoursInGraph / 4},type: 'hour',text: '{CUtils.HoursInGraph / 4}h'}}, {{" );
+                        TheCharts.AppendLine( $"       count: {CUtils.HoursInGraph / 2},type: 'hour',text: '{CUtils.HoursInGraph / 2}h'}}, {{" );
                         TheCharts.AppendLine( "        type: 'all',text: 'All'}]," );
                         TheCharts.AppendLine( "      inputEnabled: false," );
 
@@ -893,28 +891,16 @@ namespace CumulusUtils
         #endregion
 
         #region Datagenerator
-        internal void GenerateUserAskedData( List<ChartDef> thisList )
+        internal DateTime GenerateUserAskedData( List<ChartDef> thisList )
         {
             Sup.LogDebugMessage( $"Generating Compiler UserAskedData: Start" );
 
             if ( thisList?.Any() != true )
             {
                 Sup.LogTraceInfoMessage( $"Generating UserAskedData: Nothing to do" );
-                return;
+                return DateTime.Now;
             }
 
-            // From AirlinkLog:
-            // This is shared with GraphSolar... should become some common function to get this interval from the Cumulus.ini file
-            // Also shared with ChartsCompiler... have to clean this up and do a shared function somewhere
-            // Will do at some time.
-            int[] PossibleIntervals = { 1, 5, 10, 15, 20, 30 };
-
-            int LogIntervalInMinutes = PossibleIntervals[ Convert.ToInt32( Sup.GetCumulusIniValue( "Station", "DataLogInterval", "" ), CultureInfo.InvariantCulture ) ];
-            int FTPIntervalInMinutes = Convert.ToInt32( Sup.GetCumulusIniValue( "FTP site", "UpdateInterval", "" ) );
-            double HoursInGraph = Convert.ToDouble( Sup.GetCumulusIniValue( "Graphs", "GraphHours", "" ) );
-            int DaysInGraph = Convert.ToInt32( Sup.GetCumulusIniValue( "Graphs", "ChartMaxDays", "" ) );
-
-            // From AirlinkLog:
             // Take the FTP frequency or the LogInterval (whichever is the largest) and use the minute value being a multiple of that one cycle below the now time as the end time
             // Then go the hours in Graphs back to complete the full cycle. 
             // So with a 10 min FTP cycle and Now = 08h09 the endtime must be 08h00 -> the minute value MOD FTP frequency
@@ -922,8 +908,25 @@ namespace CumulusUtils
             // This is also shared with the ChartsCompiler -> make some shared function for start and endtime related to the intervals.
             //
             DateTime Now = DateTime.Now;
-            DateTime timeEnd = Now.AddMinutes( -Now.Minute % Math.Max( FTPIntervalInMinutes, LogIntervalInMinutes ) );
-            DateTime timeStart = timeEnd.AddHours( -HoursInGraph );
+            DateTime timeEnd = Now.AddMinutes( -Now.Minute % Math.Max( CUtils.FTPIntervalInMinutes, CUtils.LogIntervalInMinutes ) );
+            DateTime timeStart;
+
+            if ( CUtils.Isup.IsIncrementalAllowed() )
+            {
+                try
+                {
+                    timeStart = DateTime.ParseExact( Sup.GetUtilsIniValue( "General", "LastUploadTime", "" ), "dd/MM/yy HH:mm", CUtils.inv ).AddMinutes( 1 );
+                }
+                catch
+                {
+                    timeStart = timeEnd.AddHours( -CUtils.HoursInGraph );
+                }
+
+            }
+            else
+            {
+                timeStart = timeEnd.AddHours( -CUtils.HoursInGraph );
+            }
 
             StringBuilder Recent = new StringBuilder( "{" );
             StringBuilder Daily = new StringBuilder( "{" );
@@ -1024,6 +1027,8 @@ namespace CumulusUtils
                 All.Append( "}" );
                 using ( StreamWriter sw = new StreamWriter( $"{Sup.PathUtils}{Sup.CUserdataALL}", false, Encoding.UTF8 ) ) { sw.Write( All.ToString() ); }
             }
+
+            return timeEnd;
         } // End Generate JSON
 
         #endregion

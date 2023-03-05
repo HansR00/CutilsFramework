@@ -23,13 +23,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 using System.Text;
-using System.Web.ModelBinding;
-using static CumulusUtils.ExtraSensors;
+//using static CumulusUtils.ExtraSensors;
 
 namespace CumulusUtils
 {
@@ -64,7 +61,7 @@ namespace CumulusUtils
             {
                 CustomLog tmp;
                 string IntervalEnabled;
-                
+
                 IntervalEnabled = Sup.GetCumulusIniValue( "CustomLogs", $"IntervalEnabled{i}", "" );
 
                 if ( IntervalEnabled.Equals( "1" ) )
@@ -153,7 +150,7 @@ namespace CumulusUtils
 
         #endregion
 
-#region DoCustomLogs
+        #region DoCustomLogs
         internal void DoCustomLogs()
         {
             Sup.LogDebugMessage( "DoCustomLogs - Start" );
@@ -168,9 +165,9 @@ namespace CumulusUtils
 
             return;
         }
-#endregion
+        #endregion
 
-#region GenerateCustomLogsModule
+        #region GenerateCustomLogsModule
 
         internal void GenerateCustomLogsModule()
         {
@@ -227,11 +224,11 @@ namespace CumulusUtils
 
                 foreach ( CustomLog tmp in CustomLogsList )
                 {
-                    foreach( string thisTag in tmp.TagNames)
+                    foreach ( string thisTag in tmp.TagNames )
                     {
                         sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
                         sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                        sb.AppendLine( $"    $('#ajxCustomLogs{thisTag}').html(ExtraSensorRT[ {i} ] + ' {WebTags.GetTagUnit(thisTag)}');" );
+                        sb.AppendLine( $"    $('#ajxCustomLogs{thisTag}').html(ExtraSensorRT[ {i} ] + ' {WebTags.GetTagUnit( thisTag )}');" );
                         sb.AppendLine( $"    $('#ajxCustomLogs{thisTag}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
                         sb.AppendLine( "  }" );
                     }
@@ -293,10 +290,10 @@ namespace CumulusUtils
 #if !RELEASE
                 of.WriteLine( sb );
 #else
-                    of.WriteLine( CuSupport.StringRemoveWhiteSpace( sb.ToString(), " " ) );
+                of.WriteLine( CuSupport.StringRemoveWhiteSpace( sb.ToString(), " " ) );
 #endif
 
-#endregion
+                #endregion
             }
         }
 
@@ -333,7 +330,7 @@ namespace CumulusUtils
         internal void GenerateCustomLogsCharts()
         {
             const string DemarcationLineCustomLogs = "; CustomLogsCharts";
-            const string DemarcationLineExtraSensors = "; ExtraSensorCharts";
+            //const string DemarcationLineExtraSensors = "; ExtraSensorCharts";
 
             bool OutputWritten = false;
             bool DemarcationLineFound = false;
@@ -377,7 +374,7 @@ namespace CumulusUtils
                 CutilsChartsMods.Add( DemarcationLineCustomLogs );
 
             // Now the road is clear to add the charts from the list of plotparameters per class (Temp, Humidity etc....
-            ExtraSensorType currentType;
+            //ExtraSensorType currentType;
             CutilsChartsMods.Add( "" );
 
             for ( i = 0; i < CustomLogsList.Count; )
@@ -475,7 +472,7 @@ namespace CumulusUtils
             else return s.Substring( 2, a - 2 );
         }
         static readonly string[] TagUnit = new string[] {
-            
+
         };
 
         static readonly bool[] changeIndicator = new bool[] {

@@ -34,7 +34,8 @@
  *ad 3) The graphs need to be adjusted, realtime data added and redrawn
  *
  * Below I reproduce the links as found in the AQI code of CMX. Please note that for Canada there is an issue because CMX just takes the PM component of a combined formula.
- * I will give some additional links for Canada. Canada has confusing information about its AirQuality system
+ * I will give some additional links for Canada. Canada has confusing information about its AirQuality system.
+ * Please check also this post on the forum: https://cumulus.hosiene.co.uk/viewtopic.php?t=18602
  * 
  * Links:
  *  1) US: https://www.airnow.gov/sites/default/files/2018-05/aqi-technical-assistance-document-may2016.pdf
@@ -77,9 +78,12 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using FluentFTP.Helpers;
+using ServiceStack.Text;
 
 namespace CumulusUtils
 {
@@ -736,7 +740,7 @@ namespace CumulusUtils
                     of.AppendLine( "  cache: false," );
                     of.AppendLine( "  dataType: 'json'" );
                     of.AppendLine( "  })" );
-                    of.AppendLine( ".fail( function (xhr, textStatus, errorThrown) { console.log('airlinkdata[InOut][Conc].txt ' + textStatus + ' : ' + 'errorThrown'); })" );
+                    of.AppendLine( ".fail( function (xhr, textStatus, errorThrown) { console.log('airlinkdata[InOut][Conc].json ' + textStatus + ' : ' + 'errorThrown'); })" );
                     of.AppendLine( ".done( function(resp){" );
 
                     tmpBuilder.Clear();
@@ -1083,7 +1087,7 @@ namespace CumulusUtils
 
         #region GenAirLinkDataJson
 
-        internal void GenAirLinkDataJson()
+        internal async Task GenAirLinkDataJson()
         {
             // Purpose is to create the JSON for the Airlink data and offering the poissibility to do only that to accomodate the fact that
             // CMX does not (and probably will never) generate that JSON like it generates the temperature JSON for graphing.
@@ -1104,7 +1108,7 @@ namespace CumulusUtils
             {
                 string InOut = DetermineSensor( j, TwoSensors );
 
-                StringBuilder sb = new StringBuilder( 300000 );
+                StringBuilder sb = new StringBuilder();
 
                 foreach ( string thisConc in Concentrations )  // Loop over PM2p5 and PM10  - bothe in their own JSON file
                 {
@@ -1195,58 +1199,88 @@ namespace CumulusUtils
 
                         if ( WantToSeeWind )
                         {
+                            string StartOfCopyJS = "";
+                            string JSONstringWind, JSONstringWindDir, wspeedArray, wdirArray, thisWindSubstr, thisWindDirSubstr;
+                            int startWind, startWindDir, NrOfMinutesRequired, i;
+
+                            CmxIPC thisCmxIPC = new CmxIPC( CUtils.Sup, CUtils.Isup );
+
                             // Now, the wind JSONs should have the same startingtime as the AirLink data.
-                            // During debugging: check this
 
                             Sup.LogTraceInfoMessage( $"GenAirLinkJson - Doing Wind." );
 
-                            string JSONstringWind, JSONstringWindDir;
-                            int startWind, startWindDir;
+                            if ( CUtils.Isup.IsIncrementalAllowed() )
+                            {
+                                TimeSpan ts = thisList.Last().ThisDate - thisList.First().ThisDate;
+                                NrOfMinutesRequired = (int) ts.TotalMinutes + CUtils.LogIntervalInMinutes;
+                                if ( NrOfMinutesRequired > CUtils.HoursInGraph * 60 ) NrOfMinutesRequired = CUtils.HoursInGraph * 60;
 
-                            TextReader srWind = new StreamReader( "web/winddata.json" );
-                            TextReader srWindDir = new StreamReader( "web/wdirdata.json" );
-                            JSONstringWind = srWind.ReadToEnd();
-                            JSONstringWindDir = srWindDir.ReadToEnd();
+                                DateTime StartOfCopy = thisList.Last().ThisDate.AddMinutes( -NrOfMinutesRequired );
+                                StartOfCopyJS = CuSupport.DateTimeToJS( StartOfCopy ).ToString();
+                            }
+                            else
+                            {
+                                NrOfMinutesRequired = CUtils.HoursInGraph * 60;
+                            }
+
+                            Sup.LogTraceInfoMessage( $"GenAirLinkJson - HrsInGraph/NrOfMinutesRequired {CUtils.HoursInGraph}/{NrOfMinutesRequired}" );
+
+                            i = 0; // counter for nr of wind observations
+
+                            JSONstringWind = await thisCmxIPC.GetCMXGraphdataAsync( "winddata" );
+                            JSONstringWindDir = await thisCmxIPC.GetCMXGraphdataAsync( "wdirdata" );
+
+                            var ws = JsonObject.Parse( JSONstringWind );
+                            var wd = JsonObject.Parse( JSONstringWindDir );
+
+                            wspeedArray = ws.Get<string>( "wspeed" );                //(tagName, StringComparison.InvariantCulture).Name == tagName)
+                            wdirArray = wd.Get<string>( "avgbearing" );              //(tagName, StringComparison.InvariantCulture).Name == tagName)
+
+                            if ( CUtils.Isup.IsIncrementalAllowed() )
+                            {
+                                startWind = wspeedArray.IndexOf( StartOfCopyJS ) - 1;       // Find the entry of the startTime in JS
+                                startWindDir = wdirArray.IndexOf( StartOfCopyJS ) - 1;
+
+                                if ( startWind < 0 ) { startWind = 1; startWindDir = 1; }     // If the catchup is larger than HoursInGraphs * 60
+                            }
+                            else
+                            {
+                                startWind = 1;        // Find the entry of the startTime in JS
+                                startWindDir = 1;
+                            }
+
+                            Sup.LogTraceInfoMessage( $"GenAirLinkJson - Before: startWind {startWind} - startWindDir {startWindDir}" );
 
                             sb.Append( $"\"wind\":[" );
 
-                            startWind = JSONstringWind.IndexOf( "wspeed" ) + 9;
-                            startWindDir = JSONstringWindDir.IndexOf( "avgbearing" ) + 13;
-                            ;
-
-                            int L1, L2 = 0, L3 = 0;
+                            int L1 = 0, L2 = 0, L3 = 0;
 
                             do
                             {
-                                L1 = JSONstringWind.IndexOf( ']', startWind ) - startWind;
-                                if ( L1 <= 0 )
-                                    break;
+                                L1 = wspeedArray.IndexOf( ']', startWind ) - startWind;
+                                if ( L1 <= 0 || L1 >= wspeedArray.Length ) break; // if not incremental we have to stop at some point 
 
-                                L2 = JSONstringWindDir.IndexOf( ',', startWindDir );
-                                L3 = JSONstringWindDir.IndexOf( ']', L2 );
+                                L2 = wdirArray.IndexOf( ',', startWindDir );
+                                L3 = wdirArray.IndexOf( ']', L2 );
 
-                                string thisWindSubstr = JSONstringWind.Substring( startWind, L1 );
-                                string thisWindDirSubstr = JSONstringWindDir.Substring( L2, L3 - L2 + 1 );
+                                thisWindSubstr = wspeedArray.Substring( startWind, L1 );
+                                thisWindDirSubstr = wdirArray.Substring( L2, L3 - L2 + 1 );
                                 startWind += thisWindSubstr.Length + 2;
                                 startWindDir = L3 + 2;
 
                                 sb.Append( $"{thisWindSubstr}{thisWindDirSubstr}," );
-                                if ( startWind >= JSONstringWind.Length )
-                                    break;
-                                if ( startWindDir >= JSONstringWindDir.Length )
-                                    break;
-                            } while ( startWind < JSONstringWind.Length );
+                            } while ( i++ < NrOfMinutesRequired );  // this condition is only for incremental, not incremental is regulated by the break within.
+
+                            Sup.LogTraceInfoMessage( $"GenAirLinkJson - After: startWind {startWind} - startWindDir {startWindDir}" );
 
                             sb.Remove( sb.Length - 1, 1 );
                             sb.Append( $"]," );
-
                         }
 
                         sb.Remove( sb.Length - 1, 1 );
                     } // WantToSeeWind
 
                     sb.Append( '}' );
-                    Sup.LogTraceInfoMessage( $"GenAirLinkJson - JSON for {InOut}_pm{thisConc} has {sb.Capacity} chars out of {sb.MaxCapacity}." );
 
                     using ( StreamWriter thisJSON = new StreamWriter( $"{Sup.PathUtils}{Sup.AirlinkJSONpart}{InOut}{thisConc}.json", false, Encoding.UTF8 ) )
                     {
