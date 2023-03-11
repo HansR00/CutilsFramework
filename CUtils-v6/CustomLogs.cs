@@ -30,25 +30,25 @@ using System.Text;
 
 namespace CumulusUtils
 {
-    internal class CustomLogs
+    public class CustomLogs
     {
-        internal int[] Frequencies = { 1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30, 60 };
-        internal struct CustomLog
+        public int[] Frequencies = { 1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30, 60 };
+        public struct CustomLog
         {
-            internal string Name;
-            internal string Content;
-            internal int Frequency;  // in minutes
-            internal List<string> TagsRaw;
-            internal List<string> TagNames;
+            public string Name;
+            public string Content;
+            public int Frequency;  // in minutes
+            public List<string> TagsRaw;
+            public List<string> TagNames;
         }
 
-        internal WebtagInfo WebTags { get; set; }
-        internal List<CustomLog> CustomLogsList = new();
+        public WebtagInfo WebTags { get; set; }
+        public List<CustomLog> CustomLogsList = new();
 
         readonly CuSupport Sup;
 
         #region Constructor
-        internal CustomLogs( CuSupport s )
+        public CustomLogs( CuSupport s )
         {
             Sup = s;
 
@@ -151,7 +151,7 @@ namespace CumulusUtils
         #endregion
 
         #region DoCustomLogs
-        internal void DoCustomLogs()
+        public void DoCustomLogs()
         {
             Sup.LogDebugMessage( "DoCustomLogs - Start" );
 
@@ -169,7 +169,7 @@ namespace CumulusUtils
 
         #region GenerateCustomLogsModule
 
-        internal void GenerateCustomLogsModule()
+        public void GenerateCustomLogsModule()
         {
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.CustomLogsOutputFilename}", false, Encoding.UTF8 ) )
             {
@@ -301,7 +301,7 @@ namespace CumulusUtils
 
         #region GenerateCustomLogsRealtime
 
-        internal void GenerateCustomLogsRealtime()
+        public void GenerateCustomLogsRealtime()
         {
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.CustomLogsRealtimeFilename}", false, Encoding.UTF8 ) )
             {
@@ -327,7 +327,7 @@ namespace CumulusUtils
 
         #region GenerateCustomLogsCharts
 
-        internal void GenerateCustomLogsCharts()
+        public void GenerateCustomLogsCharts()
         {
             const string DemarcationLineCustomLogs = "; CustomLogsCharts";
             //const string DemarcationLineExtraSensors = "; ExtraSensorCharts";
@@ -350,7 +350,7 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( $"GenerateCustomLogsCharts: Testing UserModificationCustomLogsCharts: {Sup.GetUtilsIniValue( "CustomLogs", "UserModificationCustomLogsCharts", "false" )}" );
 
-            if ( Sup.GetUtilsIniValue( "CustomLogs", "UserModificationCustomLogsCharts", "false" ).Equals( "true", CUtils.cmp ) ) return;
+            if ( Sup.GetUtilsIniValue( "CustomLogs", "UserModificationCustomLogsCharts", "false" ).Equals( "true", CUtils.Cmp ) ) return;
 
             CutilsChartsIn = File.ReadAllLines( $"{Sup.PathUtils}{Sup.CutilsChartsDef}" );
 
@@ -386,7 +386,7 @@ namespace CumulusUtils
                 //    $"{CustomLogsList[ i ].Type} " +
                 //    $"{Sup.GetCUstringValue( "ExtraSensors", "Sensors", "Sensors", true )}" );
 
-                //while ( i < CustomLogsList.Count && ( CustomLogsList[ i ].Type == currentType || thisKeyword.Substring( 0, 3 ).Equals( "CO2", CUtils.cmp ) ) )
+                //while ( i < CustomLogsList.Count && ( CustomLogsList[ i ].Type == currentType || thisKeyword.Substring( 0, 3 ).Equals( "CO2", CUtils.Cmp ) ) )
                 //{
                 //    if ( ExtraSensorList[ i ].Type == ExtraSensorType.External ) thisKeyword = ExtraSensorList[ i ].Name;
                 //    else thisKeyword = ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ];
@@ -429,25 +429,25 @@ namespace CumulusUtils
     } // Class CustomLogs
 
     #region WebtagInfo
-    internal class WebtagInfo
+    public class WebtagInfo
     {
-        internal WebtagInfo()
+        public WebtagInfo()
         {
             // Constructor
         }
 
-        internal string GetTagUnit( string name )
+        public string GetTagUnit( string name )
         {
-            int i = Array.FindIndex( Tagname, word => word.Equals( name, CUtils.cmp ) );
+            int i = Array.FindIndex( Tagname, word => word.Equals( name, CUtils.Cmp ) );
             return TagUnit[ i ];
         }
 
-        internal bool IsValidWebtag( string name )
+        public bool IsValidWebtag( string name )
         {
-            return Array.FindIndex( Tagname, word => word.Equals( name, CUtils.cmp ) ) != -1;
+            return Array.FindIndex( Tagname, word => word.Equals( name, CUtils.Cmp ) ) != -1;
         }
 
-        internal string FetchWebtagRaw( string s, ref int Start )
+        public string FetchWebtagRaw( string s, ref int Start )
         {
             // returns the raw Webtag, or if no webtag found, returns null
             string tmp;
@@ -465,7 +465,7 @@ namespace CumulusUtils
         }
 
         // Fetch the name from a full webtag spec e.g. <#temp> => temp
-        internal string FetchWebtagName( string s )
+        public string FetchWebtagName( string s )
         {
             int a = s.IndexOf( ' ' );
             if ( a == -1 ) return s.Substring( 2, s.Length - 3 );

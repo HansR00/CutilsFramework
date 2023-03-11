@@ -29,14 +29,14 @@ using System.Linq;
 
 namespace CumulusUtils
 {
-    internal struct ExternalExtraSensorslogValue
+    public struct ExternalExtraSensorslogValue
     {
         public DateTime ThisDate { get; set; }
 
         public double Value { get; set; }
     }
 
-    internal class ExternalExtraSensorslog : IDisposable
+    public class ExternalExtraSensorslog : IDisposable
     {
         private readonly CuSupport Sup;
         private readonly bool IgnoreDataErrors;
@@ -49,18 +49,18 @@ namespace CumulusUtils
         const int MaxErrors = 10;
         int ErrorCount = 0;
 
-        internal ExternalExtraSensorslog( CuSupport s, string SensorName )
+        public ExternalExtraSensorslog( CuSupport s, string SensorName )
         {
             Sup = s;
             Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog constructor: Using fixed path: | data/ |; file: | *log.txt" );
 
             ThisSensorName = SensorName;
-            IgnoreDataErrors = Sup.GetUtilsIniValue( "General", "IgnoreDataErrors", "true" ).Equals( "true", CUtils.cmp );
+            IgnoreDataErrors = Sup.GetUtilsIniValue( "General", "IgnoreDataErrors", "true" ).Equals( "true", CUtils.Cmp );
 
             // Get the list of monthly logfile in the datadirectory and check what type of delimeters we have
             ExternalExtraSensorslogList = Directory.GetFiles( "data/", $"{SensorName}*.txt" );
 
-            if ( ExternalExtraSensorslogList.Length >= 0 && Sup.GetUtilsIniValue( "ExtraSensors", "CleanupExtraSensorslog", "false" ).Equals( "true", CUtils.cmp ) )
+            if ( ExternalExtraSensorslogList.Length >= 0 && Sup.GetUtilsIniValue( "ExtraSensors", "CleanupExtraSensorslog", "false" ).Equals( "true", CUtils.Cmp ) )
             {
                 // We keep two month of data, the rest can be discarded
                 Sup.LogTraceInfoMessage( $"ExternalExtraSensors constructor: Cleaning up Extra Sensors Logfiles..." );
@@ -78,11 +78,10 @@ namespace CumulusUtils
             return;
         }
 
-        internal List<ExternalExtraSensorslogValue> ExternalExtraSensorsValuesList;
+        public List<ExternalExtraSensorslogValue> ExternalExtraSensorsValuesList;
 
-        internal List<ExternalExtraSensorslogValue> ReadExternalExtraSensorslog()
+        public List<ExternalExtraSensorslogValue> ReadExternalExtraSensorslog()
         {
-            CultureInfo Inv = CultureInfo.InvariantCulture;
             bool NextFileTried = false;
             bool PeriodComplete = false;
 
@@ -101,7 +100,7 @@ namespace CumulusUtils
             {
                 try
                 {
-                    timeStart = DateTime.ParseExact( Sup.GetUtilsIniValue( "General", "LastUploadTime", "" ), "dd/MM/yy HH:mm", CUtils.inv ).AddMinutes( 1 );
+                    timeStart = DateTime.ParseExact( Sup.GetUtilsIniValue( "General", "LastUploadTime", "" ), "dd/MM/yy HH:mm", CUtils.Inv ).AddMinutes( 1 );
                 }
                 catch
                 {
@@ -146,7 +145,7 @@ namespace CumulusUtils
                     try
                     {
                         //Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog: Try block Parsing: {splitLine[0]} {splitLine[1]}" );
-                        tmp.ThisDate = DateTime.ParseExact( splitLine[ 0 ], "dd/MM/yy HH:mm", Inv );
+                        tmp.ThisDate = DateTime.ParseExact( splitLine[ 0 ], "dd/MM/yy HH:mm", CUtils.Inv );
 
                         //Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog: Try block Parsing after parse {tmp.ThisDate} {timeStart} {timeEnd}" );
                         if ( tmp.ThisDate < timeStart ) continue;

@@ -44,7 +44,7 @@ namespace CumulusUtils
     public class Temp
     {
         static string[] UnitTempText { get; } = { "°C", "°F" };
-        readonly public TempDim Dim;
+        public readonly TempDim Dim;
 
         public Temp( TempDim t ) { Dim = t; } // Constructor
 
@@ -80,7 +80,7 @@ namespace CumulusUtils
       { 0.514444,1.15078, 1.852,   1.0}         // kts to m/s, mph, km/h
     };
 
-        readonly public WindDim Dim;
+        public readonly WindDim Dim;
 
         public Wind( WindDim w, CuSupport s ) { Dim = w; UnitWindText[ 2 ] = $"km{s.PerHour}"; }
 
@@ -134,7 +134,7 @@ namespace CumulusUtils
       { 33.8639, 33.8639, 1.0 }         // inHg to mb, hPa
     };
 
-        readonly public PressureDim Dim;
+        public readonly PressureDim Dim;
         public Pressure( PressureDim p ) { Dim = p; }
 
         public string Text() { return UnitPressureText[ (int) Dim ]; }
@@ -164,7 +164,7 @@ namespace CumulusUtils
       { 1.852,   1.15078,  1.852,   1.0}          // nm to km, km, mi
     };
 
-        readonly public DistanceDim Dim;
+        public readonly DistanceDim Dim;
 
         public Distance( DistanceDim d ) { Dim = d; }
 

@@ -30,13 +30,13 @@ using FluentFTP.Helpers;
 
 namespace CumulusUtils
 {
-    internal class HelpTexts
+    public class HelpTexts
     {
         readonly CuSupport Sup;
         readonly Dictionary<string, string> Helptexts = new Dictionary<string, string>();
 
         #region Constructor
-        internal HelpTexts( CuSupport s )
+        public HelpTexts( CuSupport s )
         {
             Sup = s;
 
@@ -131,7 +131,7 @@ namespace CumulusUtils
 
         #region GetHelptext
 
-        internal string GetHelpText( string key )
+        public string GetHelpText( string key )
         {
             string retval;
 

@@ -54,7 +54,7 @@ namespace CumulusUtils
         readonly List<OutputDef> AllOutputs = new List<OutputDef>();
         OutputDef thisOutput = new OutputDef( "cumuluscharts.txt" );
 
-        internal List<OutputDef> ParseChartDefinitions()
+        public List<OutputDef> ParseChartDefinitions()
         {
             // Make the whole file into one string with meaningful contents separated by singles space
             if ( File.Exists( $"{Sup.PathUtils}{Sup.CutilsChartsDef}" ) )
@@ -83,7 +83,7 @@ namespace CumulusUtils
 
             try  // Any error condition will fail the parsing and return null, falling back to default charts. Elaborate later with error messages
             {
-                if ( Keywords[ CurrPosition ].Equals( "Equations", CUtils.cmp ) )
+                if ( Keywords[ CurrPosition ].Equals( "Equations", CUtils.Cmp ) )
                 {
                     CurrPosition++;
 
@@ -96,7 +96,7 @@ namespace CumulusUtils
 
                 do  // while not end of input
                 {
-                    if ( Keywords[ CurrPosition++ ].Equals( "Chart", CUtils.cmp ) )
+                    if ( Keywords[ CurrPosition++ ].Equals( "Chart", CUtils.Cmp ) )
                     {
                         thisChart = new ChartDef( "", "" )
                         {
@@ -105,7 +105,7 @@ namespace CumulusUtils
 
                         if ( AllCharts.Count > 0 )
                             foreach ( ChartDef entry in AllCharts )
-                                if ( thisChart.Id.Equals( entry.Id, CUtils.cmp ) )
+                                if ( thisChart.Id.Equals( entry.Id, CUtils.Cmp ) )
                                 {
                                     Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : Duplicate and illegal ID '{entry.Id}'" );
                                     return null;
@@ -120,13 +120,13 @@ namespace CumulusUtils
 
                     Sup.LogTraceInfoMessage( $"Parsing User Charts Definitions : Chart {thisChart.Id}'" );
 
-                    if ( Keywords[ CurrPosition++ ].Equals( "Title", CUtils.cmp ) )
+                    if ( Keywords[ CurrPosition++ ].Equals( "Title", CUtils.Cmp ) )
                     {
                         thisChart.Title = Keywords[ CurrPosition++ ];
 
-                        while ( !Keywords[ CurrPosition ].Equals( "Plot", CUtils.cmp ) && !Keywords[ CurrPosition ].Equals( "ConnectsTo", CUtils.cmp ) &&
-                                                                                   !Keywords[ CurrPosition ].Equals( "Zoom", CUtils.cmp ) &&
-                                                                                   !Keywords[ CurrPosition ].Equals( "Has", CUtils.cmp ) )
+                        while ( !Keywords[ CurrPosition ].Equals( "Plot", CUtils.Cmp ) && !Keywords[ CurrPosition ].Equals( "ConnectsTo", CUtils.Cmp ) &&
+                                                                                   !Keywords[ CurrPosition ].Equals( "Zoom", CUtils.Cmp ) &&
+                                                                                   !Keywords[ CurrPosition ].Equals( "Has", CUtils.Cmp ) )
                         {
                             thisChart.Title += " " + Keywords[ CurrPosition++ ];
                         }
@@ -138,11 +138,11 @@ namespace CumulusUtils
                         return null;
                     }
 
-                    while ( Keywords[ CurrPosition ].Equals( "ConnectsTo", CUtils.cmp ) ||
-                            Keywords[ CurrPosition ].Equals( "Zoom", CUtils.cmp ) ||
-                            Keywords[ CurrPosition ].Equals( "Has", CUtils.cmp ) )
+                    while ( Keywords[ CurrPosition ].Equals( "ConnectsTo", CUtils.Cmp ) ||
+                            Keywords[ CurrPosition ].Equals( "Zoom", CUtils.Cmp ) ||
+                            Keywords[ CurrPosition ].Equals( "Has", CUtils.Cmp ) )
                     {
-                        if ( Keywords[ CurrPosition ].Equals( "ConnectsTo", CUtils.cmp ) )
+                        if ( Keywords[ CurrPosition ].Equals( "ConnectsTo", CUtils.Cmp ) )
                         {
                             CurrPosition++;
 
@@ -162,7 +162,7 @@ namespace CumulusUtils
                         }
 
                         // Search for Zoom keyword
-                        if ( Keywords[ CurrPosition ].Equals( "Zoom", CUtils.cmp ) )
+                        if ( Keywords[ CurrPosition ].Equals( "Zoom", CUtils.Cmp ) )
                         {
                             CurrPosition++;
 
@@ -178,21 +178,21 @@ namespace CumulusUtils
                             }
                         } // End ZOOM
 
-                        if ( Keywords[ CurrPosition ].Equals( "Has", CUtils.cmp ) )
+                        if ( Keywords[ CurrPosition ].Equals( "Has", CUtils.Cmp ) )
                         {
                             CurrPosition++;
 
-                            if ( Keywords[ CurrPosition ].Equals( "WindBarbs", CUtils.cmp ) )
+                            if ( Keywords[ CurrPosition ].Equals( "WindBarbs", CUtils.Cmp ) )
                             {
                                 CurrPosition++;
                                 thisChart.HasWindBarbs = true;
 
-                                if ( Keywords[ CurrPosition ].Equals( "Above", CUtils.cmp ) )
+                                if ( Keywords[ CurrPosition ].Equals( "Above", CUtils.Cmp ) )
                                 {
                                     CurrPosition++;
                                     thisChart.WindBarbsBelow = false;
                                 }
-                                else if ( Keywords[ CurrPosition ].Equals( "Below", CUtils.cmp ) )
+                                else if ( Keywords[ CurrPosition ].Equals( "Below", CUtils.Cmp ) )
                                 {
                                     CurrPosition++;
                                     thisChart.WindBarbsBelow = true;
@@ -204,7 +204,7 @@ namespace CumulusUtils
                                     return null;
                                 }
 
-                                if ( Keywords[ CurrPosition ].Equals( "Colour", CUtils.cmp ) )
+                                if ( Keywords[ CurrPosition ].Equals( "Colour", CUtils.Cmp ) )
                                 {
                                     CurrPosition++;
 
@@ -220,7 +220,7 @@ namespace CumulusUtils
                         }
                     } // while ConnectsTo, Zoom, Has
 
-                    if ( !( Keywords[ CurrPosition ].Equals( "Plot", CUtils.cmp ) || Keywords[ CurrPosition ].Equals( "Stats", CUtils.cmp ) ) )
+                    if ( !( Keywords[ CurrPosition ].Equals( "Plot", CUtils.Cmp ) || Keywords[ CurrPosition ].Equals( "Stats", CUtils.Cmp ) ) )
                     {
                         // Error condition
                         Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' : Plot or Stats missing" );
@@ -231,14 +231,14 @@ namespace CumulusUtils
                     {
                         Plotvar thisPlotvar = new Plotvar();
 
-                        if ( Keywords[ CurrPosition ].Equals( "Stats", CUtils.cmp ) )
+                        if ( Keywords[ CurrPosition ].Equals( "Stats", CUtils.Cmp ) )
                         {
                             CurrPosition++;
 
                             // Do the STATS specific block
                             thisPlotvar.IsStats = true;
 
-                            if ( Keywords[ CurrPosition ].Equals( "All", CUtils.cmp ) )
+                            if ( Keywords[ CurrPosition ].Equals( "All", CUtils.Cmp ) )
                             {
                                 PlotvarAxis = PlotvarAxisALL;
                                 PlotvarTypes = PlotvarTypesALL;
@@ -249,7 +249,7 @@ namespace CumulusUtils
 
                                 CurrPosition++;
                             }
-                            else if ( Keywords[ CurrPosition ].Equals( "Recent", CUtils.cmp ) )
+                            else if ( Keywords[ CurrPosition ].Equals( "Recent", CUtils.Cmp ) )
                             {
                                 PlotvarAxis = PlotvarAxisRECENT;
                                 PlotvarTypes = PlotvarTypesRECENT;
@@ -260,7 +260,7 @@ namespace CumulusUtils
 
                                 CurrPosition++;
                             }
-                            else if ( Keywords[ CurrPosition ].Equals( "Extra", CUtils.cmp ) )
+                            else if ( Keywords[ CurrPosition ].Equals( "Extra", CUtils.Cmp ) )
                             {
                                 PlotvarAxis = PlotvarAxisEXTRA;
                                 PlotvarTypes = PlotvarTypesEXTRA;
@@ -282,10 +282,10 @@ namespace CumulusUtils
                                 thisPlotvar.PlotvarRange = PlotvarRangeType.Recent;
                             }
 
-                            if ( Array.Exists( PlotvarKeyword, word => word.Equals( Keywords[ CurrPosition ], CUtils.cmp ) ) )
+                            if ( Array.Exists( PlotvarKeyword, word => word.Equals( Keywords[ CurrPosition ], CUtils.Cmp ) ) )
                             {
                                 // The plot var exists, create the entry for the chart and check the other attributes
-                                int index = Array.FindIndex( PlotvarKeyword, word => word.Equals( Keywords[ CurrPosition ], CUtils.cmp ) );
+                                int index = Array.FindIndex( PlotvarKeyword, word => word.Equals( Keywords[ CurrPosition ], CUtils.Cmp ) );
 
                                 thisPlotvar.Keyword = PlotvarKeyword[ index ];
                                 thisPlotvar.PlotVar = PlotvarTypes[ index ];
@@ -303,7 +303,7 @@ namespace CumulusUtils
                                 return null;
                             }
 
-                            if ( Array.Exists( StatsTypeKeywords, word => word.Equals( Keywords[ CurrPosition ], CUtils.cmp ) ) )
+                            if ( Array.Exists( StatsTypeKeywords, word => word.Equals( Keywords[ CurrPosition ], CUtils.Cmp ) ) )
                             {
                                 thisPlotvar.GraphType = Keywords[ CurrPosition ].ToLowerInvariant();
                                 CurrPosition++;
@@ -315,7 +315,7 @@ namespace CumulusUtils
                             }
                         }
 
-                        if ( Keywords[ CurrPosition ].Equals( "Plot", CUtils.cmp ) )
+                        if ( Keywords[ CurrPosition ].Equals( "Plot", CUtils.Cmp ) )
                         {
                             bool EquationRequired = false;
 
@@ -324,7 +324,7 @@ namespace CumulusUtils
 
                             CurrPosition++;
 
-                            if ( Keywords[ CurrPosition ].Equals( "Recent", CUtils.cmp ) )
+                            if ( Keywords[ CurrPosition ].Equals( "Recent", CUtils.Cmp ) )
                             {
                                 PlotvarAxis = PlotvarAxisRECENT;
                                 PlotvarTypes = PlotvarTypesRECENT;
@@ -335,7 +335,7 @@ namespace CumulusUtils
                                 thisPlotvar.PlotvarRange = PlotvarRangeType.Recent;
                                 CurrPosition++;
                             }
-                            else if ( Keywords[ CurrPosition ].Equals( "Daily", CUtils.cmp ) || Keywords[ CurrPosition ].Equals( "All", CUtils.cmp ) )
+                            else if ( Keywords[ CurrPosition ].Equals( "Daily", CUtils.Cmp ) || Keywords[ CurrPosition ].Equals( "All", CUtils.Cmp ) )
                             {
                                 PlotvarAxis = PlotvarAxisALL;
                                 PlotvarTypes = PlotvarTypesALL;
@@ -343,14 +343,14 @@ namespace CumulusUtils
                                 Datafiles = DatafilesALL;
                                 PlotvarUnits = PlotvarUnitsALL;
 
-                                if ( Keywords[ CurrPosition ].Equals( "Daily", CUtils.cmp ) )
+                                if ( Keywords[ CurrPosition ].Equals( "Daily", CUtils.Cmp ) )
                                     thisPlotvar.PlotvarRange = PlotvarRangeType.Daily;
                                 else
                                     thisPlotvar.PlotvarRange = PlotvarRangeType.All;
 
                                 CurrPosition++;
                             }
-                            else if ( Keywords[ CurrPosition ].Equals( "Extra", CUtils.cmp ) )
+                            else if ( Keywords[ CurrPosition ].Equals( "Extra", CUtils.Cmp ) )
                             {
                                 PlotvarAxis = PlotvarAxisEXTRA; //PlotvarAxisEXTRA;
                                 PlotvarTypes = PlotvarTypesEXTRA;
@@ -373,10 +373,10 @@ namespace CumulusUtils
                             }
 
                             // So check if the plotvar Keyword translates to a true CMX data  variable
-                            if ( Array.Exists( PlotvarKeyword, word => word.Equals( Keywords[ CurrPosition ], CUtils.cmp ) ) )
+                            if ( Array.Exists( PlotvarKeyword, word => word.Equals( Keywords[ CurrPosition ], CUtils.Cmp ) ) )
                             {
                                 // The plot var exists, create the entry for the chart and check the other attributes
-                                int index = Array.FindIndex( PlotvarKeyword, word => word.Equals( Keywords[ CurrPosition ], CUtils.cmp ) );
+                                int index = Array.FindIndex( PlotvarKeyword, word => word.Equals( Keywords[ CurrPosition ], CUtils.Cmp ) );
 
                                 thisPlotvar.Keyword = PlotvarKeyword[ index ];
                                 thisPlotvar.PlotVar = PlotvarTypes[ index ];
@@ -402,7 +402,7 @@ namespace CumulusUtils
 
                             CurrPosition++;
 
-                            if ( Keywords[ CurrPosition ].Equals( "Eval", CUtils.cmp ) )
+                            if ( Keywords[ CurrPosition ].Equals( "Eval", CUtils.Cmp ) )
                             {
                                 thisPlotvar.Equation = ParseSingleEval( thisPlotvar.Keyword );
 
@@ -440,23 +440,23 @@ namespace CumulusUtils
                         do
                         {
                             // Check if the line must be shown at initialisation
-                            if ( Keywords[ CurrPosition ].Equals( "InVisible", CUtils.cmp ) )
+                            if ( Keywords[ CurrPosition ].Equals( "InVisible", CUtils.Cmp ) )
                             {
                                 CurrPosition++;
                                 thisPlotvar.Visible = false;
                             }
 
                             // Search for AS keyword
-                            if ( Keywords[ CurrPosition ].Equals( "As", CUtils.cmp ) )
+                            if ( Keywords[ CurrPosition ].Equals( "As", CUtils.Cmp ) )
                             {
                                 CurrPosition++;
 
-                                if ( Array.Exists( LinetypeKeywords, word => word.Equals( Keywords[ CurrPosition ], CUtils.cmp ) ) )
+                                if ( Array.Exists( LinetypeKeywords, word => word.Equals( Keywords[ CurrPosition ], CUtils.Cmp ) ) )
                                 {
                                     thisPlotvar.GraphType = Keywords[ CurrPosition ].ToLowerInvariant();
 
                                     if ( thisPlotvar.GraphType == "columnrange" )
-                                        if ( !Array.Exists( ValidColumnRangeVars, word => word.Equals( thisPlotvar.Keyword, CUtils.cmp ) ) )
+                                        if ( !Array.Exists( ValidColumnRangeVars, word => word.Equals( thisPlotvar.Keyword, CUtils.Cmp ) ) )
                                         {
                                             // Error condition
                                             Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' : Invalid AS type '{Keywords[ CurrPosition ]}' for '{thisPlotvar.Keyword}'" );
@@ -474,7 +474,7 @@ namespace CumulusUtils
                             } // End AS
 
                             // Search for OPACITY keyword
-                            if ( Keywords[ CurrPosition ].Equals( "Opacity", CUtils.cmp ) )
+                            if ( Keywords[ CurrPosition ].Equals( "Opacity", CUtils.Cmp ) )
                             {
                                 CurrPosition++;
 
@@ -494,7 +494,7 @@ namespace CumulusUtils
                             } // End OPACITY
 
                             // Search for COLOUR keyword
-                            if ( Keywords[ CurrPosition ].Equals( "Colour", CUtils.cmp ) )
+                            if ( Keywords[ CurrPosition ].Equals( "Colour", CUtils.Cmp ) )
                             {
                                 CurrPosition++;
 
@@ -502,7 +502,7 @@ namespace CumulusUtils
                             } // End COLOUR
 
                             // Search for ZINDEX keyword
-                            if ( Keywords[ CurrPosition ].Equals( "zIndex", CUtils.cmp ) )
+                            if ( Keywords[ CurrPosition ].Equals( "zIndex", CUtils.Cmp ) )
                             {
                                 CurrPosition++;
 
@@ -519,7 +519,7 @@ namespace CumulusUtils
                             } // End ZINDEX
 
                             // Search for LINEWIDTH keyword
-                            if ( Keywords[ CurrPosition ].Equals( "LineWidth", CUtils.cmp ) )
+                            if ( Keywords[ CurrPosition ].Equals( "LineWidth", CUtils.Cmp ) )
                             {
                                 CurrPosition++;
 
@@ -536,7 +536,7 @@ namespace CumulusUtils
                             } // End LINEWIDTH
 
                             // Search for AXIS keyword
-                            if ( Keywords[ CurrPosition ].Equals( "Axis", CUtils.cmp ) )
+                            if ( Keywords[ CurrPosition ].Equals( "Axis", CUtils.Cmp ) )
                             {
                                 CurrPosition++; // this one gets us on the Axis specification after the keyword
 
@@ -550,7 +550,7 @@ namespace CumulusUtils
                                 {
                                     try
                                     {
-                                        if ( Array.Exists( AxisKeywords, word => word.Equals( Keywords[ CurrPosition ], CUtils.cmp ) ) )
+                                        if ( Array.Exists( AxisKeywords, word => word.Equals( Keywords[ CurrPosition ], CUtils.Cmp ) ) )
                                         {
                                             thisPlotvar.AxisId = Keywords[ CurrPosition ];
                                             Enum.TryParse( Keywords[ CurrPosition ], out thisPlotvar.Axis );
@@ -574,13 +574,13 @@ namespace CumulusUtils
                                 }
                             } // End AXIS
 
-                        } while ( Keywords[ CurrPosition ].Equals( "As", CUtils.cmp ) ||
-                                    Keywords[ CurrPosition ].Equals( "Colour", CUtils.cmp ) ||
-                                    Keywords[ CurrPosition ].Equals( "zIndex", CUtils.cmp ) ||
-                                    Keywords[ CurrPosition ].Equals( "Opacity", CUtils.cmp ) ||
-                                    Keywords[ CurrPosition ].Equals( "Axis", CUtils.cmp ) ||
-                                    Keywords[ CurrPosition ].Equals( "InVisible", CUtils.cmp ) ||
-                                    Keywords[ CurrPosition ].Equals( "LineWidth", CUtils.cmp ) );
+                        } while ( Keywords[ CurrPosition ].Equals( "As", CUtils.Cmp ) ||
+                                    Keywords[ CurrPosition ].Equals( "Colour", CUtils.Cmp ) ||
+                                    Keywords[ CurrPosition ].Equals( "zIndex", CUtils.Cmp ) ||
+                                    Keywords[ CurrPosition ].Equals( "Opacity", CUtils.Cmp ) ||
+                                    Keywords[ CurrPosition ].Equals( "Axis", CUtils.Cmp ) ||
+                                    Keywords[ CurrPosition ].Equals( "InVisible", CUtils.Cmp ) ||
+                                    Keywords[ CurrPosition ].Equals( "LineWidth", CUtils.Cmp ) );
 
                         if ( thisPlotvar.GraphType == "scatter" )
                             thisChart.HasScatter = true;
@@ -599,9 +599,9 @@ namespace CumulusUtils
 
                         thisChart.PlotVars.Add( thisPlotvar );
 
-                    } while ( Keywords[ CurrPosition ].Equals( "Plot", CUtils.cmp ) || Keywords[ CurrPosition ].Equals( "Stats", CUtils.cmp ) );  // End while if PLOT keyword
+                    } while ( Keywords[ CurrPosition ].Equals( "Plot", CUtils.Cmp ) || Keywords[ CurrPosition ].Equals( "Stats", CUtils.Cmp ) );  // End while if PLOT keyword
 
-                    if ( Keywords[ CurrPosition++ ].Equals( "EndChart", CUtils.cmp ) )
+                    if ( Keywords[ CurrPosition++ ].Equals( "EndChart", CUtils.Cmp ) )
                     {
                         // thisChart still has the value for the current chart for which we just read the EndChart keyword.
                         // This means the Info and Output keywords which may follow the EndChart still refer to the chart for which those are valid!!
@@ -610,9 +610,9 @@ namespace CumulusUtils
 
                         try
                         {
-                            while ( CurrPosition < Keywords.Count - 1 && ( Keywords[ CurrPosition ].Equals( "Info", CUtils.cmp ) || Keywords[ CurrPosition ].Equals( "Output", CUtils.cmp ) ) )
+                            while ( CurrPosition < Keywords.Count - 1 && ( Keywords[ CurrPosition ].Equals( "Info", CUtils.Cmp ) || Keywords[ CurrPosition ].Equals( "Output", CUtils.Cmp ) ) )
                             {
-                                if ( Keywords[ CurrPosition ].Equals( "Info", CUtils.cmp ) )
+                                if ( Keywords[ CurrPosition ].Equals( "Info", CUtils.Cmp ) )
                                 {
                                     if ( thisChart.HasInfo )
                                     {
@@ -623,11 +623,11 @@ namespace CumulusUtils
 
                                     CurrPosition++;
 
-                                    if ( Keywords[ CurrPosition++ ].Equals( "\"", CUtils.cmp ) )
+                                    if ( Keywords[ CurrPosition++ ].Equals( "\"", CUtils.Cmp ) )
                                     {
                                         try
                                         {
-                                            while ( !Keywords[ CurrPosition ].Equals( "\"", CUtils.cmp ) )
+                                            while ( !Keywords[ CurrPosition ].Equals( "\"", CUtils.Cmp ) )
                                             {
                                                 thisChart.InfoText += " " + Keywords[ CurrPosition++ ];
                                             }
@@ -650,7 +650,7 @@ namespace CumulusUtils
                                 if ( CurrPosition >= Keywords.Count ) break;
 
                                 // Do the possible(!) output
-                                if ( Keywords[ CurrPosition ].Equals( "Output", CUtils.cmp ) )
+                                if ( Keywords[ CurrPosition ].Equals( "Output", CUtils.Cmp ) )
                                 {
                                     if ( OutputDone )
                                     {

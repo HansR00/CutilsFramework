@@ -64,7 +64,7 @@ namespace CumulusUtils
 
         #region CodeGenerator
 
-        internal void GenerateUserDefinedCharts( List<ChartDef> theseCharts, string filename, int UniqueOutputId )
+        public void GenerateUserDefinedCharts( List<ChartDef> theseCharts, string filename, int UniqueOutputId )
         {
             if ( theseCharts.Count == 0 ) return;
 
@@ -86,7 +86,7 @@ namespace CumulusUtils
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{filename}", false, Encoding.UTF8 ) )
             {
-                bool UseHighchartsBoostModule = Sup.GetUtilsIniValue( "Graphs", "UseHighchartsBoostModule", "true" ).Equals( "true", CUtils.cmp );
+                bool UseHighchartsBoostModule = Sup.GetUtilsIniValue( "Graphs", "UseHighchartsBoostModule", "true" ).Equals( "true", CUtils.Cmp );
 
                 Html.AppendLine( "<!--" );
                 Html.AppendLine( $" This file is generated as part of CumulusUtils - {DateTime.Now}" );
@@ -173,7 +173,7 @@ namespace CumulusUtils
                 if ( TheseChartsUseWindBarbs )
                     GenericJavascript.Append( "function convertToMs(data) {" +
                         "  data.map( " +
-                       $"  s => {{s[ 1 ] = s[ 1 ] * {Sup.StationWind.Convert( Sup.StationWind.Dim, WindDim.ms, 1 ).ToString( "F5", CultureInfo.InvariantCulture )} }} );" +
+                       $"  s => {{s[ 1 ] = s[ 1 ] * {Sup.StationWind.Convert( Sup.StationWind.Dim, WindDim.ms, 1 ).ToString( "F5", CUtils.Inv )} }} );" +
                         "  return" +
                         "}\n" );
 
@@ -417,7 +417,7 @@ namespace CumulusUtils
                                 tmpEquation = tmp.Insert( startSum, "sumResult[i][1]" );
 
                                 foreach ( AllVarInfo avi in thisPlotvar.EqAllVarList )
-                                    if ( sumExpr.Contains( avi.KeywordName, CUtils.cmp ) )
+                                    if ( sumExpr.Contains( avi.KeywordName, CUtils.Cmp ) )
                                         sumExpr = sumExpr.Replace( avi.KeywordName, $"{avi.KeywordName}[i][1]" );
 
                                 GenerateSumFunction( GenericJavascript );
@@ -439,7 +439,7 @@ namespace CumulusUtils
                             if ( thisPlotvar.EqAllVarList.Count > 0 )
                             {
                                 foreach ( AllVarInfo avi in thisPlotvar.EqAllVarList )
-                                    if ( tmpEquation.Contains( avi.KeywordName, CUtils.cmp ) )
+                                    if ( tmpEquation.Contains( avi.KeywordName, CUtils.Cmp ) )
                                         tmpEquation = tmpEquation.Replace( avi.KeywordName, $"{avi.KeywordName}[i][1]" );
 
                                 // Now write out the values in the array at runtime.
@@ -521,7 +521,7 @@ namespace CumulusUtils
                         AddSeriesJavascript.AppendLine( "    visible: true," );
                         AddSeriesJavascript.AppendLine( $"    dataGrouping: {{enabled: true,units: [ ['hour', [{Sup.HighChartsWindBarbSpacing()}] ] ]}}, " );
                         AddSeriesJavascript.AppendLine( $"    tooltip: {{pointFormatter() {{return this.series.name + ': ' + " +
-                            $"(this.value/{Sup.StationWind.Convert( Sup.StationWind.Dim, WindDim.ms, 1 ).ToString( "F5", CultureInfo.InvariantCulture )}).toFixed(1) + " +
+                            $"(this.value/{Sup.StationWind.Convert( Sup.StationWind.Dim, WindDim.ms, 1 ).ToString( "F5", CUtils.Inv )}).toFixed(1) + " +
                             $"' {Sup.StationWind.Text()}'}} }}," );
                         AddSeriesJavascript.AppendLine( "    data: WindBarbData" );
                         AddSeriesJavascript.AppendLine( "  }, false);" );
@@ -891,7 +891,7 @@ namespace CumulusUtils
         #endregion
 
         #region Datagenerator
-        internal DateTime GenerateUserAskedData( List<ChartDef> thisList )
+        public DateTime GenerateUserAskedData( List<ChartDef> thisList )
         {
             Sup.LogDebugMessage( $"Generating Compiler UserAskedData: Start" );
 
@@ -915,7 +915,7 @@ namespace CumulusUtils
             {
                 try
                 {
-                    timeStart = DateTime.ParseExact( Sup.GetUtilsIniValue( "General", "LastUploadTime", "" ), "dd/MM/yy HH:mm", CUtils.inv ).AddMinutes( 1 );
+                    timeStart = DateTime.ParseExact( Sup.GetUtilsIniValue( "General", "LastUploadTime", "" ), "dd/MM/yy HH:mm", CUtils.Inv ).AddMinutes( 1 );
                 }
                 catch
                 {
@@ -940,13 +940,16 @@ namespace CumulusUtils
 
             // Do the ALL/DAILY only once a day
 
-            DateTime.TryParse( Sup.GetUtilsIniValue( "Compiler", "DoneToday", $"{Now.AddDays( -1 ):dd/MM/yy}" ), out DateTime DoneToday );
+            _ = DateTime.TryParse( Sup.GetUtilsIniValue( "Compiler", "DoneToday", $"{Now.AddDays( -1 ):s}" ), out DateTime DoneToday );
+
+            Sup.LogTraceInfoMessage( $"Generate UserAskedData: DoneToday = {DoneToday}." );
+
             bool DoDailyAndAll = !Sup.DateIsToday( DoneToday );
 
             if ( DoDailyAndAll )
             {
                 Sup.LogTraceInfoMessage( $"Generate UserAskedData: Must generate the ALL Range." );
-                Sup.SetUtilsIniValue( "Compiler", "DoneToday", $"{Now:dd/MM/yy}" );
+                Sup.SetUtilsIniValue( "Compiler", "DoneToday", $"{Now:s}" );
             }
             else
                 Sup.LogTraceInfoMessage( $"Generate UserAskedData: Must NOT generate the ALL Range." );
@@ -1049,7 +1052,7 @@ namespace CumulusUtils
                     {
                         foreach ( AllVarInfo avi in AllVars )
                         {
-                            if ( p.Keyword.Equals( avi.KeywordName, CUtils.cmp ) )
+                            if ( p.Keyword.Equals( avi.KeywordName, CUtils.Cmp ) )
                             {
                                 found = true;
                                 break;
@@ -1127,15 +1130,15 @@ namespace CumulusUtils
 
                         foreach ( string pt in PlotvarTypes )
                         {
-                            string pk = PlotvarKeyword[ Array.FindIndex( PlotvarTypes, word => word.Equals( pt, CUtils.cmp ) ) ];
-                            string df = Datafiles[ Array.FindIndex( PlotvarTypes, word => word.Equals( pt, CUtils.cmp ) ) ];
+                            string pk = PlotvarKeyword[ Array.FindIndex( PlotvarTypes, word => word.Equals( pt, CUtils.Cmp ) ) ];
+                            string df = Datafiles[ Array.FindIndex( PlotvarTypes, word => word.Equals( pt, CUtils.Cmp ) ) ];
 
-                            if ( p.Equation.Contains( pk, CUtils.cmp ) )
+                            if ( p.Equation.Contains( pk, CUtils.Cmp ) )
                             {
                                 found = false;
 
                                 foreach ( AllVarInfo a in AllVars )
-                                    if ( a.KeywordName.Equals( pk, CUtils.cmp ) )
+                                    if ( a.KeywordName.Equals( pk, CUtils.Cmp ) )
                                     {
                                         tmpVarInfo = a;
                                         found = true;

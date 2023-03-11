@@ -377,13 +377,17 @@ namespace CumulusUtils
 
         public bool DateIsToday( DateTime thisDate )
         {
-            bool retval = true;
+            bool retval;
 
-            if ( Math.Abs( DateTime.Now.DayOfYear - thisDate.DayOfYear ) > 0 )
-            {
-                retval = false;
-                LogTraceVerboseMessage( $"DateIsNotToday: {thisDate}, {thisDate.DayOfYear} versus {DateTime.Now.DayOfYear})" );
-            }
+            TimeSpan thisSpan = DateTime.Now - thisDate;
+
+            LogTraceInfoMessage( $"DateIsToday for thisDate: {thisDate} | thisDate.DayOfYear: {thisDate.DayOfYear} versus Now.DayOfYear: {DateTime.Now.DayOfYear})" );
+            LogDebugMessage( $"DateIsToday: thisSpan: {thisSpan} | thisSpan.TotalDays = {thisSpan.TotalDays}" );
+
+            if ( thisSpan.TotalDays > 1 ) retval = false;
+            else retval = true;
+
+            LogDebugMessage( $"DateIsToday returning {retval}" );
 
             return retval;
         }
@@ -423,7 +427,7 @@ namespace CumulusUtils
         {
             StringBuilder sb = new StringBuilder();
 
-            bool UseHighchartsBoostModule = GetUtilsIniValue( "Graphs", "UseHighchartsBoostModule", "true" ).Equals( "true", CUtils.cmp );
+            bool UseHighchartsBoostModule = GetUtilsIniValue( "Graphs", "UseHighchartsBoostModule", "true" ).Equals( "true", CUtils.Cmp );
 
             //sb.AppendLine( "<script src='https://code.highcharts.com/stock/highstock.js'></script>" );
             //sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/highcharts-more.js\"></script>" );
@@ -480,8 +484,8 @@ namespace CumulusUtils
                 Level = TraceLevel.Verbose
             };
 
-            LoggingOn = GetUtilsIniValue( "General", "LoggingOn", "true" ).Equals( "true", CUtils.cmp );
-            NormalMessageToConsole = GetUtilsIniValue( "General", "NormalMessageToConsole", "true" ).Equals( "true", CUtils.cmp );
+            LoggingOn = GetUtilsIniValue( "General", "LoggingOn", "true" ).Equals( "true", CUtils.Cmp );
+            NormalMessageToConsole = GetUtilsIniValue( "General", "NormalMessageToConsole", "true" ).Equals( "true", CUtils.Cmp );
             string thisTrace = GetUtilsIniValue( "General", "TraceInfoLevel", "Info" );     // Verbose, Information, Warning, Error, Off
 
             LogTraceInfoMessage( $"Initial {CUTraceSwitch} => Error: {CUTraceSwitch.TraceError}, Warning: {CUTraceSwitch.TraceWarning}, Info: {CUTraceSwitch.TraceInfo}, Verbose: {CUTraceSwitch.TraceInfo}" );
@@ -630,7 +634,7 @@ namespace CumulusUtils
         // https://stackoverflow.com/questions/677204/counting-the-number-of-flags-set-on-an-enumeration
         // https://en.wikipedia.org/wiki/Hamming_weight
 
-        internal static UInt64 CountFlags( this AxisType axis )
+        public static UInt64 CountFlags( this AxisType axis )
         {
             UInt32 c;
 
@@ -669,21 +673,21 @@ namespace CumulusUtils
     #endregion
 
     #region Random Generator
-    static public class RandomGenerator
+    public static class RandomGenerator
     {
         // Instantiate random number generator.  
         // It is better to keep a single Random instance 
         // and keep using Next on the same instance.  
-        static private readonly Random _random = new Random();
+        private static readonly Random _random = new Random();
 
         // Generates a random number within a range.      
-        static public int RandomNumber( int min, int max )
+        public static int RandomNumber( int min, int max )
         {
             return _random.Next( min, max );
         }
 
         // Generates a random string with a given size.    
-        static public string RandomString( int size, bool lowerCase = false )
+        public static string RandomString( int size, bool lowerCase = false )
         {
             var builder = new StringBuilder( size );
 
@@ -707,7 +711,7 @@ namespace CumulusUtils
 
         // Generates a random password.  
         // 4-LowerCase + 4-Digits + 2-UpperCase  
-        static public string RandomPassword()
+        public static string RandomPassword()
         {
             var passwordBuilder = new StringBuilder();
 

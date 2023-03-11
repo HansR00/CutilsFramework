@@ -183,7 +183,7 @@ namespace CumulusUtils
             if ( thisList.Any() )
             {
                 ZeroWindCount = thisList.Where( x => x.CMXLatestGust == 0 ).Count();
-                DataBuilder.Append( $"ZeroWind{ArrayCode} = {( (float) ZeroWindCount / thisList.Count * 100 ).ToString( "F1", inv )};\n" );
+                DataBuilder.Append( $"ZeroWind{ArrayCode} = {( (float) ZeroWindCount / thisList.Count * 100 ).ToString( "F1", CUtils.Inv )};\n" );
 
                 for ( int i = 1; i <= NrOfWindforceClasses; i++ )
                 {
@@ -217,7 +217,7 @@ namespace CumulusUtils
                             FreqTmp = 0.0F;
                         }
 
-                        DataBuilder.Append( $"{( 100 * FreqTmp ).ToString( "F4", inv )}," );
+                        DataBuilder.Append( $"{( 100 * FreqTmp ).ToString( "F4", CUtils.Inv )}," );
                     }
 
                     DataBuilder.Remove( DataBuilder.Length - 1, 1 );
@@ -280,7 +280,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "  title:" );
             thisBuffer.AppendLine( "  {" );
             thisBuffer.AppendLine( $"    text: '{Sup.GetCUstringValue( "Graphs", "WindRunTitle", "Wind Run", true )} - " +
-              $"{( year == 0 ? Sup.GetCUstringValue( "General", "AllTime", "All Time", false ) : year.ToString( "F0", inv ) )} ({Sup.StationDistance.Text()})'" );
+              $"{( year == 0 ? Sup.GetCUstringValue( "General", "AllTime", "All Time", false ) : year.ToString( "F0", CUtils.Inv ) )} ({Sup.StationDistance.Text()})'" );
             thisBuffer.AppendLine( "  }," );
             thisBuffer.AppendLine( "  subtitle:" );
             thisBuffer.AppendLine( "  {" );

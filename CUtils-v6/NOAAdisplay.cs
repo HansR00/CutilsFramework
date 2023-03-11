@@ -129,7 +129,7 @@ namespace CumulusUtils
                 // That was the setting of everything in the Document Load function
                 // Now start the whole thing
 
-                if ( Sup.GetUtilsIniValue( "NOAA", "StartInCurrentMonth", "true" ).Equals( "false", CUtils.cmp ) )
+                if ( Sup.GetUtilsIniValue( "NOAA", "StartInCurrentMonth", "true" ).Equals( "false", CUtils.Cmp ) )
                     of.WriteLine( "    $('#month').val('');" );  // Set the whole thing to only the year (the original)
 
                 of.WriteLine( "    $('#year').trigger('change');" );

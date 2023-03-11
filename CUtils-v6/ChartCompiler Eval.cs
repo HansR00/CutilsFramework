@@ -31,7 +31,7 @@ namespace CumulusUtils
         #region Equations
         bool Equationblock = false;
 
-        internal bool ParseEquationBlock()
+        public bool ParseEquationBlock()
         {
             Equationblock = true;
 
@@ -45,7 +45,7 @@ namespace CumulusUtils
                     return false;
                 else
                     AllEquations.Add( thisEq );
-            } while ( !Keywords[ CurrPosition ].Equals( "Chart", CUtils.cmp ) && CurrPosition < Keywords.Count - 1 );
+            } while ( !Keywords[ CurrPosition ].Equals( "Chart", CUtils.Cmp ) && CurrPosition < Keywords.Count - 1 );
 
             Equationblock = false;  // Checked by the parser when substituting
 
@@ -55,13 +55,13 @@ namespace CumulusUtils
         #endregion Equations
 
         #region ParseSingleEval
-        internal string ParseSingleEval( string Id ) // Returns the expression parsed or empty
+        public string ParseSingleEval( string Id ) // Returns the expression parsed or empty
         {
             // Do the EVAL:
-            if ( Keywords[ CurrPosition ].Equals( "Eval", CUtils.cmp ) )
+            if ( Keywords[ CurrPosition ].Equals( "Eval", CUtils.Cmp ) )
             {
                 if ( !Equationblock )
-                    if ( Array.Exists( PlotvarKeyword, word => word.Equals( Id, CUtils.cmp ) ) )
+                    if ( Array.Exists( PlotvarKeyword, word => word.Equals( Id, CUtils.Cmp ) ) )
                     {
                         Sup.LogTraceInfoMessage( $"Parsing User Charts: Invalid Plotvariable Name for Eval function" );
                         Sup.LogTraceInfoMessage( $"Parsing User Charts: Plotvariable Name may not be reserved Keyword: {Id}" );
@@ -230,11 +230,11 @@ namespace CumulusUtils
                     {
                         string tmpWord = Exp[ i ];
 
-                        if ( Array.Exists( Functions, word => word.Equals( tmpWord, CUtils.cmp ) ) )
+                        if ( Array.Exists( Functions, word => word.Equals( tmpWord, CUtils.Cmp ) ) )
                         {
                             // It is a function so translate to the javascript equivalent. To do so we must know its argument so we continue in Term
                             // Expecting ( and ) with an expression in between
-                            tmp += Functions[ Array.FindIndex( Functions, word => word.Equals( tmpWord, CUtils.cmp ) ) ];
+                            tmp += Functions[ Array.FindIndex( Functions, word => word.Equals( tmpWord, CUtils.Cmp ) ) ];
 
                             i++;
                             if ( Exp[ i ] == "(" )
@@ -257,7 +257,7 @@ namespace CumulusUtils
 
                                 subExpArr = subExp.ToArray();
 
-                                bool commaPermitted = "pow".Equals( tmpWord, CUtils.cmp ) || "max".Equals( tmpWord, CUtils.cmp ) || "min".Equals( tmpWord, CUtils.cmp );
+                                bool commaPermitted = "pow".Equals( tmpWord, CUtils.Cmp ) || "max".Equals( tmpWord, CUtils.Cmp ) || "min".Equals( tmpWord, CUtils.Cmp );
                                 tmpTerm = Expression( subExpArr, ref EquationSubstitution, commaPermitted );
 
                                 if ( tmpTerm != null )
@@ -279,9 +279,9 @@ namespace CumulusUtils
                             // not a function so must be a variable and we're done, return to expression
                             if ( !Equationblock )
                             {
-                                if ( Array.Exists( PlotvarKeyword, word => word.Equals( tmpWord, CUtils.cmp ) ) )
+                                if ( Array.Exists( PlotvarKeyword, word => word.Equals( tmpWord, CUtils.Cmp ) ) )
                                 {
-                                    int index = Array.FindIndex( PlotvarKeyword, word => word.Equals( tmpWord, CUtils.cmp ) );
+                                    int index = Array.FindIndex( PlotvarKeyword, word => word.Equals( tmpWord, CUtils.Cmp ) );
                                     tmp += PlotvarKeyword[ index ];
                                 }
                                 else

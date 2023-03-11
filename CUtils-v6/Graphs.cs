@@ -59,9 +59,8 @@ namespace CumulusUtils
             GraphAverageClash;
 
         private bool StationNormal, StationAverage;
-        private readonly CultureInfo inv = CultureInfo.InvariantCulture;
 
-        static public bool UseHighchartsBoostModule;
+        public static bool UseHighchartsBoostModule;
 
         private enum Months : int { Jan = 1, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec };
 
@@ -105,32 +104,32 @@ namespace CumulusUtils
         {
             Sup = s;
 
-            GraphDailyRain = Sup.GetUtilsIniValue( "Graphs", "DailyRain", "true" ).Equals( "true", CUtils.cmp );
-            GraphMonthlyRain = Sup.GetUtilsIniValue( "Graphs", "MonthlyRain", "true" ).Equals( "true", CUtils.cmp );
-            GraphYearRainStats = Sup.GetUtilsIniValue( "Graphs", "YearRainstats", "true" ).Equals( "true", CUtils.cmp );
-            GraphYearMonthRainStats = Sup.GetUtilsIniValue( "Graphs", "YearMonthRainstats", "true" ).Equals( "true", CUtils.cmp );
+            GraphDailyRain = Sup.GetUtilsIniValue( "Graphs", "DailyRain", "true" ).Equals( "true", CUtils.Cmp );
+            GraphMonthlyRain = Sup.GetUtilsIniValue( "Graphs", "MonthlyRain", "true" ).Equals( "true", CUtils.Cmp );
+            GraphYearRainStats = Sup.GetUtilsIniValue( "Graphs", "YearRainstats", "true" ).Equals( "true", CUtils.Cmp );
+            GraphYearMonthRainStats = Sup.GetUtilsIniValue( "Graphs", "YearMonthRainstats", "true" ).Equals( "true", CUtils.Cmp );
 
             CUtils.HasRainGraphMenu = GraphDailyRain || GraphMonthlyRain || GraphYearMonthRainStats || GraphYearRainStats;
 
-            GraphMonthlyTemperature = Sup.GetUtilsIniValue( "Graphs", "MonthlyTemp", "true" ).Equals( "true", CUtils.cmp );
-            GraphYearTempStats = Sup.GetUtilsIniValue( "Graphs", "YearTempstats", "true" ).Equals( "true", CUtils.cmp );
-            GraphYearMonthTempStats = Sup.GetUtilsIniValue( "Graphs", "YearMonthTempstats", "true" ).Equals( "true", CUtils.cmp );
-            GraphWarmerDays = Sup.GetUtilsIniValue( "Graphs", "WarmerDays", "true" ).Equals( "true", CUtils.cmp );
-            GraphHeatmap = Sup.GetUtilsIniValue( "Graphs", "HeatMap", "true" ).Equals( "true", CUtils.cmp );
+            GraphMonthlyTemperature = Sup.GetUtilsIniValue( "Graphs", "MonthlyTemp", "true" ).Equals( "true", CUtils.Cmp );
+            GraphYearTempStats = Sup.GetUtilsIniValue( "Graphs", "YearTempstats", "true" ).Equals( "true", CUtils.Cmp );
+            GraphYearMonthTempStats = Sup.GetUtilsIniValue( "Graphs", "YearMonthTempstats", "true" ).Equals( "true", CUtils.Cmp );
+            GraphWarmerDays = Sup.GetUtilsIniValue( "Graphs", "WarmerDays", "true" ).Equals( "true", CUtils.Cmp );
+            GraphHeatmap = Sup.GetUtilsIniValue( "Graphs", "HeatMap", "true" ).Equals( "true", CUtils.Cmp );
 
             CUtils.HasTempGraphMenu = GraphMonthlyTemperature || GraphYearTempStats || GraphYearMonthTempStats || GraphHeatmap || GraphWarmerDays;
 
-            GraphWindrun = Sup.GetUtilsIniValue( "Graphs", "Windrun", "true" ).Equals( "true", CUtils.cmp );
-            GraphWindRose = Sup.GetUtilsIniValue( "Graphs", "WindRose", "true" ).Equals( "true", CUtils.cmp );
+            GraphWindrun = Sup.GetUtilsIniValue( "Graphs", "Windrun", "true" ).Equals( "true", CUtils.Cmp );
+            GraphWindRose = Sup.GetUtilsIniValue( "Graphs", "WindRose", "true" ).Equals( "true", CUtils.Cmp );
 
             CUtils.HasWindGraphMenu = GraphWindRose || GraphWindrun;
 
             if ( CUtils.HasSolar )
             {
-                GraphSolarHours = Sup.GetUtilsIniValue( "Graphs", "SolarHours", "true" ).Equals( "true", CUtils.cmp );
-                GraphYearMonthSolarHoursStats = Sup.GetUtilsIniValue( "Graphs", "SolarHoursYearMonth", "true" ).Equals( "true", CUtils.cmp );
-                GraphSolarEnergy = Sup.GetUtilsIniValue( "Graphs", "SolarEnergy", "true" ).Equals( "true", CUtils.cmp );
-                GraphYearMonthSolarEnergyStats = Sup.GetUtilsIniValue( "Graphs", "SolarEnergyYearMonth", "true" ).Equals( "true", CUtils.cmp );
+                GraphSolarHours = Sup.GetUtilsIniValue( "Graphs", "SolarHours", "true" ).Equals( "true", CUtils.Cmp );
+                GraphYearMonthSolarHoursStats = Sup.GetUtilsIniValue( "Graphs", "SolarHoursYearMonth", "true" ).Equals( "true", CUtils.Cmp );
+                GraphSolarEnergy = Sup.GetUtilsIniValue( "Graphs", "SolarEnergy", "true" ).Equals( "true", CUtils.Cmp );
+                GraphYearMonthSolarEnergyStats = Sup.GetUtilsIniValue( "Graphs", "SolarEnergyYearMonth", "true" ).Equals( "true", CUtils.Cmp );
 
                 CUtils.HasSolarGraphMenu = GraphSolarHours || GraphSolarEnergy || GraphYearMonthSolarHoursStats || GraphYearMonthSolarEnergyStats;
             }
@@ -139,25 +138,25 @@ namespace CumulusUtils
                 GraphSolarHours = GraphSolarEnergy = GraphYearMonthSolarHoursStats = GraphYearMonthSolarEnergyStats = CUtils.HasSolarGraphMenu = false;
             }
 
-            GraphTempSum = Sup.GetUtilsIniValue( "Graphs", "TempSum", "true" ).Equals( "true", CUtils.cmp );
-            GraphGrowingDegreeDays = Sup.GetUtilsIniValue( "Graphs", "GrowingDegreeDays", "true" ).Equals( "true", CUtils.cmp );
-            GraphSeasons = Sup.GetUtilsIniValue( "Graphs", "Seasons", "false" ).Equals( "true", CUtils.cmp );
-            GraphDailyEVT = Sup.GetUtilsIniValue( "Graphs", "DailyEVT", "true" ).Equals( "true", CUtils.cmp );
-            GraphMonthlyEVT = Sup.GetUtilsIniValue( "Graphs", "MonthlyEVT", "true" ).Equals( "true", CUtils.cmp );
-            GraphAverageClash = Sup.GetUtilsIniValue( "Graphs", "AverageClash", "false" ).Equals( "true", CUtils.cmp ); // So default is false!!!
+            GraphTempSum = Sup.GetUtilsIniValue( "Graphs", "TempSum", "true" ).Equals( "true", CUtils.Cmp );
+            GraphGrowingDegreeDays = Sup.GetUtilsIniValue( "Graphs", "GrowingDegreeDays", "true" ).Equals( "true", CUtils.Cmp );
+            GraphSeasons = Sup.GetUtilsIniValue( "Graphs", "Seasons", "false" ).Equals( "true", CUtils.Cmp );
+            GraphDailyEVT = Sup.GetUtilsIniValue( "Graphs", "DailyEVT", "true" ).Equals( "true", CUtils.Cmp );
+            GraphMonthlyEVT = Sup.GetUtilsIniValue( "Graphs", "MonthlyEVT", "true" ).Equals( "true", CUtils.Cmp );
+            GraphAverageClash = Sup.GetUtilsIniValue( "Graphs", "AverageClash", "false" ).Equals( "true", CUtils.Cmp ); // So default is false!!!
 
             CUtils.HasMiscGraphMenu = GraphTempSum || GraphGrowingDegreeDays || GraphSeasons || GraphDailyEVT || GraphMonthlyEVT || GraphAverageClash;
 
             // For windrose
-            NrOfCompassSectors = Convert.ToInt32( Sup.GetCumulusIniValue( "Display", "NumWindRosePoints", "" ), inv );
+            NrOfCompassSectors = Convert.ToInt32( Sup.GetCumulusIniValue( "Display", "NumWindRosePoints", "" ), CUtils.Inv );
             CompassSector = (float) ( 360.0 / (float) NrOfCompassSectors );
             HalfCompassSector = (float) ( CompassSector / 2.0 );
 
-            NrOfWindforceClasses = Convert.ToSingle( Sup.GetUtilsIniValue( "Graphs", "WindRoseNrOfWindforceClasses", "6" ), inv );
-            SpeedForRoseInterval = Convert.ToSingle( Sup.GetUtilsIniValue( "Graphs", "WindRoseMaxWindSpeed", "60" ), inv ) / NrOfWindforceClasses;
+            NrOfWindforceClasses = Convert.ToSingle( Sup.GetUtilsIniValue( "Graphs", "WindRoseNrOfWindforceClasses", "6" ), CUtils.Inv );
+            SpeedForRoseInterval = Convert.ToSingle( Sup.GetUtilsIniValue( "Graphs", "WindRoseMaxWindSpeed", "60" ), CUtils.Inv ) / NrOfWindforceClasses;
 
             // For WindRun
-            WindrunClassWidth = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "WindrunClassWidth", "75" ), inv );
+            WindrunClassWidth = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "WindrunClassWidth", "75" ), CUtils.Inv );
             MaxWindrun = (int) thisList.Select( x => x.TotalWindRun ).Max();
             NrofWindrunClasses = MaxWindrun / WindrunClassWidth + 1;
             WindrunClasses = new int[ NrofWindrunClasses ];   // { 100, 200, 300, 400, 500, 600, 700}; // in km, other unist need conversion
@@ -165,7 +164,7 @@ namespace CumulusUtils
                 WindrunClasses[ i ] = WindrunClassWidth + WindrunClassWidth * i;
 
             // For scatter graph
-            UseHighchartsBoostModule = Sup.GetUtilsIniValue( "Graphs", "UseHighchartsBoostModule", "true" ).Equals( "true", CUtils.cmp );
+            UseHighchartsBoostModule = Sup.GetUtilsIniValue( "Graphs", "UseHighchartsBoostModule", "true" ).Equals( "true", CUtils.Cmp );
 
             if ( UseHighchartsBoostModule )
                 Sup.LogTraceInfoMessage( "Graphx: Using Highcharts Boost Module!" );
@@ -189,9 +188,9 @@ namespace CumulusUtils
 
             maxRain = ThisList.Select( x => x.TotalRainThisDay ).Max();
 
-            maxNrOfSeriesVisibleInGraph = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "MaxNrOfSeriesVisibileInGraph", "2" ), inv );
+            maxNrOfSeriesVisibleInGraph = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "MaxNrOfSeriesVisibileInGraph", "2" ), CUtils.Inv );
 
-            HeatmapNrOfYearsPerPage = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "HeatmapNumberOfYearsPerPage", "10" ), inv );
+            HeatmapNrOfYearsPerPage = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "HeatmapNumberOfYearsPerPage", "10" ), CUtils.Inv );
             SplitHeatmapPages = ( YearMax - YearMin + 1 ) > HeatmapNrOfYearsPerPage;
 
             StringBuilder thisBuffer = new StringBuilder();

@@ -35,28 +35,28 @@ namespace CumulusUtils
     #region Global Declarations
 
     [Flags]
-    internal enum AxisType
+    public enum AxisType
     {
         None = 0, Temp = 1, Pressure = 2, Rain = 4, Rrate = 8, Wind = 16, Direction = 32, Humidity = 64, Solar = 128, UV = 256, Hours = 512,
         Distance = 1024, DegreeDays = 2048, EVT = 4096, Free = 8192, AQ = 16384, ppm = 32768
     };
-    internal enum PlotvarRangeType { Recent, Extra, Daily, All };
+    public enum PlotvarRangeType { Recent, Extra, Daily, All };
 
-    internal struct OutputDef
+    public struct OutputDef
     {
-        internal OutputDef( string filename )
+        public OutputDef( string filename )
         {
             Filename = filename;
             TheseCharts = new List<ChartDef>();
         }
 
-        internal string Filename { get; set; }
-        internal List<ChartDef> TheseCharts;
+        public string Filename { get; set; }
+        public List<ChartDef> TheseCharts;
     }
 
-    internal struct ChartDef
+    public struct ChartDef
     {
-        internal ChartDef( string thisId, string thisTitle )
+        public ChartDef( string thisId, string thisTitle )
         {
             Range = PlotvarRangeType.Recent;
             PlotVars = new List<Plotvar>();
@@ -72,55 +72,55 @@ namespace CumulusUtils
             InfoText = "";
             Zoom = -1;
         }
-        internal PlotvarRangeType Range { get; set; }
-        internal AxisType Axis;
-        internal List<Plotvar> PlotVars { get; set; }
-        internal string Id { get; set; }
-        internal string Title { get; set; }
-        internal bool HasScatter { get; set; }
-        internal bool HasWindBarbs { get; set; }
-        internal bool WindBarbsBelow { get; set; }
-        internal string WindBarbColor { get; set; }
-        internal List<int> ConnectsToDashboardPanel { get; set; }
-        internal bool HasInfo { get; set; }
-        internal string InfoText { get; set; }
-        internal int Zoom { get; set; }
+        public PlotvarRangeType Range { get; set; }
+        public AxisType Axis;
+        public List<Plotvar> PlotVars { get; set; }
+        public string Id { get; set; }
+        public string Title { get; set; }
+        public bool HasScatter { get; set; }
+        public bool HasWindBarbs { get; set; }
+        public bool WindBarbsBelow { get; set; }
+        public string WindBarbColor { get; set; }
+        public List<int> ConnectsToDashboardPanel { get; set; }
+        public bool HasInfo { get; set; }
+        public string InfoText { get; set; }
+        public int Zoom { get; set; }
     }
 
-    internal struct EqDef
+    public struct EqDef
     {
-        internal string Id;
-        internal string Equation;
+        public string Id;
+        public string Equation;
     }
 
     // The structure 
-    internal struct Plotvar
+    public struct Plotvar
     {
-        internal string Keyword;            // The actual keyword to use in the graph and make it understandable
-        internal string PlotVar;            // like 'Temp', 'wdir' etc... : the id in the JSON
-        internal string Equation;           // Any equation the user puts in the EVAL string, checked and translated to javascript
-        internal List<AllVarInfo> EqAllVarList;
-        internal PlotvarRangeType PlotvarRange; // So is it a Recent, Extra, Daily or All range
+        public string Keyword;            // The actual keyword to use in the graph and make it understandable
+        public string PlotVar;            // like 'Temp', 'wdir' etc... : the id in the JSON
+        public string Equation;           // Any equation the user puts in the EVAL string, checked and translated to javascript
+        public List<AllVarInfo> EqAllVarList;
+        public PlotvarRangeType PlotvarRange; // So is it a Recent, Extra, Daily or All range
 
 
-        internal string Unit;               // Required knowledge about the parameters unit is stored in an array
-        internal string Datafile;           // the actual datafile where the data can be found
-        internal string Color;              // the c olour as defined 
-        internal int LineWidth;             // The LineWidth
-        internal double Opacity;            // The LineWidth
-        internal string GraphType;          // like 'line', spline etc...
-        internal AxisType Axis;             // For fast access to the type needed
-        internal string AxisId;             // For fast access to the type needed
-        internal int zIndex;                // the zIndex plane for the plotorder (e.g. to get a  line before an area so it can be seen)
-        internal bool IsStats;              // Remember it is a stats var and needs to be linked to the original which must be in the same chart
-        internal bool Visible;              // Should the  line be visible at initialisation? true == Yes, fals == No
+        public string Unit;               // Required knowledge about the parameters unit is stored in an array
+        public string Datafile;           // the actual datafile where the data can be found
+        public string Color;              // the c olour as defined 
+        public int LineWidth;             // The LineWidth
+        public double Opacity;            // The LineWidth
+        public string GraphType;          // like 'line', spline etc...
+        public AxisType Axis;             // For fast access to the type needed
+        public string AxisId;             // For fast access to the type needed
+        public int zIndex;                // the zIndex plane for the plotorder (e.g. to get a  line before an area so it can be seen)
+        public bool IsStats;              // Remember it is a stats var and needs to be linked to the original which must be in the same chart
+        public bool Visible;              // Should the  line be visible at initialisation? true == Yes, fals == No
     }
 
-    internal struct AllVarInfo
+    public struct AllVarInfo
     {
-        internal string KeywordName;
-        internal string TypeName;
-        internal string Datafile;
+        public string KeywordName;
+        public string TypeName;
+        public string Datafile;
     }
 
 
@@ -131,7 +131,7 @@ namespace CumulusUtils
 
         #region Declarations
 
-        internal readonly AxisType[] PlotvarAxisRECENT = {
+        public readonly AxisType[] PlotvarAxisRECENT = {
             AxisType.Temp, AxisType.Temp, AxisType.Temp, AxisType.Temp, AxisType.Temp, AxisType.Temp, AxisType.Temp, AxisType.Temp,
             AxisType.Wind, AxisType.Wind,
             AxisType.Direction, AxisType.Direction,
@@ -142,7 +142,7 @@ namespace CumulusUtils
             AxisType.EVT
         };
 
-        internal readonly AxisType[] PlotvarAxisALL = {
+        public readonly AxisType[] PlotvarAxisALL = {
             AxisType.Temp, AxisType.Temp, AxisType.Temp, AxisType.Temp, AxisType.Temp, AxisType.Temp, AxisType.Temp, AxisType.Temp,
             AxisType.Wind, AxisType.Distance, AxisType.Wind,
             AxisType.Hours, AxisType.Solar, AxisType.UV,
@@ -152,7 +152,7 @@ namespace CumulusUtils
             AxisType.DegreeDays, AxisType.DegreeDays, AxisType.EVT, AxisType.Free
         };
 
-        internal readonly AxisType[] PlotvarAxisEXTRA = {
+        public readonly AxisType[] PlotvarAxisEXTRA = {
             AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,
             AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,
             AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,
@@ -167,7 +167,7 @@ namespace CumulusUtils
             AxisType.Free
         };
 
-        internal readonly string[] PlotvarTypesRECENT = {
+        public readonly string[] PlotvarTypesRECENT = {
           "intemp", "dew", "apptemp", "feelslike", "wchill", "heatindex", "temp", "humidex",
           "wgust", "wspeed",
           "bearing", "avgbearing",
@@ -178,7 +178,7 @@ namespace CumulusUtils
           "evapotranspiration"
         };
 
-        internal readonly string[] PlotvarTypesALL = {
+        public readonly string[] PlotvarTypesALL = {
           "minTemp", "maxTemp", "avgTemp", "windChill", "maxDew", "minDew", "maxFeels", "minFeels",
           "maxGust", "windRun", "maxWind",
           "sunHours", "solarRad", "uvi",
@@ -189,7 +189,7 @@ namespace CumulusUtils
         };
 
         // Static because needed in ExtraSensors
-        static internal string[] PlotvarTypesEXTRA = {
+        public static string[] PlotvarTypesEXTRA = {
             "Temp1","Temp2","Temp3","Temp4","Temp5","Temp6","Temp7","Temp8","Temp9","Temp10",
             "Humidity1","Humidity2","Humidity3","Humidity4","Humidity5","Humidity6","Humidity7","Humidity8","Humidity9","Humidity10",
             "Dewpoint1","Dewpoint2","Dewpoint3","Dewpoint4","Dewpoint5","Dewpoint6","Dewpoint7","Dewpoint8","Dewpoint9","Dewpoint10",
@@ -204,7 +204,7 @@ namespace CumulusUtils
             "Lightning"
         };
 
-        internal readonly string[] DatafilesRECENT = {
+        public readonly string[] DatafilesRECENT = {
           "tempdata.json", "tempdata.json", "tempdata.json", "tempdata.json", "tempdata.json", "tempdata.json", "tempdata.json", "tempdata.json",
           "winddata.json", "winddata.json",
           "wdirdata.json", "wdirdata.json",
@@ -215,7 +215,7 @@ namespace CumulusUtils
           "CUserdataRECENT.json"
         };
 
-        internal readonly string[] DatafilesALL = {
+        public readonly string[] DatafilesALL = {
           "alldailytempdata.json","alldailytempdata.json","alldailytempdata.json","alldailytempdata.json",
           "alldailytempdata.json","alldailytempdata.json","alldailytempdata.json","alldailytempdata.json",
           "alldailywinddata.json","alldailywinddata.json", "alldailywinddata.json",
@@ -226,7 +226,7 @@ namespace CumulusUtils
           "CUserdataALL.json", "CUserdataALL.json", "CUserdataALL.json"
         };
 
-        internal readonly string[] DatafilesEXTRA = {
+        public readonly string[] DatafilesEXTRA = {
             "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
             "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
             "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
@@ -241,7 +241,7 @@ namespace CumulusUtils
             "extrasensorsdata.json"
         };
 
-        internal readonly string[] PlotvarKeywordRECENT = {
+        public readonly string[] PlotvarKeywordRECENT = {
           "InsideTemp", "Dewpoint", "ApparentTemp", "FeelsLike", "WindChill", "HeatIndex", "Temperature", "Humidex",
           "WindGust", "WindSpeed",
           "Bearing", "AverageBearing",
@@ -252,7 +252,7 @@ namespace CumulusUtils
           "EvapoTranspiration"
         };
 
-        internal readonly string[] PlotvarKeywordALL = {
+        public readonly string[] PlotvarKeywordALL = {
           "MinTemp", "MaxTemp", "AverageTemp", "AvgWindChill", /*"WindChill",*/ "MaxDewpoint", "MinDewpoint", "MaxFeelsLike", "MinFeelsLike",
           "MaxGust", "WindRun", "HighAvgWindSpeed", /* "WindSpeed",*/
           "SunHours", "SolarRadiation", "UVIndex",
@@ -262,7 +262,7 @@ namespace CumulusUtils
           "HeatingDegreeDays","CoolingDegreeDays","DayEVT" /*"EvapoTranspiration"*/
         };
 
-        static internal string[] PlotvarKeywordEXTRA = {
+        public static string[] PlotvarKeywordEXTRA = {
             "Temp1","Temp2","Temp3","Temp4","Temp5","Temp6","Temp7","Temp8","Temp9","Temp10",
             "Humidity1","Humidity2","Humidity3","Humidity4","Humidity5","Humidity6","Humidity7","Humidity8","Humidity9","Humidity10",
             "Dewpoint1","Dewpoint2","Dewpoint3","Dewpoint4","Dewpoint5","Dewpoint6","Dewpoint7","Dewpoint8","Dewpoint9","Dewpoint10",
@@ -277,34 +277,34 @@ namespace CumulusUtils
             "Lightning"
         };
 
-        internal readonly string[] ValidColumnRangeVars = {
+        public readonly string[] ValidColumnRangeVars = {
               "MinTemp", "MaxTemp", "AverageTemp", "MaxDewpoint", "MinDewpoint", "MaxFeelsLike", "MinFeelsLike",
               "MinBarometer", "MaxBarometer",
               "MinHumidity", "MaxHumidity"
             };
 
-        internal AxisType[] PlotvarAxis;
-        internal string[] PlotvarUnits;
-        internal string[] PlotvarTypes;
-        internal string[] PlotvarKeyword;
-        internal string[] Datafiles;
+        public AxisType[] PlotvarAxis;
+        public string[] PlotvarUnits;
+        public string[] PlotvarTypes;
+        public string[] PlotvarKeyword;
+        public string[] Datafiles;
 
-        internal readonly string[] PlotvarUnitsRECENT, PlotvarUnitsALL, PlotvarUnitsEXTRA;     // Init in constructor
-        internal readonly string[] LinetypeKeywords = { "Line", "SpLine", "Area", "Column", "Scatter", "ColumnRange" };
-        internal readonly string[] AxisKeywords = { "Temp", "Wind", "Distance", "Hours", "Solar", "UV", "Rain", "Rrate", "Pressure", "Humidity", "DegreeDays", "EVT", "Free", "AQ", "ppm" };
-        internal readonly string[] StatsTypeKeywords = { "SMA" };
+        public readonly string[] PlotvarUnitsRECENT, PlotvarUnitsALL, PlotvarUnitsEXTRA;     // Init in constructor
+        public readonly string[] LinetypeKeywords = { "Line", "SpLine", "Area", "Column", "Scatter", "ColumnRange" };
+        public readonly string[] AxisKeywords = { "Temp", "Wind", "Distance", "Hours", "Solar", "UV", "Rain", "Rrate", "Pressure", "Humidity", "DegreeDays", "EVT", "Free", "AQ", "ppm" };
+        public readonly string[] StatsTypeKeywords = { "SMA" };
 
         readonly CuSupport Sup;
         readonly float MaxPressure, MinPressure;
         readonly CultureInfo ci = CultureInfo.InvariantCulture;
 
-        internal string[] ClickEvents = new string[ 24 ] { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
+        public string[] ClickEvents = new string[ 24 ] { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
 
         #endregion
 
         #region Constructor
 
-        internal ChartsCompiler( CuSupport s )
+        public ChartsCompiler( CuSupport s )
         {
             // Constructor
             Sup = s;

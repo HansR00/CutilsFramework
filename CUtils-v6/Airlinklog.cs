@@ -30,7 +30,7 @@ using FluentFTP.Helpers;
 
 namespace CumulusUtils
 {
-    internal enum AirlinklogType
+    public enum AirlinklogType
     {
         DashSemicolonComma,   // date separator, ; fieldseparator, , decimal fraction
         SlashSemicolonComma,  // date separator, ; fieldseparator, , decimal fraction
@@ -39,7 +39,7 @@ namespace CumulusUtils
         SlashCommaPoint       // date separator, , fieldseparator, . decimal fraction
     };
 
-    internal enum AirlinklogFieldName
+    public enum AirlinklogFieldName
     {
         thisDate, thisTime,
         In_temp, In_hum,
@@ -52,7 +52,7 @@ namespace CumulusUtils
         Out_AQIpm2p5, Out_AQIpm2p5_1hr, Out_AQIpm2p5_3hr, Out_AQIpm2p5_24hr, Out_AQIpm2p5_nowcast, Out_AQIPm10, Out_AQIPm10_1hr, Out_AQIPm10_3hr, Out_AQIPm10_24hr, Out_AQIPm10_nowcast
     };
 
-    internal struct AirlinklogValue
+    public struct AirlinklogValue
     {
         public DateTime ThisDate { get; set; }
         public double In_temp { get; set; }
@@ -122,7 +122,7 @@ namespace CumulusUtils
         public bool Valid { get; set; }
     }
 
-    internal class Airlinklog : IDisposable
+    public class Airlinklog : IDisposable
     {
         private readonly AirlinklogType type;
         private readonly CuSupport Sup;
@@ -136,7 +136,7 @@ namespace CumulusUtils
         const int MaxErrors = 10;
         int ErrorCount;
 
-        internal Airlinklog( CuSupport s )
+        public Airlinklog( CuSupport s )
         {
             string line;
 
@@ -187,9 +187,9 @@ namespace CumulusUtils
 
             Sup.LogTraceInfoMessage( $"Airlinklog constructor: AirlinklogType is {type}" );
             enumFieldTypeNames = Enum.GetNames( typeof( AirlinklogFieldName ) );
-            IgnoreDataErrors = Sup.GetUtilsIniValue( "General", "IgnoreDataErrors", "true" ).Equals( "true", CUtils.cmp );
+            IgnoreDataErrors = Sup.GetUtilsIniValue( "General", "IgnoreDataErrors", "true" ).Equals( "true", CUtils.Cmp );
 
-            if ( AirlinklogList.Length >= 0 && Sup.GetUtilsIniValue( "AirLink", "CleanupAirlinkLogs", "false" ).Equals( "true", CUtils.cmp ) )
+            if ( AirlinklogList.Length >= 0 && Sup.GetUtilsIniValue( "AirLink", "CleanupAirlinkLogs", "false" ).Equals( "true", CUtils.Cmp ) )
             {
                 // We keep two month of data, the rest can be discarded
                 foreach ( string thisFile in AirlinklogList )
@@ -205,9 +205,9 @@ namespace CumulusUtils
             return;
         }
 
-        internal List<AirlinklogValue> MainAirLinkList;
+        public List<AirlinklogValue> MainAirLinkList;
 
-        internal List<AirlinklogValue> ReadAirlinklog()
+        public List<AirlinklogValue> ReadAirlinklog()
         {
             // Get the list of values starting datetim NOW to Now - period by user definition GraphHours in section Graphs in Cumulus.ini
             //
@@ -228,7 +228,7 @@ namespace CumulusUtils
             {
                 try
                 {
-                    timeStart = DateTime.ParseExact( Sup.GetUtilsIniValue( "General", "LastUploadTime", "" ), "dd/MM/yy HH:mm", CUtils.inv ).AddMinutes( 1 );
+                    timeStart = DateTime.ParseExact( Sup.GetUtilsIniValue( "General", "LastUploadTime", "" ), "dd/MM/yy HH:mm", CUtils.Inv ).AddMinutes( 1 );
                 }
                 catch
                 {
@@ -406,7 +406,6 @@ namespace CumulusUtils
             AirlinklogValue ThisValue = new AirlinklogValue();
 
             int FieldInUse = (int) AirlinklogFieldName.thisDate;
-            CultureInfo provider = CultureInfo.InvariantCulture;
 
             try
             {
@@ -414,7 +413,7 @@ namespace CumulusUtils
                 tmpDatestring = lineSplit[ FieldInUse ];
                 FieldInUse = (int) AirlinklogFieldName.thisTime;
                 tmpDatestring += " " + lineSplit[ FieldInUse ];
-                ThisValue.ThisDate = DateTime.ParseExact( tmpDatestring, "dd/MM/yy HH:mm", provider );
+                ThisValue.ThisDate = DateTime.ParseExact( tmpDatestring, "dd/MM/yy HH:mm", CUtils.Inv );
 
                 if ( ThisValue.ThisDate < StartTime )
                 {
@@ -427,167 +426,167 @@ namespace CumulusUtils
 
                     // Inside sensor
                     FieldInUse = (int) AirlinklogFieldName.In_temp;
-                    ThisValue.In_temp = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.In_temp = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.In_hum;
-                    ThisValue.In_hum = Convert.ToInt32( lineSplit[ FieldInUse ], provider );
+                    ThisValue.In_hum = Convert.ToInt32( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.In_pm1;
-                    ThisValue.In_pm1 = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.In_pm1 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.In_pm2p5;
-                    ThisValue.In_pm2p5 = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.In_pm2p5 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.In_pm2p5_1hr;
-                    ThisValue.In_pm2p5_1hr = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.In_pm2p5_1hr = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.In_pm2p5_3hr;
-                    ThisValue.In_pm2p5_3hr = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.In_pm2p5_3hr = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.In_pm2p5_24hr;
-                    ThisValue.In_pm2p5_24hr = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.In_pm2p5_24hr = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.In_pm2p5_nowcast;
-                    ThisValue.In_pm2p5_nowcast = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.In_pm2p5_nowcast = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.In_pm10;
-                    ThisValue.In_pm10 = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.In_pm10 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.In_pm10_1hr;
-                    ThisValue.In_pm10_1hr = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.In_pm10_1hr = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.In_pm10_3hr;
-                    ThisValue.In_pm10_3hr = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.In_pm10_3hr = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.In_pm10_24hr;
-                    ThisValue.In_pm10_24hr = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.In_pm10_24hr = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.In_pm10_nowcast;
-                    ThisValue.In_pm10_nowcast = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.In_pm10_nowcast = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.In_pct_1hr;
-                    ThisValue.In_pct_1hr = Convert.ToInt32( lineSplit[ FieldInUse ], provider );
+                    ThisValue.In_pct_1hr = Convert.ToInt32( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.In_pct_3hr;
-                    ThisValue.In_pct_3hr = Convert.ToInt32( lineSplit[ FieldInUse ], provider );
+                    ThisValue.In_pct_3hr = Convert.ToInt32( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.In_pct_24hr;
-                    ThisValue.In_pct_24hr = Convert.ToInt32( lineSplit[ FieldInUse ], provider );
+                    ThisValue.In_pct_24hr = Convert.ToInt32( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.In_pct_nowcast;
-                    ThisValue.In_pct_nowcast = Convert.ToInt32( lineSplit[ FieldInUse ], provider );
+                    ThisValue.In_pct_nowcast = Convert.ToInt32( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.In_AQIpm2p5;
-                    ThisValue.In_AQIpm2p5 = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.In_AQIpm2p5 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.In_AQIpm2p5_1hr;
-                    ThisValue.In_AQIpm2p5_1hr = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.In_AQIpm2p5_1hr = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.In_AQIpm2p5_3hr;
-                    ThisValue.In_AQIpm2p5_3hr = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.In_AQIpm2p5_3hr = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.In_pm10_24hr;
-                    ThisValue.In_AQIpm2p5_24hr = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.In_AQIpm2p5_24hr = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.In_AQIpm2p5_nowcast;
-                    ThisValue.In_AQIpm2p5_nowcast = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.In_AQIpm2p5_nowcast = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.In_AQIPm10;
-                    ThisValue.In_AQIPm10 = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.In_AQIPm10 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.In_AQIPm10_1hr;
-                    ThisValue.In_AQIPm10_1hr = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.In_AQIPm10_1hr = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.In_AQIPm10_3hr;
-                    ThisValue.In_AQIPm10_3hr = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.In_AQIPm10_3hr = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.In_AQIPm10_24hr;
-                    ThisValue.In_AQIPm10_24hr = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.In_AQIPm10_24hr = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.In_AQIPm10_nowcast;
-                    ThisValue.In_AQIPm10_nowcast = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.In_AQIPm10_nowcast = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     // Now the Out values
                     FieldInUse = (int) AirlinklogFieldName.Out_temp;
-                    ThisValue.Out_temp = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.Out_temp = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.Out_hum;
-                    ThisValue.Out_hum = Convert.ToInt32( lineSplit[ FieldInUse ], provider );
+                    ThisValue.Out_hum = Convert.ToInt32( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.Out_pm1;
-                    ThisValue.Out_pm1 = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.Out_pm1 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.Out_pm2p5;
-                    ThisValue.Out_pm2p5 = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.Out_pm2p5 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.Out_pm2p5_1hr;
-                    ThisValue.Out_pm2p5_1hr = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.Out_pm2p5_1hr = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.Out_pm2p5_3hr;
-                    ThisValue.Out_pm2p5_3hr = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.Out_pm2p5_3hr = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.Out_pm2p5_24hr;
-                    ThisValue.Out_pm2p5_24hr = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.Out_pm2p5_24hr = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.Out_pm2p5_nowcast;
-                    ThisValue.Out_pm2p5_nowcast = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.Out_pm2p5_nowcast = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.Out_pm10;
-                    ThisValue.Out_pm10 = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.Out_pm10 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.Out_pm10_1hr;
-                    ThisValue.Out_pm10_1hr = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.Out_pm10_1hr = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.Out_pm10_3hr;
-                    ThisValue.Out_pm10_3hr = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.Out_pm10_3hr = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.Out_pm10_24hr;
-                    ThisValue.Out_pm10_24hr = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.Out_pm10_24hr = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.Out_pm10_nowcast;
-                    ThisValue.Out_pm10_nowcast = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.Out_pm10_nowcast = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.Out_pct_1hr;
-                    ThisValue.Out_pct_1hr = Convert.ToInt32( lineSplit[ FieldInUse ], provider );
+                    ThisValue.Out_pct_1hr = Convert.ToInt32( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.Out_pct_3hr;
-                    ThisValue.Out_pct_3hr = Convert.ToInt32( lineSplit[ FieldInUse ], provider );
+                    ThisValue.Out_pct_3hr = Convert.ToInt32( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.Out_pct_24hr;
-                    ThisValue.Out_pct_24hr = Convert.ToInt32( lineSplit[ FieldInUse ], provider );
+                    ThisValue.Out_pct_24hr = Convert.ToInt32( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.Out_pct_nowcast;
-                    ThisValue.Out_pct_nowcast = Convert.ToInt32( lineSplit[ FieldInUse ], provider );
+                    ThisValue.Out_pct_nowcast = Convert.ToInt32( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.Out_AQIpm2p5;
-                    ThisValue.Out_AQIpm2p5 = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.Out_AQIpm2p5 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.Out_AQIpm2p5_1hr;
-                    ThisValue.Out_AQIpm2p5_1hr = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.Out_AQIpm2p5_1hr = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.Out_AQIpm2p5_3hr;
-                    ThisValue.Out_AQIpm2p5_3hr = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.Out_AQIpm2p5_3hr = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.Out_pm10_24hr;
-                    ThisValue.Out_AQIpm2p5_24hr = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.Out_AQIpm2p5_24hr = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.Out_AQIpm2p5_nowcast;
-                    ThisValue.Out_AQIpm2p5_nowcast = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.Out_AQIpm2p5_nowcast = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.Out_AQIPm10;
-                    ThisValue.Out_AQIPm10 = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.Out_AQIPm10 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.Out_AQIPm10_1hr;
-                    ThisValue.Out_AQIPm10_1hr = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.Out_AQIPm10_1hr = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.Out_AQIPm10_3hr;
-                    ThisValue.Out_AQIPm10_3hr = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.Out_AQIPm10_3hr = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.Out_AQIPm10_24hr;
-                    ThisValue.Out_AQIPm10_24hr = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.Out_AQIPm10_24hr = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     FieldInUse = (int) AirlinklogFieldName.Out_AQIPm10_nowcast;
-                    ThisValue.Out_AQIPm10_nowcast = Convert.ToDouble( lineSplit[ FieldInUse ], provider );
+                    ThisValue.Out_AQIPm10_nowcast = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
 
                     Sup.LogTraceVerboseMessage( "SetValues after adding the values:" );
                     Sup.LogTraceVerboseMessage( $"SetValues after adding the values: Original Line {line}" );

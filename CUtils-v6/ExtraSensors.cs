@@ -61,25 +61,24 @@ using System.Text;
 
 namespace CumulusUtils
 {
-    internal class ExtraSensors
+    public class ExtraSensors
     {
-        internal enum ExtraSensorType
+        public enum ExtraSensorType
         {
             Temperature, Humidity, DewPoint, SoilTemp, SoilMoisture, AirQuality, AirQualityAvg, UserTemp, LeafTemp, LeafWetness,
             CO2, CO2avg, CO2pm2p5, CO2pm2p5avg, CO2pm10, CO2pm10avg, CO2temp, CO2hum, External, Lightning
         }
 
-        internal struct ExtraSensor
+        public struct ExtraSensor
         {
-            internal string Name;
-            internal string PlotvarType;
-            internal int PlotvarIndex;
-            internal ExtraSensorType Type;
-            internal int SensorIndex;
-            internal int RTposition;
+            public string Name;
+            public string PlotvarType;
+            public int PlotvarIndex;
+            public ExtraSensorType Type;
+            public int SensorIndex;
+            public int RTposition;
         }
 
-        readonly CultureInfo inv = CultureInfo.InvariantCulture;
         readonly CuSupport Sup;
         ExtraSensor tmp;
         List<ExtraSensor> ExtraSensorList;
@@ -102,7 +101,7 @@ namespace CumulusUtils
         #endregion
 
         #region DoExtraSensors
-        internal void DoExtraSensors()
+        public void DoExtraSensors()
         {
             Sup.LogDebugMessage( "DoExtraSensors - Start" );
 
@@ -121,7 +120,7 @@ namespace CumulusUtils
 
         #region GenerateExtraSensorsModule
 
-        internal void GenerateExtraSensorsModule()
+        public void GenerateExtraSensorsModule()
         {
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.ExtraSensorsOutputFilename}", false, Encoding.UTF8 ) )
             {
@@ -317,7 +316,6 @@ namespace CumulusUtils
                             sb.AppendLine( $"    $('#ajxLightningTime').html(ExtraSensorRT[ {tmp.RTposition + 1} ] + ' ' + ExtraSensorRT[ {tmp.RTposition + 2} ]);" );
                             sb.AppendLine( $"    $('#ajxLightningTime').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
 
-                            //sb.AppendLine( $"    tmpDistance = ExtraSensorRT[ {tmp.RTposition + 3} ] * {Sup.StationDistance.Convert( Sup.StationDistance.Dim, DistanceDim.kilometer, 1 ).ToString( "F5", CultureInfo.InvariantCulture )};" );
                             sb.AppendLine( $"    $('#ajxLightningDistance').html(Math.round(ExtraSensorRT[ {tmp.RTposition + 3} ]) + ' {Sup.StationDistance.Text()}');" );
                             sb.AppendLine( $"    $('#ajxLightningDistance').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
                             sb.AppendLine( "  }" );
@@ -365,74 +363,93 @@ namespace CumulusUtils
                 buf.Append( $"<tr " +
                     $"style='background-color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarBackground", "#C5C55B" )}; " +
                     $"color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarText", "White" )}; width:100%'>" );
-                buf.Append( $"<th {thisPadding()}>Sensor name</th><th>Value</th></tr>" );
+                buf.Append( $"<th {thisPadding()}>{Sup.GetCUstringValue( "ExtraSensors", "SensorName", "Sensor Name", false )}</th>" +
+                    $"<th>{Sup.GetCUstringValue( "ExtraSensors", "Value", "Value", false )}</th></tr>" );
 
                 foreach ( ExtraSensor tmp in ExtraSensorList )
                 {
                     switch ( (int) tmp.Type )
                     {
                         case (int) ExtraSensorType.Temperature:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxExtraTemp{tmp.SensorIndex}'></td></tr>" );
+                            buf.Append( 
+                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxExtraTemp{tmp.SensorIndex}'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.DewPoint:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxExtraDP{tmp.SensorIndex}'></td></tr>" );
+                            buf.Append( 
+                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxExtraDP{tmp.SensorIndex}'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.Humidity:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxExtraHum{tmp.SensorIndex}'></td></tr>" );
+                            buf.Append( 
+                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxExtraHum{tmp.SensorIndex}'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.SoilTemp:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxSoilTemp{tmp.SensorIndex}'></td></tr>" );
+                            buf.Append( 
+                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxSoilTemp{tmp.SensorIndex}'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.SoilMoisture:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxSoilMoisture{tmp.SensorIndex}'></td></tr>" );
+                            buf.Append( 
+                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxSoilMoisture{tmp.SensorIndex}'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.AirQuality:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxAirQuality{tmp.SensorIndex}'></td></tr>" );
+                            buf.Append( 
+                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxAirQuality{tmp.SensorIndex}'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.AirQualityAvg:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxAirQualityAvg{tmp.SensorIndex}'></td></tr>" );
+                            buf.Append( 
+                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxAirQualityAvg{tmp.SensorIndex}'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.CO2:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxCO2'></td></tr>" );
+                            buf.Append( 
+                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.CO2avg:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxCO2-24h'></td></tr>" );
+                            buf.Append( 
+                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2-24h'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.CO2pm2p5:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxCO2pm2p5'></td></tr>" );
+                            buf.Append( 
+                                $"<tr {RowColour()}><td {thisPadding()} > {Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2pm2p5'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.CO2pm2p5avg:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxCO2pm2p5-24h'></td></tr>" );
+                            buf.Append( 
+                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2pm2p5-24h'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.CO2pm10:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxCO2pm10'></td></tr>" );
+                            buf.Append( 
+                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2pm10'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.CO2pm10avg:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxCO2pm10-24h'></td></tr>" );
+                            buf.Append( 
+                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2pm10-24h'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.CO2temp:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxCO2temp'></td></tr>" );
+                            buf.Append( 
+                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2temp'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.CO2hum:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxCO2hum'></td></tr>" );
+                            buf.Append( 
+                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2hum'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.UserTemp:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxUserTemp{tmp.SensorIndex}'></td></tr>" );
+                            buf.Append( 
+                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxUserTemp{tmp.SensorIndex}'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.LeafTemp:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxLeafTemp{tmp.SensorIndex}'></td></tr>" );
+                            buf.Append( 
+                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxLeafTemp{tmp.SensorIndex}'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.LeafWetness:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td id='ajxLeafWetness{tmp.SensorIndex}'></td></tr>" );
+                            buf.Append( 
+                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxLeafWetness{tmp.SensorIndex}'></td></tr>" );
                             break;
                         case (int) ExtraSensorType.External:
                             Sup.LogTraceWarningMessage( $"GenerateExtraSensorsModule: External realtime not implemented." );
                             break;
                         case (int) ExtraSensorType.Lightning:
-                            buf.Append( $"<tr {RowColour()} onclick='Do{tmp.Type}();'><td {thisPadding()}>{tmp.Name}</td><td></td></tr>" );
-                            buf.Append( $"<tr {RowColour()}><td {thisPadding()}>&nbsp;&nbsp;Strikes today</td><td id='ajxLightningStrikesToday'></td></tr>" );
-                            buf.Append( $"<tr {RowColour()}><td {thisPadding()}>&nbsp;&nbsp;Time last strike</td><td id='ajxLightningTime'></td></tr>" );
-                            buf.Append( $"<tr {RowColour()}><td {thisPadding()}>&nbsp;&nbsp;Distance last strike</td><td id='ajxLightningDistance'></td></tr>" );
+                            buf.Append( $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td></td></tr>" );
+                            buf.Append( $"<tr {RowColour()}><td {thisPadding()}>&nbsp;&nbsp;{Sup.GetCUstringValue( "Compiler", "StrikesToday", "Strikes today", false )}</td><td id='ajxLightningStrikesToday'></td></tr>" );
+                            buf.Append( $"<tr {RowColour()}><td {thisPadding()}>&nbsp;&nbsp;{Sup.GetCUstringValue( "Compiler", "TimeLastStrike", "Time last strike", false )}</td><td id='ajxLightningTime'></td></tr>" );
+                            buf.Append( $"<tr {RowColour()}><td {thisPadding()}>&nbsp;&nbsp;{Sup.GetCUstringValue( "Compiler", "DistanceLastStrike", "Distance last strike", false )}</td><td id='ajxLightningDistance'></td></tr>" );
                             break;
                         default:
                             Sup.LogTraceErrorMessage( $"GenerateExtraSensorsModule: At impossible Switch default generating the table" );
@@ -480,7 +497,7 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( $"GenerateExtraSensorsCharts: Testing UserModificationExtraSensorCharts: {Sup.GetUtilsIniValue( "ExtraSensors", "UserModificationExtraSensorCharts", "false" )}" );
 
-            if ( Sup.GetUtilsIniValue( "ExtraSensors", "UserModificationExtraSensorCharts", "false" ).Equals( "true", CUtils.cmp ) ) return;
+            if ( Sup.GetUtilsIniValue( "ExtraSensors", "UserModificationExtraSensorCharts", "false" ).Equals( "true", CUtils.Cmp ) ) return;
 
             CutilsCharts = File.ReadAllLines( $"{Sup.PathUtils}{Sup.CutilsChartsDef}" );
 
@@ -520,7 +537,7 @@ namespace CumulusUtils
                     $"{ExtraSensorList[ i ].Type} " +
                     $"{Sup.GetCUstringValue( "ExtraSensors", "Sensors", "Sensors", true )}" );
 
-                while ( i < ExtraSensorList.Count && ( ExtraSensorList[ i ].Type == currentType || thisKeyword.Substring( 0, 3 ).Equals( "CO2", CUtils.cmp ) ) )
+                while ( i < ExtraSensorList.Count && ( ExtraSensorList[ i ].Type == currentType || thisKeyword.Substring( 0, 3 ).Equals( "CO2", CUtils.Cmp ) ) )
                 {
                     if ( ExtraSensorList[ i ].Type == ExtraSensorType.External ) thisKeyword = ExtraSensorList[ i ].Name;
                     else thisKeyword = ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ];
@@ -562,14 +579,14 @@ namespace CumulusUtils
 
         #region GenerateExtraSensorDataJson
 
-        internal void GenerateExtraSensorDataJson()
+        public void GenerateExtraSensorDataJson()
         {
-            // Purpose is to create the JSON for the Airlink data and offering the possibility to do only that to accomodate the fact that
+            // Purpose is to create the JSON for the ExtraSensors data and offering the possibility to do only that to accomodate the fact that
             // CMX does not (and probably will never) generate that JSON like it generates the temperature JSON for graphing.
-            // CumulusUtils will only generate the AirLink JSON by issueing the command: "./utils/bin/cumulusutils.exe UserAskedData"
+            // CumulusUtils will only generate the ExtraSensors JSON by issueing the command: "./utils/bin/cumulusutils.exe UserAskedData"
 
             // When we are generating the module, the JSON is automatically generated and uploaded (in the main loop) as well
-            // So here we go: it has already been determined that an Airlink is present and that we need the data
+            // So here we go: it has already been determined that ExtraSensors are present and that we need the data
 
             StringBuilder sb = new StringBuilder();
 
@@ -595,7 +612,7 @@ namespace CumulusUtils
                     sb.Append( $"\"{thisSensor.Name}\":[" );
 
                     foreach ( ExternalExtraSensorslogValue entry in thisExternalList )
-                        sb.Append( $"[{CuSupport.DateTimeToJS( entry.ThisDate )},{entry.Value.ToString( "F2", inv )}]," );
+                        sb.Append( $"[{CuSupport.DateTimeToJS( entry.ThisDate )},{entry.Value.ToString( "F2", CUtils.Inv )}]," );
 
                     sb.Remove( sb.Length - 1, 1 );
                     sb.Append( $"]," );
@@ -617,38 +634,14 @@ namespace CumulusUtils
                         foreach ( ExtraSensorslogValue value in thisList )
                         {
                             double d = (double) Field.GetValue( value );
-                            sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d.ToString( "F2", inv )}]," );
+                            sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d.ToString( "F2", CUtils.Inv )}]," );
                         }
 
                         sb.Remove( sb.Length - 1, 1 );
                         sb.Append( $"]," );
                     }
-
-                    if ( thisSensor.Type == ExtraSensorType.CO2 )
-                    {
-                        for ( int i = 1; i < 8; i++ )
-                        {
-                            VariableName = ChartsCompiler.PlotvarTypesEXTRA[ thisSensor.PlotvarIndex + i ];
-
-                            if ( thisList.Count != 0 )
-                            {
-                                sb.AppendLine( $"\"{VariableName}\":[" );
-
-                                Field = thisList[ 0 ].GetType().GetProperty( VariableName );
-                                foreach ( ExtraSensorslogValue value in thisList )
-                                {
-                                    double d = (double) Field.GetValue( value );
-                                    sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d.ToString( "F2", inv )}]," );
-                                }
-
-                                sb.Remove( sb.Length - 1, 1 );
-                                sb.Append( $"]," );
-                            }
-                        }
-                    }
-                }
-            }
-
+                } // External or noraml ExtraSensor
+            } // Loop over ExtraSensors
 
             sb.Remove( sb.Length - 1, 1 );
             sb.Append( "}" );
@@ -1013,7 +1006,7 @@ namespace CumulusUtils
 
                 // And immediately set the name as default in the Language file so the chart legend becomes comprehensible
                 // and does not require additional user action
-                Sup.SetCUstringValue( "Compiler", tmp.PlotvarType, thisSensor );
+                _ = Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, thisSensor, false );
 
                 ExtraSensorList.Add( tmp );
             }
@@ -1023,7 +1016,7 @@ namespace CumulusUtils
 
         #region SensorCommunity Iframe
 
-        internal void CreateSensorCommunityMapIframeFile()
+        public void CreateSensorCommunityMapIframeFile()
         {
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.SensorCommunityOutputFilename}", false, Encoding.UTF8 ) )
             {

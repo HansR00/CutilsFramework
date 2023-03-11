@@ -32,7 +32,7 @@ namespace CumulusUtils
     // Yet Another Dafile Reader (Utils - Variation and inspired by Beteljuice and Murry Conarroe of Wildwood Weather)
     // Needed to get rid of PHP code
 
-    internal class Yadr : IDisposable
+    public class Yadr : IDisposable
     {
         readonly string[] Months;
 

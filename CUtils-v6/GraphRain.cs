@@ -34,7 +34,7 @@ namespace CumulusUtils
         {
             int i = 0, j;
             float sum = 0, movingAverage = 0, MaxYearlyRainAlltime = 0;
-            int period = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "PeriodMovingAverage", "180" ), inv );
+            int period = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "PeriodMovingAverage", "180" ), CUtils.Inv );
 
             Sup.LogDebugMessage( "GenDailyRainGraphData : starting" );
 
@@ -91,7 +91,7 @@ namespace CumulusUtils
 
             NormalUsage = Sup.GetUtilsIniValue( "Graphs", "UseNormalRainReference", "Normal" );
 
-            if ( NormalUsage.Equals( "Normal", CUtils.cmp ) || NormalUsage.Equals( "Both", CUtils.cmp ) )
+            if ( NormalUsage.Equals( "Normal", CUtils.Cmp ) || NormalUsage.Equals( "Both", CUtils.Cmp ) )
             {
                 StationNormal = true;
 
@@ -101,7 +101,7 @@ namespace CumulusUtils
                     string iniResult = Sup.GetCumulusIniValue( "NOAA", iniKeyName, "0.0" );
                     if ( iniResult.IndexOf( ',' ) > 0 )
                         iniResult = iniResult.Replace( ',', '.' );
-                    NOAARainNormYearAv += (float) Convert.ToDouble( iniResult, inv );
+                    NOAARainNormYearAv += (float) Convert.ToDouble( iniResult, CUtils.Inv );
                 }
 
                 YearlyValues.Add( NOAARainNormYearAv );
@@ -110,7 +110,7 @@ namespace CumulusUtils
             }
 
             // Use station Average
-            if ( NormalUsage.Equals( "StationAverage", CUtils.cmp ) || NormalUsage.Equals( "Both", CUtils.cmp ) )
+            if ( NormalUsage.Equals( "StationAverage", CUtils.Cmp ) || NormalUsage.Equals( "Both", CUtils.Cmp ) )
             {
                 List<float> tmp = new List<float>();
 
@@ -139,7 +139,7 @@ namespace CumulusUtils
             }
 
             thisBuffer.AppendLine( "    min: 0," );
-            thisBuffer.AppendLine( $"    max: {MaxYearlyRainAlltime.ToString( "F0", inv )}," );
+            thisBuffer.AppendLine( $"    max: {MaxYearlyRainAlltime.ToString( "F0", CUtils.Inv )}," );
             thisBuffer.AppendLine( "    title:" );
             thisBuffer.AppendLine( "    {" );
             thisBuffer.AppendLine( $"      text: '{Sup.GetCUstringValue( "Graphs", "DRY-axisOpposite2", "Accumulated Yearly Rain to date", true )} ({Sup.StationRain.Text()})'" );
@@ -150,12 +150,12 @@ namespace CumulusUtils
 
             if ( StationNormal )
             {
-                thisBuffer.AppendLine( $"        value: {NOAARainNormYearAv.ToString( "F1", inv )}," );
+                thisBuffer.AppendLine( $"        value: {NOAARainNormYearAv.ToString( "F1", CUtils.Inv )}," );
                 thisBuffer.AppendLine( "        zindex: 2," );
                 thisBuffer.AppendLine( "        color: 'red'," );
                 thisBuffer.AppendLine( "        dashStyle: 'shortdash'," );
                 thisBuffer.AppendLine( "        width: 2," );
-                thisBuffer.AppendLine( $"        label: {{ text: 'Normal Yearly Rainfall ({NOAARainNormYearAv.ToString( "F0", inv )})', align: 'left'  }}" );
+                thisBuffer.AppendLine( $"        label: {{ text: 'Normal Yearly Rainfall ({NOAARainNormYearAv.ToString( "F0", CUtils.Inv )})', align: 'left'  }}" );
             }
 
             if ( StationAverage && StationNormal )
@@ -163,12 +163,12 @@ namespace CumulusUtils
 
             if ( StationAverage ) // Must be StationAverage
             {
-                thisBuffer.AppendLine( $"      value: {StationRainYearAv.ToString( "F1", inv )}," );
+                thisBuffer.AppendLine( $"      value: {StationRainYearAv.ToString( "F1", CUtils.Inv )}," );
                 thisBuffer.AppendLine( "      zindex: 2," );
                 thisBuffer.AppendLine( "      color: 'green'," );
                 thisBuffer.AppendLine( "      dashStyle: 'shortdash'," );
                 thisBuffer.AppendLine( "      width: 2," );
-                thisBuffer.AppendLine( $"      label: {{ text: 'Station Yearly Rainfall ({StationRainYearAv.ToString( "F0", inv )})', align: 'right', textAlign: 'right' }}" );
+                thisBuffer.AppendLine( $"      label: {{ text: 'Station Yearly Rainfall ({StationRainYearAv.ToString( "F0", CUtils.Inv )})', align: 'right', textAlign: 'right' }}" );
             }
 
             thisBuffer.AppendLine( "    }] " ); // closing the plotLines
@@ -278,7 +278,7 @@ namespace CumulusUtils
 
             // Fill the Normal array - from tradition this is named after the NOAA but it can be from any Meteo organisation
 
-            if ( NormalUsage.Equals( "Normal", CUtils.cmp ) || NormalUsage.Equals( "Both", CUtils.cmp ) )
+            if ( NormalUsage.Equals( "Normal", CUtils.Cmp ) || NormalUsage.Equals( "Both", CUtils.Cmp ) )
             {
                 StationNormal = true;
 
@@ -288,14 +288,14 @@ namespace CumulusUtils
                     string iniResult = Sup.GetCumulusIniValue( "NOAA", iniKeyName, "0.0" );
                     if ( iniResult.IndexOf( ',' ) > 0 )
                         iniResult = iniResult.Replace( ',', '.' );
-                    NOAARainNorm[ i - 1 ] = (float) Convert.ToDouble( iniResult, inv );
+                    NOAARainNorm[ i - 1 ] = (float) Convert.ToDouble( iniResult, CUtils.Inv );
 
-                    Sup.LogTraceInfoMessage( $" Normal values: {iniKeyName} -> {NOAARainNorm[ i - 1 ].ToString( "F1", inv )}" );
+                    Sup.LogTraceInfoMessage( $" Normal values: {iniKeyName} -> {NOAARainNorm[ i - 1 ].ToString( "F1", CUtils.Inv )}" );
                 }
             }
 
             // Use station Average
-            if ( NormalUsage.Equals( "StationAverage", CUtils.cmp ) || NormalUsage.Equals( "Both", CUtils.cmp ) )
+            if ( NormalUsage.Equals( "StationAverage", CUtils.Cmp ) || NormalUsage.Equals( "Both", CUtils.Cmp ) )
             {
                 StationAverage = true;
 
@@ -321,7 +321,7 @@ namespace CumulusUtils
                     else
                         NOAARainStationAv[ i - 1 ] = -1;
 
-                    Sup.LogTraceInfoMessage( $" Station Average values: {Enum.GetNames( typeof( Months ) )[ i - 1 ]} -> {NOAARainNorm[ i - 1 ].ToString( "F1", inv )}" );
+                    Sup.LogTraceInfoMessage( $" Station Average values: {Enum.GetNames( typeof( Months ) )[ i - 1 ]} -> {NOAARainNorm[ i - 1 ].ToString( "F1", CUtils.Inv )}" );
                 }
             }
 
@@ -461,7 +461,7 @@ namespace CumulusUtils
                 else
                     PrintFirstAccolades = true;
 
-                sb.Append( $"      name: '{years[ counter ].ToString( inv )}', \n" );
+                sb.Append( $"      name: '{years[ counter ].ToString( CUtils.Inv )}', \n" );
 
                 if ( counter >= YearValues.Count - maxNrOfSeriesVisibleInGraph ) { sb.Append( "      visible: true,\n" ); }
                 else { sb.Append( "      visible: false,\n" ); }
@@ -552,7 +552,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( $"    text: '{Sup.GetCUstringValue( "Graphs", "YRSRainRange", "Rain range", true )} ({Sup.StationRain.Text()})'" );
             thisBuffer.AppendLine( "  }," );
             thisBuffer.AppendLine( $"  min: 0.0," );
-            thisBuffer.AppendLine( $"  max: {maxRain.ToString( "F2", inv )}" );
+            thisBuffer.AppendLine( $"  max: {maxRain.ToString( "F2", CUtils.Inv )}" );
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "tooltip:" );
             thisBuffer.AppendLine( "{" );
@@ -595,7 +595,7 @@ namespace CumulusUtils
             for ( int i = 0; i < years.Count; i++ )
             {
                 // minrain[i] is replaced by 0, can't have subzero rain
-                sb.Append( $"[{0.ToString( "F2", inv )},{maxrain[ i ].ToString( "F2", inv )}]," );
+                sb.Append( $"[{0.ToString( "F2", CUtils.Inv )},{maxrain[ i ].ToString( "F2", CUtils.Inv )}]," );
             }
             sb.Remove( sb.Length - 1, 1 );
             thisBuffer.AppendLine( $"{sb}" );
@@ -610,7 +610,7 @@ namespace CumulusUtils
             sb.Clear();
             for ( int i = 0; i < years.Count; i++ )
             {
-                sb.Append( $"[{average[ i ].ToString( "F2", inv )}]," );
+                sb.Append( $"[{average[ i ].ToString( "F2", CUtils.Inv )}]," );
             }
             sb.Remove( sb.Length - 1, 1 );
             thisBuffer.AppendLine( $"{sb}" );
@@ -628,8 +628,8 @@ namespace CumulusUtils
             {
                 float AvMinusStddev = average[ i ] - stddev[ i ];
 
-                sb.Append( $"[{( AvMinusStddev < 0.0 ? 0.ToString( "F2", inv ) : AvMinusStddev.ToString( "F2", inv ) )}," +
-                    $"{( average[ i ] + stddev[ i ] ).ToString( "F2", inv )}]," );
+                sb.Append( $"[{( AvMinusStddev < 0.0 ? 0.ToString( "F2", CUtils.Inv ) : AvMinusStddev.ToString( "F2", CUtils.Inv ) )}," +
+                    $"{( average[ i ] + stddev[ i ] ).ToString( "F2", CUtils.Inv )}]," );
             }
 
             sb.Remove( sb.Length - 1, 1 );
@@ -710,7 +710,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( $"    text: '{Sup.GetCUstringValue( "Graphs", "YRSRainRange", "Rain range", true )} ({Sup.StationRain.Text()})'" );
             thisBuffer.AppendLine( "  }," );
             thisBuffer.AppendLine( $"  min: 0.0," );
-            thisBuffer.AppendLine( $"  max: {maxRain.ToString( "F2", inv )}" );
+            thisBuffer.AppendLine( $"  max: {maxRain.ToString( "F2", CUtils.Inv )}" );
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "tooltip:" );
             thisBuffer.AppendLine( "{" );
@@ -752,7 +752,7 @@ namespace CumulusUtils
             sb.Clear();
 
             for ( int i = 0; i < years.Count; i++ )
-                sb.Append( $"[0.0,{maxrain[ i ].ToString( "F2", inv )}]," );
+                sb.Append( $"[0.0,{maxrain[ i ].ToString( "F2", CUtils.Inv )}]," );
 
             sb.Remove( sb.Length - 1, 1 );
             thisBuffer.AppendLine( $"{sb}" );
@@ -767,7 +767,7 @@ namespace CumulusUtils
             sb.Clear();
             for ( int i = 0; i < years.Count; i++ )
             {
-                sb.Append( $"[{average[ i ].ToString( "F2", inv )}]," );
+                sb.Append( $"[{average[ i ].ToString( "F2", CUtils.Inv )}]," );
             }
             sb.Remove( sb.Length - 1, 1 );
             thisBuffer.AppendLine( $"{sb}" );
@@ -784,8 +784,8 @@ namespace CumulusUtils
             {
                 float AvMinusStddev = average[ i ] - stddev[ i ];
 
-                sb.Append( $"[{( AvMinusStddev < 0.0 ? 0.ToString( "F2", inv ) : AvMinusStddev.ToString( "F2", inv ) )}," +
-                    $"{( average[ i ] + stddev[ i ] ).ToString( "F2", inv )}]," );
+                sb.Append( $"[{( AvMinusStddev < 0.0 ? 0.ToString( "F2", CUtils.Inv ) : AvMinusStddev.ToString( "F2", CUtils.Inv ) )}," +
+                    $"{( average[ i ] + stddev[ i ] ).ToString( "F2", CUtils.Inv )}]," );
             }
             sb.Remove( sb.Length - 1, 1 );
             thisBuffer.AppendLine( $"{sb}" );

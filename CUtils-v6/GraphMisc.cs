@@ -36,7 +36,7 @@ namespace CumulusUtils
         {
             int i = 0, j;
             float sum = 0, movingAverage = 0;
-            int period = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "PeriodMovingAverage", "180" ), inv );
+            int period = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "PeriodMovingAverage", "180" ), CUtils.Inv );
 
             Sup.LogDebugMessage( "GenDailyEVTGraphData : starting" );
 
@@ -252,7 +252,7 @@ namespace CumulusUtils
                 if ( counter > 0 )
                     sb.Append( "},{\n" );
 
-                sb.Append( $"      name: '{years[ counter ].ToString( inv )}', \n" );
+                sb.Append( $"      name: '{years[ counter ].ToString( CUtils.Inv )}', \n" );
 
                 if ( counter >= YearValues.Count - maxNrOfSeriesVisibleInGraph ) { sb.Append( "      visible: true,\n" ); }
                 else { sb.Append( "      visible: false,\n" ); }
@@ -285,7 +285,7 @@ namespace CumulusUtils
         private void GenTempSum( List<DayfileValue> ThisList, StringBuilder thisBuffer )
         {
             float TempSum;
-            float Latitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Latitude", "" ), inv );
+            float Latitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Latitude", "" ), CUtils.Inv );
             bool NorthernHemisphere = Latitude >= 0;
             DateTime StartDate, EndDate;
 
@@ -414,7 +414,7 @@ namespace CumulusUtils
         {
             float TempSum;
             float TempReference = Convert.ToSingle( Sup.GetUtilsIniValue( "Graphs", "GrowingDegreeDaysReferenceTemp", "5" ) );
-            float Latitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Latitude", "" ), inv );
+            float Latitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Latitude", "" ), CUtils.Inv );
             bool NorthernHemisphere = Latitude >= 0;
             DateTime StartDate, EndDate;
 
@@ -540,17 +540,17 @@ namespace CumulusUtils
 
         struct YearSeasons
         {
-            internal int year;
-            internal int Winter1;
-            internal int Spring;
-            internal int Summer;
-            internal int Autumn;
-            internal int Winter2;
+            public int year;
+            public int Winter1;
+            public int Spring;
+            public int Summer;
+            public int Autumn;
+            public int Winter2;
         }
 
         private void YearlySeasons( List<DayfileValue> ThisList, StringBuilder thisBuffer )
         {
-            float Latitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Latitude", "" ), inv );
+            float Latitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Latitude", "" ), CUtils.Inv );
             bool NorthernHemisphere = Latitude >= 0;
             DateTime StartDate, EndDate;
 
@@ -796,7 +796,7 @@ namespace CumulusUtils
         {
             float sumCumulusAverage = 0, sumMinMaxAverage = 0;
 
-            int period = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "PeriodMovingAverage", "180" ), inv );
+            int period = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "PeriodMovingAverage", "180" ), CUtils.Inv );
 
             Sup.LogDebugMessage( "GenerateClashOfAverages : starting" );
 

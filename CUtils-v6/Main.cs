@@ -154,60 +154,60 @@ namespace CumulusUtils
         private bool DoExtraSensors;
         private bool DoCustomLogs;
 
-        public static StringComparison cmp = StringComparison.OrdinalIgnoreCase;
-        public static CultureInfo inv = CultureInfo.InvariantCulture;
+        public static StringComparison Cmp = StringComparison.OrdinalIgnoreCase;
+        public static CultureInfo Inv = CultureInfo.InvariantCulture;
 
         public static CuSupport Sup { get; set; }
         public static InetSupport Isup { get; set; }
 
-        static public bool Thrifty { get; private set; }
-        static public bool ThriftyRecordsDirty { get; set; }
-        static public bool ThriftyTop10RecordsDirty { get; set; }
-        static public int ThriftyTop10RecordsPeriod { get; private set; }
-        static public bool ThriftyDayRecordsDirty { get; set; }
-        static public bool ThriftyRainGraphsDirty { get; set; }
-        static public int ThriftyRainGraphsPeriod { get; private set; }
-        static public bool ThriftyTempGraphsDirty { get; set; }
-        static public int ThriftyTempGraphsPeriod { get; private set; }
-        static public bool ThriftyWindGraphsDirty { get; set; }
-        static public int ThriftyWindGraphsPeriod { get; private set; }
-        static public bool ThriftySolarGraphsDirty { get; set; }
-        static public int ThriftySolarGraphsPeriod { get; private set; }
-        static public bool ThriftyMiscGraphsDirty { get; set; }
-        static public int ThriftyMiscGraphsPeriod { get; private set; }
+        public static bool Thrifty { get; private set; }
+        public static bool ThriftyRecordsDirty { get; set; }
+        public static bool ThriftyTop10RecordsDirty { get; set; }
+        public static int ThriftyTop10RecordsPeriod { get; private set; }
+        public static bool ThriftyDayRecordsDirty { get; set; }
+        public static bool ThriftyRainGraphsDirty { get; set; }
+        public static int ThriftyRainGraphsPeriod { get; private set; }
+        public static bool ThriftyTempGraphsDirty { get; set; }
+        public static int ThriftyTempGraphsPeriod { get; private set; }
+        public static bool ThriftyWindGraphsDirty { get; set; }
+        public static int ThriftyWindGraphsPeriod { get; private set; }
+        public static bool ThriftySolarGraphsDirty { get; set; }
+        public static int ThriftySolarGraphsPeriod { get; private set; }
+        public static bool ThriftyMiscGraphsDirty { get; set; }
+        public static int ThriftyMiscGraphsPeriod { get; private set; }
 
-        static public bool DoWebsite { get; set; }
-        static public bool DoLibraryIncludes { get; set; }
-        static public bool DojQueryInclude { get; set; }
-        static public bool MapParticipant { get; private set; }
-        static public bool HasRainGraphMenu { get; set; }
-        static public bool HasTempGraphMenu { get; set; }
-        static public bool HasWindGraphMenu { get; set; }
-        static public bool HasSolarGraphMenu { get; set; }
-        static public bool HasMiscGraphMenu { get; set; }
-        static public bool HasStationMapMenu { get; set; }
-        static public bool HasMeteoCamMenu { get; set; }
-        static public bool CheckOnlyAsked { get; set; }
+        public static bool DoWebsite { get; set; }
+        public static bool DoLibraryIncludes { get; set; }
+        public static bool DojQueryInclude { get; set; }
+        public static bool MapParticipant { get; private set; }
+        public static bool HasRainGraphMenu { get; set; }
+        public static bool HasTempGraphMenu { get; set; }
+        public static bool HasWindGraphMenu { get; set; }
+        public static bool HasSolarGraphMenu { get; set; }
+        public static bool HasMiscGraphMenu { get; set; }
+        public static bool HasStationMapMenu { get; set; }
+        public static bool HasMeteoCamMenu { get; set; }
+        public static bool CheckOnlyAsked { get; set; }
 
         // Check for presence of optional sensors 
-        static public bool HasSolar { get; set; }
-        static public bool ShowUV { get; set; }
-        static public bool HasAirLink { get; set; }
-        static public bool HasExtraSensors { get; set; }
-        static public bool HasCustomLogs { get; set; }
-        static public bool ParticipatesSensorCommunity { get; set; }
-        static public DateTime RunStarted { get; private set; }
-        static public DateTime StartOfObservations { get; set; }
-        static public bool CanDoMap { get; set; }
-        static internal HelpTexts ChartHelp { get; private set; }
-        static public int HoursInGraph { get; set; }
-        static public int DaysInGraph { get; set; }
-        static public int LogIntervalInMinutes { get; set; }
-        static public int FTPIntervalInMinutes { get; set; }
+        public static bool HasSolar { get; set; }
+        public static bool ShowUV { get; set; }
+        public static bool HasAirLink { get; set; }
+        public static bool HasExtraSensors { get; set; }
+        public static bool HasCustomLogs { get; set; }
+        public static bool ParticipatesSensorCommunity { get; set; }
+        public static DateTime RunStarted { get; private set; }
+        public static DateTime StartOfObservations { get; set; }
+        public static bool CanDoMap { get; set; }
+        public static HelpTexts ChartHelp { get; private set; }
+        public static int HoursInGraph { get; set; }
+        public static int DaysInGraph { get; set; }
+        public static int LogIntervalInMinutes { get; set; }
+        public static int FTPIntervalInMinutes { get; set; }
 
-        static public int[] PossibleIntervals = { 1, 5, 10, 15, 20, 30 };
+        public static int[] PossibleIntervals = { 1, 5, 10, 15, 20, 30 };
 
-        static internal List<DayfileValue> MainList = new List<DayfileValue>();
+        public static List<DayfileValue> MainList = new List<DayfileValue>();
 
         #region Main
         private static async Task Main( string[] args )
@@ -250,13 +250,13 @@ namespace CumulusUtils
 
                 // So, here we go... for FluentFTP
                 // The only time CuSupport is instantiated; Can't be in the different classes
-                if ( Sup.GetUtilsIniValue( "FTP site", "FtpLog", "Off" ).Equals( "On", cmp ) )
+                if ( Sup.GetUtilsIniValue( "FTP site", "FtpLog", "Off" ).Equals( "On", CUtils.Cmp ) )
                 {
                     FtpTrace.LogPassword = false;
                     FtpTrace.LogUserName = false;
                     FtpTrace.LogIP = false;
 
-                    FtpListener = new TextWriterTraceListener( $"utils/utilslog/{DateTime.Now.ToString( "yyMMddHHmm", inv )}FTPlog.txt" );
+                    FtpListener = new TextWriterTraceListener( $"utils/utilslog/{DateTime.Now.ToString( "yyMMddHHmm", CUtils.Inv )}FTPlog.txt" );
                     FtpTrace.AddListener( FtpListener );
                 }
 
@@ -279,12 +279,12 @@ namespace CumulusUtils
                 ThriftyWindGraphsDirty = false;
                 ThriftyMiscGraphsDirty = false;
 
-                ThriftyTop10RecordsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "Top10RecordsPeriod", "1" ), inv );
-                ThriftyRainGraphsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "RainGraphsPeriod", "1" ), inv );
-                ThriftyTempGraphsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "TempGraphsPeriod", "1" ), inv );
-                ThriftyWindGraphsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "WindGraphsPeriod", "1" ), inv );
-                ThriftySolarGraphsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "SolarGraphsPeriod", "1" ), inv );
-                ThriftyMiscGraphsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "MiscGraphsPeriod", "1" ), inv );
+                ThriftyTop10RecordsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "Top10RecordsPeriod", "1" ), CUtils.Inv );
+                ThriftyRainGraphsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "RainGraphsPeriod", "1" ), CUtils.Inv );
+                ThriftyTempGraphsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "TempGraphsPeriod", "1" ), CUtils.Inv );
+                ThriftyWindGraphsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "WindGraphsPeriod", "1" ), CUtils.Inv );
+                ThriftySolarGraphsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "SolarGraphsPeriod", "1" ), CUtils.Inv );
+                ThriftyMiscGraphsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "MiscGraphsPeriod", "1" ), CUtils.Inv );
 
                 if ( Environment.OSVersion.Platform.Equals( PlatformID.Unix ) )
                 {
@@ -297,18 +297,18 @@ namespace CumulusUtils
                     CanDoMap = true;
 
 
-                HasStationMapMenu = Sup.GetUtilsIniValue( "StationMap", "StationMapMenu", "true" ).Equals( "true", cmp );
-                HasMeteoCamMenu = Sup.GetUtilsIniValue( "MeteoCam", "MeteoCamMenu", "true" ).Equals( "true", cmp );
-                HasExtraSensors = Sup.GetUtilsIniValue( "ExtraSensors", "ExtraSensors", "false" ).Equals( "true", cmp ) &&
+                HasStationMapMenu = Sup.GetUtilsIniValue( "StationMap", "StationMapMenu", "true" ).Equals( "true", CUtils.Cmp );
+                HasMeteoCamMenu = Sup.GetUtilsIniValue( "MeteoCam", "MeteoCamMenu", "true" ).Equals( "true", CUtils.Cmp );
+                HasExtraSensors = Sup.GetUtilsIniValue( "ExtraSensors", "ExtraSensors", "false" ).Equals( "true", CUtils.Cmp ) &&
                     Sup.GetCumulusIniValue( "Station", "LogExtraSensors", "" ).Equals( "1" );
-                HasCustomLogs = Sup.GetUtilsIniValue( "CustomLogs", "CustomLogs", "false" ).Equals( "true", cmp ) &&
+                HasCustomLogs = Sup.GetUtilsIniValue( "CustomLogs", "CustomLogs", "false" ).Equals( "true", CUtils.Cmp ) &&
                     ( Sup.GetCumulusIniValue( "CustomLogs", "IntervalEnabled0", "" ).Equals( "1" ) || Sup.GetCumulusIniValue( "CustomLogs", "DailyEnabled0", "" ).Equals( "1" ) );
 
-                ParticipatesSensorCommunity = Sup.GetUtilsIniValue( "ExtraSensors", "ParticipatesSensorCommunity", "false" ).Equals( "true", cmp );
-                MapParticipant = Sup.GetUtilsIniValue( "Maps", "Participant", "true" ).Equals( "true", cmp );
-                HasSolar = Sup.GetUtilsIniValue( "Website", "ShowSolar", "true" ).Equals( "true", cmp ); // Is an indirect determination set by the user only in  cutils
-                DoLibraryIncludes = Sup.GetUtilsIniValue( "General", "DoLibraryIncludes", "false" ).Equals( "true", cmp ); // Do we need the libs??
-                DojQueryInclude = Sup.GetUtilsIniValue( "General", "GeneratejQueryInclude", "false" ).Equals( "true", cmp );
+                ParticipatesSensorCommunity = Sup.GetUtilsIniValue( "ExtraSensors", "ParticipatesSensorCommunity", "false" ).Equals( "true", CUtils.Cmp );
+                MapParticipant = Sup.GetUtilsIniValue( "Maps", "Participant", "true" ).Equals( "true", CUtils.Cmp );
+                HasSolar = Sup.GetUtilsIniValue( "Website", "ShowSolar", "true" ).Equals( "true", CUtils.Cmp ); // Is an indirect determination set by the user only in  cutils
+                DoLibraryIncludes = Sup.GetUtilsIniValue( "General", "DoLibraryIncludes", "false" ).Equals( "true", CUtils.Cmp ); // Do we need the libs??
+                DojQueryInclude = Sup.GetUtilsIniValue( "General", "GeneratejQueryInclude", "false" ).Equals( "true", CUtils.Cmp );
 
                 bool AirLinkIn = Sup.GetCumulusIniValue( "AirLink", "In-Enabled", "0" ).Equals( "1" );
                 bool AirLinkOut = Sup.GetCumulusIniValue( "AirLink", "Out-Enabled", "0" ).Equals( "1" );
@@ -316,8 +316,7 @@ namespace CumulusUtils
 
                 HoursInGraph = Convert.ToInt32( Sup.GetCumulusIniValue( "Graphs", "GraphHours", "" ) );
                 DaysInGraph = Convert.ToInt32( Sup.GetCumulusIniValue( "Graphs", "ChartMaxDays", "" ) );
-                //int[] PossibleIntervals = { 1, 5, 10, 15, 20, 30 }; see declaration
-                LogIntervalInMinutes = PossibleIntervals[ Convert.ToInt32( Sup.GetCumulusIniValue( "Station", "DataLogInterval", "" ), CUtils.inv ) ];
+                LogIntervalInMinutes = PossibleIntervals[ Convert.ToInt32( Sup.GetCumulusIniValue( "Station", "DataLogInterval", "" ), CUtils.Inv ) ];
                 FTPIntervalInMinutes = Convert.ToInt32( Sup.GetCumulusIniValue( "FTP site", "UpdateInterval", "" ) );
                 DaysInGraph = Convert.ToInt32( Sup.GetCumulusIniValue( "Graphs", "ChartMaxDays", "" ) );
 
@@ -412,7 +411,7 @@ namespace CumulusUtils
             if ( string.IsNullOrEmpty( tmp ) ) StartOfObservations = MainList.Select( x => x.ThisDate ).Min();
             else
             {
-                StartOfObservations = DateTime.ParseExact( tmp, "dd/MM/yy", inv );
+                StartOfObservations = DateTime.ParseExact( tmp, "dd/MM/yy", CUtils.Inv );
 
                 int i = MainList.RemoveAll( p => p.ThisDate < StartOfObservations );
                 Sup.LogTraceInfoMessage( $"CumulusUtils : RecordsBeganDate used: {StartOfObservations}, Number of days removed from list: {i}" );
@@ -875,7 +874,7 @@ namespace CumulusUtils
                     }
 
                     // No matter what happened, set the upload date/time
-                    Sup.SetUtilsIniValue( "General", "LastUploadTime", tmpTimeEnd.ToString( "dd/MM/yy HH:mm", CUtils.inv ) );
+                    Sup.SetUtilsIniValue( "General", "LastUploadTime", tmpTimeEnd.ToString( "dd/MM/yy HH:mm", CUtils.Inv ) );
 
 
 #if TIMING
@@ -1091,7 +1090,7 @@ namespace CumulusUtils
             {
                 Sup.LogDebugMessage( $" CommandLineArgs : handling arg: {s}" );
 
-                if ( s.Equals( "Website", cmp ) )
+                if ( s.Equals( "Website", CUtils.Cmp ) )
                 {
                     DoSystemChk = true;
                     DoTop10 = true;
@@ -1114,35 +1113,35 @@ namespace CumulusUtils
                 }
                 else
                 {
-                    if ( s.Equals( "Thrifty", cmp ) )
+                    if ( s.Equals( "Thrifty", CUtils.Cmp ) )
                     {
                         Thrifty = true;
                     }
                     else
                     {
-                        if ( s.Equals( "Top10", cmp ) ) DoTop10 = true;
-                        if ( s.Equals( "pwsFWI", cmp ) ) DoPwsFWI = true;
-                        if ( s.Equals( "Sysinfo", cmp ) ) DoSystemChk = true;
-                        if ( s.Equals( "Graphs", cmp ) ) DoGraphs = true;
-                        if ( s.Equals( "CreateMap", cmp ) ) DoCreateMap = true;    // Undocumented feature only for the keeper of the map
-                        if ( s.Equals( "Yadr", cmp ) ) DoYadr = true;
-                        if ( s.Equals( "Records", cmp ) ) DoRecords = true;
-                        if ( s.Equals( "NOAA", cmp ) ) DoNOAA = true;
-                        if ( s.Equals( "DayRecords", cmp ) ) DoDayRecords = true;
-                        if ( s.Equals( "CheckOnly", cmp ) ) DoCheckOnly = true;
-                        if ( s.Equals( "Forecast", cmp ) ) DoForecast = true;
-                        if ( s.Equals( "UserReports", cmp ) ) DoUserReports = true;
-                        if ( s.Equals( "StationMap", cmp ) ) DoStationMap = true;
-                        if ( s.Equals( "MeteoCam", cmp ) ) DoMeteoCam = true;
-                        if ( s.Equals( "AirLink", cmp ) ) DoAirLink = true;
-                        if ( s.Equals( "CompileOnly", cmp ) ) DoCompileOnly = true;
-                        if ( s.Equals( "ExtraSensors", cmp ) )
+                        if ( s.Equals( "Top10", CUtils.Cmp ) ) DoTop10 = true;
+                        if ( s.Equals( "pwsFWI", CUtils.Cmp ) ) DoPwsFWI = true;
+                        if ( s.Equals( "Sysinfo", CUtils.Cmp ) ) DoSystemChk = true;
+                        if ( s.Equals( "Graphs", CUtils.Cmp ) ) DoGraphs = true;
+                        if ( s.Equals( "CreateMap", CUtils.Cmp ) ) DoCreateMap = true;    // Undocumented feature only for the keeper of the map
+                        if ( s.Equals( "Yadr", CUtils.Cmp ) ) DoYadr = true;
+                        if ( s.Equals( "Records", CUtils.Cmp ) ) DoRecords = true;
+                        if ( s.Equals( "NOAA", CUtils.Cmp ) ) DoNOAA = true;
+                        if ( s.Equals( "DayRecords", CUtils.Cmp ) ) DoDayRecords = true;
+                        if ( s.Equals( "CheckOnly", CUtils.Cmp ) ) DoCheckOnly = true;
+                        if ( s.Equals( "Forecast", CUtils.Cmp ) ) DoForecast = true;
+                        if ( s.Equals( "UserReports", CUtils.Cmp ) ) DoUserReports = true;
+                        if ( s.Equals( "StationMap", CUtils.Cmp ) ) DoStationMap = true;
+                        if ( s.Equals( "MeteoCam", CUtils.Cmp ) ) DoMeteoCam = true;
+                        if ( s.Equals( "AirLink", CUtils.Cmp ) ) DoAirLink = true;
+                        if ( s.Equals( "CompileOnly", CUtils.Cmp ) ) DoCompileOnly = true;
+                        if ( s.Equals( "ExtraSensors", CUtils.Cmp ) )
                         {
                             DoExtraSensors = true;
                             DoCompileOnly = true;  // Implicit for Extra Sensors
                         }
-                        if ( s.Equals( "UserAskedData", cmp ) ) DoUserAskedData = true;
-                        if ( s.Equals( "CustomLogs", cmp ) ) DoCustomLogs = true;
+                        if ( s.Equals( "UserAskedData", CUtils.Cmp ) ) DoUserAskedData = true;
+                        if ( s.Equals( "CustomLogs", CUtils.Cmp ) ) DoCustomLogs = true;
                     }
                 }
             }

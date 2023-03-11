@@ -31,7 +31,7 @@ using System.Xml.Linq;
 
 namespace CumulusUtils
 {
-    internal struct StructPrediction
+    public struct StructPrediction
     {
         public string Icon { get; set; }
         public float MinTemp { get; set; }
@@ -43,7 +43,7 @@ namespace CumulusUtils
         public string Day { get; set; }
     }
 
-    internal class WeatherForecasts
+    public class WeatherForecasts
     {
         private readonly CuSupport Sup;
         private readonly InetSupport Isup;
@@ -63,7 +63,7 @@ namespace CumulusUtils
             // Make sure the parameters exist in one run, otherwise the user has to run, define and run again
             ForecastSystem = Sup.GetUtilsIniValue( "Forecasts", "ForecastSystem", "SPOTWX" );
 
-            if ( ForecastSystem.Equals( "Yourweather", CUtils.cmp ) )
+            if ( ForecastSystem.Equals( "Yourweather", CUtils.Cmp ) )
             {
                 string YourWeatherPredictionURL = Sup.GetUtilsIniValue( "Forecasts", "SevenDayPredictionURL", "" );
 
@@ -116,7 +116,7 @@ namespace CumulusUtils
                 return;
 
             }
-            else if ( Sup.GetUtilsIniValue( "Forecasts", "ForecastSystem", "SPOTWX" ).Equals( "Norway", CUtils.cmp ) )
+            else if ( Sup.GetUtilsIniValue( "Forecasts", "ForecastSystem", "SPOTWX" ).Equals( "Norway", CUtils.Cmp ) )
             {
                 // https://developer.yr.no/
                 //
@@ -138,7 +138,7 @@ namespace CumulusUtils
                 }
                 return;
             }
-            else if ( Sup.GetUtilsIniValue( "Forecasts", "ForecastSystem", "SPOTWX" ).Equals( "WXSIM", CUtils.cmp ) )
+            else if ( Sup.GetUtilsIniValue( "Forecasts", "ForecastSystem", "SPOTWX" ).Equals( "WXSIM", CUtils.Cmp ) )
             {
                 string WxsimPredictionURL = Sup.GetUtilsIniValue( "Forecasts", "WXsimURL", "" );
 
@@ -157,7 +157,7 @@ namespace CumulusUtils
                 }
                 return;
             }
-            else if ( Sup.GetUtilsIniValue( "Forecasts", "ForecastSystem", "SPOTWX" ).Equals( "SPOTWX", CUtils.cmp ) )
+            else if ( Sup.GetUtilsIniValue( "Forecasts", "ForecastSystem", "SPOTWX" ).Equals( "SPOTWX", CUtils.Cmp ) )
             {
                 string SpotwxPredictionURL;
 

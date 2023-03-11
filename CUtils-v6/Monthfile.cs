@@ -37,7 +37,7 @@ namespace CumulusUtils
         SolarRad, EVT, AnnualEVT, ApparentTemp, SolarTheoreticalMax, HrsOfSunshineSoFar, CurrWindBearing, RG11RainToday, TotalRainSinceMidnight
     };
 
-    internal struct MonthfileValue
+    public struct MonthfileValue
     {
         // commented out values need to be read as Garbage
         public DateTime ThisDate { get; set; }
@@ -82,7 +82,7 @@ namespace CumulusUtils
     }
 
 
-    internal enum MonthfileType
+    public enum MonthfileType
     {
         DashSemicolonComma,   // date separator, ; fieldseparator, , decimal fraction
         SlashSemicolonComma,  // date separator, ; fieldseparator, , decimal fraction
@@ -91,7 +91,7 @@ namespace CumulusUtils
         SlashCommaPoint       // date separator, , fieldseparator, . decimal fraction
     };
 
-    internal class Monthfile : IDisposable
+    public class Monthfile : IDisposable
     {
         readonly MonthfileType type;
         readonly CuSupport Sup;
@@ -177,7 +177,7 @@ namespace CumulusUtils
                     type = MonthfileType.SlashCommaPoint;
                 else
                 {
-                    Sup.LogTraceErrorMessage( "Monthfile constructor: Internal Error - Unkown format of inputfile. Please notify programmer." );
+                    Sup.LogTraceErrorMessage( "Monthfile constructor: internal Error - Unkown format of inputfile. Please notify programmer." );
                     Environment.Exit( 0 );
                 }
             }
@@ -186,8 +186,8 @@ namespace CumulusUtils
 
             Sup.LogTraceInfoMessage( $"Monthfile constructor: MonthfileType is {type}" );
             enumFieldTypeNames = Enum.GetNames( typeof( MonthfileFieldName ) );
-            IgnoreDataErrors = Sup.GetUtilsIniValue( "General", "IgnoreDataErrors", "true" ).Equals( "true", CUtils.cmp );
-            UseSQL = Sup.GetUtilsIniValue( "General", "UseSQL", "false" ).Equals( "true", CUtils.cmp );
+            IgnoreDataErrors = Sup.GetUtilsIniValue( "General", "IgnoreDataErrors", "true" ).Equals( "true", CUtils.Cmp );
+            UseSQL = Sup.GetUtilsIniValue( "General", "UseSQL", "false" ).Equals( "true", CUtils.Cmp );
 
             return;
         }
@@ -265,7 +265,7 @@ namespace CumulusUtils
             return MainMonthList;
         } // End ReadMonthlyLogs
 
-        internal List<MonthfileValue> ReadPartialMonthlyLogs( DateTime Start, DateTime End )
+        public List<MonthfileValue> ReadPartialMonthlyLogs( DateTime Start, DateTime End )
         {
             Sup.LogDebugMessage( $"ReadPartialMonthlyLogs: start." );
 

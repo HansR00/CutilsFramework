@@ -34,7 +34,7 @@ using System.Text;
 
 namespace CumulusUtils
 {
-    internal class IniFile
+    public class IniFile
     {
         #region "Declarations"
 
@@ -44,7 +44,7 @@ namespace CumulusUtils
         // *** File name ***
         private string m_FileName;
 
-        internal string FileName {
+        public string FileName {
             get {
                 return m_FileName;
             }
@@ -89,7 +89,7 @@ namespace CumulusUtils
         }
 
         // *** Read file contents into local cache ***
-        internal void Refresh()
+        public void Refresh()
         {
             lock ( m_Lock )
             {
@@ -120,7 +120,7 @@ namespace CumulusUtils
                         s = s.Trim();
 
                         // *** Check for section names ***
-                        if ( s.StartsWith( "[", CUtils.cmp ) && s.EndsWith( "]", CUtils.cmp ) )
+                        if ( s.StartsWith( "[", CUtils.Cmp ) && s.EndsWith( "]", CUtils.Cmp ) )
                         {
                             if ( s.Length > 2 )
                             {
@@ -170,7 +170,7 @@ namespace CumulusUtils
         }
 
         // *** Flush local cache content ***
-        internal void Flush()
+        public void Flush()
         {
             //Sup.LogDebugMessage( $" Ini Flush cache modif:{m_CacheModified}, {m_FileName}" );
 
@@ -213,7 +213,7 @@ namespace CumulusUtils
         }
 
         // *** Read a value from local cache ***
-        internal string GetValue( string SectionName, string Key, string DefaultValue )
+        public string GetValue( string SectionName, string Key, string DefaultValue )
         {
             // *** Lazy loading ***
             if ( m_Lazy )
@@ -246,7 +246,7 @@ namespace CumulusUtils
         }
 
         // *** Insert or modify a value in local cache ***
-        internal void SetValue( string SectionName, string Key, string Value )
+        public void SetValue( string SectionName, string Key, string Value )
         {
             // *** Lazy loading ***
             if ( m_Lazy )
@@ -320,7 +320,7 @@ namespace CumulusUtils
         }
 
         // *** Getters for various types ***
-        internal bool GetValue( string SectionName, string Key, bool DefaultValue )
+        public bool GetValue( string SectionName, string Key, bool DefaultValue )
         {
             string StringValue = GetValue( SectionName, Key, DefaultValue.ToString( System.Globalization.CultureInfo.InvariantCulture ) );
             if ( int.TryParse( StringValue, out int Value ) )
@@ -328,7 +328,7 @@ namespace CumulusUtils
             return DefaultValue;
         }
 
-        internal int GetValue( string SectionName, string Key, int DefaultValue )
+        public int GetValue( string SectionName, string Key, int DefaultValue )
         {
             string StringValue = GetValue( SectionName, Key, DefaultValue.ToString( CultureInfo.InvariantCulture ) );
             if ( int.TryParse( StringValue, NumberStyles.Any, CultureInfo.InvariantCulture, out int Value ) )
@@ -336,7 +336,7 @@ namespace CumulusUtils
             return DefaultValue;
         }
 
-        internal double GetValue( string SectionName, string Key, double DefaultValue )
+        public double GetValue( string SectionName, string Key, double DefaultValue )
         {
             string StringValue = GetValue( SectionName, Key, DefaultValue.ToString( CultureInfo.InvariantCulture ) );
             if ( double.TryParse( StringValue, NumberStyles.Any, CultureInfo.InvariantCulture, out double Value ) )
@@ -344,7 +344,7 @@ namespace CumulusUtils
             return DefaultValue;
         }
 
-        internal byte[] GetValue( string SectionName, string Key, byte[] DefaultValue )
+        public byte[] GetValue( string SectionName, string Key, byte[] DefaultValue )
         {
             string StringValue = GetValue( SectionName, Key, EncodeByteArray( DefaultValue ) );
             try
@@ -357,7 +357,7 @@ namespace CumulusUtils
             }
         }
 
-        internal DateTime GetValue( string SectionName, string Key, DateTime DefaultValue )
+        public DateTime GetValue( string SectionName, string Key, DateTime DefaultValue )
         {
             string StringValue = GetValue( SectionName, Key, DefaultValue.ToString( CultureInfo.InvariantCulture ) );
             if ( DateTime.TryParse( StringValue, out DateTime Value ) )
@@ -366,27 +366,27 @@ namespace CumulusUtils
         }
 
         // *** Setters for various types ***
-        internal void SetValue( string SectionName, string Key, bool Value )
+        public void SetValue( string SectionName, string Key, bool Value )
         {
             SetValue( SectionName, Key, ( Value ) ? ( "1" ) : ( "0" ) );
         }
 
-        internal void SetValue( string SectionName, string Key, int Value )
+        public void SetValue( string SectionName, string Key, int Value )
         {
             SetValue( SectionName, Key, Value.ToString( CultureInfo.InvariantCulture ) );
         }
 
-        internal void SetValue( string SectionName, string Key, double Value )
+        public void SetValue( string SectionName, string Key, double Value )
         {
             SetValue( SectionName, Key, Value.ToString( CultureInfo.InvariantCulture ) );
         }
 
-        internal void SetValue( string SectionName, string Key, byte[] Value )
+        public void SetValue( string SectionName, string Key, byte[] Value )
         {
             SetValue( SectionName, Key, EncodeByteArray( Value ) );
         }
 
-        internal void SetValue( string SectionName, string Key, DateTime Value )
+        public void SetValue( string SectionName, string Key, DateTime Value )
         {
             // write datetimes in ISO 8601 ("sortable")
             SetValue( SectionName, Key, Value.ToString( "s" ) );

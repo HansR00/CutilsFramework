@@ -32,7 +32,7 @@ using System.Threading.Tasks;
 
 namespace CumulusUtils
 {
-    internal class SysInfo : IDisposable
+    public class SysInfo : IDisposable
     {
         private readonly CuSupport Sup;
         private readonly InetSupport Isup;
@@ -304,7 +304,7 @@ namespace CumulusUtils
 
                 StartProcess( "lsb_release", "-a" );
                 foreach ( string line in returnValues )
-                    if ( line.StartsWith( "Description", CUtils.cmp ) )
+                    if ( line.StartsWith( "Description", CUtils.Cmp ) )
                         of.WriteLine( CuSupport.StringRemoveWhiteSpace( line, " " ) );
             }
             catch ( Exception e )
@@ -402,7 +402,7 @@ namespace CumulusUtils
 
                 StartProcess( "lsb_release", "-a" );
                 foreach ( string line in returnValues )
-                    if ( line.StartsWith( "Description", CUtils.cmp ) )
+                    if ( line.StartsWith( "Description", CUtils.Cmp ) )
                         of.WriteLine( CuSupport.StringRemoveWhiteSpace( line, " " ) );
             }
             catch ( Exception e )

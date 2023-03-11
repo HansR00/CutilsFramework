@@ -63,9 +63,9 @@ namespace CumulusUtils
         #region declaration
 
         // PossibleIntervals are the loggingintervals in minutes with the possibilities as given in the Station Settings of CMX
-        readonly int[] PossibleIntervals = { 1, 5, 10, 15, 20, 30 };
+        //readonly int[] PossibleIntervals = { 1, 5, 10, 15, 20, 30 };
 
-        internal struct DaySolarValues
+        public struct DaySolarValues
         {
             public int SunUpTimeInMinutes { get; set; }
             public float SolarHours { get; set; }
@@ -155,8 +155,8 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "  {" );
             thisBuffer.AppendLine( $"    text: '{Sup.GetCUstringValue( "Graphs", "YSHSYaxis", "Solar Hours per day", true )} ({Sup.GetCUstringValue( "General", "Hours", "Hours", true )})'" );
             thisBuffer.AppendLine( "  }," );
-            thisBuffer.AppendLine( $"  min: {minminSH.ToString( "F2", inv )}," );
-            thisBuffer.AppendLine( $"  max: {maxmaxSH.ToString( "F2", inv )}" );
+            thisBuffer.AppendLine( $"  min: {minminSH.ToString( "F2", CUtils.Inv )}," );
+            thisBuffer.AppendLine( $"  max: {maxmaxSH.ToString( "F2", CUtils.Inv )}" );
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "tooltip:" );
             thisBuffer.AppendLine( "{" );
@@ -198,7 +198,7 @@ namespace CumulusUtils
             sb.Clear();
             for ( int i = 0; i < years.Count; i++ )
             {
-                sb.Append( $"[{minSolarHours[ i ].ToString( "F2", inv )},{maxSolarHours[ i ].ToString( "F2", inv )}]," );
+                sb.Append( $"[{minSolarHours[ i ].ToString( "F2", CUtils.Inv )},{maxSolarHours[ i ].ToString( "F2", CUtils.Inv )}]," );
             }
             sb.Remove( sb.Length - 1, 1 );
             thisBuffer.AppendLine( $"{sb}" );
@@ -213,7 +213,7 @@ namespace CumulusUtils
             sb.Clear();
             for ( int i = 0; i < years.Count; i++ )
             {
-                sb.Append( $"[{average[ i ].ToString( "F2", inv )}]," );
+                sb.Append( $"[{average[ i ].ToString( "F2", CUtils.Inv )}]," );
             }
             sb.Remove( sb.Length - 1, 1 );
             thisBuffer.AppendLine( $"{sb}" );
@@ -231,8 +231,8 @@ namespace CumulusUtils
             {
                 float AvMinusStddev = average[ i ] - stddev[ i ];
 
-                sb.Append( $"[{( AvMinusStddev < 0.0 ? 0.ToString( "F2", inv ) : AvMinusStddev.ToString( "F2", inv ) )}," +
-                    $"{( average[ i ] + stddev[ i ] ).ToString( "F2", inv )}]," );
+                sb.Append( $"[{( AvMinusStddev < 0.0 ? 0.ToString( "F2", CUtils.Inv ) : AvMinusStddev.ToString( "F2", CUtils.Inv ) )}," +
+                    $"{( average[ i ] + stddev[ i ] ).ToString( "F2", CUtils.Inv )}]," );
             }
 
             sb.Remove( sb.Length - 1, 1 );
@@ -314,8 +314,8 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "  {" );
             thisBuffer.AppendLine( $"    text: '{Sup.GetCUstringValue( "Graphs", "YSHSYaxis", "Solar Hours per day", true )} ({Sup.GetCUstringValue( "General", "Hours", "Hours", true )})'" );
             thisBuffer.AppendLine( "  }," );
-            thisBuffer.AppendLine( $"  min: {minminSH.ToString( "F2", inv )}," );
-            thisBuffer.AppendLine( $"  max: {maxmaxSH.ToString( "F2", inv )}" );
+            thisBuffer.AppendLine( $"  min: {minminSH.ToString( "F2", CUtils.Inv )}," );
+            thisBuffer.AppendLine( $"  max: {maxmaxSH.ToString( "F2", CUtils.Inv )}" );
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "tooltip:" );
             thisBuffer.AppendLine( "{" );
@@ -357,7 +357,7 @@ namespace CumulusUtils
             sb.Clear();
 
             for ( int i = 0; i < years.Count; i++ )
-                sb.Append( $"[{minSolarHours[ i ].ToString( "F2", inv )},{maxSolarHours[ i ].ToString( "F2", inv )}]," );
+                sb.Append( $"[{minSolarHours[ i ].ToString( "F2", CUtils.Inv )},{maxSolarHours[ i ].ToString( "F2", CUtils.Inv )}]," );
 
             sb.Remove( sb.Length - 1, 1 );
             thisBuffer.AppendLine( $"{sb}" );
@@ -372,7 +372,7 @@ namespace CumulusUtils
             sb.Clear();
 
             for ( int i = 0; i < years.Count; i++ )
-                sb.Append( $"[{average[ i ].ToString( "F2", inv )}]," );
+                sb.Append( $"[{average[ i ].ToString( "F2", CUtils.Inv )}]," );
 
             sb.Remove( sb.Length - 1, 1 );
             thisBuffer.AppendLine( $"{sb}" );
@@ -390,8 +390,8 @@ namespace CumulusUtils
             {
                 float AvMinusStddev = average[ i ] - stddev[ i ];
 
-                sb.Append( $"[{( AvMinusStddev < 0.0 ? 0.ToString( "F2", inv ) : AvMinusStddev.ToString( "F2", inv ) )}," +
-                    $"{( average[ i ] + stddev[ i ] ).ToString( "F2", inv )}]," );
+                sb.Append( $"[{( AvMinusStddev < 0.0 ? 0.ToString( "F2", CUtils.Inv ) : AvMinusStddev.ToString( "F2", CUtils.Inv ) )}," +
+                    $"{( average[ i ] + stddev[ i ] ).ToString( "F2", CUtils.Inv )}]," );
             }
 
             sb.Remove( sb.Length - 1, 1 );
@@ -481,8 +481,8 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "  {" );
             thisBuffer.AppendLine( $"    text: '{Sup.GetCUstringValue( "Graphs", "YSESYaxis", "Daily kilo Watt hour per m2", true )} ({Sup.GetCUstringValue( "General", "kWh", "kWh", true )})'" );
             thisBuffer.AppendLine( "  }," );
-            thisBuffer.AppendLine( $"  min: {minminSE.ToString( "F2", inv )}," );
-            thisBuffer.AppendLine( $"  max: {maxmaxSE.ToString( "F2", inv )}" );
+            thisBuffer.AppendLine( $"  min: {minminSE.ToString( "F2", CUtils.Inv )}," );
+            thisBuffer.AppendLine( $"  max: {maxmaxSE.ToString( "F2", CUtils.Inv )}" );
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "tooltip:" );
             thisBuffer.AppendLine( "{" );
@@ -524,7 +524,7 @@ namespace CumulusUtils
             sb.Clear();
             for ( int i = 0; i < years.Count; i++ )
             {
-                sb.Append( $"[{minSolarEnergy[ i ].ToString( "F2", inv )},{maxSolarEnergy[ i ].ToString( "F2", inv )}]," );
+                sb.Append( $"[{minSolarEnergy[ i ].ToString( "F2", CUtils.Inv )},{maxSolarEnergy[ i ].ToString( "F2", CUtils.Inv )}]," );
             }
             sb.Remove( sb.Length - 1, 1 );
             thisBuffer.AppendLine( $"{sb}" );
@@ -539,7 +539,7 @@ namespace CumulusUtils
             sb.Clear();
             for ( int i = 0; i < years.Count; i++ )
             {
-                sb.Append( $"[{average[ i ].ToString( "F2", inv )}]," );
+                sb.Append( $"[{average[ i ].ToString( "F2", CUtils.Inv )}]," );
             }
             sb.Remove( sb.Length - 1, 1 );
             thisBuffer.AppendLine( $"{sb}" );
@@ -557,8 +557,8 @@ namespace CumulusUtils
             {
                 float AvMinusStddev = average[ i ] - stddev[ i ];
 
-                sb.Append( $"[{( AvMinusStddev < 0.0 ? 0.ToString( "F2", inv ) : AvMinusStddev.ToString( "F2", inv ) )}," +
-                    $"{( average[ i ] + stddev[ i ] ).ToString( "F2", inv )}]," );
+                sb.Append( $"[{( AvMinusStddev < 0.0 ? 0.ToString( "F2", CUtils.Inv ) : AvMinusStddev.ToString( "F2", CUtils.Inv ) )}," +
+                    $"{( average[ i ] + stddev[ i ] ).ToString( "F2", CUtils.Inv )}]," );
             }
 
             sb.Remove( sb.Length - 1, 1 );
@@ -640,8 +640,8 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "  {" );
             thisBuffer.AppendLine( $"    text: '{Sup.GetCUstringValue( "Graphs", "YSESYaxis", "Daily kilo Watt hour per m2", true )} ({Sup.GetCUstringValue( "General", "kWh", "kWh", true )})'" );
             thisBuffer.AppendLine( "  }," );
-            thisBuffer.AppendLine( $"  min: {minminSE.ToString( "F2", inv )}," );
-            thisBuffer.AppendLine( $"  max: {maxmaxSE.ToString( "F2", inv )}" );
+            thisBuffer.AppendLine( $"  min: {minminSE.ToString( "F2", CUtils.Inv )}," );
+            thisBuffer.AppendLine( $"  max: {maxmaxSE.ToString( "F2", CUtils.Inv )}" );
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "tooltip:" );
             thisBuffer.AppendLine( "{" );
@@ -683,7 +683,7 @@ namespace CumulusUtils
             sb.Clear();
 
             for ( int i = 0; i < years.Count; i++ )
-                sb.Append( $"[{minSolarEnergy[ i ].ToString( "F2", inv )},{maxSolarEnergy[ i ].ToString( "F2", inv )}]," );
+                sb.Append( $"[{minSolarEnergy[ i ].ToString( "F2", CUtils.Inv )},{maxSolarEnergy[ i ].ToString( "F2", CUtils.Inv )}]," );
 
             sb.Remove( sb.Length - 1, 1 );
             thisBuffer.AppendLine( $"{sb}" );
@@ -698,7 +698,7 @@ namespace CumulusUtils
             sb.Clear();
 
             for ( int i = 0; i < years.Count; i++ )
-                sb.Append( $"[{average[ i ].ToString( "F2", inv )}]," );
+                sb.Append( $"[{average[ i ].ToString( "F2", CUtils.Inv )}]," );
 
             sb.Remove( sb.Length - 1, 1 );
             thisBuffer.AppendLine( $"{sb}" );
@@ -716,8 +716,8 @@ namespace CumulusUtils
             {
                 float AvMinusStddev = average[ i ] - stddev[ i ];
 
-                sb.Append( $"[{( AvMinusStddev < 0.0 ? 0.ToString( "F2", inv ) : AvMinusStddev.ToString( "F2", inv ) )}," +
-                    $"{( average[ i ] + stddev[ i ] ).ToString( "F2", inv )}]," );
+                sb.Append( $"[{( AvMinusStddev < 0.0 ? 0.ToString( "F2", CUtils.Inv ) : AvMinusStddev.ToString( "F2", CUtils.Inv ) )}," +
+                    $"{( average[ i ] + stddev[ i ] ).ToString( "F2", CUtils.Inv )}]," );
             }
 
             sb.Remove( sb.Length - 1, 1 );
@@ -751,8 +751,8 @@ namespace CumulusUtils
             DateTime enddate = MonthfileList.Select( x => x.ThisDate ).Max().Date;
 
             int OldIntervalInMinutes;
-            int IntervalInMinutes = PossibleIntervals[ Convert.ToInt32( Sup.GetCumulusIniValue( "Station", "DataLogInterval", "" ), inv ) ];
-            float SunThreshold = Convert.ToSingle( Sup.GetCumulusIniValue( "Solar", "SunThreshold", "" ), inv ) / 100;
+            int IntervalInMinutes = CUtils.PossibleIntervals[ Convert.ToInt32( Sup.GetCumulusIniValue( "Station", "DataLogInterval", "" ), CUtils.Inv ) ];
+            float SunThreshold = Convert.ToSingle( Sup.GetCumulusIniValue( "Solar", "SunThreshold", "" ), CUtils.Inv ) / 100;
 
             Sup.LogTraceInfoMessage( $"Solar Graphs - CreateListsFromMonthlyLogs DataLogInterval = {IntervalInMinutes}" );
             Sup.LogTraceInfoMessage( $"Solar Graphs - CreateListsFromMonthlyLogs SunThreshold = {SunThreshold}" );

@@ -10,19 +10,19 @@ using ServiceStack;
 
 namespace CumulusUtils
 {
-    internal class InetPHP
+    public class InetPHP
     {
         // Based on the mail by Mark Crossley date: 17/02/2023 13:09
 
         readonly CuSupport Sup;
 
-        internal string PhpUrl;
-        internal string PhpSecret;
-        internal string PhpCompression;
+        public string PhpUrl;
+        public string PhpSecret;
+        public string PhpCompression;
 
-        internal HttpClient phpUploadHttpClient;
+        public HttpClient phpUploadHttpClient;
 
-        internal InetPHP( CuSupport s )
+        public InetPHP( CuSupport s )
         {
             Sup = s;
 
@@ -41,7 +41,7 @@ namespace CumulusUtils
             return;
         }
 
-        internal async Task<bool> PhpInit()
+        public async Task<bool> PhpInit()
         {
             using ( var request = new HttpRequestMessage( HttpMethod.Get, PhpUrl ) )
             {
@@ -70,7 +70,7 @@ namespace CumulusUtils
             }
         } // PhpInit (get the compression mode)
 
-        internal async Task<bool> UploadAsync( string localfile, string remotefile )
+        public async Task<bool> UploadAsync( string localfile, string remotefile )
         {
             bool binary = false;
             bool incremental = false;

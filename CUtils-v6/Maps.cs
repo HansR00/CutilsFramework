@@ -32,7 +32,7 @@ using System.Xml.Linq;
 
 namespace CumulusUtils
 {
-    internal class Maps : IDisposable
+    public class Maps : IDisposable
     {
         private readonly CuSupport Sup;
 
@@ -59,8 +59,8 @@ namespace CumulusUtils
                 string Latitude = Sup.GetCumulusIniValue( "Station", "Latitude", "" );
                 string Longitude = Sup.GetCumulusIniValue( "Station", "Longitude", "" );
 
-                if ( !Website.StartsWith( "http:", CUtils.cmp ) &&
-                    !Website.StartsWith( "https:", CUtils.cmp ) &&
+                if ( !Website.StartsWith( "http:", CUtils.Cmp ) &&
+                    !Website.StartsWith( "https:", CUtils.Cmp ) &&
                     !string.IsNullOrEmpty( Website ) )
                 {
                     Website = "http://" + Website;
@@ -110,36 +110,41 @@ namespace CumulusUtils
                 }
             }
 
-            // Do the upload over HTTP/CGI
-            // Note: I use 'using' because it is easier and it gets only called for UserReports so 
-            //       there is no risk - I don't see a risk - of socket exhaustion
-            // Note: The check on the date is done at the end of MapsOn because we also need to determine the existence of content
-            //       for the fields Name, Website, Latitude and Longitude.
+            // Check DoneToday and if last time was yesterday send it again
             //
             bool DoMapsOn;
             string retval;
+            DateTime DoneToday;
 
-            Sup.LogTraceInfoMessage( $"MapsOn: Before testing DoneToday: {Sup.GetUtilsIniValue( "Maps", "DoneToday", $"{DateTime.Now.AddDays( -1 ):dd/MM/yy}")}" );
+            string tmp = Sup.GetUtilsIniValue( "Maps", "DoneToday", $"{DateTime.Now.AddDays( -1 ):s}" );
 
-            if ( DateTime.TryParse( Sup.GetUtilsIniValue( "Maps", "DoneToday", $"{DateTime.Now.AddDays( -1 ):dd/MM/yy}" ), out DateTime DoneToday ) )
+            try
             {
-                Sup.LogTraceInfoMessage( $"MapsOn: Before testing DoneToday: {DoneToday:dd/MM/yy} " );
-                DoMapsOn = !Sup.DateIsToday( DoneToday );
-                Sup.LogTraceInfoMessage( $"MapsOn: After testing DoneToday: {DoneToday:dd/MM/yy} DoMApsOn = {DoMapsOn}" );
+                // This converts the last date string to a DateTime, value is in DoneToday, function returns true
+                if ( DateTime.TryParse( tmp, out DoneToday ) )
+                {
+                    Sup.LogTraceInfoMessage( $"MapsOn: Before testing DoneToday after parsing: {DoneToday} " );
+                    DoMapsOn = !Sup.DateIsToday( DoneToday );
+                }
+                else DoMapsOn = true;
             }
-            else DoMapsOn = true;
+            catch 
+            {
+                DoneToday = DateTime.Now;
+                DoMapsOn = true;
+            }
 
             if ( DoMapsOn )
             {
-                Sup.LogTraceInfoMessage( $"MapsOn: Must send signature: {DoneToday:dd/MM/yy} / Setting DoneToday to now." );
-                Sup.SetUtilsIniValue( "Maps", "DoneToday", $"{DateTime.Now:dd/MM/yy}" );
+                Sup.LogTraceInfoMessage( $"MapsOn: Must send signature: {DoneToday:s} / Setting DoneToday to now." );
+                Sup.SetUtilsIniValue( "Maps", "DoneToday", $"{DateTime.Now:s}" );
 
                 string thisContent = $"filename#{FileToSend}&";
                 thisContent += "filecontent#" + File.ReadAllText( Sup.PathUtils + FileToSend, Encoding.UTF8 );
                 retval = await CUtils.Isup.PostUrlDataAsync( new Uri( "https://meteo-wagenborgen.nl/cgi-bin/receive.pl" ), thisContent );
                 Sup.LogTraceInfoMessage( $"MapsOn : Success" );
             }
-            else retval = $"MapsOn: Must NOT send signature, has been done already : {DoneToday:dd/MM/yy}";
+            else retval = $"MapsOn: Must NOT send signature, has been done already : {DoneToday:s}";
 
             if ( File.Exists( $"{Sup.PathUtils}{FileToSend}" ) ) File.Delete( $"{Sup.PathUtils}{FileToSend}" );
 

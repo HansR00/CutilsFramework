@@ -116,7 +116,7 @@ namespace CumulusUtils
                 of.WriteLine( "   margin: auto;" );
                 of.WriteLine( "}" );
 
-                if ( Sup.GetUtilsIniValue( "General", "UseScrollableTables", "true" ).Equals( "true", CUtils.cmp ) )
+                if ( Sup.GetUtilsIniValue( "General", "UseScrollableTables", "true" ).Equals( "true", CUtils.Cmp ) )
                 {
                     of.WriteLine( ".CUtable{" );
                     of.WriteLine( "  scrollbar-width: thin;" );

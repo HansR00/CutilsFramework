@@ -33,7 +33,7 @@ namespace CumulusUtils
 {
 
     #region structFWI
-    internal struct StructFWI
+    public struct StructFWI
     {
         public double ActualVaporPressure { get; set; }
         public string Date { get; set; }
@@ -54,7 +54,7 @@ namespace CumulusUtils
 
     #endregion
 
-    internal class PwsFWI : IDisposable
+    public class PwsFWI : IDisposable
     {
         #region Declarations
 
@@ -111,12 +111,12 @@ namespace CumulusUtils
                 ExtremeFWIvalue = dngrLevelValue[ (int) DngrLevel.purple ];
             // else the default remains
 
-            if ( Sup.GetUtilsIniValue( "pwsFWI", "ResultFormat", "Standard" ).Equals( "Beteljuice", CUtils.cmp ) )
+            if ( Sup.GetUtilsIniValue( "pwsFWI", "ResultFormat", "Standard" ).Equals( "Beteljuice", CUtils.Cmp ) )
                 BeteljuiceFormat = true;
             else
                 BeteljuiceFormat = false;
 
-            if ( Sup.GetUtilsIniValue( "pwsFWI", "FireImage", "true" ).Equals( "true", CUtils.cmp ) )
+            if ( Sup.GetUtilsIniValue( "pwsFWI", "FireImage", "true" ).Equals( "true", CUtils.Cmp ) )
                 UseFireImage = true;
             else
                 UseFireImage = false;
@@ -358,7 +358,7 @@ namespace CumulusUtils
                 if ( DoPrediction )
                 {
                     // UseTodaysValue is true will use the prediction value of today as current otherwise it will use the true calculated value on observations
-                    bool UseTodaysValue = Sup.GetUtilsIniValue( "pwsFWI", "CurrentIndexDay", "Yesterday" ).Equals( "Today", CUtils.cmp );
+                    bool UseTodaysValue = Sup.GetUtilsIniValue( "pwsFWI", "CurrentIndexDay", "Yesterday" ).Equals( "Today", CUtils.Cmp );
                     IndexOfCurrent = FWIlist.Count - NrOfPredictiveDays - ( UseTodaysValue ? 0 : 1 );
                 }
                 else
@@ -366,7 +366,7 @@ namespace CumulusUtils
 
                 fmtindex = SetFmtIndex( IndexOfCurrent );
 
-                if ( Sup.GetUtilsIniValue( "pwsFWI", "CurrentIndexFormat", "Standard" ).Equals( "Standard", CUtils.cmp ) )
+                if ( Sup.GetUtilsIniValue( "pwsFWI", "CurrentIndexFormat", "Standard" ).Equals( "Standard", CUtils.Cmp ) )
                 {
                     // Use the standard Style
                     of.WriteLine( $"<span id='CurrentPwsFWI' style=\"border: 1px solid black;cursor:pointer;text-align:center;background:{fmtstring[ (int) fmtindex ]}\"> " +
@@ -374,7 +374,7 @@ namespace CumulusUtils
                     Sup.SetUtilsIniValue( "pwsFWI", "CurrentPwsFWI", $"<span id='CurrentPwsFWI' style=\"border: 1px solid black;cursor:pointer;text-align:center;background:{fmtstring[ (int) fmtindex ]}\"> " +
                                         $"&nbsp;{FWIlist[ IndexOfCurrent ].SmoothedFWI.ToString( "F1", CultureInfo.InvariantCulture )}&nbsp;pwsFWI</span>" );
                 }
-                else if ( Sup.GetUtilsIniValue( "pwsFWI", "CurrentIndexFormat", "Standard" ).Equals( "Betel-Kocher", CUtils.cmp ) )
+                else if ( Sup.GetUtilsIniValue( "pwsFWI", "CurrentIndexFormat", "Standard" ).Equals( "Betel-Kocher", CUtils.Cmp ) )
                 {
                     // Use the Betel-Kocher style
                     const string Base64Img = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAAGCAIAAADbpI4QAAAABnRSTlMAAAAAAABupgeRAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA7ElEQVQ4jd2TvU7CYBSGn++3PxZDE0ZCC62DF2Di6mWQmDBzCd6rCo5KRasSSTBfXcpSMLELJDzTGd6c8z7DEdzRgnWX95QyYZlRDljmlAM++jjdCErp4vgtz++T5Gk0ehwOZ2k6z7KHXq+Q0jXXVrCGFXzCCr6282ZfBwcFvMIzLGABL1DA978MNF4bYSewCq3RFuUjQsQZRGD2RMVGqUDrwPOs75swVFEkOh2k3MlWoEFAtVVy8APqD2EPLBjQIEG0MNg9fuLUwkaYgOC4VQ5DLZyfX95ejC3NVzw9auGr/s30ehL73eO2OQC/GPkzEsKfXDgAAAAASUVORK5CYII=";

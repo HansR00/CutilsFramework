@@ -29,7 +29,7 @@ using System.Text;
 
 namespace CumulusUtils
 {
-    internal class Records
+    public class Records
     {
         readonly string[] m = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };  //Culture independent, just strings to compare
         readonly CuSupport Sup;

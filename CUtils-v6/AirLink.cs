@@ -87,14 +87,13 @@ using ServiceStack.Text;
 
 namespace CumulusUtils
 {
-    internal class AirLink
+    public class AirLink
     {
         readonly CuSupport Sup;
 
         enum SupportedCountries : int { US, UK, CA, EU, AU, NL, BE };
         enum CumulusCountries : int { US, UK, EUAQI, EUCAQI, CA, AU, NL, BE };
 
-        readonly CultureInfo inv = CultureInfo.InvariantCulture;
         readonly string[] Concentrations = { "2p5", "10" };
         readonly string[] Series = { "", "_1hr", "_3hr", "_24hr", "_nowcast" };
 
@@ -323,19 +322,19 @@ namespace CumulusUtils
             //ReferenceColours = ... not required because hardcoded - too complex to parameterize
 
             // What doe we want to see? Now, 1 hr, 3 hr, 24 hr and NowCast
-            WantToSeeNow = Sup.GetUtilsIniValue( "AirLink", "WantToSeeNow", "true" ).Equals( "true", CUtils.cmp );
-            WantToSeeNowCast = Sup.GetUtilsIniValue( "AirLink", "WantToSeeNowCast", "false" ).Equals( "true", CUtils.cmp );
-            WantToSee1hr = Sup.GetUtilsIniValue( "AirLink", "WantToSee1hr", "false" ).Equals( "true", CUtils.cmp );
-            WantToSee3hr = Sup.GetUtilsIniValue( "AirLink", "WantToSee3hr", "false" ).Equals( "true", CUtils.cmp );
-            WantToSee24hr = Sup.GetUtilsIniValue( "AirLink", "WantToSee24hr", "false" ).Equals( "true", CUtils.cmp );
-            WantToSeeWind = Sup.GetUtilsIniValue( "AirLink", "WantToSeeWind", "false" ).Equals( "true", CUtils.cmp );
+            WantToSeeNow = Sup.GetUtilsIniValue( "AirLink", "WantToSeeNow", "true" ).Equals( "true", CUtils.Cmp );
+            WantToSeeNowCast = Sup.GetUtilsIniValue( "AirLink", "WantToSeeNowCast", "false" ).Equals( "true", CUtils.Cmp );
+            WantToSee1hr = Sup.GetUtilsIniValue( "AirLink", "WantToSee1hr", "false" ).Equals( "true", CUtils.Cmp );
+            WantToSee3hr = Sup.GetUtilsIniValue( "AirLink", "WantToSee3hr", "false" ).Equals( "true", CUtils.Cmp );
+            WantToSee24hr = Sup.GetUtilsIniValue( "AirLink", "WantToSee24hr", "false" ).Equals( "true", CUtils.Cmp );
+            WantToSeeWind = Sup.GetUtilsIniValue( "AirLink", "WantToSeeWind", "false" ).Equals( "true", CUtils.Cmp );
 
-            AirLinkIn = Sup.GetCumulusIniValue( "AirLink", "In-Enabled", "0" ).Equals( "1", CUtils.cmp );
-            AirLinkOut = Sup.GetCumulusIniValue( "AirLink", "Out-Enabled", "0" ).Equals( "1", CUtils.cmp );
+            AirLinkIn = Sup.GetCumulusIniValue( "AirLink", "In-Enabled", "0" ).Equals( "1", CUtils.Cmp );
+            AirLinkOut = Sup.GetCumulusIniValue( "AirLink", "Out-Enabled", "0" ).Equals( "1", CUtils.Cmp );
 
             TwoSensors = AirLinkIn & AirLinkOut;
 
-            StandAloneModule = Sup.GetUtilsIniValue( "AirLink", "StandAloneModule", "false" ).Equals( "true", CUtils.cmp );
+            StandAloneModule = Sup.GetUtilsIniValue( "AirLink", "StandAloneModule", "false" ).Equals( "true", CUtils.Cmp );
 
             Sup.LogTraceInfoMessage( $"WantToSeeNow = {WantToSeeNow}" );
             Sup.LogTraceInfoMessage( $"WantToSeeNowCast = {WantToSeeNowCast}" );
@@ -352,14 +351,13 @@ namespace CumulusUtils
         #endregion
 
         #region DoAirLink
-        internal void DoAirLink()
+        public void DoAirLink()
         {
             Sup.LogDebugMessage( "DoAirLink - Start" );
 
             Sup.LogTraceInfoMessage( $"DoAirLink - AirLinkIn : {AirLinkIn} / AirLinkOut : {AirLinkOut}" );
 
             GenAirLinkModule();
-            //GenAirLinkDataJson();
         }
 
         #endregion
@@ -646,7 +644,7 @@ namespace CumulusUtils
             if ( WantToSeeWind )
             {
                 of.AppendLine( "function convertToMs(data){data.map(s => {" +
-                    $"s[1] = s[1] * {Sup.StationWind.Convert( Sup.StationWind.Dim, WindDim.ms, 1 ).ToString( "F5", inv )} " +
+                    $"s[1] = s[1] * {Sup.StationWind.Convert( Sup.StationWind.Dim, WindDim.ms, 1 ).ToString( "F5", CUtils.Inv )} " +
                     "}); return data};" );
             }
 
@@ -771,7 +769,7 @@ namespace CumulusUtils
                         of.AppendLine( $"          chart.addSeries({{name: titles[idx], xAxis: 1, color: 'black', type: 'windbarb', visible: true, " +
                             $"dataGrouping: {{enabled: true,units: [ ['hour', [{Sup.HighChartsWindBarbSpacing()}] ] ]}}, " );
                         of.AppendLine( "    tooltip: {pointFormatter() {return this.series.name + ': ' + " +
-                            $"(this.value/{Sup.StationWind.Convert( Sup.StationWind.Dim, WindDim.ms, 1 ).ToString( "F5", inv )}).toFixed(1) + ' {Sup.StationWind.Text()}'}} }}," );
+                            $"(this.value/{Sup.StationWind.Convert( Sup.StationWind.Dim, WindDim.ms, 1 ).ToString( "F5", CUtils.Inv )}).toFixed(1) + ' {Sup.StationWind.Text()}'}} }}," );
                         of.AppendLine( $"data: convertedWindbarbData }}, false);" );
                         of.AppendLine( "        }" );
                         of.AppendLine( "        else {" );
@@ -1087,7 +1085,7 @@ namespace CumulusUtils
 
         #region GenAirLinkDataJson
 
-        internal async Task GenAirLinkDataJson()
+        public async Task GenAirLinkDataJson()
         {
             // Purpose is to create the JSON for the Airlink data and offering the poissibility to do only that to accomodate the fact that
             // CMX does not (and probably will never) generate that JSON like it generates the temperature JSON for graphing.
@@ -1126,7 +1124,7 @@ namespace CumulusUtils
                             foreach ( AirlinklogValue value in thisList )
                             {
                                 double d = (double) Field.GetValue( value );
-                                sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d.ToString( "F2", inv )}]," );
+                                sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d.ToString( "F2", CUtils.Inv )}]," );
                             }
 
                             sb.Remove( sb.Length - 1, 1 );
@@ -1142,7 +1140,7 @@ namespace CumulusUtils
                             foreach ( AirlinklogValue value in thisList )
                             {
                                 double d = (double) Field.GetValue( value );
-                                sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d.ToString( "F2", inv )}]," );
+                                sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d.ToString( "F2", CUtils.Inv )}]," );
                             }
 
                             sb.Remove( sb.Length - 1, 1 );
@@ -1158,7 +1156,7 @@ namespace CumulusUtils
                             foreach ( AirlinklogValue value in thisList )
                             {
                                 double d = (double) Field.GetValue( value );
-                                sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d.ToString( "F2", inv )}]," );
+                                sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d.ToString( "F2", CUtils.Inv )}]," );
                             }
 
                             sb.Remove( sb.Length - 1, 1 );
@@ -1174,7 +1172,7 @@ namespace CumulusUtils
                             foreach ( AirlinklogValue value in thisList )
                             {
                                 double d = (double) Field.GetValue( value );
-                                sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d.ToString( "F2", inv )}]," );
+                                sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d.ToString( "F2", CUtils.Inv )}]," );
                             }
 
                             sb.Remove( sb.Length - 1, 1 );
@@ -1190,7 +1188,7 @@ namespace CumulusUtils
                             foreach ( AirlinklogValue value in thisList )
                             {
                                 double d = (double) Field.GetValue( value );
-                                sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d.ToString( "F2", inv )}]," );
+                                sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d.ToString( "F2", CUtils.Inv )}]," );
                             }
 
                             sb.Remove( sb.Length - 1, 1 );

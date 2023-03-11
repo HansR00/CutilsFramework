@@ -36,7 +36,7 @@ using System.Threading.Tasks;
 namespace CumulusUtils
 {
     // RealtimeFields is used in cumulusutils.js library to index realtime.txt
-    internal enum RealtimeFields
+    public enum RealtimeFields
     {
         date, timehhmmss, temp, hum, dew, wspeed, wlatest, bearing, rrate, rfall, press, currentwdir, beaufortnumber, windunit, tempunitnodeg, pressunit, rainunit,
         windrun, presstrendval, rmonth, ryear, rfallY, intemp, inhum, wchill, temptrend, tempTH, TtempTH, tempTL, TtempTL, windTM, TwindTM, wgustTM, TwgustTM, pressTH,
@@ -45,7 +45,7 @@ namespace CumulusUtils
     };
 
     // DashboardPanels is used in GenerateWebsite at specific location and the dedicated function GeneratePanelCode(thisPanel)
-    internal enum DashboardPanels
+    public enum DashboardPanels
     {
         TemperatureText, PressureText, RainText, Clocks, WindGauge1, WindDirGauge1, WindRoseGauge1, WindText, SolarDisc, LunarDisc, HumidityText, SolarText,
         TemperatureGauge, OtherTempsGauge, PressureGauge, HumidityGauge, WindGauge2, WindDirGauge2, WindRoseGauge2, CloudBaseGauge, RainGauge, RainSpeedGauge, SolarGauge, UVGauge, Empty
@@ -53,7 +53,7 @@ namespace CumulusUtils
 
     class Website
     {
-        readonly private string[] Package = new string[] {"index.html", "cumulusutils.js","cumuluscharts.txt","gauges.js","HighchartsDefaults.js","HighchartsLanguage.js",
+        private readonly string[] Package = new string[] {"index.html", "cumulusutils.js","cumuluscharts.txt","gauges.js","HighchartsDefaults.js","HighchartsLanguage.js",
                                      "suncalc.js","tween.min.js", "steelseries.min.js","RGraph.rose.js","RGraph.common.core.js","language.js",
                                      "gauges-ss.css"};
 
@@ -88,10 +88,10 @@ namespace CumulusUtils
             // ShowSolar and HasSolar are the same for now, but it may be different as HasSolar determines whether there is a sensor, ShowSolar is to show it on screen....
             // Difficult. May change into one variable (which must be global then: also used in Graphs
             ShowSolar = CUtils.HasSolar;
-            ShowUV = Sup.GetUtilsIniValue( "Website", "ShowUV", "true" ).Equals( "true", CUtils.cmp );
+            ShowUV = Sup.GetUtilsIniValue( "Website", "ShowUV", "true" ).Equals( "true", CUtils.Cmp );
 
             DoGoogleStats = !string.IsNullOrEmpty( Sup.GetUtilsIniValue( "Website", "GoogleStatsId", "" ) );
-            PermitGoogleOptOut = Sup.GetUtilsIniValue( "Website", "PermitGoogleOptout", "false" ).Equals( "true", CUtils.cmp );
+            PermitGoogleOptOut = Sup.GetUtilsIniValue( "Website", "PermitGoogleOptout", "false" ).Equals( "true", CUtils.Cmp );
 
             PanelsConfiguration = new string[ 24 ]
             {
@@ -566,7 +566,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
         private void GenerateCUlib()
         {
             StringBuilder CUlibFile = new StringBuilder();
-            bool UseCMXMoonImage = Sup.GetUtilsIniValue( "Website", "UseCMXMoonImage", "false" ).ToLowerInvariant().Equals( "true", CUtils.cmp );
+            bool UseCMXMoonImage = Sup.GetUtilsIniValue( "Website", "UseCMXMoonImage", "false" ).ToLowerInvariant().Equals( "true", CUtils.Cmp );
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}cumulusutils.js", false, Encoding.UTF8 ) )
             {
@@ -1634,7 +1634,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 // 
                 // ShowInsideMeasurements is driving the inside values, even if in Cumulus they are set to display
                 //
-                bool ShowInsideMeasurements = Sup.GetUtilsIniValue( "Website", "ShowInsideMeasurements", "true" ).Equals( "true", CUtils.cmp );
+                bool ShowInsideMeasurements = Sup.GetUtilsIniValue( "Website", "ShowInsideMeasurements", "true" ).Equals( "true", CUtils.Cmp );
 
                 using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}cumuluscharts.txt", false, Encoding.UTF8 ) )
                 {
@@ -2807,8 +2807,8 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                         {
                             while ( !Enum.IsDefined( typeof( ItemTypes ), K[ i ] ) ) ItemName += ' ' + K[ i++ ];  // Get all words before the Itemtype
 
-                            if ( ItemName.StartsWith( "../", CUtils.cmp ) || ItemName.StartsWith( "./", CUtils.cmp ) ||
-                                 ItemName.StartsWith( "http", CUtils.cmp ) || ItemName.StartsWith( "https", CUtils.cmp ) ) ItemNameIsURL = true;
+                            if ( ItemName.StartsWith( "../", CUtils.Cmp ) || ItemName.StartsWith( "./", CUtils.Cmp ) ||
+                                 ItemName.StartsWith( "http", CUtils.Cmp ) || ItemName.StartsWith( "https", CUtils.Cmp ) ) ItemNameIsURL = true;
 
                             thisType = (ItemTypes) Enum.Parse( typeof( ItemTypes ), K[ i++ ], true );
                             Destination = K[ i++ ];
