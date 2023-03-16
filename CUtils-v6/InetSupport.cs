@@ -309,12 +309,6 @@ namespace CumulusUtils
 
             if ( Upload )
             {
-                //Sup.LogTraceInfoMessage( $"Upload File values: URL: {CumulusURL}" );
-                //Sup.LogTraceInfoMessage( $"Upload File values: CMX Dir: {CumulusDir}" );
-                //Sup.LogTraceInfoMessage( $"Upload File values: UtilsDir: {CumulusUtilsDir}" );
-                //Sup.LogTraceInfoMessage( $"Upload File values: remotefile: {remotefile}" );
-                //Sup.LogTraceInfoMessage( $"Upload File values: requestname: {Dir}/{remotefile}" );
-
                 if ( ProtocolUsed == FtpProtocols.FTP || ProtocolUsed == FtpProtocols.FTPS )
                 {
                     string requestname = Dir + "/" + remotefile;
@@ -432,10 +426,19 @@ namespace CumulusUtils
                 } // if else on basis of protocol
                 else if ( ProtocolUsed == FtpProtocols.PHP )
                 {
+                    // We can't use the CMX Upload directory definition as that is used for the signature files FTP
+                    string requestname;
+
+                    if ( !string.IsNullOrEmpty( CumulusUtilsDir ) )
+                        requestname = $"{CumulusUtilsDir}/{remotefile}";
+                    else
+                        requestname = remotefile;
+
                     Sup.LogTraceInfoMessage( $"Upload File values: localfile: {localfile}" );
                     Sup.LogTraceInfoMessage( $"Upload File values: remotefile: {remotefile}" );
+                    Sup.LogTraceInfoMessage( $"Upload File values: requestname: {requestname}" );
 
-                    await clientPhp.UploadAsync( localfile: localfile, remotefile: remotefile );
+                    await clientPhp.UploadAsync( localfile: localfile, remotefile: requestname );
 
                     Sup.LogTraceInfoMessage( $"PHP UploadFile: Done" );
                 }

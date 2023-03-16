@@ -411,10 +411,18 @@ namespace CumulusUtils
             if ( string.IsNullOrEmpty( tmp ) ) StartOfObservations = MainList.Select( x => x.ThisDate ).Min();
             else
             {
-                StartOfObservations = DateTime.ParseExact( tmp, "dd/MM/yy", CUtils.Inv );
+                try
+                {
+                    StartOfObservations = DateTime.ParseExact( tmp, "dd/MM/yy", CUtils.Inv );
 
-                int i = MainList.RemoveAll( p => p.ThisDate < StartOfObservations );
-                Sup.LogTraceInfoMessage( $"CumulusUtils : RecordsBeganDate used: {StartOfObservations}, Number of days removed from list: {i}" );
+                    int i = MainList.RemoveAll( p => p.ThisDate < StartOfObservations );
+                    Sup.LogTraceInfoMessage( $"CumulusUtils : RecordsBeganDate used: {StartOfObservations}, Number of days removed from list: {i}" );
+                }
+                catch
+                {
+                    StartOfObservations = MainList.Select( x => x.ThisDate ).Min();
+                    Sup.LogTraceInfoMessage( $"CumulusUtils : RecordsBeganDate used with wrong format; using the first observation date {StartOfObservations}" );
+                }
             }
 
             // Reading the Monthly logfile has no Async and is independent of InetSupport!!

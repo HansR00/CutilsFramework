@@ -908,6 +908,7 @@ namespace CumulusUtils
             // This is also shared with the ChartsCompiler -> make some shared function for start and endtime related to the intervals.
             //
             DateTime Now = DateTime.Now;
+            Now = new DateTime( Now.Year, Now.Month, Now.Day, Now.Hour, Now.Minute, 0 );
             DateTime timeEnd = Now.AddMinutes( -Now.Minute % Math.Max( CUtils.FTPIntervalInMinutes, CUtils.LogIntervalInMinutes ) );
             DateTime timeStart;
 
@@ -927,6 +928,8 @@ namespace CumulusUtils
             {
                 timeStart = timeEnd.AddHours( -CUtils.HoursInGraph );
             }
+
+            Sup.LogTraceInfoMessage( $"GenerateUserAskedData: timeStart = {timeStart}; timeEnd = {timeEnd}" );
 
             StringBuilder Recent = new StringBuilder( "{" );
             StringBuilder Daily = new StringBuilder( "{" );
