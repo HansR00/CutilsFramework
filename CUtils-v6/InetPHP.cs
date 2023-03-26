@@ -114,6 +114,7 @@ namespace CumulusUtils
                     request.Headers.Add( "TS", unixTs );
                     request.Headers.Add( "SIGNATURE", signature );
                     request.Headers.Add( "BINARY", binary ? "1" : "0" );
+                    request.Headers.Add( "UTF8", "1" );
 
                     // Compress? if supported and payload exceeds 500 bytes
                     if ( data.Length < 500 || PhpCompression == "none" )

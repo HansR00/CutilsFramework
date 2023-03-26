@@ -640,12 +640,13 @@ namespace CumulusUtils
             // For the windbarbs we need the conversion to m/s. For this we need a special data conversion
             // which is done here in Javascript and not at compile time since we use the JSON files and 
             // the JSON conversion I think is more awkward and therefore performance loss. This seems nicer.
-            // At least it is different and therefore educational :D
             if ( WantToSeeWind )
             {
                 of.AppendLine( "function convertToMs(data){data.map(s => {" +
                     $"s[1] = s[1] * {Sup.StationWind.Convert( Sup.StationWind.Dim, WindDim.ms, 1 ).ToString( "F5", CUtils.Inv )} " +
                     "}); return data};" );
+
+                of.AppendLine( "var convertedWindbarbData;" );  // Make this a module global i.s.o. within the ajax function for possible debugging
             }
 
 
