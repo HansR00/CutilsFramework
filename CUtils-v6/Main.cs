@@ -104,7 +104,6 @@
  * https://devblogs.microsoft.com/dotnet/configureawait-faq/
  * 
  * Read this on how to stop bubbling up the async thing:
- * (NOTE: this is relevant because of the GetUtilsIniValue which would really be a major problem if that needs to be async)
  * https://stackoverflow.com/questions/48116738/stop-bubbling-up-async-await-task-to-caller-without-getting-deadlock
  * https://stackoverflow.com/questions/54388796/how-can-i-stop-async-await-from-bubbling-up-in-functions
  *
@@ -408,7 +407,11 @@ namespace CumulusUtils
             //
             string tmp = Sup.GetUtilsIniValue( "General", "RecordsBeganDate", "" );
 
-            if ( string.IsNullOrEmpty( tmp ) ) StartOfObservations = MainList.Select( x => x.ThisDate ).Min();
+            if ( string.IsNullOrEmpty( tmp ) )
+            {
+                //StartOfObservations = DateTime.Parse() // Use the startdate in CumulusMX
+                StartOfObservations = MainList.Select( x => x.ThisDate ).Min();
+            }
             else
             {
                 try
@@ -999,7 +1002,7 @@ namespace CumulusUtils
                 await Isup.UploadFileAsync( $"{Sup.NOAAOutputFilename}", $"{Sup.PathUtils}{Sup.NOAAOutputFilename}" );
             }
 
-            if ( DoDayRecords && ( !Thrifty || ThriftyDayRecordsDirty ) )
+            if ( DoDayRecords /*&& ( !Thrifty || ThriftyDayRecordsDirty )*/ )  // Take care it is always uploaded to possibly change the format of yesterday even if there is no record
             {
                 Sup.LogTraceInfoMessage( $"Thrifty: DoDayRecords && (!Thrifty || ThriftyDayRecordsDirty) - {DoDayRecords && ( !Thrifty || ThriftyDayRecordsDirty )} => Uploading = {Sup.DayRecordsOutputFilename}" );
                 await Isup.UploadFileAsync( $"{Sup.DayRecordsOutputFilename}", $"{Sup.PathUtils}{Sup.DayRecordsOutputFilename}" );
@@ -1071,8 +1074,6 @@ namespace CumulusUtils
 
                     Sup.LogTraceInfoMessage( $"Uploading => {fi.Name} from {Sup.PathUtils}{fi.Name}" );
                     if ( await Isup.UploadFileAsync( $"{fi.Name}", $"{Sup.PathUtils}{fi.Name}" ) ) fi.Delete();
-                    //await Isup.UploadFileAsync( $"{fi.Name}", $"{Sup.PathUtils}{fi.Name}" ); // For DEBUG purposes we might want to leave the files
-                    // else leave the files so they can be uploaded manually
                 }
             }
 

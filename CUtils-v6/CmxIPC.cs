@@ -29,6 +29,7 @@
 
 using System;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 using ServiceStack.Text;
 
 namespace CumulusUtils
@@ -81,13 +82,32 @@ namespace CumulusUtils
             Sup.LogTraceVerboseMessage( $"GetCMXInfo API : NewBuildNumber: {thisInfo.NewBuildNumber}" );
             Sup.LogTraceVerboseMessage( $"GetCMXInfo API : CpuCount: {thisInfo.CpuCount}" );
             Sup.LogTraceVerboseMessage( $"GetCMXInfo API : CpuTemp: {thisInfo.CpuTemp}" );
-
             return thisInfo;
         }
 
         public async Task<string> GetCMXGraphdataAsync( string thisGraphDef )
         {
+            // Base function without a startdate gets full json
             string GraphDataUrl = $"{CmxBaseURL}/api/graphdata/{thisGraphDef}.json";
+            string JSONstring = await Isup.GetUrlDataAsync( new Uri( GraphDataUrl ) );
+
+            return JSONstring;
+        }
+
+        public async Task<string> GetCMXGraphdataAsync( string thisGraphDef, DateTime thisTime )
+        {
+            // Overloaad woith a startdate
+            // Everything according to the spec in the Marks email of 16/03/2023 17h22 :
+            // 1) (@17h22)
+            // Would it help your CUtils if you could do something like this when fetching the graph data…
+            // /api/graphdata/tempdata.json?start=1678983491
+            // Where start = unix timestamp to start the graph data from ?
+            // 2) (@18h10)
+            // No parameter = full data set from Graph Hours
+            // Start ts = real Unix timestamp, no fudging of local time.
+            // Graph data sets remain the same with pseudo TS.
+            //
+            string GraphDataUrl = $"{CmxBaseURL}/api/graphdata/{thisGraphDef}.json?start={CuSupport.DateTimeToUnixUTC(thisTime)}";
             string JSONstring = await Isup.GetUrlDataAsync( new Uri( GraphDataUrl ) );
 
             return JSONstring;

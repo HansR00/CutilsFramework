@@ -1198,57 +1198,40 @@ namespace CumulusUtils
 
                         if ( WantToSeeWind )
                         {
-                            string StartOfCopyJS = "";
                             string JSONstringWind, JSONstringWindDir, wspeedArray, wdirArray, thisWindSubstr, thisWindDirSubstr;
-                            int startWind, startWindDir, NrOfMinutesRequired, i;
+                            int startWind, startWindDir;
+
+                            DateTime StartDateTime = DateTime.ParseExact( Sup.GetUtilsIniValue( "General", "LastUploadTime", "" ), "dd/MM/yy HH:mm", CUtils.Inv ).AddMinutes( 1 );
 
                             CmxIPC thisCmxIPC = new CmxIPC( CUtils.Sup, CUtils.Isup );
 
                             // Now, the wind JSONs should have the same startingtime as the AirLink data.
 
-                            Sup.LogTraceInfoMessage( $"GenAirLinkJson - Doing Wind." );
+                            Sup.LogTraceInfoMessage( $"GenAirLinkJson - Doing Wind for {thisConc}." );
 
                             if ( CUtils.Isup.IsIncrementalAllowed() )
                             {
-                                TimeSpan ts = thisList.Last().ThisDate - thisList.First().ThisDate;
-                                NrOfMinutesRequired = (int) ts.TotalMinutes + CUtils.LogIntervalInMinutes;
-                                if ( NrOfMinutesRequired > CUtils.HoursInGraph * 60 ) NrOfMinutesRequired = CUtils.HoursInGraph * 60;
-
-                                DateTime StartOfCopy = thisList.Last().ThisDate.AddMinutes( -NrOfMinutesRequired );
-                                StartOfCopyJS = CuSupport.DateTimeToJS( StartOfCopy ).ToString();
+                                JSONstringWind = await thisCmxIPC.GetCMXGraphdataAsync( "winddata", StartDateTime );
+                                JSONstringWindDir = await thisCmxIPC.GetCMXGraphdataAsync( "wdirdata", StartDateTime );
                             }
                             else
                             {
-                                NrOfMinutesRequired = CUtils.HoursInGraph * 60;
+                                JSONstringWind = await thisCmxIPC.GetCMXGraphdataAsync( "winddata" );
+                                JSONstringWindDir = await thisCmxIPC.GetCMXGraphdataAsync( "wdirdata" );
                             }
 
-                            Sup.LogTraceInfoMessage( $"GenAirLinkJson - HrsInGraph/NrOfMinutesRequired {CUtils.HoursInGraph}/{NrOfMinutesRequired}" );
+                            var ws= JsonObject.Parse( JSONstringWind );
+                            wspeedArray = ws.Get<string>( "wspeed" );
 
-                            i = 0; // counter for nr of wind observations
-
-                            JSONstringWind = await thisCmxIPC.GetCMXGraphdataAsync( "winddata" );
-                            JSONstringWindDir = await thisCmxIPC.GetCMXGraphdataAsync( "wdirdata" );
-
-                            var ws = JsonObject.Parse( JSONstringWind );
                             var wd = JsonObject.Parse( JSONstringWindDir );
+                            wdirArray = wd.Get<string>( "avgbearing" );
 
-                            wspeedArray = ws.Get<string>( "wspeed" );                //(tagName, StringComparison.InvariantCulture).Name == tagName)
-                            wdirArray = wd.Get<string>( "avgbearing" );              //(tagName, StringComparison.InvariantCulture).Name == tagName)
+                            //Sup.LogTraceInfoMessage( $"StartDateTime = {StartDateTime}" );
+                            //Sup.LogTraceInfoMessage( $"ws = {wspeedArray}" );
+                            //Sup.LogTraceInfoMessage( $"wd = {wdirArray}" );
 
-                            if ( CUtils.Isup.IsIncrementalAllowed() )
-                            {
-                                startWind = wspeedArray.IndexOf( StartOfCopyJS ) - 1;       // Find the entry of the startTime in JS
-                                startWindDir = wdirArray.IndexOf( StartOfCopyJS ) - 1;
-
-                                if ( startWind < 0 ) { startWind = 1; startWindDir = 1; }     // If the catchup is larger than HoursInGraphs * 60
-                            }
-                            else
-                            {
-                                startWind = 1;        // Find the entry of the startTime in JS
-                                startWindDir = 1;
-                            }
-
-                            Sup.LogTraceInfoMessage( $"GenAirLinkJson - Before: startWind {startWind} - startWindDir {startWindDir}" );
+                            startWind = 1;        // Set at start of the first entry
+                            startWindDir = 1;
 
                             sb.Append( $"\"wind\":[" );
 
@@ -1268,9 +1251,7 @@ namespace CumulusUtils
                                 startWindDir = L3 + 2;
 
                                 sb.Append( $"{thisWindSubstr}{thisWindDirSubstr}," );
-                            } while ( i++ < NrOfMinutesRequired );  // this condition is only for incremental, not incremental is regulated by the break within.
-
-                            Sup.LogTraceInfoMessage( $"GenAirLinkJson - After: startWind {startWind} - startWindDir {startWindDir}" );
+                            } while ( true );
 
                             sb.Remove( sb.Length - 1, 1 );
                             sb.Append( $"]," );

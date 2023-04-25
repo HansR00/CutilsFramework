@@ -435,14 +435,17 @@ namespace CumulusUtils
                         requestname = remotefile;
 
                     Sup.LogTraceInfoMessage( $"Upload File values: localfile: {localfile}" );
-                    Sup.LogTraceInfoMessage( $"Upload File values: remotefile: {remotefile}" );
-                    Sup.LogTraceInfoMessage( $"Upload File values: requestname: {requestname}" );
+                    Sup.LogTraceInfoMessage( $"Upload File values: remotefile: {requestname}" );
 
-                    await clientPhp.UploadAsync( localfile: localfile, remotefile: requestname );
+                    if ( !await clientPhp.UploadAsync( localfile: localfile, remotefile: requestname ) )
+                    {
+                        // The send apparently failed so return false
+                        Sup.LogTraceInfoMessage( $"PHP UploadFile: Failed" );
+                        return false;
+                    }
 
-                    Sup.LogTraceInfoMessage( $"PHP UploadFile: Done" );
+                    Sup.LogTraceInfoMessage( $"PHP UploadFile: Success" );
                 }
-
             }
             else // Upload == false
             {

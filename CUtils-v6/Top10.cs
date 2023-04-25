@@ -135,28 +135,39 @@ namespace CumulusUtils
                 Top10List[ i ] = new List<DayfileValue>();
         }
 
-        private class CompareLongestDryPeriod : Comparer<DayfileValue>
-        {
-            public override int Compare( DayfileValue x, DayfileValue y )
-            {
-                if ( x.DryPeriod > y.DryPeriod ) return ( -1 );
-                else if ( x.DryPeriod < y.DryPeriod ) return ( 1 );
-                else return ( 0 );
-            }
-        }
-
-        private class CompareLongestWetPeriod : Comparer<DayfileValue>
-        {
-            public override int Compare( DayfileValue x, DayfileValue y )
-            {
-                if ( x.WetPeriod > y.WetPeriod ) return ( -1 );
-                else if ( x.WetPeriod < y.WetPeriod ) return ( 1 );
-                else return ( 0 );
-            }
-        }
-
         public void GenerateTop10List( List<DayfileValue> ThisList )
         {
+            //Do the Dry/WetPeriods before re-sorting the list for other purposes
+            List<DayfileValue> DryPeriodList = new List<DayfileValue>();
+            List<DayfileValue> WetPeriodList = new List<DayfileValue>();
+            DayfileValue previous = ThisList[ 0 ];
+
+            bool DryPeriodActive = false, WetPeriodActive = false;
+
+            foreach ( DayfileValue element in ThisList )
+            {
+                if (element.DryPeriod != 0)
+                {
+                    DryPeriodActive = true;
+
+                    if ( WetPeriodActive ) WetPeriodList.Add( previous );
+                    WetPeriodActive = false;
+                }
+
+                if (element.WetPeriod != 0)
+                {
+                    WetPeriodActive = true;
+
+                    if (DryPeriodActive) DryPeriodList.Add( previous );
+                    DryPeriodActive = false;
+                }
+
+                previous = element;
+            }
+
+            Top10List[ (int) Top10Types.longestDryPeriod ] = DryPeriodList.OrderByDescending( x => x.DryPeriod ).Take( 10 ).ToList();
+            Top10List[ (int) Top10Types.longestWetPeriod ] = WetPeriodList.OrderByDescending( x => x.WetPeriod ).Take( 10 ).ToList();
+
             //MaxTemp
             Top10List[ (int) Top10Types.maxTemp ] = ThisList.OrderByDescending( x => x.MaxTemp ).Take( 10 ).ToList();
 
@@ -195,7 +206,6 @@ namespace CumulusUtils
 
             for ( int thisYear = ThisList.Select( x => x.ThisDate.Year ).Min(); thisYear <= ThisList.Select( x => x.ThisDate.Year ).Max(); thisYear++ )
                 for ( int thisMonth = 1; thisMonth <= 12; thisMonth++ )
-                    //try { tmpList.Add( ThisList.Where( x => x.ThisDate.Year == thisYear ).Where( x => x.ThisDate.Month == thisMonth ).MaxBy( x => x.MonthlyRain ) ); }
                     try
                     {
                         tmpList.Add( ThisList.Where( x => x.ThisDate.Year == thisYear ).Where( x => x.ThisDate.Month == thisMonth ).OrderByDescending( x => x.MonthlyRain ).First() );
@@ -207,65 +217,11 @@ namespace CumulusUtils
 
             MonthlyRainNrOfMonths = Top10List[ (int) Top10Types.highestMonthlyRain ].Count;
 
-            //DryPeriod
-            int i, j;
-
-            ThisList.Sort( new CompareLongestDryPeriod() );
-
-            Top10List[ (int) Top10Types.longestDryPeriod ].Add( ThisList[ 0 ] );
-
-            foreach ( DayfileValue element in ThisList )
-            {
-                bool FoundInTop10 = false;
-
-                for ( j = 0; j < Top10List[ (int) Top10Types.longestDryPeriod ].Count; j++ )
-                {
-                    DateTime tmpDate = Top10List[ (int) Top10Types.longestDryPeriod ][ j ].ThisDate;
-
-                    if ( Math.Abs( element.ThisDate.Subtract( tmpDate ).TotalDays ) < Top10List[ (int) Top10Types.longestDryPeriod ][ j ].DryPeriod )
-                    {
-                        FoundInTop10 = true;
-                    }
-                }
-
-                if ( FoundInTop10 ) continue;
-                else
-                {
-                    Top10List[ (int) Top10Types.longestDryPeriod ].Add( element );
-                    if ( Top10List[ (int) Top10Types.longestDryPeriod ].Count == 10 ) break;
-                }
-            }
-
-            //WetPeriod
-            ThisList.Sort( new CompareLongestWetPeriod() );
-            Top10List[ (int) Top10Types.longestWetPeriod ].Add( ThisList[ 0 ] );
-
-            foreach ( DayfileValue element in ThisList )
-            {
-                bool FoundInTop10 = false;
-
-                for ( j = 0; j < Top10List[ (int) Top10Types.longestWetPeriod ].Count; j++ )
-                {
-                    DateTime tmpDate = Top10List[ (int) Top10Types.longestWetPeriod ][ j ].ThisDate;
-
-                    if ( Math.Abs( element.ThisDate.Subtract( tmpDate ).TotalDays ) < Top10List[ (int) Top10Types.longestWetPeriod ][ j ].WetPeriod )
-                    {
-                        FoundInTop10 = true;
-                    }
-                }
-
-                if ( FoundInTop10 ) continue;
-                else
-                {
-                    Top10List[ (int) Top10Types.longestWetPeriod ].Add( element );
-                    if ( Top10List[ (int) Top10Types.longestWetPeriod ].Count == 10 ) break;
-                }
-            }
-
             // Now, do some DEBUG printing
             DateTime Yesterday = DateTime.Today.AddDays( -1 );
 
-            i = 0;
+            int i = 0, j;
+
             Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
             for ( j = 0; j < 10; j++ )
             {
