@@ -5,7 +5,7 @@ This is the source code for the <i>CumulusUtils</i> ( or <i>CUtils</i> for short
 
 The license is the <b>Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</b> which is basically a usage license (not like GNU, BSD or MIT etc...). You are invited to look at the differences between those different type of licenses, also the difference between free software and gratuit.
 
-The software is published on the subforum for CumulusUtils (https://cumulus.hosiene.co.uk/viewtopic.php?t=17998) on the main CumulusMX forum where the basic installation and usage  instructions can be found as well. For more extensive explanation the user is invited to use the specific wiki pages (https://www.cumuluswiki.org/a/Category:CumulusUtils).
+The tool is published on the subforum for CumulusUtils (https://cumulus.hosiene.co.uk/viewtopic.php?t=17998) on the main CumulusMX forum where the basic installation and usage  instructions can be found as well. For more extensive explanation the user is invited to use the specific wiki pages (https://www.cumuluswiki.org/a/Category:CumulusUtils).
 
 The code has been published for several reasons but  mainly because:
 
