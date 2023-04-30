@@ -29,7 +29,6 @@
 
 using System;
 using System.Threading.Tasks;
-using System.Web.UI.WebControls;
 using ServiceStack.Text;
 
 namespace CumulusUtils
@@ -107,7 +106,7 @@ namespace CumulusUtils
             // Start ts = real Unix timestamp, no fudging of local time.
             // Graph data sets remain the same with pseudo TS.
             //
-            string GraphDataUrl = $"{CmxBaseURL}/api/graphdata/{thisGraphDef}.json?start={CuSupport.DateTimeToUnixUTC(thisTime)}";
+            string GraphDataUrl = $"{CmxBaseURL}/api/graphdata/{thisGraphDef}.json?start={CuSupport.DateTimeToUnixUTC( thisTime )}";
             string JSONstring = await Isup.GetUrlDataAsync( new Uri( GraphDataUrl ) );
 
             return JSONstring;

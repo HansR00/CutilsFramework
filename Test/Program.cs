@@ -41,7 +41,7 @@ namespace Test
                 Console.WriteLine( $"MapsOn: Before testing DoneToday string tmp: {tmp} " );
 
                 string thisFormat = "s";
-                Console.WriteLine($"Try ParseExact: {DateTime.ParseExact( tmp, thisFormat, thisculture )}" );
+                Console.WriteLine( $"Try ParseExact: {DateTime.ParseExact( tmp, thisFormat, thisculture )}" );
 
                 if ( DateTime.TryParse( tmp, out DateTime DoneToday ) )
                 {

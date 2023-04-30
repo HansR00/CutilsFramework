@@ -23,7 +23,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -315,7 +314,7 @@ namespace CumulusUtils
                         tmp = SetValues( line, timeStart );
                         if ( tmp.Valid )
                             MainExtraSensorsValuesList.Add( tmp );
-                        if ( tmp.ThisDate >= timeEnd ) 
+                        if ( tmp.ThisDate >= timeEnd )
                             break; // we have our set of data required
                         line = ReadLine( af, false );
                     } while ( !string.IsNullOrEmpty( line ) );

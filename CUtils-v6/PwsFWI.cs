@@ -301,7 +301,7 @@ namespace CumulusUtils
 
                     FWIlist.Add( localFWI );
 
-                    Sup.LogTraceVerboseMessage( $"   {localFWI.Date}; {localFWI.T:F1}; {localFWI.Wind:F1}; {localFWI.Rain:F1}; " +
+                    Sup.LogTraceInfoMessage( $"   {localFWI.Date}; {localFWI.T:F1}; {localFWI.Wind:F1}; {localFWI.Rain:F1}; " +
                                         $"{localFWI.RH:F2}; {localFWI.Psat:F2}; {localFWI.VPD:F2}; " +
                                         $"{localFWI.dayFWI:F2}; {localFWI.DryPeriod:F0}; {localFWI.SmoothedFWI:F2}" );
 
@@ -1015,7 +1015,7 @@ namespace CumulusUtils
 
                         // The actual carry over from the history is done in SetExtraValues
                         //
-                        if ( ThisValue.TotalRainThisDay > 0 ) { ThisValue.WetPeriod = 1; ThisValue.DryPeriod = 0; }
+                        if ( ThisValue.TotalRainThisDay >= (float) Sup.StationRain.Convert( RainDim.millimeter, Sup.StationRain.Dim, 0.2 ) ) { ThisValue.DryPeriod = 0; ThisValue.WetPeriod = 1;  }
                         else { ThisValue.DryPeriod = 1; ThisValue.WetPeriod = 0; }
 
                         ThisList.Add( ThisValue );

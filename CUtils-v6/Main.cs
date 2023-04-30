@@ -841,7 +841,7 @@ namespace CumulusUtils
                             {
                                 tmpTimeEnd = fncs.GenerateUserAskedData( thisList: tmpChartsList );  // 
                             }
-                            catch( Exception e )
+                            catch ( Exception e )
                             {
                                 Sup.LogTraceInfoMessage( $"UserAskedData: Failing in GenerateUSerAskedData - i.e. Compiler data)" );
                                 Sup.LogTraceInfoMessage( $"UserAskedData: Message {e.Message})" );

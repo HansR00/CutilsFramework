@@ -146,7 +146,7 @@ namespace CumulusUtils
 
             foreach ( DayfileValue element in ThisList )
             {
-                if (element.DryPeriod != 0)
+                if ( element.DryPeriod != 0 )
                 {
                     DryPeriodActive = true;
 
@@ -154,11 +154,11 @@ namespace CumulusUtils
                     WetPeriodActive = false;
                 }
 
-                if (element.WetPeriod != 0)
+                if ( element.WetPeriod != 0 )
                 {
                     WetPeriodActive = true;
 
-                    if (DryPeriodActive) DryPeriodList.Add( previous );
+                    if ( DryPeriodActive ) DryPeriodList.Add( previous );
                     DryPeriodActive = false;
                 }
 

@@ -566,7 +566,6 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
         private void GenerateCUlib()
         {
             StringBuilder CUlibFile = new StringBuilder();
-            bool UseCMXMoonImage = Sup.GetUtilsIniValue( "Website", "UseCMXMoonImage", "false" ).ToLowerInvariant().Equals( "true", CUtils.Cmp );
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}cumulusutils.js", false, Encoding.UTF8 ) )
             {
@@ -1170,12 +1169,18 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     "}" );
 
                 // Do the MOON procedure
+                bool UseCMXMoonImage = Sup.GetUtilsIniValue( "Website", "UseCMXMoonImage", "false" ).ToLowerInvariant().Equals( "true", CUtils.Cmp );
 
                 if ( UseCMXMoonImage )
                 {
+                    Sup.LogDebugMessage( $"Generating CUlib Using CMX Moon image" );
+
+                    string MoonImageLocation = Sup.GetUtilsIniValue( "Website", "MoonImageLocation", "" ).ToLowerInvariant();
+
                     CUlibFile.Append(
                         "function CreateMoon() {" +
-                       $"    tmpMoon = '<img src=\"{Sup.GetCumulusIniValue( "Graphs", "MoonImageFtpDest", "" )}\">';" +
+                        //$"    tmpMoon = '<img src=\"{Sup.GetCumulusIniValue( "Graphs", "MoonImageFtpDest", "" )}\">';" +
+                        $"    tmpMoon = '<img src=\"{MoonImageLocation}\">';" +
                         "    $('#d3MoonDisc').html(tmpMoon);" +
                         "}" +
                         "function MoveMoonPosition() {" +
@@ -1199,6 +1204,8 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 }
                 else
                 {
+                    Sup.LogDebugMessage( $"Generating CUlib Using CUtils Moonsimulation" );
+
                     CUlibFile.Append(
                               "var MoonRadius = 40;" +
                               "var MoonLight = '#ffff80';" +

@@ -128,7 +128,7 @@ namespace CumulusUtils
                 }
                 else DoMapsOn = true;
             }
-            catch 
+            catch
             {
                 DoneToday = DateTime.Now;
                 DoMapsOn = true;

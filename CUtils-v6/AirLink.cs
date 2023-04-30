@@ -76,9 +76,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -844,22 +842,24 @@ namespace CumulusUtils
 
             if ( !StandAloneModule )
             {
-                of.AppendLine( $"<input type='submit' class=buttonSlim value='{Sup.GetCUstringValue( "AirQuality", "Help", "Help", false )}' action='class='nav-link' data-toggle='modal' data-target='#Help'>" );
+                of.AppendLine( $"<input type='submit' class=buttonSlim value='{Sup.GetCUstringValue( "AirQuality", "Help", "Help", false )}' class='nav-link' data-bs-toggle='modal' data-bs-target='#Help'>" );
             }
             of.AppendLine( "</div>" );
 
             of.AppendLine( $"<div><b>{Sup.GetCUstringValue( "AirQuality", "AirQuality", "Air Quality", false )} / {Sup.GetCUstringValue( "AirQuality", "NormativeCountry", "Normative country selected", true )}: {CountrySelected}</b>" +
                          $"&nbsp;-&nbsp;<b>{Sup.GetCumulusIniValue( "Station", "LocName", "" )}</b></div><br/>" );
 
-            if ( CUtils.DoWebsite && !StandAloneModule )
+            if ( /* CUtils.DoWebsite && */ !StandAloneModule )
             {
+                Sup.LogDebugMessage( "DoAirLinkModule - Writing the Help Modal" );
+
                 // The Help info
                 of.AppendLine( "<div class='modal fade' id='Help' tabindex='-1' role='dialog' aria-hidden='true'>" );
                 of.AppendLine( "<div class='modal-dialog modal-dialog-centered modal-dialog modal-lg' role='document'>" );
                 of.AppendLine( "<div class='modal-content'>" );
                 of.AppendLine( "<div class='modal-header'>" );
                 of.AppendLine( "<h5 class='modal-title'>Help Info on Air Quality reporting</h5>" );
-                of.AppendLine( "<button type = 'button' class='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>" );
+                of.AppendLine( "<button type = 'button' class='close' data-bs-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>" );
                 of.AppendLine( "</div>" );
                 of.AppendLine( "<div class='modal-body' style='text-align:left;'>" );
                 of.AppendLine( @"In Air Quality (with either the cheap sensors or the government published data) it is important to know about the Air Quality Indices (AQI) and PM concentrations. " +
@@ -870,14 +870,15 @@ namespace CumulusUtils
                   "some links to the sites for specific countries. You will have to study yourself (if you want). <br/><br/>" +
                   "Please be aware that these charts only give the abolute measurements of the PM concentrations as given by the sensors used. The AQI  levels for the different countries have great variations " +
                   "and I will not go through the trouble to display those levels in the graphs for the normative country selected. <br/><br/>" +
-                  "The graphs show the <a  href='https://www.airqualitynow.eu/download/CITEAIR-Comparing_Urban_Air_Quality_across_Borders.pdf' target='_blank'>indicative AQI levels of the EU-CAQI standards</a> for the 1 hr series.<br/><br/>" +
+                  "The graphs show the <a  href='https://www.researchgate.net/publication/269030465_Wwwairqualitynoweu_a_common_website_and_air_quality_indices_to_compare_cities_across_Europe' target='_blank'>indicative AQI levels of the EU-CAQI standards (researchgate paper)</a> " +
+                  "(<a href='https://uk-air.defra.gov.uk/assets/documents/reports/cat12/0705231407_070516_CITEAIR-NH-Overview-v1.pdf' target='_blank'>UK explication</a>) for the 1 hr series.<br/><br/>" +
                   "These will show you reasonable short term danger levels although maybe not standardized in your country. 24 hr levels are considered irrelevant in the context of a personal station: you will be dead before this level reaches a level where help " +
                   "services are activated. If the 1 hr level shows an unhealthy level you better start running away (precautionary principle).<br><br/>" +
                   "Yes, big differences in different countries. Therefore: study the documents and the danger levels in the matrix I supplied." );
                 of.AppendLine( "</a>" );
                 of.AppendLine( "</div>" );
                 of.AppendLine( "<div class='modal-footer'>" );
-                of.AppendLine( $"<button type='button' class='btn btn-secondary' data-dismiss='modal'>{Sup.GetCUstringValue( "Website", "Close", "Close", false )}</button>" );
+                of.AppendLine( $"<button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>{Sup.GetCUstringValue( "Website", "Close", "Close", false )}</button>" );
                 of.AppendLine( "</div>" );
                 of.AppendLine( "</div>" );
                 of.AppendLine( "</div>" );
@@ -1220,7 +1221,7 @@ namespace CumulusUtils
                                 JSONstringWindDir = await thisCmxIPC.GetCMXGraphdataAsync( "wdirdata" );
                             }
 
-                            var ws= JsonObject.Parse( JSONstringWind );
+                            var ws = JsonObject.Parse( JSONstringWind );
                             wspeedArray = ws.Get<string>( "wspeed" );
 
                             var wd = JsonObject.Parse( JSONstringWindDir );
