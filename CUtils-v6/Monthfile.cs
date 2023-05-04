@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -101,12 +102,11 @@ namespace CumulusUtils
         readonly string[] DaysOfMiracleAndWonder;
         readonly bool UseSQL;
         readonly DateTime AncientCumulus = new DateTime( 2004, 01, 27 );
-        readonly CultureInfo provider = CultureInfo.InvariantCulture;
 
         bool disposed;
         string filenameCopy;
 
-        const int MaxErrors = 10;
+        int MaxErrors;
         int ErrorCount;
 
         bool MonthlyLogsRead;
@@ -188,6 +188,7 @@ namespace CumulusUtils
             enumFieldTypeNames = Enum.GetNames( typeof( MonthfileFieldName ) );
             IgnoreDataErrors = Sup.GetUtilsIniValue( "General", "IgnoreDataErrors", "true" ).Equals( "true", CUtils.Cmp );
             UseSQL = Sup.GetUtilsIniValue( "General", "UseSQL", "false" ).Equals( "true", CUtils.Cmp );
+            MaxErrors = Convert.ToInt32( Sup.GetUtilsIniValue( "General", "MaxErrors", "10" ), CUtils.Inv );
 
             return;
         }
@@ -438,35 +439,35 @@ namespace CumulusUtils
                 tmpDatestring = lineSplit[ FieldInUse ];
                 FieldInUse = (int) MonthfileFieldName.thisTime;
                 tmpDatestring += " " + lineSplit[ FieldInUse ];
-                ThisValue.ThisDate = DateTime.ParseExact( tmpDatestring, "dd/MM/yy HH:mm", provider );
+                ThisValue.ThisDate = DateTime.ParseExact( tmpDatestring, "dd/MM/yy HH:mm", CUtils.Inv );
 
                 ThisValue.UseAverageBearing = lineSplit.Length <= (int) MonthfileFieldName.CurrWindBearing;
 
                 if ( ThisValue.UseAverageBearing )
                 {
                     FieldInUse = (int) MonthfileFieldName.AvWindBearing;
-                    ThisValue.AvWindBearing = Convert.ToInt32( lineSplit[ FieldInUse ], provider );
+                    ThisValue.AvWindBearing = Convert.ToInt32( lineSplit[ FieldInUse ], CUtils.Inv );
                 }
                 else
                 {
                     FieldInUse = (int) MonthfileFieldName.CurrWindBearing;
-                    ThisValue.CurrWindBearing = Convert.ToInt32( lineSplit[ FieldInUse ], provider );
+                    ThisValue.CurrWindBearing = Convert.ToInt32( lineSplit[ FieldInUse ], CUtils.Inv );
                 }
 
                 FieldInUse = (int) MonthfileFieldName.CurrPressure;
-                ThisValue.CurrPressure = Convert.ToSingle( lineSplit[ FieldInUse ], provider );
+                ThisValue.CurrPressure = Convert.ToSingle( lineSplit[ FieldInUse ], CUtils.Inv );
 
                 FieldInUse = (int) MonthfileFieldName.CMXLatestGust;
-                ThisValue.CMXLatestGust = Convert.ToSingle( lineSplit[ FieldInUse ], provider );
-
-                FieldInUse = (int) MonthfileFieldName.EVT;
-                ThisValue.Evt = Convert.ToSingle( lineSplit[ FieldInUse ], provider );
+                ThisValue.CMXLatestGust = Convert.ToSingle( lineSplit[ FieldInUse ], CUtils.Inv );
 
                 FieldInUse = (int) MonthfileFieldName.SolarRad;
-                ThisValue.SolarRad = Convert.ToInt32( lineSplit[ FieldInUse ], provider );
+                ThisValue.SolarRad = Convert.ToInt32( lineSplit[ FieldInUse ], CUtils.Inv );
+
+                FieldInUse = (int) MonthfileFieldName.EVT;
+                ThisValue.Evt = Convert.ToSingle( lineSplit[ FieldInUse ], CUtils.Inv );
 
                 FieldInUse = (int) MonthfileFieldName.SolarTheoreticalMax;
-                ThisValue.SolarTheoreticalMax = Convert.ToInt32( lineSplit[ FieldInUse ], provider );
+                ThisValue.SolarTheoreticalMax = Convert.ToInt32( lineSplit[ FieldInUse ], CUtils.Inv );
 
                 ThisValue.Valid = true;
             }
@@ -477,7 +478,7 @@ namespace CumulusUtils
                 ErrorCount++;
 
                 //handle exception
-                if ( ErrorCount < MaxErrors )
+                if ( ErrorCount <= MaxErrors )
                 {
                     Sup.LogTraceErrorMessage( $"{m} fail: {e.Message}" );
                     Sup.LogTraceErrorMessage( $"{m}: in field nr {FieldInUse} ({enumFieldTypeNames[ FieldInUse ]})" );
@@ -495,7 +496,7 @@ namespace CumulusUtils
                 if ( IgnoreDataErrors )
                 {
                     ThisValue.Valid = false;
-                    if ( ErrorCount < MaxErrors )
+                    if ( ErrorCount <= MaxErrors )
                         Sup.LogTraceInfoMessage( "Monthfile.SetValues : Continuing to read data" );
                 }
                 else
@@ -510,7 +511,7 @@ namespace CumulusUtils
 
                 ErrorCount++;
 
-                if ( ErrorCount < MaxErrors )
+                if ( ErrorCount <= MaxErrors )
                 {
                     Sup.LogTraceErrorMessage( $"{m} fail: {e.Message}" );
                     Sup.LogTraceErrorMessage( $"{m}: in field nr {FieldInUse} does  not exist in this file" );
@@ -520,7 +521,7 @@ namespace CumulusUtils
                 if ( IgnoreDataErrors )
                 {
                     ThisValue.Valid = false;
-                    if ( ErrorCount < MaxErrors )
+                    if ( ErrorCount <= MaxErrors )
                         Sup.LogTraceInfoMessage( "Monthfile.SetValues : Continuing to read data" );
                 }
                 else
@@ -580,8 +581,6 @@ namespace CumulusUtils
 
                 using ( MySqlConnection connection = new MySqlConnection( builder.ConnectionString ) )
                 {
-                    CultureInfo ci = CultureInfo.InvariantCulture;
-
                     using ( MySqlCommand command = new MySqlCommand( "SELECT COUNT(*) FROM Monthly;", connection ) )
                     {
 

@@ -83,7 +83,7 @@ namespace CumulusUtils
             Sup = s;
             Sup.LogDebugMessage( $"Main CmulusUtils: Yadr Constructor Start" );
 
-            //Windrunbase = Windrunstep = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "WindrunClassWidth", "75" ), CultureInfo.InvariantCulture );
+            //Windrunbase = Windrunstep = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "WindrunClassWidth", "75" ), CUtils.Inv );
             Windrunbase = Windrunstep = 75;
 
             // we have 13 classes in the table. If it becomes more or less we have to adjust tables

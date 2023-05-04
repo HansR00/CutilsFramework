@@ -501,8 +501,6 @@ namespace CumulusUtils
                     of.WriteLine( $"</tbody></table>" );
                     of.WriteLine( $"</div>" );
 
-                    // thisDate = new DateTime(2019, 1, 1); //Convert.ToDateTime("01/01/2019", CultureInfo.InvariantCulture);
-
                     // Now the monthly table for all time records
                     for ( int month = 0; month < 12; month++ )
                     {

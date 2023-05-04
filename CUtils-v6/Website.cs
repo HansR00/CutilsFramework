@@ -80,9 +80,9 @@ namespace CumulusUtils
             Sup = s;
             Isup = i;
 
-            Latitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Latitude", "" ), CultureInfo.InvariantCulture );
-            Longitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Longitude", "" ), CultureInfo.InvariantCulture );
-            Altitude = Convert.ToInt32( Sup.GetCumulusIniValue( "Station", "Altitude", "" ), CultureInfo.InvariantCulture );
+            Latitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Latitude", "" ), CUtils.Inv );
+            Longitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Longitude", "" ), CUtils.Inv );
+            Altitude = Convert.ToInt32( Sup.GetCumulusIniValue( "Station", "Altitude", "" ), CUtils.Inv );
             AltitudeInFeet = Sup.GetCumulusIniValue( "Station", "AltitudeInFeet", "" ) == "1";
 
             // ShowSolar and HasSolar are the same for now, but it may be different as HasSolar determines whether there is a sensor, ShowSolar is to show it on screen....
@@ -987,8 +987,8 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 // Do the SUN procedure
 
                 CUlibFile.Append( "" +
-                         $"var Latitude = {Latitude.ToString( "F4", CultureInfo.InvariantCulture )};" +
-                         $"var Longitude = {Longitude.ToString( "F4", CultureInfo.InvariantCulture )};" +
+                         $"var Latitude = {Latitude.ToString( "F4", CUtils.Inv )};" +
+                         $"var Longitude = {Longitude.ToString( "F4", CUtils.Inv )};" +
                           "var Radius = 60;" +
                           "var ST, STT;" +
                           "var haveDay, haveCivil, haveNautical, haveAstronomical, haveNight, NorthernLight, SouthernLight;" +
@@ -1175,7 +1175,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 {
                     Sup.LogDebugMessage( $"Generating CUlib Using CMX Moon image" );
 
-                    string MoonImageLocation = Sup.GetUtilsIniValue( "Website", "MoonImageLocation", "" ).ToLowerInvariant();
+                    string MoonImageLocation = Sup.GetUtilsIniValue( "Website", "MoonImageLocation", "" );
 
                     CUlibFile.Append(
                         "function CreateMoon() {" +

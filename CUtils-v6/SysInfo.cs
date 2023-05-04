@@ -64,7 +64,7 @@ namespace CumulusUtils
                 StringBuilder DeviceInfo = new StringBuilder();
                 string tmp;
 
-                DeviceType = Convert.ToInt32( Sup.GetCumulusIniValue( "Station", "Type", "1" ), CultureInfo.InvariantCulture );
+                DeviceType = Convert.ToInt32( Sup.GetCumulusIniValue( "Station", "Type", "1" ), CUtils.Inv );
                 //DeviceType = 11;
                 Sup.LogTraceInfoMessage( $" SystemStatus: Found device {DeviceType} {CuSupport.StationInUse( DeviceType )}" );
 
@@ -220,7 +220,7 @@ namespace CumulusUtils
 
             for ( int i = 0; i < LinesToSkip.Length; i++ )
                 if ( !string.IsNullOrEmpty( StringLinesToSkip[ i ] ) )
-                    LinesToSkip[ i ] = Convert.ToInt32( StringLinesToSkip[ i ], CultureInfo.InvariantCulture ) - 1;
+                    LinesToSkip[ i ] = Convert.ToInt32( StringLinesToSkip[ i ], CUtils.Inv ) - 1;
 
             of.WriteLine( "Windows" );
             of.WriteLine( "" );

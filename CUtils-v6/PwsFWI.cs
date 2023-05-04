@@ -98,8 +98,8 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( $"PwsFWIfuncs constructor" );
 
-            Analyse = Convert.ToInt32( Sup.GetUtilsIniValue( "pwsFWI", "Analyse", "30" ), CultureInfo.InvariantCulture );
-            WarningLevel = Convert.ToInt32( Sup.GetUtilsIniValue( "pwsFWI", "WarningLevel", "5" ), CultureInfo.InvariantCulture );
+            Analyse = Convert.ToInt32( Sup.GetUtilsIniValue( "pwsFWI", "Analyse", "30" ), CUtils.Inv );
+            WarningLevel = Convert.ToInt32( Sup.GetUtilsIniValue( "pwsFWI", "WarningLevel", "5" ), CUtils.Inv );
 
             if ( WarningLevel != 5 && WarningLevel != 6 )
             {
@@ -209,7 +209,7 @@ namespace CumulusUtils
                 {
                     double A, B, C;
 
-                    localFWI.Date = ThisList[ i ].ThisDate.ToString( "dd/MM/yy", CultureInfo.InvariantCulture );
+                    localFWI.Date = ThisList[ i ].ThisDate.ToString( "dd/MM/yy", CUtils.Inv );
                     localFWI.T = Sup.StationTemp.Convert( Sup.StationTemp.Dim, TempDim.celsius, ThisList[ i ].MaxTemp );                // if Temp is in F, convert it to C. Otherwise it remains in C
                     localFWI.RH = ThisList[ i ].LowHumidity / 100;                                                                      // always percentage
                     localFWI.Wind = Sup.StationWind.Convert( Sup.StationWind.Dim, WindDim.kmh, ThisList[ i ].HighAverageWindSpeed );    // if Wind other than km/h convert it otherwise it remains in km/h
@@ -370,9 +370,9 @@ namespace CumulusUtils
                 {
                     // Use the standard Style
                     of.WriteLine( $"<span id='CurrentPwsFWI' style=\"border: 1px solid black;cursor:pointer;text-align:center;background:{fmtstring[ (int) fmtindex ]}\"> " +
-                                $"&nbsp;{FWIlist[ IndexOfCurrent ].SmoothedFWI.ToString( "F1", CultureInfo.InvariantCulture )}&nbsp;pwsFWI</span>" );
+                                $"&nbsp;{FWIlist[ IndexOfCurrent ].SmoothedFWI.ToString( "F1", CUtils.Inv )}&nbsp;pwsFWI</span>" );
                     Sup.SetUtilsIniValue( "pwsFWI", "CurrentPwsFWI", $"<span id='CurrentPwsFWI' style=\"border: 1px solid black;cursor:pointer;text-align:center;background:{fmtstring[ (int) fmtindex ]}\"> " +
-                                        $"&nbsp;{FWIlist[ IndexOfCurrent ].SmoothedFWI.ToString( "F1", CultureInfo.InvariantCulture )}&nbsp;pwsFWI</span>" );
+                                        $"&nbsp;{FWIlist[ IndexOfCurrent ].SmoothedFWI.ToString( "F1", CUtils.Inv )}&nbsp;pwsFWI</span>" );
                 }
                 else if ( Sup.GetUtilsIniValue( "pwsFWI", "CurrentIndexFormat", "Standard" ).Equals( "Betel-Kocher", CUtils.Cmp ) )
                 {
@@ -380,10 +380,10 @@ namespace CumulusUtils
                     const string Base64Img = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAAGCAIAAADbpI4QAAAABnRSTlMAAAAAAABupgeRAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA7ElEQVQ4jd2TvU7CYBSGn++3PxZDE0ZCC62DF2Di6mWQmDBzCd6rCo5KRasSSTBfXcpSMLELJDzTGd6c8z7DEdzRgnWX95QyYZlRDljmlAM++jjdCErp4vgtz++T5Gk0ehwOZ2k6z7KHXq+Q0jXXVrCGFXzCCr6282ZfBwcFvMIzLGABL1DA978MNF4bYSewCq3RFuUjQsQZRGD2RMVGqUDrwPOs75swVFEkOh2k3MlWoEFAtVVy8APqD2EPLBjQIEG0MNg9fuLUwkaYgOC4VQ5DLZyfX95ejC3NVzw9auGr/s30ehL73eO2OQC/GPkzEsKfXDgAAAAASUVORK5CYII=";
 
                     of.WriteLine( $"<span id='CurrentPwsFWI' style='border: 1px solid black;padding:0px;cursor:pointer;text-align:center;line-height:100%;display:block;background:{fmtstring[ (int) fmtindex ]}'>" +
-                                 $"pwsFWI<br>&nbsp;{FWIlist[ IndexOfCurrent ].SmoothedFWI.ToString( "F1", CultureInfo.InvariantCulture )}&nbsp;<br>" +
+                                 $"pwsFWI<br>&nbsp;{FWIlist[ IndexOfCurrent ].SmoothedFWI.ToString( "F1", CUtils.Inv )}&nbsp;<br>" +
                                  $"<img alt='Colour Bar' src='{Base64Img}'></span>" );
                     Sup.SetUtilsIniValue( "pwsFWI", "CurrentPwsFWI", $"<span id='CurrentPwsFWI' style=\"border: 1px solid black;padding:0px;cursor:pointer;text-align:center;line-height:100%;display:block;background:{fmtstring[ (int) fmtindex ]}\">" +
-                                 $"pwsFWI<br>&nbsp;{FWIlist[ IndexOfCurrent ].SmoothedFWI.ToString( "F1", CultureInfo.InvariantCulture )}&nbsp;<br>" +
+                                 $"pwsFWI<br>&nbsp;{FWIlist[ IndexOfCurrent ].SmoothedFWI.ToString( "F1", CUtils.Inv )}&nbsp;<br>" +
                                  $"<img alt='Colour Bar' src='{Base64Img}'></span>" );
                 }
             }
@@ -498,7 +498,7 @@ namespace CumulusUtils
                                "background: #f0f0f0; text-align: right;'>" );
                     of.WriteLine( "<span >></span></div></div>" );
                     of.WriteLine( $"<div style='width: {TableWidth}%; margin-left: auto; margin-right: auto; text-align: left;'>" +
-                          $"Current FWI value = {FWIlist[ IndexOfCurrent ].SmoothedFWI.ToString( "F1", CultureInfo.InvariantCulture )} " +
+                          $"Current FWI value = {FWIlist[ IndexOfCurrent ].SmoothedFWI.ToString( "F1", CUtils.Inv )} " +
                           $"(maximum scale = {ExtremeFWIvalue})</div>" );
                     of.WriteLine( $"<div style ='width: {TableWidth}%; margin-left: auto; margin-right: auto; text-align:left;'>" +
                                  "<small>For more information on the Fire Weather Index, see the end of this page.</small></div>" );
@@ -538,12 +538,12 @@ namespace CumulusUtils
 
                         of.WriteLine( $"<tr style='text-align:center;{tmpBackground}'>" );
                         of.WriteLine( $"<td>{FWIlist[ i ].Date}</td>" );
-                        of.WriteLine( $"<td>{FWIlist[ i ].T.ToString( "F1", CultureInfo.InvariantCulture )}</td>" );
-                        of.WriteLine( $"<td>{FWIlist[ i ].Wind.ToString( "F1", CultureInfo.InvariantCulture )}</td>" );
-                        of.WriteLine( $"<td>{FWIlist[ i ].Rain.ToString( "F1", CultureInfo.InvariantCulture )}</td>" );
-                        of.WriteLine( $"<td>{FWIlist[ i ].RH.ToString( "F2", CultureInfo.InvariantCulture )}</td>" );
-                        of.WriteLine( $"<td>{FWIlist[ i ].DryPeriod.ToString( "D", CultureInfo.InvariantCulture )}</td>" );
-                        of.WriteLine( $"<td style='background:{fmtstring[ (int) fmtindex ]}'>{FWIlist[ i ].SmoothedFWI.ToString( "F1", CultureInfo.InvariantCulture )}</td>" );
+                        of.WriteLine( $"<td>{FWIlist[ i ].T.ToString( "F1", CUtils.Inv )}</td>" );
+                        of.WriteLine( $"<td>{FWIlist[ i ].Wind.ToString( "F1", CUtils.Inv )}</td>" );
+                        of.WriteLine( $"<td>{FWIlist[ i ].Rain.ToString( "F1", CUtils.Inv )}</td>" );
+                        of.WriteLine( $"<td>{FWIlist[ i ].RH.ToString( "F2", CUtils.Inv )}</td>" );
+                        of.WriteLine( $"<td>{FWIlist[ i ].DryPeriod.ToString( "D", CUtils.Inv )}</td>" );
+                        of.WriteLine( $"<td style='background:{fmtstring[ (int) fmtindex ]}'>{FWIlist[ i ].SmoothedFWI.ToString( "F1", CUtils.Inv )}</td>" );
 
                         of.WriteLine( "</tr>" );
                     }
@@ -981,13 +981,13 @@ namespace CumulusUtils
 
                         foreach ( XElement hr in hour ) // loop over the days in  the prediction to get the lowest estimate of RH
                         {
-                            lowHum = Convert.ToSingle( hr.Element( "humidity" ).Attribute( "value" ).Value, CultureInfo.InvariantCulture );
+                            lowHum = Convert.ToSingle( hr.Element( "humidity" ).Attribute( "value" ).Value, CUtils.Inv );
 
                             if ( lowHum < ThisValue.LowHumidity )
                                 ThisValue.LowHumidity = lowHum;
                         }
 
-                        ThisValue.ThisDate = DateTime.ParseExact( el.Attribute( "value" ).Value, "yyyyMMdd", CultureInfo.InvariantCulture );
+                        ThisValue.ThisDate = DateTime.ParseExact( el.Attribute( "value" ).Value, "yyyyMMdd", CUtils.Inv );
 
                         // We require conversions if the units used are not deg Celsius, km/h, mm, hPa
                         // So we make an intermediate value while storing in xxxxAPI valiable. That variable contains the non standard value
@@ -1002,9 +1002,9 @@ namespace CumulusUtils
                         Wind w = new Wind( WindDim.kmh, Sup );
                         Rain r = new Rain( RainDim.millimeter );
 
-                        ThisValue.MaxTemp = (float) Sup.StationTemp.Convert( TempDim.celsius, Sup.StationTemp.Dim, Convert.ToSingle( el.Element( "tempmax" ).Attribute( "value" ).Value, CultureInfo.InvariantCulture ) );
-                        ThisValue.HighAverageWindSpeed = (float) Sup.StationWind.Convert( WindDim.kmh, Sup.StationWind.Dim, Convert.ToSingle( el.Element( "wind" ).Attribute( "value" ).Value, CultureInfo.InvariantCulture ) );
-                        ThisValue.TotalRainThisDay = (float) Sup.StationRain.Convert( RainDim.millimeter, Sup.StationRain.Dim, Convert.ToSingle( el.Element( "rain" ).Attribute( "value" ).Value, CultureInfo.InvariantCulture ) );
+                        ThisValue.MaxTemp = (float) Sup.StationTemp.Convert( TempDim.celsius, Sup.StationTemp.Dim, Convert.ToSingle( el.Element( "tempmax" ).Attribute( "value" ).Value, CUtils.Inv ) );
+                        ThisValue.HighAverageWindSpeed = (float) Sup.StationWind.Convert( WindDim.kmh, Sup.StationWind.Dim, Convert.ToSingle( el.Element( "wind" ).Attribute( "value" ).Value, CUtils.Inv ) );
+                        ThisValue.TotalRainThisDay = (float) Sup.StationRain.Convert( RainDim.millimeter, Sup.StationRain.Dim, Convert.ToSingle( el.Element( "rain" ).Attribute( "value" ).Value, CUtils.Inv ) );
 
                         Sup.LogTraceInfoMessage( "XML AddPrediction - The data:" );
                         Sup.LogTraceInfoMessage( $"ThisValue converted date: {ThisValue.ThisDate:dd-MM-yyyy}" );

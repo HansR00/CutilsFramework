@@ -318,7 +318,7 @@ namespace CumulusUtils
                         // This means I have to  parse the number. If it parses OK it is a number, if it does not: error
                         tmp += Exp[ i ];
 
-                        try { nmbr = Convert.ToDouble( tmp, ci ); }
+                        try { nmbr = Convert.ToDouble( tmp, CUtils.Inv ); }
                         catch ( Exception e ) { Sup.LogTraceErrorMessage( $"Term : Error in Expression, not a number {tmp} ({e.Message})" ); return null; }
                     }
                     else

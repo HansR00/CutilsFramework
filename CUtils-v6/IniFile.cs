@@ -322,7 +322,7 @@ namespace CumulusUtils
         // *** Getters for various types ***
         public bool GetValue( string SectionName, string Key, bool DefaultValue )
         {
-            string StringValue = GetValue( SectionName, Key, DefaultValue.ToString( System.Globalization.CultureInfo.InvariantCulture ) );
+            string StringValue = GetValue( SectionName, Key, DefaultValue.ToString( CUtils.Inv ) );
             if ( int.TryParse( StringValue, out int Value ) )
                 return ( Value != 0 );
             return DefaultValue;
@@ -330,7 +330,7 @@ namespace CumulusUtils
 
         public int GetValue( string SectionName, string Key, int DefaultValue )
         {
-            string StringValue = GetValue( SectionName, Key, DefaultValue.ToString( CultureInfo.InvariantCulture ) );
+            string StringValue = GetValue( SectionName, Key, DefaultValue.ToString( CUtils.Inv ) );
             if ( int.TryParse( StringValue, NumberStyles.Any, CultureInfo.InvariantCulture, out int Value ) )
                 return Value;
             return DefaultValue;
@@ -338,7 +338,7 @@ namespace CumulusUtils
 
         public double GetValue( string SectionName, string Key, double DefaultValue )
         {
-            string StringValue = GetValue( SectionName, Key, DefaultValue.ToString( CultureInfo.InvariantCulture ) );
+            string StringValue = GetValue( SectionName, Key, DefaultValue.ToString( CUtils.Inv ) );
             if ( double.TryParse( StringValue, NumberStyles.Any, CultureInfo.InvariantCulture, out double Value ) )
                 return Value;
             return DefaultValue;
@@ -359,7 +359,7 @@ namespace CumulusUtils
 
         public DateTime GetValue( string SectionName, string Key, DateTime DefaultValue )
         {
-            string StringValue = GetValue( SectionName, Key, DefaultValue.ToString( CultureInfo.InvariantCulture ) );
+            string StringValue = GetValue( SectionName, Key, DefaultValue.ToString( CUtils.Inv ) );
             if ( DateTime.TryParse( StringValue, out DateTime Value ) )
                 return Value;
             return DefaultValue;
@@ -373,12 +373,12 @@ namespace CumulusUtils
 
         public void SetValue( string SectionName, string Key, int Value )
         {
-            SetValue( SectionName, Key, Value.ToString( CultureInfo.InvariantCulture ) );
+            SetValue( SectionName, Key, Value.ToString( CUtils.Inv ) );
         }
 
         public void SetValue( string SectionName, string Key, double Value )
         {
-            SetValue( SectionName, Key, Value.ToString( CultureInfo.InvariantCulture ) );
+            SetValue( SectionName, Key, Value.ToString( CUtils.Inv ) );
         }
 
         public void SetValue( string SectionName, string Key, byte[] Value )

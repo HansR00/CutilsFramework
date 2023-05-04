@@ -51,7 +51,7 @@ namespace CumulusUtils
     public class CuSupport : IDisposable
     {
         // Is it a version number beta shown at users?
-        const string beta = "";
+        const string beta = "beta 3";
 
         #region declarations
         public Wind StationWind { get; set; }
@@ -169,8 +169,8 @@ namespace CumulusUtils
                 Locale = GetUtilsIniValue( "General", "Language", "en-GB" );
 
                 if ( Locale.Length < 5 ) { LogTraceErrorMessage( $"Invalid Locale: {Language}" ); Environment.Exit( -1 ); }
-                Language = Locale.Substring( 0, 2 ).ToUpper( CultureInfo.InvariantCulture );
-                Country = Locale.Substring( 3, 2 ).ToUpper( CultureInfo.InvariantCulture );
+                Language = Locale.Substring( 0, 2 ).ToUpper( CUtils.Inv );
+                Country = Locale.Substring( 3, 2 ).ToUpper( CUtils.Inv );
 
                 bool found = false;
 
@@ -396,11 +396,11 @@ namespace CumulusUtils
         {
             string _ver;
 
-            _ver = typeof( CuSupport ).Assembly.GetName().Version.Major.ToString( CultureInfo.InvariantCulture ) + "." +
-                          typeof( CuSupport ).Assembly.GetName().Version.Minor.ToString( CultureInfo.InvariantCulture ) + "." +
-                          typeof( CuSupport ).Assembly.GetName().Version.Build.ToString( CultureInfo.InvariantCulture );
+            _ver = typeof( CuSupport ).Assembly.GetName().Version.Major.ToString( CUtils.Inv ) + "." +
+                          typeof( CuSupport ).Assembly.GetName().Version.Minor.ToString( CUtils.Inv ) + "." +
+                          typeof( CuSupport ).Assembly.GetName().Version.Build.ToString( CUtils.Inv );
 
-            _ver = String.Format( CultureInfo.InvariantCulture, $"<a href='https://cumulus.hosiene.co.uk/viewtopic.php?f=44&t=17998' target='_blank'>CumulusUtils</a> " +
+            _ver = String.Format( CUtils.Inv, $"<a href='https://cumulus.hosiene.co.uk/viewtopic.php?f=44&t=17998' target='_blank'>CumulusUtils</a> " +
                                   $"Version {_ver} " + beta +
                                   $" - generated at " + DateTime.Now.ToString( "g" ) );  // .ToString( "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture )
 
@@ -411,9 +411,9 @@ namespace CumulusUtils
         {
             string _ver;
 
-            _ver = typeof( CuSupport ).Assembly.GetName().Version.Major.ToString( CultureInfo.InvariantCulture ) + "." +
-                          typeof( CuSupport ).Assembly.GetName().Version.Minor.ToString( CultureInfo.InvariantCulture ) + "." +
-                          typeof( CuSupport ).Assembly.GetName().Version.Build.ToString( CultureInfo.InvariantCulture );
+            _ver = typeof( CuSupport ).Assembly.GetName().Version.Major.ToString( CUtils.Inv ) + "." +
+                          typeof( CuSupport ).Assembly.GetName().Version.Minor.ToString( CUtils.Inv ) + "." +
+                          typeof( CuSupport ).Assembly.GetName().Version.Build.ToString( CUtils.Inv );
 
             return _ver + " " + beta;
         }
@@ -429,27 +429,27 @@ namespace CumulusUtils
 
             bool UseHighchartsBoostModule = GetUtilsIniValue( "Graphs", "UseHighchartsBoostModule", "true" ).Equals( "true", CUtils.Cmp );
 
-            //sb.AppendLine( "<script src='https://code.highcharts.com/stock/highstock.js'></script>" );
-            //sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/highcharts-more.js\"></script>" );
-            //sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/indicators/indicators.js\"></script>" );
-            //sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/modules/exporting.js\" ></script>" );
-            //sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/modules/heatmap.js\"></script>" );
-            //sb.AppendLine( "<script src='https://code.highcharts.com/stock/modules/windbarb.js'></script>" );
-            //sb.AppendLine( "<script defer src='https://code.highcharts.com/modules/accessibility.js'></script>" );
-
-            //if ( UseHighchartsBoostModule )
-            //    sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/modules/boost.js\"></script>" );
-
-            sb.AppendLine( "<script src='https://code.highcharts.com/stock/10.3.2/highstock.js'></script>" );
-            sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/10.3.2/highcharts-more.js\"></script>" );
-            sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/10.3.2/indicators/indicators.js\"></script>" );
-            sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/10.3.2/modules/exporting.js\" ></script>" );
-            sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/10.3.2/modules/heatmap.js\"></script>" );
-            sb.AppendLine( "<script src='https://code.highcharts.com/stock/10.3.2/modules/windbarb.js'></script>" );
-            sb.AppendLine( "<script defer src='https://code.highcharts.com/10.3.2/modules/accessibility.js'></script>" );
+            sb.AppendLine( "<script src='https://code.highcharts.com/stock/highstock.js'></script>" );
+            sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/highcharts-more.js\"></script>" );
+            sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/indicators/indicators.js\"></script>" );
+            sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/modules/exporting.js\" ></script>" );
+            sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/modules/heatmap.js\"></script>" );
+            sb.AppendLine( "<script src='https://code.highcharts.com/stock/modules/windbarb.js'></script>" );
+            sb.AppendLine( "<script defer src='https://code.highcharts.com/modules/accessibility.js'></script>" );
 
             if ( UseHighchartsBoostModule )
-                sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/10.3.2/modules/boost.js\"></script>" );
+                sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/modules/boost.js\"></script>" );
+
+            //sb.AppendLine( "<script src='https://code.highcharts.com/stock/10.3.2/highstock.js'></script>" );
+            //sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/10.3.2/highcharts-more.js\"></script>" );
+            //sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/10.3.2/indicators/indicators.js\"></script>" );
+            //sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/10.3.2/modules/exporting.js\" ></script>" );
+            //sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/10.3.2/modules/heatmap.js\"></script>" );
+            //sb.AppendLine( "<script src='https://code.highcharts.com/stock/10.3.2/modules/windbarb.js'></script>" );
+            //sb.AppendLine( "<script defer src='https://code.highcharts.com/10.3.2/modules/accessibility.js'></script>" );
+
+            //if ( UseHighchartsBoostModule )
+            //    sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/10.3.2/modules/boost.js\"></script>" );
 
             sb.AppendLine( "  <script src='lib/HighchartsLanguage.js'></script>" );
             sb.AppendLine( "  <script src='lib/HighchartsDefaults.js'></script>" );
@@ -503,7 +503,7 @@ namespace CumulusUtils
 
             if ( LoggingOn )
             {
-                ThisListener = new TextWriterTraceListener( $"utils/utilslog/{DateTime.Now.ToString( "yyMMddHHmm", CultureInfo.InvariantCulture )}cumulusutils.log" );
+                ThisListener = new TextWriterTraceListener( $"utils/utilslog/{DateTime.Now.ToString( "yyMMddHHmm", CUtils.Inv )}cumulusutils.log" );
                 Trace.Listeners.Add( ThisListener );  // Used for messages under the conditions of the Switch: None, Error, Warning, Information, Verbose
                 Trace.AutoFlush = true;
             }

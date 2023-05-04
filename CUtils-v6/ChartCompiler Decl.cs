@@ -296,7 +296,6 @@ namespace CumulusUtils
 
         readonly CuSupport Sup;
         readonly float MaxPressure, MinPressure;
-        readonly CultureInfo ci = CultureInfo.InvariantCulture;
 
         public string[] ClickEvents = new string[ 24 ] { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
 
@@ -505,8 +504,8 @@ namespace CumulusUtils
 
             try
             {
-                MaxPressure = Convert.ToSingle( Sup.GetAlltimeRecordValue( "Pressure", "highpressurevalue", "" ), ci );
-                MinPressure = Convert.ToSingle( Sup.GetAlltimeRecordValue( "Pressure", "lowpressurevalue", "" ), ci );
+                MaxPressure = Convert.ToSingle( Sup.GetAlltimeRecordValue( "Pressure", "highpressurevalue", "" ), CUtils.Inv );
+                MinPressure = Convert.ToSingle( Sup.GetAlltimeRecordValue( "Pressure", "lowpressurevalue", "" ), CUtils.Inv );
             }
             catch
             {
@@ -563,7 +562,7 @@ namespace CumulusUtils
             const double Deg2Rad = Math.PI / 180;
             const int SolarConstant = 1375;
             int Estimation;
-            double Latitude = Convert.ToDouble( Sup.GetCumulusIniValue( "Station", "Latitude", "" ), CultureInfo.InvariantCulture );
+            double Latitude = Convert.ToDouble( Sup.GetCumulusIniValue( "Station", "Latitude", "" ), CUtils.Inv );
 
             double Gamma = 0.796 - 0.01 * Math.Sin( 0.986 * ( i + 284 ) * Deg2Rad );
             double EarthSunDist = 1 + 0.034 * Math.Cos( ( i - 2 ) * Deg2Rad );

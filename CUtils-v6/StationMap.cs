@@ -63,13 +63,13 @@ namespace CumulusUtils
 
             if ( !CUtils.HasStationMapMenu ) return; // Don't generate, ignore everything, just get back.
 
-            Latitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Latitude", "" ), CultureInfo.InvariantCulture );
-            Longitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Longitude", "" ), CultureInfo.InvariantCulture );
-            ArrowLatitude = Convert.ToSingle( Sup.GetUtilsIniValue( "StationMap", "ArrowLatitude", Latitude.ToString( "F4", CultureInfo.InvariantCulture ) ), CultureInfo.InvariantCulture );
-            ArrowLongitude = Convert.ToSingle( Sup.GetUtilsIniValue( "StationMap", "ArrowLongitude", Longitude.ToString( "F4", CultureInfo.InvariantCulture ) ), CultureInfo.InvariantCulture ) - (float) 0.0200;
+            Latitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Latitude", "" ), CUtils.Inv );
+            Longitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Longitude", "" ), CUtils.Inv );
+            ArrowLatitude = Convert.ToSingle( Sup.GetUtilsIniValue( "StationMap", "ArrowLatitude", Latitude.ToString( "F4", CUtils.Inv ) ), CUtils.Inv );
+            ArrowLongitude = Convert.ToSingle( Sup.GetUtilsIniValue( "StationMap", "ArrowLongitude", Longitude.ToString( "F4", CUtils.Inv ) ), CUtils.Inv ) - (float) 0.0200;
 
-            CompassRoseType = Convert.ToInt32( Sup.GetUtilsIniValue( "StationMap", "CompassRoseType", "1" ), CultureInfo.InvariantCulture );
-            WindArrowType = Convert.ToInt32( Sup.GetUtilsIniValue( "StationMap", "WindArrowType", "1" ), CultureInfo.InvariantCulture );
+            CompassRoseType = Convert.ToInt32( Sup.GetUtilsIniValue( "StationMap", "CompassRoseType", "1" ), CUtils.Inv );
+            WindArrowType = Convert.ToInt32( Sup.GetUtilsIniValue( "StationMap", "WindArrowType", "1" ), CUtils.Inv );
 
             StationName = $"{Sup.GetCumulusIniValue( "Station", "LocName", "" )}";
             StationDesc = $"{Sup.GetCumulusIniValue( "Station", "LocDesc", "" )}";
@@ -112,8 +112,8 @@ namespace CumulusUtils
                 of.WriteLine( $"  iconSize:[{ArrowSize},{ArrowSize}]" );
                 of.WriteLine( "});" );
 
-                of.WriteLine( $"var markerWindArrow = L.marker([{ArrowLatitude.ToString( "F4", CultureInfo.InvariantCulture )}, " +
-                                       $"{ArrowLongitude.ToString( "F4", CultureInfo.InvariantCulture )}], " +
+                of.WriteLine( $"var markerWindArrow = L.marker([{ArrowLatitude.ToString( "F4", CUtils.Inv )}, " +
+                                       $"{ArrowLongitude.ToString( "F4", CUtils.Inv )}], " +
                                        $"{{  icon: thisWindArrow, zIndexOffset: 10, opacity: 0.8 }}).addTo(StationMap);" );
 
                 of.WriteLine( "markerWindArrow.setRotationOrigin('center center');" );
@@ -125,11 +125,11 @@ namespace CumulusUtils
                   $"{Sup.GetCUstringValue( "StationMap", "Rain", "Rain", true )}: <span id =\\\'TT5\\\'></span> {Sup.StationRain.Text()}<br/>" +
                   $"</div>',{{offset: L.point(0, {RoseSize / 2}), permanent: true, direction: 'bottom'}});" ); // possibilities: right, left, top, bottom, center, auto
 
-                of.WriteLine( $"var markerStation = L.marker([{Latitude.ToString( CultureInfo.InvariantCulture )}, {Longitude.ToString( CultureInfo.InvariantCulture )}]).addTo(StationMap);" );
+                of.WriteLine( $"var markerStation = L.marker([{Latitude.ToString( CUtils.Inv )}, {Longitude.ToString( CUtils.Inv )}]).addTo(StationMap);" );
                 of.WriteLine( $"markerStation.bindPopup(\"<b>{StationName}</b><br/>{StationDesc}<br/>Lat: {Latitude} / Lon: {Longitude}<br/>\");" );
 
-                of.WriteLine( $"StationMap.setView([{Latitude.ToString( "F4", CultureInfo.InvariantCulture )}, " +
-                                                 $"{Longitude.ToString( "F4", CultureInfo.InvariantCulture )}], " +
+                of.WriteLine( $"StationMap.setView([{Latitude.ToString( "F4", CUtils.Inv )}, " +
+                                                 $"{Longitude.ToString( "F4", CUtils.Inv )}], " +
                                                  $"{Sup.GetUtilsIniValue( "StationMap", "Zoomlevel", "13" )});" );
 
                 of.WriteLine( "function UpdateWindArrow( newAngle, beaufort, temp, baro, humidity, rain ){" );

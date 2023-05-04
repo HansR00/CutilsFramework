@@ -489,7 +489,7 @@ namespace CumulusUtils
                         }
 
                         if ( thisPlotvar.GraphType == "area" )
-                            AddSeriesJavascript.AppendLine( $"    fillOpacity: {thisPlotvar.Opacity.ToString( "F1", ci )}," );
+                            AddSeriesJavascript.AppendLine( $"    fillOpacity: {thisPlotvar.Opacity.ToString( "F1", CUtils.Inv )}," );
 
 
                         AddSeriesJavascript.AppendLine( $"    color: '{thisPlotvar.Color}'," );
@@ -973,7 +973,7 @@ namespace CumulusUtils
                             case PlotvarRangeType.Recent:
                                 Recent.Append( $"\"{thisVar.PlotVar}\":[" );
                                 foreach ( MonthfileValue entry in MonthlyListToWriteOut )
-                                    Recent.Append( $"[{CuSupport.DateTimeToJS( entry.ThisDate )},{entry.Evt.ToString( "F1", ci )}]," );
+                                    Recent.Append( $"[{CuSupport.DateTimeToJS( entry.ThisDate )},{entry.Evt.ToString( "F1", CUtils.Inv )}]," );
                                 Recent.Remove( Recent.Length - 1, 1 );
                                 Recent.Append( $"]," );
 
@@ -988,15 +988,15 @@ namespace CumulusUtils
 
                                 if ( thisVar.PlotVar.Equals( "heatingdegreedays" ) )
                                     foreach ( DayfileValue entry in CUtils.MainList )
-                                        All.Append( $"[{CuSupport.DateTimeToJS( entry.ThisDate )},{entry.HeatingDegreeDays.ToString( "F1", ci )}]," );
+                                        All.Append( $"[{CuSupport.DateTimeToJS( entry.ThisDate )},{entry.HeatingDegreeDays.ToString( "F1", CUtils.Inv )}]," );
 
                                 else if ( thisVar.PlotVar.Equals( "coolingdegreedays" ) )
                                     foreach ( DayfileValue entry in CUtils.MainList )
-                                        All.Append( $"[{CuSupport.DateTimeToJS( entry.ThisDate )},{entry.CoolingDegreeDays.ToString( "F1", ci )}]," );
+                                        All.Append( $"[{CuSupport.DateTimeToJS( entry.ThisDate )},{entry.CoolingDegreeDays.ToString( "F1", CUtils.Inv )}]," );
 
                                 else if ( thisVar.PlotVar.Equals( "evapotranspiration" ) )
                                     foreach ( DayfileValue entry in CUtils.MainList )
-                                        All.Append( $"[{CuSupport.DateTimeToJS( entry.ThisDate )},{entry.EvapoTranspiration.ToString( "F1", ci )}]," );
+                                        All.Append( $"[{CuSupport.DateTimeToJS( entry.ThisDate )},{entry.EvapoTranspiration.ToString( "F1", CUtils.Inv )}]," );
 
                                 All.Remove( All.Length - 1, 1 );
                                 All.Append( $"]," );

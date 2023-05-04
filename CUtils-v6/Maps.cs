@@ -78,7 +78,7 @@ namespace CumulusUtils
                                           new XElement( "Website", Website ),
                                           new XElement( "Latitude", Latitude ),
                                           new XElement( "Longitude", Longitude ),
-                                          new XElement( "Date", DateTime.UtcNow.ToString( "dd-MM-yyyy HH:mm", CultureInfo.InvariantCulture ) )
+                                          new XElement( "Date", DateTime.UtcNow.ToString( "dd-MM-yyyy HH:mm", CUtils.Inv ) )
                                         );
 
                         // And save the file and write back to the central storage
@@ -98,7 +98,7 @@ namespace CumulusUtils
                     Sup.LogTraceInfoMessage( $"Maps->MapsOn: Website: {Website}" );
                     Sup.LogTraceInfoMessage( $"Maps->MapsOn: Latitude: {Latitude}" );
                     Sup.LogTraceInfoMessage( $"Maps->MapsOn: Longitude: {Longitude}" );
-                    Sup.LogTraceInfoMessage( $"Maps->MapsOn: Date (UTC): {DateTime.UtcNow.ToString( "dd-MM-yyyy HH:mm", CultureInfo.InvariantCulture )}" );
+                    Sup.LogTraceInfoMessage( $"Maps->MapsOn: Date (UTC): {DateTime.UtcNow.ToString( "dd-MM-yyyy HH:mm", CUtils.Inv )}" );
 
                     // An exit is made here. This is especially disturbing when operating with the website generator
                     // I do this to oblige the user to actually fill in correct data for his website (which he needs for use of CumulusUtils
@@ -289,7 +289,7 @@ namespace CumulusUtils
 
                 try
                 {
-                    lastSeen = DateTime.ParseExact( strDate, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.None );
+                    lastSeen = DateTime.ParseExact( strDate, dateFormats, CUtils.Inv, DateTimeStyles.None );
                     Sup.LogTraceVerboseMessage( $"GenUtilsMap: ParseExact : Succesful parse Date lastSeen: {strDate} / {lastSeen}" );
                 }
                 catch ( Exception e ) when ( e is FormatException || e is ArgumentNullException )
@@ -412,14 +412,14 @@ namespace CumulusUtils
 
                         Name = thisStation.Element( "Name" ).Value;
                         Description = thisStation.Element( "Description" ).Value;
-                        Latitude = Convert.ToSingle( thisStation.Element( "Latitude" ).Value.Replace( ',', '.' ), CultureInfo.InvariantCulture );
-                        Longitude = Convert.ToSingle( thisStation.Element( "Longitude" ).Value.Replace( ',', '.' ), CultureInfo.InvariantCulture );
+                        Latitude = Convert.ToSingle( thisStation.Element( "Latitude" ).Value.Replace( ',', '.' ), CUtils.Inv );
+                        Longitude = Convert.ToSingle( thisStation.Element( "Longitude" ).Value.Replace( ',', '.' ), CUtils.Inv );
                         Website = thisStation.Element( "Website" )?.Value ?? "";
                         Date = thisStation.Element( "Date" )?.Value ?? "";
 
                         Sup.LogTraceInfoMessage( $"CreateMap: Writing Station {Name}" );
 
-                        of.WriteLine( $"  var marker = L.marker([{Latitude.ToString( CultureInfo.InvariantCulture )}, {Longitude.ToString( CultureInfo.InvariantCulture )}]).addTo(CumulusStations);" );
+                        of.WriteLine( $"  var marker = L.marker([{Latitude.ToString( CUtils.Inv )}, {Longitude.ToString( CUtils.Inv )}]).addTo(CumulusStations);" );
 
                         of.WriteLine( $"  marker.bindPopup(\"<b>{Name}</b><br/>{Description}<br/>" +
                                       $"Lat: {Latitude} / Lon: {Longitude}<br/>" +
@@ -427,7 +427,7 @@ namespace CumulusUtils
                                       //$"<a href='{Website}' target='_blank'>Website</a><br/>" +
                                       $"Last alive (UTC): {Date}\");" );
 
-                        of.WriteLine( $"  var circle = L.circle([{Latitude.ToString( "F4", CultureInfo.InvariantCulture )}, {Longitude.ToString( "F4", CultureInfo.InvariantCulture )}], {{" );
+                        of.WriteLine( $"  var circle = L.circle([{Latitude.ToString( "F4", CUtils.Inv )}, {Longitude.ToString( "F4", CUtils.Inv )}], {{" );
                         of.WriteLine( "     color: 'lightgrey', weight:2," );
                         of.WriteLine( "     fillColor: 'whitesmoke'," );
                         of.WriteLine( "     fillOpacity: 0.3," );

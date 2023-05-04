@@ -480,7 +480,7 @@ namespace CumulusUtils
 
                                 try
                                 {
-                                    thisPlotvar.Opacity = Convert.ToDouble( Keywords[ CurrPosition++ ], ci );
+                                    thisPlotvar.Opacity = Convert.ToDouble( Keywords[ CurrPosition++ ], CUtils.Inv );
 
                                     if ( thisPlotvar.Opacity < 0 || thisPlotvar.Opacity > 1 )
                                         thisPlotvar.Opacity = 1.0;
@@ -508,7 +508,7 @@ namespace CumulusUtils
 
                                 try
                                 {
-                                    thisPlotvar.zIndex = Convert.ToInt32( Keywords[ CurrPosition++ ], ci );
+                                    thisPlotvar.zIndex = Convert.ToInt32( Keywords[ CurrPosition++ ], CUtils.Inv );
                                 }
                                 catch ( Exception e )
                                 {
@@ -525,7 +525,7 @@ namespace CumulusUtils
 
                                 try
                                 {
-                                    thisPlotvar.LineWidth = Convert.ToInt32( Keywords[ CurrPosition++ ], ci );
+                                    thisPlotvar.LineWidth = Convert.ToInt32( Keywords[ CurrPosition++ ], CUtils.Inv );
                                 }
                                 catch ( Exception e )
                                 {

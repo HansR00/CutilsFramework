@@ -164,14 +164,14 @@ namespace CumulusUtils
                 // Convert the string to float and then print as F4. This to prevent problems with the string representation in the ini
                 // of the Lat / Lon : sometimes they are long with repetetive digits, sometime just 4 digits.
                 //
-                float Latitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Latitude", "" ), CultureInfo.InvariantCulture );
-                float Longitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Longitude", "" ), CultureInfo.InvariantCulture );
+                float Latitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Latitude", "" ), CUtils.Inv );
+                float Longitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Longitude", "" ), CUtils.Inv );
 
-                string TzOffset = TimeZoneInfo.Local.GetUtcOffset( DateTime.Now ).ToString( "hh", CultureInfo.CurrentCulture );
+                string TzOffset = TimeZoneInfo.Local.GetUtcOffset( DateTime.Now ).ToString( "hh", CUtils.Inv );
 
                 SpotwxPredictionURL = $"https://spotwx.com/products/grib_index.php?model=gem_glb_25km&" +
-                  $"lat={Latitude.ToString( "F4", CultureInfo.InvariantCulture )}&" +
-                  $"lon={Longitude.ToString( "F4", CultureInfo.InvariantCulture )}&" +
+                  $"lat={Latitude.ToString( "F4", CUtils.Inv )}&" +
+                  $"lon={Longitude.ToString( "F4", CUtils.Inv )}&" +
                   $"tz={TzOffset}";
 
                 // OK, Generate the HTML table straightforward from the structs
@@ -211,31 +211,31 @@ namespace CumulusUtils
                     // that order will never change !!
 
                     IEnumerable<XElement> forecasts = from desc in thisvar.Descendants( "forecast" ) select desc;
-                    FcastType = Convert.ToInt32( thisvar.Element( "icon" ).Value, CultureInfo.InvariantCulture );
+                    FcastType = Convert.ToInt32( thisvar.Element( "icon" ).Value, CUtils.Inv );
 
                     switch ( FcastType )
                     {
                         case 4: // MinTemp
                             foreach ( XElement forecast in forecasts )
                             {
-                                sequence = Convert.ToInt32( forecast.Attribute( "data_sequence" ).Value, CultureInfo.InvariantCulture );
-                                PredictionList[ sequence - 1 ].MinTemp = Convert.ToSingle( forecast.Attribute( "value" ).Value, CultureInfo.InvariantCulture );
+                                sequence = Convert.ToInt32( forecast.Attribute( "data_sequence" ).Value, CUtils.Inv );
+                                PredictionList[ sequence - 1 ].MinTemp = Convert.ToSingle( forecast.Attribute( "value" ).Value, CUtils.Inv );
                             }
                             break;
 
                         case 5: // MaxTemp
                             foreach ( XElement forecast in forecasts )
                             {
-                                sequence = Convert.ToInt32( forecast.Attribute( "data_sequence" ).Value, CultureInfo.InvariantCulture );
-                                PredictionList[ sequence - 1 ].MaxTemp = Convert.ToSingle( forecast.Attribute( "value" ).Value, CultureInfo.InvariantCulture );
+                                sequence = Convert.ToInt32( forecast.Attribute( "data_sequence" ).Value, CUtils.Inv );
+                                PredictionList[ sequence - 1 ].MaxTemp = Convert.ToSingle( forecast.Attribute( "value" ).Value, CUtils.Inv );
                             }
                             break;
 
                         case 9: // Wind
                             foreach ( XElement forecast in forecasts )
                             {
-                                sequence = Convert.ToInt32( forecast.Attribute( "data_sequence" ).Value, CultureInfo.InvariantCulture );
-                                PredictionList[ sequence - 1 ].WindIcon = Convert.ToInt32( forecast.Attribute( "idB" ).Value, CultureInfo.InvariantCulture );
+                                sequence = Convert.ToInt32( forecast.Attribute( "data_sequence" ).Value, CUtils.Inv );
+                                PredictionList[ sequence - 1 ].WindIcon = Convert.ToInt32( forecast.Attribute( "idB" ).Value, CUtils.Inv );
                                 PredictionList[ sequence - 1 ].WindText = forecast.Attribute( "valueB" ).Value;
                             }
                             break;
@@ -243,8 +243,8 @@ namespace CumulusUtils
                         case 10: // Weer
                             foreach ( XElement forecast in forecasts )
                             {
-                                sequence = Convert.ToInt32( forecast.Attribute( "data_sequence" ).Value, CultureInfo.InvariantCulture );
-                                PredictionList[ sequence - 1 ].WeatherIcon = Convert.ToInt32( forecast.Attribute( "id2" ).Value, CultureInfo.InvariantCulture );
+                                sequence = Convert.ToInt32( forecast.Attribute( "data_sequence" ).Value, CUtils.Inv );
+                                PredictionList[ sequence - 1 ].WeatherIcon = Convert.ToInt32( forecast.Attribute( "id2" ).Value, CUtils.Inv );
                                 PredictionList[ sequence - 1 ].WeatherText = forecast.Attribute( "value2" ).Value;
                             }
                             break;
@@ -252,7 +252,7 @@ namespace CumulusUtils
                         case 15: // Name of the Day
                             foreach ( XElement forecast in forecasts )
                             {
-                                sequence = Convert.ToInt32( forecast.Attribute( "data_sequence" ).Value, CultureInfo.InvariantCulture );
+                                sequence = Convert.ToInt32( forecast.Attribute( "data_sequence" ).Value, CUtils.Inv );
                                 PredictionList[ sequence - 1 ].Day = forecast.Attribute( "value" ).Value;
                             }
                             break;

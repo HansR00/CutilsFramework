@@ -571,8 +571,7 @@ namespace CumulusUtils
 
                 using ( MySqlConnection connection = new MySqlConnection( builder.ConnectionString ) )
                 {
-                    CultureInfo ci = CultureInfo.InvariantCulture;
-                    String sql = "SELECT * FROM Dayfile;";
+                    string sql = "SELECT * FROM Dayfile;";
 
                     using ( MySqlCommand command = new MySqlCommand( sql, connection ) )
                     {
@@ -588,32 +587,32 @@ namespace CumulusUtils
                                 {
                                     ThisDate = reader.GetDateTime( (int) FieldName.thisDate ),
                                     HighWindGust = reader.GetFloat( (int) FieldName.highWindGust ),
-                                    TimeHighWindGust = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeHighWindGust ), "dd-MM-yyyy HH:mm", ci ),
+                                    TimeHighWindGust = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeHighWindGust ), "dd-MM-yyyy HH:mm", CUtils.Inv ),
                                     MinTemp = reader.GetFloat( (int) FieldName.minTemp ),
-                                    TimeMinTemp = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeMinTemp ), "dd-MM-yyyy HH:mm", ci ),
+                                    TimeMinTemp = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeMinTemp ), "dd-MM-yyyy HH:mm", CUtils.Inv ),
                                     MaxTemp = reader.GetFloat( (int) FieldName.maxTemp ),
-                                    TimeMaxTemp = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeMaxTemp ), "dd-MM-yyyy HH:mm", ci ),
+                                    TimeMaxTemp = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeMaxTemp ), "dd-MM-yyyy HH:mm", CUtils.Inv ),
                                     MinBarometer = reader.GetFloat( (int) FieldName.minBarometer ),
-                                    TimeMinBarometer = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeMinBarometer ), "dd-MM-yyyy HH:mm", ci ),
+                                    TimeMinBarometer = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeMinBarometer ), "dd-MM-yyyy HH:mm", CUtils.Inv ),
                                     MaxBarometer = reader.GetFloat( (int) FieldName.maxBarometer ),
-                                    TimeMaxBarometer = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeMaxBarometer ), "dd-MM-yyyy HH:mm", ci ),
+                                    TimeMaxBarometer = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeMaxBarometer ), "dd-MM-yyyy HH:mm", CUtils.Inv ),
                                     MaxRainRate = reader.GetFloat( (int) FieldName.maxRainRate ),
-                                    TimeMaxRainRate = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeMaxRainRate ), "dd-MM-yyyy HH:mm", ci ),
+                                    TimeMaxRainRate = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeMaxRainRate ), "dd-MM-yyyy HH:mm", CUtils.Inv ),
                                     TotalRainThisDay = reader.GetFloat( (int) FieldName.totalRainThisDay ),
                                     AverageTempThisDay = reader.GetFloat( (int) FieldName.averageTempThisDay ),
                                     TotalWindRun = reader.GetFloat( (int) FieldName.totalWindRunThisDay ),
                                     HighAverageWindSpeed = reader.GetFloat( (int) FieldName.highAverageWindSpeed ),
-                                    TimeHighAverageWindSpeed = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeHighAverageWindSpeed ), "dd-MM-yyyy HH:mm", ci ),
+                                    TimeHighAverageWindSpeed = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeHighAverageWindSpeed ), "dd-MM-yyyy HH:mm", CUtils.Inv ),
                                     LowHumidity = reader.GetFloat( (int) FieldName.lowHumidity ),
-                                    TimeLowHumidity = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeLowHumidity ), "dd-MM-yyyy HH:mm", ci ),
+                                    TimeLowHumidity = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeLowHumidity ), "dd-MM-yyyy HH:mm", CUtils.Inv ),
                                     HighHumidity = reader.GetFloat( (int) FieldName.highHumidity ),
-                                    TimeHighHumidity = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeHighHumidity ), "dd-MM-yyyy HH:mm", ci ),
+                                    TimeHighHumidity = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeHighHumidity ), "dd-MM-yyyy HH:mm", CUtils.Inv ),
                                     EvapoTranspiration = reader.GetFloat( (int) FieldName.evapotranspiration ),
                                     HrsOfSunshine = reader.GetFloat( (int) FieldName.hrsofsunshine ),
 
                                     // here some additional data are skipped
                                     HighHourlyRain = reader.GetFloat( (int) FieldName.highHourlyRain ),
-                                    TimeHighHourlyRain = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeHighHourlyRain ), "dd-MM-yyyy HH:mm", ci ),
+                                    TimeHighHourlyRain = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeHighHourlyRain ), "dd-MM-yyyy HH:mm", CUtils.Inv ),
 
                                     // here some additional data are skipped
                                     HeatingDegreeDays = reader.GetFloat( (int) FieldName.heatingdegreedays ),
