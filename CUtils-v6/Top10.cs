@@ -458,8 +458,11 @@ namespace CumulusUtils
 
             // If the cycle is true then set records dirty so it is always uploaded; required to release accented records when 30 day period has  passed
             if ( CUtils.RunStarted.DayOfYear % CUtils.ThriftyTop10RecordsPeriod == 0 ) CUtils.ThriftyTop10RecordsDirty = true;
+            Sup.LogTraceInfoMessage( "Top10funcs: Determined the Dirty Bit" );
 
+            Sup.LogTraceInfoMessage( "Top10funcs: Starting the HTML Generation" );
             if ( !CUtils.Thrifty || CUtils.ThriftyTop10RecordsDirty ) HTMLexportTop10();
+
             Sup.LogTraceVerboseMessage( $"Thrifty: !Thrifty || ThriftyTop10RecordsDirty - {!CUtils.Thrifty || CUtils.ThriftyTop10RecordsDirty} => Top10 , NO HTML generated!" );
 
             Sup.LogTraceInfoMessage( "Top10funcs: Completed, returning from generating the Top10 list" );
@@ -476,6 +479,8 @@ namespace CumulusUtils
             const int AttentionPeriod = 30;
 
             Sup.LogDebugMessage( "HTMLexportTop10 : starting Style" );
+
+            Sup.LogTraceInfoMessage( "HTMLexportTop10 : Starting the HTML Generation" );
 
             using ( StreamWriter of = new( $"{Sup.PathUtils}{Sup.Top10OutputFilename}", false, Encoding.UTF8 ) )
             {
@@ -520,16 +525,22 @@ namespace CumulusUtils
                 of.WriteLine( "<div id=\"report\">" );
                 of.WriteLine( "<br/>" );
 
+                Sup.LogTraceInfoMessage( "HTMLexportTop10 : Written the styles" );
+
                 // Now do the table
 
                 NrOfRecordTypes = Enum.GetNames( typeof( Top10Types ) ).Length;
                 for ( i = 0; i < NrOfRecordTypes; i += Top10TableFormat.NrOfColumns )
                 {
+                    Sup.LogTraceInfoMessage( $"HTMLexportTop10 : Looping over All RecordTypes - Current = {i}" );
+
                     of.WriteLine( "<table class=\"CUtable\">\n<thead>" );
                     of.WriteLine( "<tr>" );
 
                     for ( k = 0; k < Top10TableFormat.NrOfColumns; k++ )
                     {
+                        Sup.LogTraceInfoMessage( $"HTMLexportTop10 : Looping over NrOfColumns - Current = {k}" );
+
                         if ( i + k >= NrOfRecordTypes ) break;
                         of.WriteLine( $"<th style=\"color:{Top10TableFormat.TxtcolorHeader};\">{TypesHeaders[ i + k ]}</th>" ); //enumNames[i + k]
                     }
@@ -539,6 +550,8 @@ namespace CumulusUtils
 
                     for ( j = 0; j < 10; j++ )
                     {
+                        Sup.LogTraceInfoMessage( $"HTMLexportTop10 : Looping over the rows 1 to 10 values {j}" );
+
                         of.WriteLine( "<tr>" );
 
                         for ( k = 0; k < Top10TableFormat.NrOfColumns; k++ )
@@ -652,17 +665,25 @@ namespace CumulusUtils
                     of.WriteLine( "</tbody></table><br/>" );
                 }
 
+                Sup.LogTraceInfoMessage( $"HTMLexportTop10 : Done with the Table" );
+
                 of.WriteLine( $"<p>{Sup.GetCUstringValue( "Records", "RecordsSince", "Records registered since", false )} {CUtils.StartOfObservations.Date:dd MMMM yyyy} - " +
                              $"({( CUtils.RunStarted.Date - CUtils.StartOfObservations.Date ).TotalDays} {Sup.GetCUstringValue( "General", "Days", "Days", false )})</p>" );
 
+                Sup.LogTraceInfoMessage( $"HTMLexportTop10 : Done with the TableFooter" );
 
                 if ( !CUtils.DoWebsite )
                 {
                     of.WriteLine( $"<p style ='text-align: center; font-size: 12px;'>{CuSupport.FormattedVersion()} - {CuSupport.Copyright()}</p>" );
                 }
 
+                Sup.LogTraceInfoMessage( $"HTMLexportTop10 : Version/Copyright" );
+
                 of.WriteLine( "</div>" ); // (id=report)
                 of.WriteLine( "</div>" ); // (id=reportBox)
+
+                Sup.LogTraceInfoMessage( $"HTMLexportTop10 : Ready generating HTML" );
+
             } // End using of (output file)
         }
 
