@@ -144,6 +144,7 @@ namespace CumulusUtils
 
             bool DryPeriodActive = false, WetPeriodActive = false;
 
+            Sup.LogTraceInfoMessage( "Top10funcs: Starting Dry and Wet period analysis" );
             foreach ( DayfileValue element in ThisList )
             {
                 if ( element.DryPeriod != 0 )
@@ -164,57 +165,78 @@ namespace CumulusUtils
 
                 previous = element;
             }
+            Sup.LogTraceInfoMessage( "Top10funcs: Dry and Wet period analysis - End of loop over all elements" );
 
             Top10List[ (int) Top10Types.longestDryPeriod ] = DryPeriodList.OrderByDescending( x => x.DryPeriod ).Take( 10 ).ToList();
+            Sup.LogTraceInfoMessage( "Top10funcs: Dry and Wet period analysis - Inverted the DryPeriod list" );
+
             Top10List[ (int) Top10Types.longestWetPeriod ] = WetPeriodList.OrderByDescending( x => x.WetPeriod ).Take( 10 ).ToList();
+            Sup.LogTraceInfoMessage( "Top10funcs: Dry and Wet period analysis - Inverted the WetPeriod list" );
 
             //MaxTemp
             Top10List[ (int) Top10Types.maxTemp ] = ThisList.OrderByDescending( x => x.MaxTemp ).Take( 10 ).ToList();
+            Sup.LogTraceInfoMessage( "Top10funcs: Did MaxTemp list" );
 
             //MinTemp
             Top10List[ (int) Top10Types.minTemp ] = ThisList.OrderBy( x => x.MinTemp ).Take( 10 ).ToList();
+            Sup.LogTraceInfoMessage( "Top10funcs: Did MinTemp list" );
 
             //LowHumidity
             Top10List[ (int) Top10Types.minHumidity ] = ThisList.OrderBy( x => x.LowHumidity ).Take( 10 ).ToList();
+            Sup.LogTraceInfoMessage( "Top10funcs: Did LowHumidity list" );
 
             //HighPressure
             Top10List[ (int) Top10Types.highPressure ] = ThisList.OrderByDescending( x => x.MaxBarometer ).Take( 10 ).ToList();
+            Sup.LogTraceInfoMessage( "Top10funcs: Did MaxBarometer list" );
 
             //LowPressure
             Top10List[ (int) Top10Types.lowPressure ] = ThisList.OrderBy( x => x.MinBarometer ).Take( 10 ).ToList();
+            Sup.LogTraceInfoMessage( "Top10funcs: Did MinBarometer list" );
 
             //HighWind
             Top10List[ (int) Top10Types.highWind ] = ThisList.OrderByDescending( x => x.HighAverageWindSpeed ).Take( 10 ).ToList();
+            Sup.LogTraceInfoMessage( "Top10funcs: Did HighAverageWind list" );
 
             //HighGust
             Top10List[ (int) Top10Types.highGust ] = ThisList.OrderByDescending( x => x.HighWindGust ).Take( 10 ).ToList();
+            Sup.LogTraceInfoMessage( "Top10funcs: Did HighWindGust list" );
 
             //TotalWindRun
             Top10List[ (int) Top10Types.totalWindrun ] = ThisList.OrderByDescending( x => x.TotalWindRun ).Take( 10 ).ToList();
+            Sup.LogTraceInfoMessage( "Top10funcs: Did Windrun list" );
 
             //HighRainRate
             Top10List[ (int) Top10Types.highRainRate ] = ThisList.OrderByDescending( x => x.MaxRainRate ).Take( 10 ).ToList();
+            Sup.LogTraceInfoMessage( "Top10funcs: Did MaxRainrate list" );
 
             //HighHourlyRain
             Top10List[ (int) Top10Types.highHourlyRain ] = ThisList.OrderByDescending( x => x.HighHourlyRain ).Take( 10 ).ToList();
+            Sup.LogTraceInfoMessage( "Top10funcs: Did HourlyRain list" );
 
             //HighDailyRain
             Top10List[ (int) Top10Types.highDailyRain ] = ThisList.OrderByDescending( x => x.TotalRainThisDay ).Take( 10 ).ToList();
+            Sup.LogTraceInfoMessage( "Top10funcs: Did TotalRainThisDay list" );
 
             //HighMonthlyRain
             List<DayfileValue> tmpList = new();
+            Sup.LogTraceInfoMessage( "Top10funcs: Start HighMonthlyRain list" );
 
             for ( int thisYear = ThisList.Select( x => x.ThisDate.Year ).Min(); thisYear <= ThisList.Select( x => x.ThisDate.Year ).Max(); thisYear++ )
                 for ( int thisMonth = 1; thisMonth <= 12; thisMonth++ )
                     try
                     {
+                        Sup.LogTraceInfoMessage( $"Top10funcs: Doing HighMonthlyRain {thisYear} / {thisMonth}" );
                         tmpList.Add( ThisList.Where( x => x.ThisDate.Year == thisYear ).Where( x => x.ThisDate.Month == thisMonth ).OrderByDescending( x => x.MonthlyRain ).First() );
                     }
                     catch ( Exception ) { continue; }
 
             Top10List[ (int) Top10Types.highestMonthlyRain ] = tmpList.OrderByDescending( x => x.MonthlyRain ).Take( 10 ).ToList();
+            Sup.LogTraceInfoMessage( "Top10funcs: Completed HighMonthlyRain list" );
 
             Top10List[ (int) Top10Types.lowestMonthlyRain ] = tmpList.OrderBy( x => x.MonthlyRain ).Take( 10 ).ToList();
+            Sup.LogTraceInfoMessage( "Top10funcs: Completed LowMonthlyRain list" );
+
+            Sup.LogTraceInfoMessage( "Top10funcs: Starting Debugging output (Only Under Verbose)" );
 
             MonthlyRainNrOfMonths = Top10List[ (int) Top10Types.highestMonthlyRain ].Count;
 
@@ -432,10 +454,13 @@ namespace CumulusUtils
                 }
             }
 
-            // If the cycle is true then set records dirty so it is always uploaded; required to release accented records when 30 day period has  passed
-            //if ( CUtils.RunStarted.DayOfYear % CUtils.ThriftyTop10RecordsPeriod == 0 ) CUtils.ThriftyTop10RecordsDirty = true;
-            CUtils.ThriftyTop10RecordsDirty = true;
+            Sup.LogTraceInfoMessage( "Top10funcs: End Debugging output (Only Under Verbose)" );
 
+            // If the cycle is true then set records dirty so it is always uploaded; required to release accented records when 30 day period has  passed
+            if ( CUtils.RunStarted.DayOfYear % CUtils.ThriftyTop10RecordsPeriod == 0 ) CUtils.ThriftyTop10RecordsDirty = true;
+            Sup.LogTraceInfoMessage( "Top10funcs: Determined the Dirty Bit" );
+
+            Sup.LogTraceInfoMessage( "Top10funcs: Starting the HTML Generation" );
             if ( !CUtils.Thrifty || CUtils.ThriftyTop10RecordsDirty ) HTMLexportTop10();
 
             Sup.LogTraceVerboseMessage( $"Thrifty: !Thrifty || ThriftyTop10RecordsDirty - {!CUtils.Thrifty || CUtils.ThriftyTop10RecordsDirty} => Top10 , NO HTML generated!" );
@@ -452,6 +477,8 @@ namespace CumulusUtils
             string buf, timebuf;
 
             const int AttentionPeriod = 30;
+
+            Sup.LogDebugMessage( "HTMLexportTop10 : starting Style" );
 
             Sup.LogTraceInfoMessage( "HTMLexportTop10 : Starting the HTML Generation" );
 
@@ -498,16 +525,22 @@ namespace CumulusUtils
                 of.WriteLine( "<div id=\"report\">" );
                 of.WriteLine( "<br/>" );
 
+                Sup.LogTraceInfoMessage( "HTMLexportTop10 : Written the styles" );
+
                 // Now do the table
 
                 NrOfRecordTypes = Enum.GetNames( typeof( Top10Types ) ).Length;
                 for ( i = 0; i < NrOfRecordTypes; i += Top10TableFormat.NrOfColumns )
                 {
+                    Sup.LogTraceInfoMessage( $"HTMLexportTop10 : Looping over All RecordTypes - Current = {i}" );
+
                     of.WriteLine( "<table class=\"CUtable\">\n<thead>" );
                     of.WriteLine( "<tr>" );
 
                     for ( k = 0; k < Top10TableFormat.NrOfColumns; k++ )
                     {
+                        Sup.LogTraceInfoMessage( $"HTMLexportTop10 : Looping over NrOfColumns - Current = {k}" );
+
                         if ( i + k >= NrOfRecordTypes ) break;
                         of.WriteLine( $"<th style=\"color:{Top10TableFormat.TxtcolorHeader};\">{TypesHeaders[ i + k ]}</th>" ); //enumNames[i + k]
                     }
@@ -517,6 +550,8 @@ namespace CumulusUtils
 
                     for ( j = 0; j < 10; j++ )
                     {
+                        Sup.LogTraceInfoMessage( $"HTMLexportTop10 : Looping over the rows 1 to 10 values {j}" );
+
                         of.WriteLine( "<tr>" );
 
                         for ( k = 0; k < Top10TableFormat.NrOfColumns; k++ )
@@ -630,13 +665,19 @@ namespace CumulusUtils
                     of.WriteLine( "</tbody></table><br/>" );
                 }
 
+                Sup.LogTraceInfoMessage( $"HTMLexportTop10 : Done with the Table" );
+
                 of.WriteLine( $"<p>{Sup.GetCUstringValue( "Records", "RecordsSince", "Records registered since", false )} {CUtils.StartOfObservations.Date:dd MMMM yyyy} - " +
                              $"({( CUtils.RunStarted.Date - CUtils.StartOfObservations.Date ).TotalDays} {Sup.GetCUstringValue( "General", "Days", "Days", false )})</p>" );
+
+                Sup.LogTraceInfoMessage( $"HTMLexportTop10 : Done with the TableFooter" );
 
                 if ( !CUtils.DoWebsite )
                 {
                     of.WriteLine( $"<p style ='text-align: center; font-size: 12px;'>{CuSupport.FormattedVersion()} - {CuSupport.Copyright()}</p>" );
                 }
+
+                Sup.LogTraceInfoMessage( $"HTMLexportTop10 : Version/Copyright" );
 
                 of.WriteLine( "</div>" ); // (id=report)
                 of.WriteLine( "</div>" ); // (id=reportBox)
