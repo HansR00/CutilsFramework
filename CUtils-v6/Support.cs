@@ -51,7 +51,7 @@ namespace CumulusUtils
     public class CuSupport : IDisposable
     {
         // Is it a version number beta shown at users?
-        const string beta = "beta 3";
+        const string beta = "";
 
         #region declarations
         public Wind StationWind { get; set; }
@@ -427,29 +427,35 @@ namespace CumulusUtils
         {
             StringBuilder sb = new StringBuilder();
 
+            string SpecificHighchartsVersion = GetUtilsIniValue( "General", "UseSpecificHighchartsVersion", "" );
             bool UseHighchartsBoostModule = GetUtilsIniValue( "Graphs", "UseHighchartsBoostModule", "true" ).Equals( "true", CUtils.Cmp );
 
-            sb.AppendLine( "<script src='https://code.highcharts.com/stock/highstock.js'></script>" );
-            sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/highcharts-more.js\"></script>" );
-            sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/indicators/indicators.js\"></script>" );
-            sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/modules/exporting.js\" ></script>" );
-            sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/modules/heatmap.js\"></script>" );
-            sb.AppendLine( "<script src='https://code.highcharts.com/stock/modules/windbarb.js'></script>" );
-            sb.AppendLine( "<script defer src='https://code.highcharts.com/modules/accessibility.js'></script>" );
+            if (string.IsNullOrEmpty(SpecificHighchartsVersion))
+            {
+                sb.AppendLine( "<script src='https://code.highcharts.com/stock/highstock.js'></script>" );
+                sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/highcharts-more.js\"></script>" );
+                sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/indicators/indicators.js\"></script>" );
+                sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/modules/exporting.js\" ></script>" );
+                sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/modules/heatmap.js\"></script>" );
+                sb.AppendLine( "<script src='https://code.highcharts.com/stock/modules/windbarb.js'></script>" );
+                sb.AppendLine( "<script defer src='https://code.highcharts.com/modules/accessibility.js'></script>" );
 
-            if ( UseHighchartsBoostModule )
-                sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/modules/boost.js\"></script>" );
+                if ( UseHighchartsBoostModule )
+                    sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/modules/boost.js\"></script>" );
+            }
+            else
+            {
+                sb.AppendLine( $"<script src='https://code.highcharts.com/stock/{SpecificHighchartsVersion}/highstock.js'></script>" );
+                sb.AppendLine( $"<script src=\"https://code.highcharts.com/stock/{SpecificHighchartsVersion}/highcharts-more.js\"></script>" );
+                sb.AppendLine( $"<script src=\"https://code.highcharts.com/stock/{SpecificHighchartsVersion}/indicators/indicators.js\"></script>" );
+                sb.AppendLine( $"<script src=\"https://code.highcharts.com/stock/{SpecificHighchartsVersion}/modules/exporting.js\" ></script>" );
+                sb.AppendLine( $"<script src=\"https://code.highcharts.com/stock/{SpecificHighchartsVersion}/modules/heatmap.js\"></script>" );
+                sb.AppendLine( $"<script src='https://code.highcharts.com/stock/{SpecificHighchartsVersion}/modules/windbarb.js'></script>" );
+                sb.AppendLine( $"<script defer src='https://code.highcharts.com/{SpecificHighchartsVersion}/modules/accessibility.js'></script>" );
 
-            //sb.AppendLine( "<script src='https://code.highcharts.com/stock/10.3.2/highstock.js'></script>" );
-            //sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/10.3.2/highcharts-more.js\"></script>" );
-            //sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/10.3.2/indicators/indicators.js\"></script>" );
-            //sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/10.3.2/modules/exporting.js\" ></script>" );
-            //sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/10.3.2/modules/heatmap.js\"></script>" );
-            //sb.AppendLine( "<script src='https://code.highcharts.com/stock/10.3.2/modules/windbarb.js'></script>" );
-            //sb.AppendLine( "<script defer src='https://code.highcharts.com/10.3.2/modules/accessibility.js'></script>" );
-
-            //if ( UseHighchartsBoostModule )
-            //    sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/10.3.2/modules/boost.js\"></script>" );
+                if ( UseHighchartsBoostModule )
+                    sb.AppendLine( $"<script src=\"https://code.highcharts.com/stock/{SpecificHighchartsVersion}/modules/boost.js\"></script>" );
+            }
 
             sb.AppendLine( "  <script src='lib/HighchartsLanguage.js'></script>" );
             sb.AppendLine( "  <script src='lib/HighchartsDefaults.js'></script>" );

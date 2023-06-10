@@ -815,7 +815,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                           "  let realtime = tmpInput.split(' '); " +
                           $"  let UnitWind = '{Sup.StationWind.Text()}';" +
                           $"  let UnitDegree = realtime[{(int) RealtimeFields.tempunitnodeg}] == 'C' ? '°C' : '°F';" +
-                          $"  let UnitPress = realtime[{(int) RealtimeFields.pressunit}] == 'in' ? 'ínHg' : realtime[{(int) RealtimeFields.pressunit}];" +
+                          $"  let UnitPress = realtime[{(int) RealtimeFields.pressunit}] == \"in\" ? \"ínHg\" : realtime[{(int) RealtimeFields.pressunit}];" +
                           $"  let UnitRain = realtime[{(int) RealtimeFields.rainunit}];" +
 
                           // This one is only for the StationMap, if that one is not active don't do this (needs to be implemented)

@@ -56,7 +56,7 @@ namespace CumulusUtils
             Sup = s;
             Isup = i;
 
-            string CMXport = Sup.GetUtilsIniValue( "SysInfo", "CMXport", "8998" );
+            string CMXport = Sup.GetUtilsIniValue( "General", "CMXport", "8998" );
 
             CmxBaseURL = $"http://localhost:{CMXport}";
             //CmxBaseURL = $"http://192.168.178.143:{CMXport}";
@@ -191,7 +191,7 @@ namespace CumulusUtils
             string MultipleWebtagURL = $"{CmxBaseURL}/api/tags/process.txt";
             retval = await Isup.PostUrlDataAsync( new Uri( MultipleWebtagURL ), content );
 
-            Sup.LogTraceVerboseMessage( $"ReplaceWebtagsPostAsync End. Returning {retval}" );
+            //Sup.LogTraceVerboseMessage( $"ReplaceWebtagsPostAsync End. Returning {retval}" );
 
             return retval;
         } // End ReplaceWebtags

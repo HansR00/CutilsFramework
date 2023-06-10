@@ -361,7 +361,7 @@ namespace CumulusUtils
 
             thisBuffer.AppendLine( "  title:" );
             thisBuffer.AppendLine( "  {" );
-            thisBuffer.AppendLine( $"    text: '{Sup.GetCUstringValue( "Graphs", "MRTitle", "Monthly Rain", true )} {Sup.StationRain.Text()}'" );
+            thisBuffer.AppendLine( $"    text: '{Sup.GetCUstringValue( "Graphs", "MRTitle", "Monthly Rain", true )} ({Sup.StationRain.Text()})'" );
             thisBuffer.AppendLine( "  }," );
             thisBuffer.AppendLine( "  subtitle:" );
             thisBuffer.AppendLine( "  {" );
@@ -386,7 +386,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "  {" );
             thisBuffer.AppendLine( "    title:" );
             thisBuffer.AppendLine( "    {" );
-            thisBuffer.AppendLine( $"      text: '{Sup.GetCUstringValue( "Graphs", "MRY-axis", "Monthly Rain", true )} {Sup.StationRain.Text()}'" );
+            thisBuffer.AppendLine( $"      text: '{Sup.GetCUstringValue( "Graphs", "MRY-axis", "Monthly Rain", true )} ({Sup.StationRain.Text()})'" );
             thisBuffer.AppendLine( "    }" );
             thisBuffer.AppendLine( "  }," );
 
@@ -556,7 +556,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "tooltip:" );
             thisBuffer.AppendLine( "{" );
-            thisBuffer.AppendLine( $"  valueSuffix: '{Sup.StationRain.Text()}'" );
+            thisBuffer.AppendLine( $"  valueSuffix: ' {Sup.StationRain.Text()}'" );
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "plotOptions:" );
             thisBuffer.AppendLine( "{" );
@@ -714,7 +714,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "tooltip:" );
             thisBuffer.AppendLine( "{" );
-            thisBuffer.AppendLine( $"  valueSuffix: '{Sup.StationRain.Text()}'" );
+            thisBuffer.AppendLine( $"  valueSuffix: ' {Sup.StationRain.Text()}'" );
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "plotOptions:" );
             thisBuffer.AppendLine( "{" );

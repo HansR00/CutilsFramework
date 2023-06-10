@@ -486,7 +486,7 @@ namespace CumulusUtils
             else // Fahrenheit
             {
                 thisBuffer.AppendLine( $"  min: 0," );
-                thisBuffer.AppendLine( $"  max: 122," );
+                thisBuffer.AppendLine( $"  max: 120," );
             }
 
             thisBuffer.AppendLine( "}," );
@@ -498,7 +498,7 @@ namespace CumulusUtils
             //
             thisBuffer.AppendLine( "  tooltip: {" );
             thisBuffer.AppendLine( $"    headerFormat: '<b>{Sup.GetCUstringValue( "Graphs", "HMTTtemperatureTXT", "Temperature", true )}:</b><br/>'," );
-            thisBuffer.AppendLine( $"    pointFormatter() {{ return DayNumber2Date(this.x, this.y) + ': ' + this.value + '{Sup.StationTemp.Text()}' }}" );
+            thisBuffer.AppendLine( $"    pointFormatter() {{ return DayNumber2Date(this.x, this.y) + ': ' + this.value + ' {Sup.StationTemp.Text()}' }}" );
             thisBuffer.AppendLine( "  }," );
 
             thisBuffer.AppendLine( "data: [" );

@@ -61,7 +61,7 @@ namespace CumulusUtils
             string ForecastSystem;
 
             // Make sure the parameters exist in one run, otherwise the user has to run, define and run again
-            ForecastSystem = Sup.GetUtilsIniValue( "Forecasts", "ForecastSystem", "SPOTWX" );
+            ForecastSystem = Sup.GetUtilsIniValue( "Forecasts", "ForecastSystem", "Yourweather" );
 
             if ( ForecastSystem.Equals( "Yourweather", CUtils.Cmp ) )
             {
@@ -92,10 +92,15 @@ namespace CumulusUtils
                         of.WriteLine( "</style>" );
 
                         of.WriteLine( "<div id='report'>" );
-                        of.WriteLine( "<h2>Seven Day Forecast</h2>" );
+
+                        //string Title = Sup.GetUtilsIniValue( "Forecasts", "SevenDayPredictionURL", "" );
+                        string Title = Sup.GetCUstringValue( "Forecasts", "Title", "Seven Day Prediction", false );
+                        of.WriteLine( $"<h2>{Title}</h2>" );
+
                         of.WriteLine( "<table class=CUtable><tbody>" );
-                        of.WriteLine( "<tr style='border-bottom: 1px'><th>Day</th>" +
-                          "<th></th><th></th><th>Forecast</th><th></th><th>Wind</th></tr>" );
+                        of.WriteLine( $"<tr style='border-bottom: 1px'><th>{Sup.GetCUstringValue( "Forecasts", "Day", "Day", false )}</th>" +
+                          $"<th></th><th></th><th>{Sup.GetCUstringValue( "Forecasts", "Forecast", "Forecast", false )}</th>" +
+                          $"<th></th><th>{Sup.GetCUstringValue( "Forecasts", "Wind", "Wind", false )}</th></tr>" );
 
                         for ( int i = 0; i < 7; i++ )
                         {
@@ -109,14 +114,18 @@ namespace CumulusUtils
                               $"<td>{tmp.WindText}</td></tr>" );
                         }
                         of.WriteLine( "</tbody></table>" );
-                        of.WriteLine( "<p style='font-size: 80%;padding-top: 20px !important'>Forecast API by <a href='https://www.yourweather.co.uk/'>yourweather.co.uk</a> on the basis of <a href='https://www.ecmwf.int/'>ECMWF</a>.</div>" );
+                        of.WriteLine( "<p style='font-size: 80%;padding-top: 20px !important'>" +
+                            $"{Sup.GetCUstringValue( "Forecasts", "Footer1", "Forecast API by", false )} " +
+                            $"<a href='https://www.yourweather.co.uk/'>yourweather.co.uk</a>" +
+                            $" {Sup.GetCUstringValue( "Forecasts", "Footer2", "on the basis of", false )} " +
+                            $"<a href='https://www.ecmwf.int/'>ECMWF</a>.</div>" );
                     }
                 }
 
                 return;
 
             }
-            else if ( Sup.GetUtilsIniValue( "Forecasts", "ForecastSystem", "SPOTWX" ).Equals( "Norway", CUtils.Cmp ) )
+            else if ( ForecastSystem.Equals( "Norway", CUtils.Cmp ) )
             {
                 // https://developer.yr.no/
                 //
@@ -138,7 +147,7 @@ namespace CumulusUtils
                 }
                 return;
             }
-            else if ( Sup.GetUtilsIniValue( "Forecasts", "ForecastSystem", "SPOTWX" ).Equals( "WXSIM", CUtils.Cmp ) )
+            else if ( ForecastSystem.Equals( "WXSIM", CUtils.Cmp ) )
             {
                 string WxsimPredictionURL = Sup.GetUtilsIniValue( "Forecasts", "WXsimURL", "" );
 
@@ -157,7 +166,7 @@ namespace CumulusUtils
                 }
                 return;
             }
-            else if ( Sup.GetUtilsIniValue( "Forecasts", "ForecastSystem", "SPOTWX" ).Equals( "SPOTWX", CUtils.Cmp ) )
+            else if ( ForecastSystem.Equals( "SPOTWX", CUtils.Cmp ) )
             {
                 string SpotwxPredictionURL;
 

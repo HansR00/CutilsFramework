@@ -148,6 +148,8 @@ namespace CumulusUtils
 
             foreach ( DayfileValue element in ThisList )
             {
+                int year = element.ThisDate.Year;
+
                 if ( element.DryPeriod != 0 )
                 {
                     DryPeriodActive = true;
@@ -166,6 +168,10 @@ namespace CumulusUtils
 
                 previous = element;
             }
+
+            // Make sure the current period is added to the list
+            if ( DryPeriodActive ) { DryPeriodList.Add( previous ); }
+            else { WetPeriodList.Add( previous );}
 
             Top10List[ (int) Top10Types.longestDryPeriod ] = DryPeriodList.OrderByDescending( x => x.DryPeriod ).Take( 10 ).ToList();
 
