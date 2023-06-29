@@ -154,14 +154,14 @@ namespace CumulusUtils
 
     public class Distance
     {
-        string[] UnitDistanceText { get; } = { "km", "mi", "km", "nm" };
+        string[] UnitDistanceText { get; } = { "m", "mi", "km", "nm" };
 
         readonly double[,] ConversionFactors =
         {
-      { 1.0,     0.621371, 1.0,     0.539957 } ,  // m to mi, km, nm
-      { 1.60934, 1.0,      1.60934, 0.868976 } ,  // mi to km, km, nm
-      { 1.0,     0.621371, 1.0,     0.539957 } ,  // km to km, mp, nm
-      { 1.852,   1.15078,  1.852,   1.0}          // nm to km, km, mi
+      { 1.0,     0.000621371, 0.001, 0.000539957 } ,  // m to mi, km, nm
+      { 1609.34, 1.0,      1.60934, 0.868976 } ,  // mi to m, km, nm
+      { 1000,     0.621371, 1.0,     0.539957 } ,  // km to m, mp, nm
+      { 1852,   1.15078,  1.852,   1.0}          // nm to m, km, mi
     };
 
         public readonly DistanceDim Dim;

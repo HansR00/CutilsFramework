@@ -236,7 +236,7 @@ namespace CumulusUtils
             for ( j = 0; j < 10; j++ )
             {
                 Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].TimeMaxTemp:dd/MM/yyyy HH:mm} {Top10List[ i ][ j ].MaxTemp:F2}" );
+                  $"{Top10List[ i ][ j ].TimeMaxTemp:g} {Top10List[ i ][ j ].MaxTemp:F2}" );
 
                 if ( Top10List[ i ][ j ].TimeMaxTemp.Date == Yesterday.Date )
                 {
@@ -250,7 +250,7 @@ namespace CumulusUtils
             for ( j = 0; j < 10; j++ )
             {
                 Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].TimeMinTemp:dd/MM/yyyy HH:mm} {Top10List[ i ][ j ].MinTemp:F2}" );
+                  $"{Top10List[ i ][ j ].TimeMinTemp:g} {Top10List[ i ][ j ].MinTemp:F2}" );
 
                 if ( Top10List[ i ][ j ].TimeMinTemp.Date == Yesterday.Date )
                 {
@@ -264,7 +264,7 @@ namespace CumulusUtils
             for ( j = 0; j < 10; j++ )
             {
                 Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].TimeLowHumidity:dd/MM/yyyy HH:mm} {Top10List[ i ][ j ].LowHumidity:F2}" );
+                  $"{Top10List[ i ][ j ].TimeLowHumidity:g} {Top10List[ i ][ j ].LowHumidity:F2}" );
 
                 if ( Top10List[ i ][ j ].TimeLowHumidity.Date == Yesterday.Date )
                 {
@@ -278,7 +278,7 @@ namespace CumulusUtils
             for ( j = 0; j < 10; j++ )
             {
                 Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].TimeMaxBarometer:dd/MM/yyyy HH:mm} {Top10List[ i ][ j ].MaxBarometer:F2}" );
+                  $"{Top10List[ i ][ j ].TimeMaxBarometer:g} {Top10List[ i ][ j ].MaxBarometer:F2}" );
 
                 if ( Top10List[ i ][ j ].TimeMaxBarometer.Date == Yesterday.Date )
                 {
@@ -292,7 +292,7 @@ namespace CumulusUtils
             for ( j = 0; j < 10; j++ )
             {
                 Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].TimeMinBarometer:dd/MM/yyyy HH:mm} {Top10List[ i ][ j ].MinBarometer:F2}" );
+                  $"{Top10List[ i ][ j ].TimeMinBarometer:g} {Top10List[ i ][ j ].MinBarometer:F2}" );
 
                 if ( Top10List[ i ][ j ].TimeMinBarometer.Date == Yesterday.Date )
                 {
@@ -306,7 +306,7 @@ namespace CumulusUtils
             for ( j = 0; j < 10; j++ )
             {
                 Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].TimeHighAverageWindSpeed:dd/MM/yyyy HH:mm} {Top10List[ i ][ j ].HighAverageWindSpeed:F2}" );
+                  $"{Top10List[ i ][ j ].TimeHighAverageWindSpeed:g} {Top10List[ i ][ j ].HighAverageWindSpeed:F2}" );
 
                 if ( Top10List[ i ][ j ].TimeHighAverageWindSpeed.Date == Yesterday.Date )
                 {
@@ -320,7 +320,7 @@ namespace CumulusUtils
             for ( j = 0; j < 10; j++ )
             {
                 Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].TimeHighWindGust:dd/MM/yyyy HH:mm} {Top10List[ i ][ j ].HighWindGust:F2}" );
+                  $"{Top10List[ i ][ j ].TimeHighWindGust:g} {Top10List[ i ][ j ].HighWindGust:F2}" );
 
                 if ( Top10List[ i ][ j ].TimeHighWindGust.Date == Yesterday.Date )
                 {
@@ -334,7 +334,7 @@ namespace CumulusUtils
             for ( j = 0; j < 10; j++ )
             {
                 Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].ThisDate:dd/MM/yyyy} {Top10List[ i ][ j ].TotalWindRun:F2}" );
+                  $"{Top10List[ i ][ j ].ThisDate:d} {Top10List[ i ][ j ].TotalWindRun:F2}" );
 
                 if ( Top10List[ i ][ j ].ThisDate.Date == Yesterday.Date )
                 {
@@ -348,7 +348,7 @@ namespace CumulusUtils
             for ( j = 0; j < 10; j++ )
             {
                 Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].TimeMaxRainRate:dd/MM/yyyy HH:mm} {Top10List[ i ][ j ].MaxRainRate:F2}" );
+                  $"{Top10List[ i ][ j ].TimeMaxRainRate:g} {Top10List[ i ][ j ].MaxRainRate:F2}" );
 
                 if ( Top10List[ i ][ j ].TimeMaxRainRate.Date == Yesterday.Date )
                 {
@@ -362,7 +362,7 @@ namespace CumulusUtils
             for ( j = 0; j < Top10List[ i ].Count; j++ )
             {
                 Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].TimeHighHourlyRain:dd/MM/yyyy HH:mm} {Top10List[ i ][ j ].HighHourlyRain:F2}" );
+                  $"{Top10List[ i ][ j ].TimeHighHourlyRain:g} {Top10List[ i ][ j ].HighHourlyRain:F2}" );
 
                 if ( Top10List[ i ][ j ].TimeHighHourlyRain.Date == Yesterday.Date )
                 {
@@ -376,7 +376,7 @@ namespace CumulusUtils
             for ( j = 0; j < Top10List[ i ].Count; j++ )
             {
                 Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].ThisDate:dd/MM/yyyy} {Top10List[ i ][ j ].TotalRainThisDay:F2}" );
+                  $"{Top10List[ i ][ j ].ThisDate:d} {Top10List[ i ][ j ].TotalRainThisDay:F2}" );
 
                 if ( Top10List[ i ][ j ].ThisDate.Date == Yesterday.Date )
                 {
@@ -390,7 +390,7 @@ namespace CumulusUtils
             for ( j = 0; j < Top10List[ i ].Count; j++ )
             {
                 Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].ThisDate:MM/yyyy} {Top10List[ i ][ j ].MonthlyRain:F2}" );
+                  $"{Top10List[ i ][ j ].ThisDate:MMM yyyy} {Top10List[ i ][ j ].MonthlyRain:F2}" );
 
                 if ( Top10List[ i ][ j ].ThisDate.Date == Yesterday.Date )
                 {
@@ -404,7 +404,7 @@ namespace CumulusUtils
             for ( j = 0; j < Top10List[ i ].Count; j++ )
             {
                 Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].ThisDate:MM/yyyy} {Top10List[ i ][ j ].MonthlyRain:F2}" );  // Lowest monthly rain, inverted from previous list
+                  $"{Top10List[ i ][ j ].ThisDate:MMM yyyy} {Top10List[ i ][ j ].MonthlyRain:F2}" );  // Lowest monthly rain, inverted from previous list
 
                 if ( Top10List[ i ][ j ].ThisDate.Date == Yesterday.Date )
                 {
@@ -418,7 +418,7 @@ namespace CumulusUtils
             for ( j = 0; j < Top10List[ i ].Count; j++ )
             {
                 Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].ThisDate:dd/MM/yyyy} {Top10List[ i ][ j ].DryPeriod:F2}" );
+                  $"{Top10List[ i ][ j ].ThisDate:d} {Top10List[ i ][ j ].DryPeriod:F2}" );
 
                 if ( Top10List[ i ][ j ].ThisDate.Date == Yesterday.Date )
                 {
@@ -432,7 +432,7 @@ namespace CumulusUtils
             for ( j = 0; j < Top10List[ i ].Count; j++ )
             {
                 Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].ThisDate:dd/MM/yyyy} {Top10List[ i ][ j ].WetPeriod:F2}" );
+                  $"{Top10List[ i ][ j ].ThisDate:d} {Top10List[ i ][ j ].WetPeriod:F2}" );
 
                 if ( Top10List[ i ][ j ].ThisDate.Date == Yesterday.Date )
                 {
@@ -541,7 +541,7 @@ namespace CumulusUtils
                                 */
                                 Sup.LogTraceVerboseMessage( $"ExportHTMLfragment -> highlight values - {enumNames[ i + k ]}" );
                                 Sup.LogTraceVerboseMessage( $"ExportHTMLfragment -> Mainlist: " +
-                                  $"{Top10List[ i + k ][ j ].ThisDate:dd/MM/yyyy HH:mm} nu:{DateTime.Now:dd/MM/yyyy HH:mm}" );
+                                  $"{Top10List[ i + k ][ j ].ThisDate:g} nu:{DateTime.Now:g}" );
 
                                 buf = string.Format( $"style=\"color:{Top10TableFormat.TxtAccentTable};\"" );
                             }
@@ -550,57 +550,57 @@ namespace CumulusUtils
                             switch ( i + k )
                             {
                                 case (int) Top10Types.maxTemp:
-                                    timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].TimeMaxTemp:dd/MM/yyyy HH:mm}" );
+                                    timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].TimeMaxTemp.ToString( "g", CUtils.ThisCulture )}" );
                                     of.WriteLine( $"<td {buf}>{timebuf} : <b>{Temp.Format( Top10List[ i + k ][ j ].MaxTemp )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.minTemp:
-                                    timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].TimeMinTemp:dd/MM/yyyy HH:mm}" );
+                                    timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].TimeMinTemp.ToString( "g", CUtils.ThisCulture )}" );
                                     of.WriteLine( $"<td {buf}>{timebuf} : <b>{Temp.Format( Top10List[ i + k ][ j ].MinTemp )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.minHumidity:
-                                    timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].TimeLowHumidity:dd/MM/yyyy HH:mm}" );
+                                    timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].TimeLowHumidity.ToString( "g", CUtils.ThisCulture )}" );
                                     of.WriteLine( $"<td {buf}>{timebuf} : <b>{(int) Top10List[ i + k ][ j ].LowHumidity:D}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.highPressure:
-                                    timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].TimeMaxBarometer:dd/MM/yyyy HH:mm}" );
+                                    timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].TimeMaxBarometer.ToString( "g", CUtils.ThisCulture )}" );
                                     of.WriteLine( $"<td {buf}>{timebuf} : <b>{Sup.StationPressure.Format( Top10List[ i + k ][ j ].MaxBarometer )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.lowPressure:
-                                    timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].TimeMinBarometer:dd/MM/yyyy HH:mm}" );
+                                    timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].TimeMinBarometer.ToString( "g", CUtils.ThisCulture )}" );
                                     of.WriteLine( $"<td {buf}>{timebuf} : <b>{Sup.StationPressure.Format( Top10List[ i + k ][ j ].MinBarometer )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.highWind:
-                                    timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].TimeHighAverageWindSpeed:dd/MM/yyyy HH:mm}" );
+                                    timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].TimeHighAverageWindSpeed.ToString( "g", CUtils.ThisCulture )}" );
                                     of.WriteLine( $"<td {buf}>{timebuf} : <b>{Wind.Format( Top10List[ i + k ][ j ].HighAverageWindSpeed )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.highGust:
-                                    timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].TimeHighWindGust:dd/MM/yyyy HH:mm}" );
+                                    timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].TimeHighWindGust.ToString( "g", CUtils.ThisCulture )}" );
                                     of.WriteLine( $"<td {buf}>{timebuf} : <b>{Wind.Format( Top10List[ i + k ][ j ].HighWindGust )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.totalWindrun:
-                                    timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].ThisDate:dd/MM/yyyy}" );
+                                    timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].ThisDate.ToString( "d", CUtils.ThisCulture )}" );
                                     of.WriteLine( $"<td {buf}>{timebuf} : <b>{Distance.Format( Top10List[ i + k ][ j ].TotalWindRun )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.highRainRate:
-                                    timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].TimeMaxRainRate:dd/MM/yyyy HH:mm}" );
+                                    timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].TimeMaxRainRate.ToString( "g", CUtils.ThisCulture )}" );
                                     of.WriteLine( $"<td {buf}>{timebuf} : <b>{Sup.StationRain.Format( Top10List[ i + k ][ j ].MaxRainRate )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.highHourlyRain:
-                                    timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].TimeHighHourlyRain:dd/MM/yyyy HH:mm}" );
+                                    timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].TimeHighHourlyRain.ToString( "g", CUtils.ThisCulture )}" );
                                     of.WriteLine( $"<td {buf}>{timebuf} : <b>{Sup.StationRain.Format( Top10List[ i + k ][ j ].HighHourlyRain )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.highDailyRain:
-                                    timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].ThisDate:dd/MM/yyyy}" );
+                                    timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].ThisDate.ToString( "d", CUtils.ThisCulture )}" );
                                     of.WriteLine( $"<td {buf}>{timebuf} : <b>{Sup.StationRain.Format( Top10List[ i + k ][ j ].TotalRainThisDay )}</b></td>" );
                                     break;
 
@@ -608,7 +608,7 @@ namespace CumulusUtils
                                 case (int) Top10Types.lowestMonthlyRain:
                                     if ( j < MonthlyRainNrOfMonths )
                                     {
-                                        timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].ThisDate:MMM yyyy}" );
+                                        timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].ThisDate.ToString( "MMM yyyy", CUtils.ThisCulture )}" );
                                         of.WriteLine( $"<td {buf}>{timebuf} : <b>{Sup.StationRain.Format( Top10List[ i + k ][ j ].MonthlyRain )}</b></td>" );
                                     }
                                     else
@@ -619,12 +619,12 @@ namespace CumulusUtils
                                     break;
 
                                 case (int) Top10Types.longestDryPeriod:
-                                    timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].ThisDate:dd/MM/yyyy}" );
+                                    timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].ThisDate.ToString( "d", CUtils.ThisCulture )}" );
                                     of.WriteLine( $"<td {buf}>{timebuf} : <b>{Top10List[ i + k ][ j ].DryPeriod:D}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.longestWetPeriod:
-                                    timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].ThisDate:dd/MM/yyyy}" );
+                                    timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].ThisDate.ToString( "d", CUtils.ThisCulture )}" );
                                     of.WriteLine( $"<td {buf}>{timebuf} : <b>{Top10List[ i + k ][ j ].WetPeriod:D}</b></td>" );
                                     break;
 
@@ -640,7 +640,7 @@ namespace CumulusUtils
                     of.WriteLine( "</tbody></table><br/>" );
                 }
 
-                of.WriteLine( $"<p>{Sup.GetCUstringValue( "Records", "RecordsSince", "Records registered since", false )} {CUtils.StartOfObservations.Date:dd MMMM yyyy} - " +
+                of.WriteLine( $"<p>{Sup.GetCUstringValue( "Records", "RecordsSince", "Records registered since", false )} {CUtils.StartOfObservations.ToString( "D", CUtils.ThisCulture )} - " +
                              $"({( CUtils.RunStarted.Date - CUtils.StartOfObservations.Date ).TotalDays} {Sup.GetCUstringValue( "General", "Days", "Days", false )})</p>" );
 
                 if ( !CUtils.DoWebsite )

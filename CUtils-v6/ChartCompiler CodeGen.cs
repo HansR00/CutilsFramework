@@ -626,42 +626,6 @@ namespace CumulusUtils
 
             if ( AxisSet.Equals( AxisType.None ) ) NoClosingAddAxis = true;
 
-            // Check if Rain/RainRate are the only Plotvars in this chart in which case the horizontal gridlines will be set for that axis
-            // If any other Plotvar is present, the horizontal gridlines will be invisible (width = 0)
-            // The reason of this detail is that the rain value for the inches is so small that the max value of 1 for the axis can not be done automatically
-            // and the "endOnTick: false, showLastLabel: true," have to be used. This confuses the gridlines such that they have to be turned off UNLESS these are the only axis
-            // in the chart **SIGH, what a world**
-            // If there will be more of this type of shit I will have to move it to a dedicated function with the strings as in/out parameters
-            bool RainInChart = false, RRateInChart = false;
-            string RainGridLinesVisble = "", RRateGridLinesVisible = "";
-
-            foreach ( Plotvar thisPlotvar in thisChart.PlotVars )
-            {
-                if ( !thisPlotvar.Axis.HasFlag( AxisType.Rain ) && !thisPlotvar.Axis.HasFlag( AxisType.Rrate ) )
-                {
-                    RainGridLinesVisble = "gridLineWidth:0, minorGridLineWidth:0";
-                    RRateGridLinesVisible = "gridLineWidth:0, minorGridLineWidth:0";
-                    RainInChart = RRateInChart = false;
-
-                    break;
-                }
-                else if ( thisPlotvar.Axis.HasFlag( AxisType.Rain ) ) { RainInChart = true; }
-                else if ( thisPlotvar.Axis.HasFlag( AxisType.Rrate ) ) { RRateInChart = true; }
-            }
-
-            // We only have rain data in the chart either Rain or RRate
-            if ( RainInChart || RRateInChart )
-            {
-                if ( RainInChart && RRateInChart )                                                          // Both Rain and RRate
-                {
-                    RainGridLinesVisble = "gridLineWidth:1, minorGridLineWidth:1";
-                    RRateGridLinesVisible = "gridLineWidth:0, minorGridLineWidth:0";
-                }
-                else if ( RainInChart ) RainGridLinesVisble = "gridLineWidth:1, minorGridLineWidth:1";     // Just Rain in the chart
-                else if ( RRateInChart ) RRateGridLinesVisible = "gridLineWidth:1, minorGridLineWidth:1";  // Just RRate in the chart
-            }
-
-            // Now do  the actual Axis settings
             foreach ( Plotvar thisPlotvar in thisChart.PlotVars )
             {
                 if ( AxisSet.HasFlag( thisPlotvar.Axis ) ) { i++; continue; }
@@ -686,7 +650,7 @@ namespace CumulusUtils
                     buf.Append( "allowDecimals: false," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2" : "labels:{align: 'right',x: -5, y: -2" )}" +
                       $",formatter: function() {{return '<span style=\"fill: ' + (this.value <= freezing ? 'blue' : 'red') + '; \">' + this.value + '</span>';}} }}," );
-                    buf.Append( "plotLines:[{value: freezing,color: 'rgb(0, 0, 180)',width: 1,zIndex: 2}]" );
+                    buf.Append( "plotLines:[{value: freezing,color: 'rgb(0, 0, 180)',width: 1,zIndex: 2}]," );
                     AxisSet |= AxisType.Temp;
                 }
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.Pressure ) && !AxisSet.HasFlag( AxisType.Pressure ) )
@@ -698,25 +662,25 @@ namespace CumulusUtils
                     _ = Sup.StationPressure.Dim == PressureDim.inchHg ? buf.Append( "allowDecimals: true," ) : buf.Append( "allowDecimals: false," );
                     buf.Append( $"softMin: {Sup.StationPressure.Format( MinPressure ).Replace( ',', '.' )}, softMax: {Sup.StationPressure.Format( MaxPressure ).Replace( ',', '.' )}," );
                     buf.Append( $"labels: {{ formatter: function () {{return Highcharts.numberFormat(this.value, {NrOfDecimals}, '.', '');}}, " +
-                        $"{( opposite ? "align: 'left',x: 5,y: -2}" : "align: 'right',x: -5, y: -2}" )}" );
+                        $"{( opposite ? "align: 'left',x: 5,y: -2}," : "align: 'right',x: -5, y: -2}," )}" );
                     AxisSet |= AxisType.Pressure;
                 }
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.Rain ) && !AxisSet.HasFlag( AxisType.Rain ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Rain", "Rain", true )} ({thisPlotvar.Unit})'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
-                    buf.Append( $"endOnTick: false, showLastLabel: true, {RainGridLinesVisble}, softMax: 1,min: 0," );
+                    buf.Append( $"endOnTick: false, showLastLabel: true, softMax: 1,min: 0," );
                     buf.Append( "allowDecimals: false," );
-                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}," : "labels:{align: 'right',x: -5, y: -2}" )}" );
+                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}," );
                     AxisSet |= AxisType.Rain;
                 }
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.Rrate ) && !AxisSet.HasFlag( AxisType.Rrate ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Rainrate", "Rain Rate", true )} ({thisPlotvar.Unit})'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
-                    buf.Append( $"endOnTick: false, showLastLabel: true, {RRateGridLinesVisible}, softMax: 1,min: 0," );
+                    buf.Append( $"endOnTick: false, showLastLabel: true, softMax: 1,min: 0," );
                     buf.Append( "allowDecimals: false," );
-                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}" );
+                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}," );
                     AxisSet |= AxisType.Rrate;
                 }
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.Wind ) && !AxisSet.HasFlag( AxisType.Wind ) )
@@ -724,7 +688,7 @@ namespace CumulusUtils
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Wind", "Wind", true )} ({thisPlotvar.Unit})'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( "allowDecimals: false," );
-                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}" );
+                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}," );
                     AxisSet |= AxisType.Wind;
                 }
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.Direction ) && !AxisSet.HasFlag( AxisType.Direction ) )
@@ -734,7 +698,7 @@ namespace CumulusUtils
                     buf.Append( "min: 0, max: 360," );
                     buf.Append( "tickInterval: 45," ); // align: 'right',x: -5,
                     buf.Append( $"labels: {{ {( opposite ? "align: 'left',x: 5,y: -2" : "align: 'right',x: -5, y: -2" )}, formatter: function() {{return compassP(this.value);}} }}," );
-                    buf.Append( "allowDecimals: false" );
+                    buf.Append( "allowDecimals: false," );
                     AxisSet |= AxisType.Direction;
                 }
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.UV ) && !AxisSet.HasFlag( AxisType.UV ) )
@@ -742,7 +706,7 @@ namespace CumulusUtils
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "UVindex", "UV index", true )}'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( "allowDecimals: false," );
-                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}" );
+                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}," );
                     AxisSet |= AxisType.UV;
                 }
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.Solar ) && !AxisSet.HasFlag( AxisType.Solar ) )
@@ -751,7 +715,7 @@ namespace CumulusUtils
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( "allowDecimals: false," );
                     buf.Append( $"softMax: {ApproximateSolarMax()},min: 0," );
-                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}" );
+                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}," );
                     AxisSet |= AxisType.Solar;
                 }
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.Humidity ) && !AxisSet.HasFlag( AxisType.Humidity ) )
@@ -760,7 +724,7 @@ namespace CumulusUtils
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( "min: 0, max: 100," );
                     buf.Append( "allowDecimals: false," );
-                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}" );
+                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}," );
                     AxisSet |= AxisType.Humidity;
                 } // End of block generatiing the Exis info
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.Hours ) && !AxisSet.HasFlag( AxisType.Hours ) )
@@ -769,7 +733,7 @@ namespace CumulusUtils
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( "min: 0," );
                     buf.Append( "allowDecimals: false," );
-                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}" );
+                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}," );
                     AxisSet |= AxisType.Hours;
                 } // End of block generatiing the Exis info
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.EVT ) && !AxisSet.HasFlag( AxisType.EVT ) )
@@ -778,8 +742,18 @@ namespace CumulusUtils
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( $"softMax: 1,min: 0," );
                     buf.Append( "allowDecimals: false," );
-                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}," : "labels:{align: 'right',x: -5, y: -2}" )}" );
+                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}," );
                     AxisSet |= AxisType.EVT;
+                }
+                else if ( thisPlotvar.Axis.HasFlag( AxisType.Distance ) && !AxisSet.HasFlag( AxisType.Distance ) )
+                {
+                    buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Distance", "Distance", true )} " +
+                        $"({(string.IsNullOrEmpty(thisPlotvar.Unit) ? new Distance(DistanceDim.meter).Text() : thisPlotvar.Unit) })'}}," );
+                    buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
+                    buf.Append( $"softMax: 10,softMin: 0," );
+                    buf.Append( "allowDecimals: false," );
+                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}," );
+                    AxisSet |= AxisType.Distance;
                 }
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.DegreeDays ) && !AxisSet.HasFlag( AxisType.DegreeDays ) )
                 {
@@ -787,7 +761,7 @@ namespace CumulusUtils
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( $"softMax: 10,softMin: 0," );
                     buf.Append( "allowDecimals: false," );
-                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}," : "labels:{align: 'right',x: -5, y: -2}" )}" );
+                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}," );
                     AxisSet |= AxisType.DegreeDays;
                 }
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.Free ) && !AxisSet.HasFlag( AxisType.Free ) )
@@ -795,7 +769,7 @@ namespace CumulusUtils
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Compiler", $"{thisChart.Id}Dimensionless", "Dimensionless", true )}'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( $"softMax: 10,softMin: 0," );
-                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}," : "labels:{align: 'right',x: -5, y: -2}" )}" );
+                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )} ," );
                     AxisSet |= AxisType.Free;
                 }
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.AQ ) && !AxisSet.HasFlag( AxisType.AQ ) )
@@ -803,7 +777,7 @@ namespace CumulusUtils
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Compiler", "ParticulateMatter", "Particulate Matter", true )} (μg/m3)'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( $"softMax: 30,softMin: 0," );
-                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}," : "labels:{align: 'right',x: -5, y: -2}" )}" );
+                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )} ," );
                     AxisSet |= AxisType.AQ;
                 }
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.ppm ) && !AxisSet.HasFlag( AxisType.ppm ) )
@@ -811,22 +785,25 @@ namespace CumulusUtils
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Compiler", "PartsPerMillion", "Parts Per Million", true )} (ppm)'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( $"softMax: 500,softMin: 0," );
-                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}," : "labels:{align: 'right',x: -5, y: -2}" )}" );
+                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )} ," );
                     AxisSet |= AxisType.ppm;
                 }
 
                 if ( UseAddAxisCall )
                 {
-                    buf.AppendLine( "}, false, false );" );
+                    buf.AppendLine( "alignTicks: false, gridLineWidth: 0, minorGridLineWidth:0 }, false, false );" );
                 }
                 else
+                {
+                    //Use this to avoid scaling errors
+                    buf.Append( "alignTicks: false," );
                     break; // Skip the other plotvars, first var now has its axis
-
+                }
             } // For loop over all plotvars
 
             if ( thisChart.Axis.CountFlags() == 1 && !NoClosingAddAxis )
             {
-                buf.Append( "  chart.addAxis({linkedTo: 0, gridLineWidth: 0," );
+                buf.Append( "  chart.addAxis({linkedTo: 0, gridLineWidth: 0, minorGridLineWidth:0," );
 
                 if ( thisChart.Axis.HasFlag( AxisType.Temp ) )
                 {

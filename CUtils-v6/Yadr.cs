@@ -565,7 +565,7 @@ namespace CumulusUtils
 
                         if ( StatisticsList.Count > 0 )
                         {
-                            values[ 0, thisMonth ] = StatisticsList.Where( x => x.TotalRainThisDay > 0 ).Count();
+                            values[ 0, thisMonth ] = StatisticsList.Where( x => x.TotalRainThisDay >= GlobConst.RainLimit ).Count();
                             values[ 1, thisMonth ] = StatisticsList.Select( x => x.TotalRainThisDay ).Sum();
                             values[ 2, thisMonth ] = thisMonth > 0 ? values[ 2, thisMonth ] = ( values[ 2, thisMonth - 1 ] == InvalidValue ? 0 : values[ 2, thisMonth - 1 ] ) + values[ 1, thisMonth ]
                                                                  : values[ 2, thisMonth ] = values[ 1, thisMonth ];
@@ -1357,7 +1357,7 @@ $"{Sup.GetCUstringValue( "Yadr", "LowShortText", "Lo", false )}</th>" );
         {
             try
             {
-                if ( thisValue < (float) Sup.StationRain.Convert( RainDim.millimeter, Sup.StationRain.Dim, 0.2 ) )
+                if ( thisValue < (float) Sup.StationRain.Convert( RainDim.millimeter, Sup.StationRain.Dim, GlobConst.RainLimit ) )
                     return "class=\"reportday\"";
                 else
                     for ( int i = 0; i < 13; i++ )

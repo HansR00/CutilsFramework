@@ -385,7 +385,7 @@ namespace CumulusUtils
                         of.WriteLine( $"<p>1) {Sup.GetCUstringValue( "DayRecords", "Footnote_1", "Highest Temperature /  Lowest High Temperature.", false )}<br/>" );
                         of.WriteLine( $"2) {Sup.GetCUstringValue( "DayRecords", "Footnote_2", "Lowest Temperature /  Highest Low Temperature.", false )}<br/>" );
                         of.WriteLine( $"3) {Sup.GetCUstringValue( "DayRecords", "Footnote_3", "Highlighted values are set within the last year (if more than a years data exist).", false )}<br/>" );
-                        of.WriteLine( $"4) {Sup.GetCUstringValue( "Records", "RecordsSince", "Records registered since", false )} {CUtils.StartOfObservations.Date:dd MMMM yyyy} - " +
+                        of.WriteLine( $"4) {Sup.GetCUstringValue( "Records", "RecordsSince", "Records registered since", false )} {CUtils.StartOfObservations.ToString( "D", CUtils.ThisCulture )} - " +
                                        $"({( CUtils.RunStarted.Date - CUtils.StartOfObservations.Date ).TotalDays} {Sup.GetCUstringValue( "General", "Days", "Days", false )})</p>" );
                         of.WriteLine( "</td></tr>" );
                         of.WriteLine( "</tbody></table>" );

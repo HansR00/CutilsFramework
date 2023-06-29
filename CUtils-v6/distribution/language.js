@@ -10,6 +10,8 @@
 /*! Version: CumulusUtils 4.1.1 - sutne: 6. august 2020: Changed Norwegian from NO (which is not a language code, but a country code) to NB (Norsk bokmål) and NN  (Nynorsk) */
 /*! Version: CumulusUtils 4.2.0 - rogerthn: 18 august 2020: Changed Swedish from SE (which is not a language code, but a country code) to SV */
 /*! Version: CumulusUtils 6.0.1 - HansR: 31 july 2021: Added FeelsLike texts for all languages (not all translated though)*/
+/*! Version: CumulusUtils 6.19.0 - HansR: 24 june 2023: Changed language code for Denmark to DA (it was DK which is the country code)*/
+/*! Version: CumulusUtils 6.19.0 - mingjen: 26 june 2023: Completed Danish translation */
 
 /*global gauges */
 
@@ -897,9 +899,9 @@ LANG.SV = {
 
 //======================================================================================================================
 // Danish
-// ***INCOMPLETE***
+// ***COMPLETE***
 //======================================================================================================================
-LANG.DK = {
+LANG.DA = {
     canvasnosupport: 'Din browser understøtter ikke HTML5 lærred...<br>' +
                      'Opdatere din browser til en nyere version - næsten alle browsere understøter lærred nu - selv Internet Explorer 9!<br><br>' +
                      'Du omdirigeres til vores gamle forside...',
@@ -950,9 +952,9 @@ LANG.DK = {
     apptemp_title     : 'Komfort',
     apptemp_info      : 'Komfort (føles som) temperatur',
     apptemp_web       : 'Komfort',
-    feel_title        : 'Feels Like',
-    feel_info         : 'Feels Like Temperature',
-    feel_web          : 'Feels Like',
+    feel_title        : 'føles som',
+    feel_info         : 'føles som temperatur',
+    feel_web          : 'føles som',
     chill_title       : 'Vindchill',
     chill_info        : 'Vindchill',
     chill_web         : 'Vindchill',
@@ -992,10 +994,10 @@ LANG.DK = {
     bearing_info      : 'Retning',
     latest_web        : 'Seneste',
     tenminavg_web     : 'Gennemsnit',
-    dominant_bearing  : 'Dominant wind today',
-    calm              : 'calm',
-    windrose          : 'Wind Rose',
-    windruntoday      : 'Wind run today',
+    dominant_bearing  : 'gns vindretning',
+    calm              : 'Vindstille',
+    windrose          : 'Vind Rose',
+    windruntoday      : 'Vindstrækning i dag',
     //
     uv_title          : 'UV index',
     uv_levels         : ['Ingen',
@@ -1034,13 +1036,13 @@ LANG.DK = {
     solar_maxToday       : 'Maximum i dag',
     //
     cloudbase_title      : 'skyhøjde basen',
-    cloudbase_popup_title: 'Theoretical cloud base',
+    cloudbase_popup_title: 'Teoretisk skyhøjde',
     cloudbase_popup_text : 'The calculation is a simple one; 1000 feet for every 4.4 degrees Fahrenheit<br>' +
                            'difference between the temperature and the dew point. Note that this simply<br>' +
                            'gives the theoretical height at which Cumulus clouds would begin to form, the<br>' +
                            'air being saturated',
-    feet              : 'feet',
-    metres            : 'meters',
+    feet              : 'fod',
+    metres            : 'meter',
     miles             : 'miles',
     n_miles           : 'sømil',
     km                : 'km',

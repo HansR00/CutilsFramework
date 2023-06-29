@@ -95,6 +95,8 @@
  * 7) https://www.encodedna.com/webapi/webapi-controller-for-file-upload-procedure.htm
  * 8) https://stackoverflow.com/questions/10168240/encrypting-decrypting-a-string-in-c-sharp
  * 9) https://port135.com/public-key-token-assembly-dll-file/ // When you have to map a version of a dll to another in cumulusutils.exe.config
+ * 10) https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat (date formatting for locale in javascript)
+ * 11)  10) found through https://stackoverflow.com/questions/5749548/javascript-date-format-international-settings?rq=4
  * 
  * Read this on HttpClient and async/await: 
  * https://stackoverflow.com/questions/42235677/httpclient-this-instance-has-already-started
@@ -131,6 +133,15 @@ using FluentFTP.Helpers;
 
 namespace CumulusUtils
 {
+    // 
+    // Use GlobConst as a store for constants as you would use C #defines...
+    // That's what you get when you act as a hybrid between C and C#
+    // 
+    public static class GlobConst
+    {
+        public const double RainLimit = 0.2; //When more or equal than this amount in mm/day this limit is used when necessary
+    }
+
     public class CUtils
     {
         private bool DoPwsFWI;
@@ -155,6 +166,7 @@ namespace CumulusUtils
 
         public static StringComparison Cmp = StringComparison.OrdinalIgnoreCase;
         public static CultureInfo Inv = CultureInfo.InvariantCulture;
+        public static CultureInfo ThisCulture;
 
         public static CuSupport Sup { get; set; }
         public static InetSupport Isup { get; set; }
@@ -409,7 +421,6 @@ namespace CumulusUtils
 
             if ( string.IsNullOrEmpty( tmp ) )
             {
-                //StartOfObservations = DateTime.Parse() // Use the startdate in CumulusMX
                 StartOfObservations = MainList.Select( x => x.ThisDate ).Min();
             }
             else
@@ -448,7 +459,7 @@ namespace CumulusUtils
                 Sup.LogTraceInfoMessage( $"Timing DocheckOnly = {watch.ElapsedMilliseconds} ms" );
 #endif
 
-                Sup.LogTraceInfoMessage( "CheckOnly Done" );
+                Sup.LogTraceInfoMessage( "CheckOnly is no longer functional!" );
                 Sup.LogTraceInfoMessage( "Main CmulusUtils: Exiting!" );
 
                 return;

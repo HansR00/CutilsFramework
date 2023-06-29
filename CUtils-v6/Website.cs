@@ -26,6 +26,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using ServiceStack.Text;
 
 //
 // Remember minification: 
@@ -815,7 +816,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                           "  let realtime = tmpInput.split(' '); " +
                           $"  let UnitWind = '{Sup.StationWind.Text()}';" +
                           $"  let UnitDegree = realtime[{(int) RealtimeFields.tempunitnodeg}] == 'C' ? '°C' : '°F';" +
-                          $"  let UnitPress = realtime[{(int) RealtimeFields.pressunit}] == \"in\" ? \"ínHg\" : realtime[{(int) RealtimeFields.pressunit}];" +
+                          $"  let UnitPress = realtime[{(int) RealtimeFields.pressunit}] == 'in' ? 'inHg' : realtime[{(int) RealtimeFields.pressunit}];" +
                           $"  let UnitRain = realtime[{(int) RealtimeFields.rainunit}];" +
 
                           // This one is only for the StationMap, if that one is not active don't do this (needs to be implemented)
@@ -979,7 +980,14 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                           $"  tmp = '{Sup.GetCUstringValue( "Website", "LastUpdate", "Last Update", true )}: ' + realtime[{(int) RealtimeFields.timehhmmss}];" +
                           $"  $('#ajxTimeUpdate').html(tmp);" +
 
-                          $"  tmp = '{Sup.GetCUstringValue( "Website", "Date", "Date", true )}: ' + realtime[{(int) RealtimeFields.date}];" +
+                          // Don't assume the webserver has the same date as the CMX machine so do the date as if you do not know anything
+                          $"  SplitDateArray = realtime[{(int) RealtimeFields.date}].split(realtime[{(int) RealtimeFields.date}][2]);" +
+                          $"  thisDay = SplitDateArray[0];" +
+                          $"  thisMonth = SplitDateArray[1];" +
+                          $"  thisYear = SplitDateArray[2];" +
+                          $"  newDate = new Date('20' + thisYear, thisMonth - 1, thisDay);" +
+                          $"  tmp = '{Sup.GetCUstringValue( "Website", "Date", "Date", true )}: ' + new Intl.DateTimeFormat('{Sup.Locale}').format(newDate);" +
+                          //$"  tmp = '{Sup.GetCUstringValue( "Website", "Date", "Date", true )}: ' + realtime[{(int) RealtimeFields.date}];" +
                           $"  $('#ajxDateUpdate').html(tmp);" +
                           "  setTimeout('ClearChangeIndicator()', 3000);" +
                           "}" );
@@ -1327,10 +1335,13 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                           "    }" +
                           "  }" +
                           "}" +
-                        //"function ClickExtraSensor(Type) {" +
-                        //"  " +  // Do something to handle events in the ExtraSensor module
-                        //"}" +
-                        "" );
+                          "" );
+
+                CUlibFile.Append( 
+                          "function DayNumber2Date(dayNumber, year){" +
+                          "  const date = new Date( year, 0, dayNumber );" +
+                          $"  return date.toLocaleDateString('{Sup.Locale}');" +
+                          "}" );
 
                 // Now, do all checks on the individual steelseries parameters which are used 
                 // This is a tiresome process, adding a parameter is awkward. Unfortunately, no check are made in the gauges or steelseries software

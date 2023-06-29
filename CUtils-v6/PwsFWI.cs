@@ -36,7 +36,7 @@ namespace CumulusUtils
     public struct StructFWI
     {
         public double ActualVaporPressure { get; set; }
-        public string Date { get; set; }
+        public DateTime Date { get; set; }
 
         public double dayFWI { get; set; }
         public int DryPeriod { get; set; }
@@ -209,7 +209,7 @@ namespace CumulusUtils
                 {
                     double A, B, C;
 
-                    localFWI.Date = ThisList[ i ].ThisDate.ToString( "dd/MM/yy", CUtils.Inv );
+                    localFWI.Date = ThisList[ i ].ThisDate;
                     localFWI.T = Sup.StationTemp.Convert( Sup.StationTemp.Dim, TempDim.celsius, ThisList[ i ].MaxTemp );                // if Temp is in F, convert it to C. Otherwise it remains in C
                     localFWI.RH = ThisList[ i ].LowHumidity / 100;                                                                      // always percentage
                     localFWI.Wind = Sup.StationWind.Convert( Sup.StationWind.Dim, WindDim.kmh, ThisList[ i ].HighAverageWindSpeed );    // if Wind other than km/h convert it otherwise it remains in km/h
@@ -301,13 +301,13 @@ namespace CumulusUtils
 
                     FWIlist.Add( localFWI );
 
-                    Sup.LogTraceInfoMessage( $"   {localFWI.Date}; {localFWI.T:F1}; {localFWI.Wind:F1}; {localFWI.Rain:F1}; " +
+                    Sup.LogTraceInfoMessage( $"   {localFWI.Date.ToString( "d", CUtils.ThisCulture )}; {localFWI.T:F1}; {localFWI.Wind:F1}; {localFWI.Rain:F1}; " +
                                         $"{localFWI.RH:F2}; {localFWI.Psat:F2}; {localFWI.VPD:F2}; " +
                                         $"{localFWI.dayFWI:F2}; {localFWI.DryPeriod:F0}; {localFWI.SmoothedFWI:F2}" );
 
                     if ( Analyse > DaysRequiredForHTML )
                     {
-                        af.WriteLine( localFWI.Date + $"{separator}{localFWI.T:F1}{separator}{localFWI.Wind:F1}{separator}{localFWI.Rain:F1}" +
+                        af.WriteLine( $"{localFWI.Date.ToString( "d", CUtils.ThisCulture )}{separator}{localFWI.T:F1}{separator}{localFWI.Wind:F1}{separator}{localFWI.Rain:F1}" +
                           $"{separator}{localFWI.RH:F2}{separator}{localFWI.Psat:F2}{separator}{localFWI.VPD:F2}{separator}{localFWI.dayFWI:F2}" +
                           $"{separator}{localFWI.DryPeriod:D}{separator}{localFWI.SmoothedFWI:F1}" );
                     }
@@ -537,7 +537,7 @@ namespace CumulusUtils
                             tmpBackground = "";
 
                         of.WriteLine( $"<tr style='text-align:center;{tmpBackground}'>" );
-                        of.WriteLine( $"<td>{FWIlist[ i ].Date}</td>" );
+                        of.WriteLine( $"<td>{FWIlist[ i ].Date.ToString( "d", CUtils.ThisCulture )}</td>" );
                         of.WriteLine( $"<td>{FWIlist[ i ].T.ToString( "F1", CUtils.Inv )}</td>" );
                         of.WriteLine( $"<td>{FWIlist[ i ].Wind.ToString( "F1", CUtils.Inv )}</td>" );
                         of.WriteLine( $"<td>{FWIlist[ i ].Rain.ToString( "F1", CUtils.Inv )}</td>" );
@@ -833,12 +833,12 @@ namespace CumulusUtils
                         fmtindex = SetFmtIndex( i );
 
                         of.WriteLine( $"<tr style=\"{tmpBackground}\">\n" );
-                        of.WriteLine( $"<td>{FWIlist[ i ].Date}</td>" );
-                        of.WriteLine( $"<td>{FWIlist[ i ].T.ToString( "F1", CultureInfo.CurrentCulture )}</td>" );
-                        of.WriteLine( $"<td>{FWIlist[ i ].Wind.ToString( "F1", CultureInfo.CurrentCulture )}</td>" );
-                        of.WriteLine( $"<td>{FWIlist[ i ].Rain.ToString( "F1", CultureInfo.CurrentCulture )}</td>" );
-                        of.WriteLine( $"<td>{FWIlist[ i ].RH.ToString( "F2", CultureInfo.CurrentCulture )}</td>" );
-                        of.WriteLine( $"<td>{FWIlist[ i ].DryPeriod.ToString( "D", CultureInfo.CurrentCulture )}</td>" );
+                        of.WriteLine( $"<td>{FWIlist[ i ].Date.ToString( "d", CUtils.ThisCulture )}</td>" );
+                        of.WriteLine( $"<td>{FWIlist[ i ].T.ToString( "F1", CUtils.ThisCulture )}</td>" );
+                        of.WriteLine( $"<td>{FWIlist[ i ].Wind.ToString( "F1", CUtils.ThisCulture )}</td>" );
+                        of.WriteLine( $"<td>{FWIlist[ i ].Rain.ToString( "F1", CUtils.ThisCulture )}</td>" );
+                        of.WriteLine( $"<td>{FWIlist[ i ].RH.ToString( "F2", CUtils.ThisCulture )}</td>" );
+                        of.WriteLine( $"<td>{FWIlist[ i ].DryPeriod.ToString( "D", CUtils.ThisCulture )}</td>" );
 
                         if ( i == NrOfSmoothingDays )
                             of.WriteLine( $"<td style=\"background:{fmtstring[ (int) fmtindex ]};border-radius: 0px 0px 13px 0px; \">{FWIlist[ i ].SmoothedFWI.ToString( "F1", CultureInfo.CurrentCulture )}</td>" );
@@ -1007,7 +1007,7 @@ namespace CumulusUtils
                         ThisValue.TotalRainThisDay = (float) Sup.StationRain.Convert( RainDim.millimeter, Sup.StationRain.Dim, Convert.ToSingle( el.Element( "rain" ).Attribute( "value" ).Value, CUtils.Inv ) );
 
                         Sup.LogTraceInfoMessage( "XML AddPrediction - The data:" );
-                        Sup.LogTraceInfoMessage( $"ThisValue converted date: {ThisValue.ThisDate:dd-MM-yyyy}" );
+                        Sup.LogTraceInfoMessage( $"ThisValue converted date: {ThisValue.ThisDate:d}" );
                         Sup.LogTraceInfoMessage( $"ThisValue converted MaxTemp: {ThisValue.MaxTemp:F1}" );
                         Sup.LogTraceInfoMessage( $"ThisValue converted LowHumidity: {ThisValue.LowHumidity:F1}" );
                         Sup.LogTraceInfoMessage( $"ThisValue converted High Av. Windspeed: {ThisValue.HighAverageWindSpeed:F1}" );
@@ -1015,7 +1015,7 @@ namespace CumulusUtils
 
                         // The actual carry over from the history is done in SetExtraValues
                         //
-                        if ( ThisValue.TotalRainThisDay >= (float) Sup.StationRain.Convert( RainDim.millimeter, Sup.StationRain.Dim, 0.2 ) ) { ThisValue.DryPeriod = 0; ThisValue.WetPeriod = 1;  }
+                        if ( ThisValue.TotalRainThisDay >= (float) Sup.StationRain.Convert( RainDim.millimeter, Sup.StationRain.Dim, GlobConst.RainLimit ) ) { ThisValue.DryPeriod = 0; ThisValue.WetPeriod = 1;  }
                         else { ThisValue.DryPeriod = 1; ThisValue.WetPeriod = 0; }
 
                         ThisList.Add( ThisValue );

@@ -111,6 +111,7 @@ namespace CumulusUtils
             Sup.LogTraceInfoMessage( "GenMonthlyTempvsNOAAGraphData : start Generation" );
 
             // Now generate the script
+            thisBuffer.AppendLine( "console.log('Monthly Temp vs NOAA Chart starting.');" );
             thisBuffer.AppendLine( "  chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "    chart:" );
             thisBuffer.AppendLine( "    {" );
@@ -296,6 +297,7 @@ namespace CumulusUtils
                 AllYears.Add( YearValue );
             }
 
+            thisBuffer.AppendLine( "console.log('Warmer Days Chart starting.');" );
             thisBuffer.AppendLine( "chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "  chart:" );
             thisBuffer.AppendLine( "  {" );
@@ -404,13 +406,7 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "Generate Heat Map Start" );
 
-            // From : https://bobbyhadz.com/blog/javascript-convert-day-of-year-to-date
-            //
-            thisBuffer.AppendLine( "function DayNumber2Date(dayNumber, year){" );
-            thisBuffer.AppendLine( "  const date = new Date( year, 0, dayNumber );" );
-            thisBuffer.AppendLine( "  return date.toLocaleDateString();" );
-            thisBuffer.AppendLine( "}" );
-
+            thisBuffer.AppendLine( "console.log('Heatmap Chart starting.');" );
             thisBuffer.AppendLine( "chart = thisHeatmap = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "chart:" );
             thisBuffer.AppendLine( "{" );
@@ -552,6 +548,7 @@ namespace CumulusUtils
                 maxtemp.Add( yearlist.Select( x => x.MaxTemp ).Max() );
             }
 
+            thisBuffer.AppendLine( "console.log('Year Temp Stats Chart starting.');" );
             thisBuffer.AppendLine( "chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "chart:" );
             thisBuffer.AppendLine( "{" );
@@ -701,6 +698,7 @@ namespace CumulusUtils
                 return; // We're done, nothing here
             }
 
+            thisBuffer.AppendLine( "console.log('Monthly Temp Stats Chart starting.');" );
             thisBuffer.AppendLine( "chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "chart:" );
             thisBuffer.AppendLine( "{" );

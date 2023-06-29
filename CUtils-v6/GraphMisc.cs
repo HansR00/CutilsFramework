@@ -40,6 +40,7 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "GenDailyEVTGraphData : starting" );
 
+            thisBuffer.AppendLine( "console.log('Daily EVT Chart starting.');" );
             thisBuffer.AppendLine( "chart = Highcharts.stockChart('chartcontainer', {" );
             thisBuffer.AppendLine( "  rangeSelector:" );
             thisBuffer.AppendLine( "  {" );
@@ -80,10 +81,9 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "  }]," );
             thisBuffer.AppendLine( "  tooltip:" );
             thisBuffer.AppendLine( "  {" );
-            thisBuffer.AppendLine( "    headerFormat: '<span style=\"font-size: 10px\">{point.key}</span><table>'," );
+            thisBuffer.AppendLine( "    headerFormat: '<b><span style=\"font-size: 10px\">{point.key}</span></b><table>'," );
             thisBuffer.AppendLine( $"    pointFormat: '<tr><td style=\"color: {{series.color}}; padding: 0\">{{series.name}}: </td><td style=\"padding: 0\"><b>{{point.y:.2f}} {Sup.StationRain.Text()}</b></td></tr>'," );
             thisBuffer.AppendLine( "    footerFormat: '</table>'," );
-            thisBuffer.AppendLine( "    shared: true," );
             thisBuffer.AppendLine( "    useHTML: true" );
             thisBuffer.AppendLine( "  }," );
             thisBuffer.AppendLine( "  plotOptions:" );
@@ -185,6 +185,7 @@ namespace CumulusUtils
             }
 
             // Now generate the script
+            thisBuffer.AppendLine( "console.log('Monthly EVT Chart starting.');" );
             thisBuffer.AppendLine( "  chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "  chart:" );
             thisBuffer.AppendLine( "  {" );
@@ -242,6 +243,14 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "    }" );
             thisBuffer.AppendLine( "  }," );
 
+            thisBuffer.AppendLine( "  tooltip:" );
+            thisBuffer.AppendLine( "  {" );
+            thisBuffer.AppendLine( "    headerFormat: '<b><span style=\"font-size: 10px\">{point.key}</span></b><table>'," );
+            thisBuffer.AppendLine( $"    pointFormat: '<tr><td style=\"color: {{series.color}}; padding: 0\">{{series.name}}: </td><td style=\"padding: 0\"><b>{{point.y:.2f}} {Sup.StationRain.Text()}</b></td></tr>'," );
+            thisBuffer.AppendLine( "    footerFormat: '</table>'," );
+            thisBuffer.AppendLine( "    useHTML: true" );
+            thisBuffer.AppendLine( "  }," );
+
             thisBuffer.AppendLine( "  series: [{" );
 
             sb = new StringBuilder();
@@ -291,6 +300,7 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "GenTempSum : starting" );
 
+            thisBuffer.AppendLine( "console.log('Temperature Sum Chart starting.');" );
             thisBuffer.AppendLine( "chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "  rangeSelector:" );
             thisBuffer.AppendLine( "  {" );
@@ -322,9 +332,8 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "    }]," );
             thisBuffer.AppendLine( "  tooltip:" );
             thisBuffer.AppendLine( "  {" ); //xDateFormat: '%Y-%m-%d',
-            thisBuffer.AppendLine( "    headerFormat: '<span style=\"font-size: 10px\">{point.key}</span><table>'," );
-            thisBuffer.AppendLine( $"    pointFormat: '<tr><td style=\"color: {{series.color}}; padding: 0\">{{series.name}}: </td><td style=\"padding: 0\"><b>{{point.y:.1f}} {Sup.StationTemp.Text()}</b></td></tr>'," );
-            thisBuffer.AppendLine( "    footerFormat: '</table>'," );
+            thisBuffer.AppendLine( $"    headerFormat: '<b>{Sup.GetCUstringValue( "Graphs", "TempSumTitle", "", true )}:</b><br/>'," );
+            thisBuffer.AppendLine( $"    pointFormatter() {{ return '<span style=\"color: ' + this.color + '\">' + DayNumber2Date(this.x, this.series.name) + '</span>: ' + this.y + ' {Sup.StationTemp.Text()}<br/>' }}," );
             thisBuffer.AppendLine( "    shared: true," );
             thisBuffer.AppendLine( "    useHTML: true" );
             thisBuffer.AppendLine( "  }," );
@@ -420,6 +429,7 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "GrowingDegreeDays : starting" );
 
+            thisBuffer.AppendLine( "console.log('Growing  Degree Days Chart starting.');" );
             thisBuffer.AppendLine( "chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "  rangeSelector:" );
             thisBuffer.AppendLine( "  {" );
@@ -453,9 +463,8 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "    }]," );
             thisBuffer.AppendLine( "  tooltip:" );
             thisBuffer.AppendLine( "  {" );
-            thisBuffer.AppendLine( "    headerFormat: '<span style=\"font-size: 10px\">{point.key}</span><table>'," );
-            thisBuffer.AppendLine( $"    pointFormat: '<tr><td style=\"color: {{series.color}}; padding: 0\">{{series.name}}: </td><td style=\"padding: 0\"><b>{{point.y:.2f}} {Sup.StationTemp.Text()}</b></td></tr>'," );
-            thisBuffer.AppendLine( "    footerFormat: '</table>'," );
+            thisBuffer.AppendLine( $"    headerFormat: '<b>{Sup.GetCUstringValue( "Graphs", "GrowingDegreeDaysTitle", "", true )}:</b><br/>'," );
+            thisBuffer.AppendLine( $"    pointFormatter() {{ return '<span style=\"color: ' + this.color + '\">' + DayNumber2Date(this.x, this.series.name) + '</span>: ' + this.y + ' {Sup.StationTemp.Text()}<br/>' }}," );
             thisBuffer.AppendLine( "    shared: true," );
             thisBuffer.AppendLine( "    useHTML: true" );
             thisBuffer.AppendLine( "  }," );
@@ -697,6 +706,7 @@ namespace CumulusUtils
 
             SeasonList.Reverse();
 
+            thisBuffer.AppendLine( "console.log('Thermal Seasons Chart starting.');" );
             thisBuffer.AppendLine( "chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "  rangeSelector:{enabled: false}," );
             thisBuffer.AppendLine( "  chart:{type: 'bar'}, " );
@@ -731,7 +741,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "  }," );
             thisBuffer.AppendLine( "  tooltip:" );
             thisBuffer.AppendLine( "  {" );
-            thisBuffer.AppendLine( "    headerFormat: '<span style=\"font-size: 10px\">{point.key}</span><table>'," );
+            thisBuffer.AppendLine( "    headerFormat: '<b><span style=\"font-size: 10px\">{point.key}</span></b><table>'," );
             thisBuffer.AppendLine( $"    pointFormat: '<tr><td style=\"color: {{series.color}}; padding: 0\">{{series.name}}: </td><td style=\"padding: 0\"><b>{{point.y:.0f}}</b></td></tr>'," );
             thisBuffer.AppendLine( "    footerFormat: '</table>'," );
             thisBuffer.AppendLine( "    shared: true," );
@@ -803,6 +813,7 @@ namespace CumulusUtils
             // First generate the general HTML and Graph chartcontainer stuff,
             // Then generate the dataseries.
 
+            thisBuffer.AppendLine( "console.log('Clash of Averages Chart starting.');" );
             thisBuffer.AppendLine( "chart = Highcharts.stockChart('chartcontainer', {" );
 
             string tmp = Sup.GetUtilsIniValue( "Graphs", "GraphColors", graphColors );
@@ -843,7 +854,6 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "    headerFormat: '<span style=\"font-size: 10px\">{point.key}</span><table>'," );
             thisBuffer.AppendLine( $"    pointFormat: '<tr><td style=\"color: {{series.color}}; padding: 0\">{{series.name}}: </td><td style=\"padding: 0\"><b>{{point.y:.2f}} {Sup.StationTemp.Text()}</b></td></tr>'," );
             thisBuffer.AppendLine( "    footerFormat: '</table>'," );
-            thisBuffer.AppendLine( "    shared: true," );
             thisBuffer.AppendLine( "    useHTML: true" );
             thisBuffer.AppendLine( "  }," );
             thisBuffer.AppendLine( "legend:" );
