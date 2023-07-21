@@ -153,7 +153,6 @@ namespace CumulusUtils
                 Country = Locale.Substring( 3, 2 ).ToUpper( CUtils.Inv );
 
                 CUtils.ThisCulture = CultureInfo.GetCultureInfo( Locale );
-                CultureInfo.DefaultThreadCurrentCulture = CUtils.ThisCulture;
             }
             catch (Exception e ) when ( e is CultureNotFoundException )
             {
@@ -166,7 +165,6 @@ namespace CumulusUtils
                 Country = "GB";
 
                 CUtils.ThisCulture = CultureInfo.GetCultureInfo( Locale );
-                CultureInfo.DefaultThreadCurrentCulture = CUtils.ThisCulture;
             }
             catch (Exception e )
             {

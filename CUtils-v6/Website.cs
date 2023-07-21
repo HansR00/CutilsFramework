@@ -54,9 +54,9 @@ namespace CumulusUtils
 
     class Website
     {
-        private readonly string[] Package = new string[] {"index.html", "cumulusutils.js","cumuluscharts.txt","gauges.js","HighchartsDefaults.js","HighchartsLanguage.js",
-                                     "suncalc.js","tween.min.js", "steelseries.min.js","RGraph.rose.js","RGraph.common.core.js","language.js",
-                                     "gauges-ss.css"};
+        private readonly string[] Package = new string[] {"index.html", "cumulusutils.js","cumuluscharts.txt","CUgauges.js","HighchartsDefaults.js","HighchartsLanguage.js",
+                                     "suncalc.js","CUtween.min.js", "CUsteelseries.min.js","CURGraph.rose.js","CURGraph.common.core.js","CUlanguage.js",
+                                     "CUgauges-ss.css"};
 
         private readonly string[] PanelsConfiguration;
 
@@ -525,18 +525,18 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     "" );
 
                 indexFile.Append( "<!--STEELSERIES-->" +
-                    "<link href='css/gauges-ss.css' rel='stylesheet'/>" +
+                    "<link href='css/CUgauges-ss.css' rel='stylesheet'/>" +
 
                     "<script defer src='lib/suncalc.js'></script>" +
 
                     //          "<script src='lib/tween.js'></script>" +
                     //          "<script src='lib/steelseries.js'></script>" +
-                    "<script defer src='lib/tween.min.js'></script>" +
-                    "<script defer  src='lib/steelseries.min.js'></script>" +
+                    "<script defer src='lib/CUtween.min.js'></script>" +
+                    "<script defer  src='lib/CUsteelseries.min.js'></script>" +
 
-                    "<script defer  src='lib/RGraph.common.core.js'></script>" +
-                    "<script defer  src='lib/RGraph.rose.js'></script>" +
-                    "<script defer  src='lib/language.js'></script>" +
+                    "<script defer  src='lib/CURGraph.common.core.js'></script>" +
+                    "<script defer  src='lib/CURGraph.rose.js'></script>" +
+                    "<script defer  src='lib/CUlanguage.js'></script>" +
 
                     "<!--- Other utility includes of my own making -->" +
                     "<script defer src='lib/HighchartsDefaults.js'></script>" +
@@ -607,7 +607,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "  $('#Dashboard').show();" +
                   "  $('#Gauges').hide();" +
                   "  $('#ExtraAndCustom').hide();" +
-                  "  Promise.allSettled([ $.getScript('lib/gauges.js'), LoadCUsermenu('CUsermenu.txt'), LoadCUserAbout('CUserAbout.txt'), LoadUtilsReport('cumuluscharts.txt', true)])" +
+                  "  Promise.allSettled([ $.getScript('lib/CUgauges.js'), LoadCUsermenu('CUsermenu.txt'), LoadCUserAbout('CUserAbout.txt'), LoadUtilsReport('cumuluscharts.txt', true)])" +
                   "    .then(() => { " +
                   "      loadRealtimeTxt();" +
                  $"      RT_timer = setInterval(loadRealtimeTxt, {Sup.GetUtilsIniValue( "Website", "CumulusRealTimeInterval", "15" )} * 1000);" +

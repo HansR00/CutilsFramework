@@ -482,7 +482,7 @@ namespace CumulusUtils
             else // Fahrenheit
             {
                 thisBuffer.AppendLine( $"  min: 0," );
-                thisBuffer.AppendLine( $"  max: 120," );
+                thisBuffer.AppendLine( $"  max: 100," );
             }
 
             thisBuffer.AppendLine( "}," );

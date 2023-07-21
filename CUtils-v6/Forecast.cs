@@ -121,9 +121,6 @@ namespace CumulusUtils
                             $"<a href='https://www.ecmwf.int/'>ECMWF</a>.</div>" );
                     }
                 }
-
-                return;
-
             }
             else if ( ForecastSystem.Equals( "Norway", CUtils.Cmp ) )
             {
@@ -145,7 +142,6 @@ namespace CumulusUtils
                     // moved width='1000' height='650' to style
                     of.WriteLine( $"<iframe src='{NorwayPredictionURL}' frameborder='0' style='margin: 10px 0 10px 0; width:1000px; height:700px' scrolling='no'></iframe>" );
                 }
-                return;
             }
             else if ( ForecastSystem.Equals( "WXSIM", CUtils.Cmp ) )
             {
@@ -164,7 +160,6 @@ namespace CumulusUtils
                 {
                     of.WriteLine( $"<iframe src='{WxsimPredictionURL}' frameborder='0' style='border: 0;width:100%; height: 75vh;'></iframe>" );
                 }
-                return;
             }
             else if ( ForecastSystem.Equals( "SPOTWX", CUtils.Cmp ) )
             {
@@ -188,14 +183,14 @@ namespace CumulusUtils
                 {
                     of.WriteLine( $"<iframe src='{SpotwxPredictionURL}' frameborder='0' style='border: 0; width:100%; height: 75vh;'></iframe>" );
                 }
-                return;
             }
             else
             {
                 Sup.LogTraceErrorMessage( $"Prediction : Illegal Forecast system defined - {ForecastSystem}." );
                 Sup.LogTraceErrorMessage( "Prediction : Impossible to continue, exiting procedure." );
-                return;
             }
+
+            return;
         }
 
         private bool CreateSevenDayPrediction( string XMLresult )
