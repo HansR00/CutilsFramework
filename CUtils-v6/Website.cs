@@ -26,7 +26,6 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using ServiceStack.Text;
 
 //
 // Remember minification: 
@@ -367,7 +366,7 @@ The tool is constructed in C# and javascript by &copy; Hans Rottier, on the basi
 <li><a href='https://getbootstrap.com/'>Bootstrap</a> - License: <a href='https://github.com/twbs/bootstrap/blob/v4.4.1/LICENSE'>MIT</a>;</li>
 </ul>
 
-If I forgot anybody or anything or made the wrong interpretation or reference, please let me know and I will correct. You can contact me at the <a href='https://cumulus.hosiene.co.uk/viewtopic.php?f=14&t=17573'>Cumulus Support Forum</a>, user: HansR" +
+If I forgot anybody or anything or made the wrong interpretation or reference, please let me know and I will correct. You can contact me at the <a href='https://cumulus.hosiene.co.uk/viewforum.php?f=44'>Cumulus Support Forum</a>, user: HansR" +
                   "  </div>" +
                   "  <div class='modal-footer'>" +
                   $"    <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>{Sup.GetCUstringValue( "Website", "Close", "Close", false )}</button>" +
@@ -738,7 +737,8 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "  else DoStationMap = false;" +
                  $"  if (ReportName == '{Sup.MeteoCamOutputFilename}') DoWebCam = true;" +
                   "  else DoWebCam = false;" +
-                 $"  if (ReportName != '{Sup.ExtraSensorsOutputFilename}' && ReportName != '{Sup.ExtraSensorsCharts}') {{ " +
+                 $"  if ( ReportName != '{Sup.ExtraSensorsOutputFilename}' && ReportName != '{Sup.ExtraSensorsCharts}' &&" +
+                 $"       ReportName != '{Sup.CustomLogsOutputFilename}' && ReportName != '{Sup.CustomLogsCharts}' ) {{ " +
                   "    if ($('#ExtraAndCustom').is (':visible') ) {" +
                   "      $('#ExtraAndCustom').hide();" +
                   "      $('#Dashboard').show();" +
@@ -1337,7 +1337,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                           "}" +
                           "" );
 
-                CUlibFile.Append( 
+                CUlibFile.Append(
                           "function DayNumber2Date(dayNumber, year){" +
                           "  const date = new Date( year, 0, dayNumber );" +
                           $"  return date.toLocaleDateString('{Sup.Locale}');" +
@@ -2782,7 +2782,13 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 WriteReportsMenu( tmpMenu ); tmpMenu.Append( "</ul></li>" );
                 WriteGraphsMenu( tmpMenu ); tmpMenu.Append( "</ul></li>" );
                 WriteRecordsMenu( tmpMenu ); tmpMenu.Append( "</ul></li>" );
-                WriteExtraMenu( tmpMenu ); tmpMenu.Append( "</ul></li>" );
+
+                // Prevent the menu to be generated if it is not required.
+                if ( CUtils.HasAirLink || CUtils.HasExtraSensors || CUtils.HasCustomLogs )
+                {
+                    WriteExtraMenu( tmpMenu ); tmpMenu.Append( "</ul></li>" );
+                }
+
                 WriteMiscellaneousMenu( tmpMenu ); tmpMenu.Append( "</ul></li>" );
                 WriteToggleMenu( tmpMenu );
                 WritePrintMenu( tmpMenu );

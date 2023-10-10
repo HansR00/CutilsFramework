@@ -58,8 +58,11 @@ namespace CumulusUtils
 
             string CMXport = Sup.GetUtilsIniValue( "General", "CMXport", "8998" );
 
+#if !RELEASE
+            CmxBaseURL = $"http://192.168.178.143:{CMXport}";
+#else
             CmxBaseURL = $"http://localhost:{CMXport}";
-            //CmxBaseURL = $"http://192.168.178.143:{CMXport}";
+#endif
         }
 
         public async Task<InfoFromCMX> GetCMXInfoAsync()

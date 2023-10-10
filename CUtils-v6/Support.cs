@@ -37,7 +37,7 @@ namespace CumulusUtils
     public class CuSupport : IDisposable
     {
         // Is it a version number beta shown at users?
-        const string beta = "";
+        const string beta = "beta 1";
 
         #region declarations
         public Wind StationWind { get; set; }
@@ -85,6 +85,9 @@ namespace CumulusUtils
         public string CutilsChartsDef { get; } = "CutilsCharts.def";
         public string CutilsMenuDef { get; } = "CutilsMenu.def";
         public string CUhelptexts { get; } = "CUhelptexts.txt";
+
+        public string DemarcationLineExtraSensors { get; } = "; ExtraSensorCharts";
+        public string DemarcationLineCustomLogs { get; } = "; CustomLogsCharts";
 
         private readonly IniFile Ini;           // that is: Cumulus.ini
         private readonly IniFile AtrIni;        // that is: data/alltime.ini
@@ -154,7 +157,7 @@ namespace CumulusUtils
 
                 CUtils.ThisCulture = CultureInfo.GetCultureInfo( Locale );
             }
-            catch (Exception e ) when ( e is CultureNotFoundException )
+            catch ( Exception e ) when ( e is CultureNotFoundException )
             {
                 LogDebugMessage( $" Invalid Locale : {Locale}" );
                 LogTraceErrorMessage( $" Invalid Culture : {e.Message}" );
@@ -166,7 +169,7 @@ namespace CumulusUtils
 
                 CUtils.ThisCulture = CultureInfo.GetCultureInfo( Locale );
             }
-            catch (Exception e )
+            catch ( Exception e )
             {
                 // Hope we never get here
                 LogDebugMessage( $" Unknown exceeption - Invalid Culture : {e.Message}" );
@@ -333,11 +336,38 @@ namespace CumulusUtils
 
         public static string StationInUse( int i )
         {
-            string[] StationDesc = { "Davis Vantage Pro", "Davis Vantage Pro2", "Oregon Scientific WMR-928", "Oregon Scientific WM-918", "EasyWeather",
-                "Fine Offset", "LaCrosse WS2300", "Fine Offset with Solar", "Oregon Scientific WMR100", "Oregon Scientific WMR200", "Instromet", "Davis WLL", "GW1000",
-                "HTTP WUnderground", "HTTP Ecowitt", "HTTP Ambient", "WeatherFlow Tempest" };
+            //string[] StationDesc = { "Davis Vantage Pro", "Davis Vantage Pro2", "Oregon Scientific WMR-928", "Oregon Scientific WM-918", "EasyWeather",
+            //    "Fine Offset", "LaCrosse WS2300", "Fine Offset with Solar", "Oregon Scientific WMR100", "Oregon Scientific WMR200", "Instromet", "Davis WLL", "GW1000",
+            //    "HTTP WUnderground", "HTTP Ecowitt", "HTTP Ambient", "WeatherFlow Tempest" };
 
-            if ( i > StationDesc.Length - 1 )
+            //"enum": [-1,17,0,1,11,19,20,12,18,14,13,15,16,5,7,4,10,6,8,9,3,2],
+
+            string[] StationDesc =
+            {
+                "Davis Vantage Pro",			// 0
+			    "Davis Vantage Pro2",			// 1
+			    "Oregon Scientific WMR-928",	// 2
+			    "Oregon Scientific WM-918",		// 3
+			    "EasyWeather",					// 4
+			    "Fine Offset",					// 5
+			    "LaCrosse WS2300",				// 6
+			    "Fine Offset with Solar",		// 7
+			    "Oregon Scientific WMR100",		// 8
+			    "Oregon Scientific WMR200",		// 9
+			    "Instromet",					// 10
+			    "Davis WLL",					// 11
+			    "GW1000/Ecowitt Local API",		// 12 - the only name changed, CMX uses GW1000 and local API in the interface
+			    "HTTP WUnderground",			// 13
+			    "HTTP Ecowitt",					// 14
+			    "HTTP Ambient",					// 15
+			    "WeatherFlow Tempest",			// 16
+			    "Simulator",					// 17
+                "Davis WeatherLink Cloud (WLL/WLC)",  // 18
+                "Davis WeatherLink Cloud (VP2)",      // 19
+                "Ecowitt Cloud"                 // 20
+            };
+
+            if ( i < 0 || i > StationDesc.Length - 1 )
                 return "Unknown Station";
             else
                 return StationDesc[ i ];
@@ -370,7 +400,7 @@ namespace CumulusUtils
 
             _ver = String.Format( CUtils.Inv, $"<a href='https://cumulus.hosiene.co.uk/viewtopic.php?f=44&t=17998' target='_blank'>CumulusUtils</a> " +
                                   $"Version {_ver} " + beta +
-                                  $" - generated at " + DateTime.Now.ToString( "g", CUtils.ThisCulture) );  // .ToString( "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture )
+                                  $" - generated at " + DateTime.Now.ToString( "g", CUtils.ThisCulture ) );  // .ToString( "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture )
 
             return _ver;
         }
@@ -398,7 +428,7 @@ namespace CumulusUtils
             string SpecificHighchartsVersion = GetUtilsIniValue( "General", "UseSpecificHighchartsVersion", "" );
             bool UseHighchartsBoostModule = GetUtilsIniValue( "Graphs", "UseHighchartsBoostModule", "true" ).Equals( "true", CUtils.Cmp );
 
-            if (string.IsNullOrEmpty(SpecificHighchartsVersion))
+            if ( string.IsNullOrEmpty( SpecificHighchartsVersion ) )
             {
                 sb.AppendLine( "<script src='https://code.highcharts.com/stock/highstock.js'></script>" );
                 sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/highcharts-more.js\"></script>" );

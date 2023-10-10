@@ -26,7 +26,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-//using static CumulusUtils.ExtraSensors;
 
 namespace CumulusUtils
 {
@@ -44,6 +43,9 @@ namespace CumulusUtils
 
         public WebtagInfo WebTags { get; set; }
         public List<CustomLog> CustomLogsList = new();
+
+        public int TotalNrOfCustomLogs = 0;
+        public int TotalNrOfWebtags = 0;
 
         readonly CuSupport Sup;
 
@@ -77,6 +79,7 @@ namespace CumulusUtils
                     };
 
                     CustomLogsList.Add( tmp );
+                    TotalNrOfCustomLogs += 1;
                 }
                 else if ( IntervalEnabled.Equals( "0" ) ) continue;     // take next entry (if it exists)
                 else break;                                             // No more Interval Custom Logs, the Enabled value must  be empty
@@ -101,6 +104,7 @@ namespace CumulusUtils
                     };
 
                     CustomLogsList.Add( tmp );
+                    TotalNrOfCustomLogs += 1;
                 }
                 else if ( DailyEnabled.Equals( "0" ) ) continue;    // take next entry (if it exists)
                 else break;                                         // No more Daily Custom Logs, the Enabled value must  be empty
@@ -141,9 +145,11 @@ namespace CumulusUtils
                     }
                     else break; // no (more) webtags found
                 } while ( CurrentIndex < thisLog.Content.Length );
+
+                TotalNrOfWebtags += thisLog.TagsRaw.Count;
             }
 
-            Sup.LogTraceInfoMessage( "Extra Sensors constructor: stop" );
+            Sup.LogTraceInfoMessage( "Custom Logs constructor: stop" );
 
             return;
         }
@@ -155,8 +161,10 @@ namespace CumulusUtils
         {
             Sup.LogDebugMessage( "DoCustomLogs - Start" );
 
-            // I: create the extrasensorsrealtime.txt which has to be processed by CMX and transferred to the webroot.
-            // 
+            // I: create the customlogsrealtime.txt which has to be processed by CMX and transferred to the webroot.
+            // II: Create the charts to be compiled by the chartscompiler
+            // III: generate the  module which rules it all
+            //
             GenerateCustomLogsRealtime();
             GenerateCustomLogsCharts();
             GenerateCustomLogsModule();
@@ -176,6 +184,7 @@ namespace CumulusUtils
                 #region Javascript
 
                 StringBuilder sb = new StringBuilder();
+                string prefix;
 
                 Sup.LogDebugMessage( $"GenerateCustomLogsModule: Generating the Module Javascript code..." );
 
@@ -216,7 +225,7 @@ namespace CumulusUtils
                     ".fail(function(jqXHR, responseStatus){ console.log('ajax call: ' + responseStatus) });" );
                 sb.AppendLine( "}" );
 
-                sb.AppendLine( $"var oldobsExtra = [ {CustomLogsList.Count} ]; " );
+                sb.AppendLine( $"var oldobsCustomLogs = [ {TotalNrOfWebtags} ]; " );
                 sb.AppendLine( "function DoCustomLogsRT(input) {" );
                 sb.AppendLine( "  var CustomLogsRT = input.split(' ');" );
 
@@ -224,16 +233,18 @@ namespace CumulusUtils
 
                 foreach ( CustomLog tmp in CustomLogsList )
                 {
+                    prefix = tmp.Frequency == -1 ? "Daily" : "";
+
                     foreach ( string thisTag in tmp.TagNames )
                     {
-                        sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
-                        sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                        sb.AppendLine( $"    $('#ajxCustomLogs{thisTag}').html(ExtraSensorRT[ {i} ] + ' {WebTags.GetTagUnit( thisTag )}');" );
-                        sb.AppendLine( $"    $('#ajxCustomLogs{thisTag}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                        sb.AppendLine( $"  if ( oldobsCustomLogs[{i}] != CustomLogsRT[{i}]) {{" );
+                        sb.AppendLine( $"    oldobsCustomLogs[{i}] = CustomLogsRT[{i}];" );
+                        sb.AppendLine( $"    $('#ajxCustomLogs{prefix}{thisTag}').html(CustomLogsRT[ {i} ] + ' {WebTags.GetTagUnit( thisTag )}');" );
+                        sb.AppendLine( $"    $('#ajxCustomLogs{prefix}{thisTag}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
                         sb.AppendLine( "  }" );
-                    }
 
-                    i++;
+                        i++;
+                    }
                 }
 
                 sb.AppendLine( "  setTimeout( 'CustomLogsClearChangeIndicator()', 3000 );" );
@@ -266,21 +277,41 @@ namespace CumulusUtils
                 }
 
                 buf.Append( $"<style>.centerItem {{width: 80%; max-height: 80vh; margin: 6vh auto;overflow-y: auto; }}</style>" );
+
                 buf.Append( $"<div class='centerItem' style='text-align:left;'><table style='width:100%'>" );
                 buf.Append( $"<tr " +
                     $"style='background-color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarBackground", "#C5C55B" )}; " +
                     $"color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarText", "White" )}; width:100%'>" );
-                buf.Append( $"<th {thisPadding()}>Sensor name</th><th>Value</th></tr>" );
+                buf.Append( $"<th {thisPadding()}>{Sup.GetCUstringValue( "CustomLogs", "WebtagName", "Webtag Name", false )}</th>" +
+                    $"<th>{Sup.GetCUstringValue( "CustomLogs", "RecentValue", "RECENT Value", false )}</th></tr>" );
+
+                bool RecentDone = false;
+                prefix = "";
 
                 foreach ( CustomLog tmp in CustomLogsList )
                 {
+                    if ( tmp.Frequency == -1 && !RecentDone )
+                    {
+                        // End the table and start a new one
+                        buf.Append( "</table></div>" );
+
+                        buf.Append( $"<div class='centerItem' style='text-align:left;'><table style='width:100%'>" );
+                        buf.Append( $"<tr " +
+                            $"style='background-color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarBackground", "#C5C55B" )}; " +
+                            $"color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarText", "White" )}; width:100%'>" );
+                        buf.Append( $"<th {thisPadding()}>{Sup.GetCUstringValue( "CustomLogs", "WebtagName", "Webtag Name", false )}</th>" +
+                            $"<th>{Sup.GetCUstringValue( "CustomLogs", "DailyValue", "DAILY Value", false )}</th></tr>" );
+
+                        RecentDone = true;
+                        prefix = "Daily";
+                    }
+
                     buf.Append( $"<tr {RowColour()}><td {thisPadding()}>{tmp.Name}:</td><td></td></tr>" );
                     foreach ( string thisTag in tmp.TagNames )
                     {
-                        buf.Append( $"<tr {RowColour()} onclick='Do{thisTag}();'><td {thisPadding()}>{thisTag}</td><td id='ajxCustomLogs{thisTag}'></td></tr>" );
+                        buf.Append( $"<tr {RowColour()} onclick='Do{thisTag}();'><td {thisPadding()}>&nbsp;&nbsp;{thisTag}</td><td id='ajxCustomLogs{prefix}{thisTag}'></td></tr>" );
                     }
                 }
-
 
                 buf.Append( "</table></div>" );
                 sb.AppendLine( $"  $('#ExtraAndCustom').html(\"{buf}\");" );
@@ -307,7 +338,7 @@ namespace CumulusUtils
             {
                 StringBuilder sb = new StringBuilder();
 
-                Sup.LogDebugMessage( $"GenerateExtraSensorsRealtime: Writing the CustomLogs realtime file for the actual valid tags found" );
+                Sup.LogDebugMessage( $"GenerateCustomLogsRealtime: Writing the CustomLogs realtime file for the actual valid tags found" );
 
                 foreach ( CustomLog tmp in CustomLogsList )
                 {
@@ -321,6 +352,8 @@ namespace CumulusUtils
 
                 of.Write( sb );
             }
+
+            return;
         }
 
         #endregion
@@ -329,14 +362,10 @@ namespace CumulusUtils
 
         public void GenerateCustomLogsCharts()
         {
-            const string DemarcationLineCustomLogs = "; CustomLogsCharts";
-            //const string DemarcationLineExtraSensors = "; ExtraSensorCharts";
-
             bool OutputWritten = false;
-            bool DemarcationLineFound = false;
-            int i, j;
+            int i;
 
-            string[] CutilsChartsIn, CutilsChartsOut;
+            string[] CutilsChartsIn;
             List<string> CutilsChartsMods;
 
             Sup.LogDebugMessage( $"GenerateCustomLogCharts: Generating the CustomLogs Charts CDL code into {Sup.PathUtils}{Sup.CutilsChartsDef}..." );
@@ -356,60 +385,46 @@ namespace CumulusUtils
 
             for ( i = 0; i < CutilsChartsIn.Length; i++ )
             {
-                if ( CutilsChartsIn[ i ].Contains( DemarcationLineCustomLogs ) )
+                if ( CutilsChartsIn[ i ].Contains( Sup.DemarcationLineCustomLogs ) && i < CutilsChartsIn.Length )
                 {
-                    if ( i < CutilsChartsIn.Length - 1 )
-                    {
-                        for ( j = CutilsChartsIn.Length - 1; j > i; j-- )
-                        {
-                            CutilsChartsIn = CutilsChartsIn.RemoveAt( j );
-                        }
-                    }
-                    DemarcationLineFound = true;
+                    for ( ; i < CutilsChartsIn.Length && !CutilsChartsIn[ i ].Contains( Sup.DemarcationLineExtraSensors ); )
+                        CutilsChartsIn = CutilsChartsIn.RemoveAt( i );
+
+                    if ( i >= CutilsChartsIn.Length || CutilsChartsIn[ i ].Contains( Sup.DemarcationLineExtraSensors ) ) break;
                 }
             }
 
             CutilsChartsMods = CutilsChartsIn.ToList();
-            if ( !DemarcationLineFound )
-                CutilsChartsMods.Add( DemarcationLineCustomLogs );
 
-            // Now the road is clear to add the charts from the list of plotparameters per class (Temp, Humidity etc....
-            //ExtraSensorType currentType;
+            CutilsChartsMods.Add( Sup.DemarcationLineCustomLogs );
             CutilsChartsMods.Add( "" );
 
-            for ( i = 0; i < CustomLogsList.Count; )
+            foreach ( CustomLog thisLog in CustomLogsList )
             {
-                //string thisKeyword;
+                CutilsChartsMods.Add( $"Chart {thisLog.Name} Title " +
+                    $"{Sup.GetCUstringValue( "CustomLogs", "Trend chart of CustomLog", "Trend chart of CustomLog", true )} " +
+                    $"{thisLog.Name} " );
 
-                //CutilsChartsMods.Add( $"Chart Extra{CustomLogsList[ i ].Type} Title " +
-                //    $"{Sup.GetCUstringValue( "ExtraSensors", "Trend chart of Extra", "Trend chart of Extra", true )} " +
-                //    $"{CustomLogsList[ i ].Type} " +
-                //    $"{Sup.GetCUstringValue( "ExtraSensors", "Sensors", "Sensors", true )}" );
+                foreach ( string thisTagName in thisLog.TagNames )
+                {
+                    // Note: the webtag names have been added to the compiler in the declarations contructor
+                    //       the names are formed {logname}{tagname} so the webtag can be used in more than one chart. 
+                    //       For the same webtag with different modifiers currently two charts are required. Maybe in future the same webtag 
+                    //       can be used more often with different modifiers in the same chart... wishlist.
+                    if ( thisLog.Frequency == -1 ) // Meaning a DAILY log
+                        CutilsChartsMods.Add( $"  PLOT DAILY {thisLog.Name}{thisTagName}" );
+                    else
+                        CutilsChartsMods.Add( $"  PLOT EXTRA {thisLog.Name}{thisTagName}" );
 
-                //while ( i < CustomLogsList.Count && ( CustomLogsList[ i ].Type == currentType || thisKeyword.Substring( 0, 3 ).Equals( "CO2", CUtils.Cmp ) ) )
-                //{
-                //    if ( ExtraSensorList[ i ].Type == ExtraSensorType.External ) thisKeyword = ExtraSensorList[ i ].Name;
-                //    else thisKeyword = ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ];
-
-                //    Sup.LogTraceInfoMessage( $"GenerateExtraSensorsCharts: Adding Sensor: {thisKeyword}" );
-
-                //    CutilsChartsMods.Add( $"  Plot Extra {thisKeyword}" );
-                //    _ = Sup.GetCUstringValue( "Compiler", thisKeyword, ExtraSensorList[ i ].Name, false );
-
-                //    i++;
-
-                //    if ( currentType == ExtraSensorType.AirQuality ) // Then the next item must be AirQualityAvg (that's how it's constructed
-                //    {
-                //        CutilsChartsMods.Add( $"  Plot Extra {ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ]}" );
-                //        Sup.GetCUstringValue( "Compiler", ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ], ExtraSensorList[ i ].Name, false );
-
-                //        i++;
-                //    }
-                //}
+                    // Set the string for meaning and translation. The user will have to modify this after initial creation to make sense of the chart.
+                    // 
+                    string tmp = thisLog.Name + thisTagName;
+                    //Sup.GetCUstringValue( "CustomLogs", tmp, tmp, false );
+                }
 
                 if ( !OutputWritten )
                 {
-                    CutilsChartsMods.Add( $"EndChart Output {Sup.ExtraSensorsCharts}" );
+                    CutilsChartsMods.Add( $"EndChart Output {Sup.CustomLogsCharts}" );
                     OutputWritten = true;
                 }
                 else
@@ -418,10 +433,256 @@ namespace CumulusUtils
                 CutilsChartsMods.Add( "" );
             }
 
-            //Sup.LogDebugMessage( $"GenerateExtraSensorsCharts: Writing the CutilsCharts.def" );
-            //File.WriteAllLines( $"{Sup.PathUtils}{Sup.CutilsChartsDef}", CutilsChartsMods, Encoding.UTF8 );
+            Sup.LogDebugMessage( $"GenerateCustomLogsCharts: Writing the CutilsCharts.def" );
+            File.WriteAllLines( $"{Sup.PathUtils}{Sup.CutilsChartsDef}", CutilsChartsMods, Encoding.UTF8 );
 
             return;
+        }
+
+        #endregion
+
+        #region GenerateCustomLogsDataJson
+
+        private struct CustomLogValue
+        {
+            public DateTime Date { get; set; }
+            public List<double> Value { get; set; }
+        }
+
+        public void GenerateCustomLogsDataJson()
+        {
+            DateTime Now = DateTime.Now;
+            Now = new DateTime( Now.Year, Now.Month, Now.Day, Now.Hour, Now.Minute, 0 );
+            DateTime timeEnd = Now.AddMinutes( -Now.Minute % Math.Max( CUtils.FTPIntervalInMinutes, CUtils.LogIntervalInMinutes ) );
+            DateTime timeStart;
+
+            if ( CUtils.Isup.IsIncrementalAllowed() )
+            {
+                try
+                {
+                    timeStart = DateTime.ParseExact( Sup.GetUtilsIniValue( "General", "LastUploadTime", "" ), "dd/MM/yy HH:mm", CUtils.Inv ).AddMinutes( 1 );
+                }
+                catch
+                {
+                    timeStart = timeEnd.AddHours( -CUtils.HoursInGraph );
+                }
+
+            }
+            else
+            {
+                timeStart = timeEnd.AddHours( -CUtils.HoursInGraph );
+            }
+
+            Sup.LogTraceInfoMessage( $"CustomLogs GenerateCustomLogsDataJson: timeStart = {timeStart}; timeEnd = {timeEnd}" );
+
+            // Required for separate DAILY JSON files... not (yet) implemented
+            //_ = DateTime.TryParse( Sup.GetUtilsIniValue( "CustomLogs", "DoneToday", $"{Now.AddDays( -1 ):s}" ), out DateTime DoneToday );
+            //Sup.LogTraceInfoMessage( $"GCustomLogs GenerateCustomLogsDataJson: DoneToday = {DoneToday}." );
+            //bool DoDailyAsWell = !Sup.DateIsToday( DoneToday );
+
+            // Purpose is to create the JSON for the CustomLogs data and offering the possibility to do only that to accomodate the fact that
+            // CMX does not (and probably will never) generate that JSON like it generates the temperature JSON for graphing.
+            // CumulusUtils will only generate the CustomLogs JSON by issueing the command: "./utils/bin/cumulusutils.exe UserAskedData"
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append( "{" );
+
+            // Fill the json with the variables needed:
+            // 1) Read the logfile belonging to one Custom Log and write the values in the list.
+            // 2) Don't use more than the nr of hrs as defined in parameter [Graphs] / GraphHours
+            // 3) prefix the webtag name with the table name: that is how they are known to the compiler
+            // 4) the date/time format is dd-mm-yy;hh:mm; (the semicolons are CMX generated as are the formats).
+
+            List<CustomLogValue> thisList;
+
+            foreach ( CustomLog thisLog in CustomLogsList )
+            {
+                if ( thisLog.Frequency == -1 ) thisList = ReadDailyCustomLog( thisLog ); // Activate this if we use another JSON for the DAILY CustomLogs
+                else thisList = ReadRecentCustomLog( thisLog, timeStart, timeEnd );
+
+                Sup.LogTraceInfoMessage( $"CustomLogs GenerateCustomLogsDataJson: Doing {thisLog.Name}" );
+
+                for ( int i = 0; i < thisLog.TagNames.Count; i++ )
+                {
+                    sb.Append( $"\"{thisLog.Name}{thisLog.TagNames[ i ]}\":[" );
+
+                    foreach ( CustomLogValue entry in thisList )
+                        sb.Append( $"[{CuSupport.DateTimeToJS( entry.Date )},{entry.Value[ i ].ToString( "F1", CUtils.Inv )}]," );
+
+                    sb.Remove( sb.Length - 1, 1 );
+                    sb.Append( $"]," );
+                }
+            }
+
+            sb.Remove( sb.Length - 1, 1 );
+            sb.Append( "}" );
+
+            using ( StreamWriter thisJSON = new StreamWriter( $"{Sup.PathUtils}{Sup.CustomLogsJSON}", false, Encoding.UTF8 ) )
+            {
+                thisJSON.WriteLine( sb.ToString() );
+            }
+
+            return;
+        }
+
+        private List<CustomLogValue> ReadRecentCustomLog( CustomLog thisLog, DateTime Start, DateTime End )
+        {
+            Sup.LogTraceInfoMessage( $"CustomLogs ReadRecentCustomLog: {thisLog.Name}" );
+
+            bool PeriodComplete = false, NextFileTried = false;
+            bool WarningWritten = false;
+
+            char thisSeparator = '.';
+
+            string FilenamePostFix = Start.Date.ToString( "-yyyyMM" ) + ".txt";
+            string DateTimeText, ValuesAsText;
+            string[] ValuesAsTextArray;
+
+            CustomLogValue tmp = new CustomLogValue();
+            List<CustomLogValue> thisList = new List<CustomLogValue>();
+
+            while ( !PeriodComplete )
+            {
+                string fullFilename = "data/" + thisLog.Name + FilenamePostFix;
+                string copyFilename = "data/copy_" + thisLog.Name + FilenamePostFix;
+                Sup.LogTraceInfoMessage( $"CustomLogs ReadRecentCustomLog: {fullFilename} - Start: {Start} ; End: {End} ;" );
+
+                if ( File.Exists( copyFilename ) ) File.Delete( copyFilename );
+                File.Copy( fullFilename, copyFilename );
+
+                string[] allLines = File.ReadAllLines( copyFilename );
+                thisSeparator = allLines[ 0 ].Contains( thisSeparator ) ? ',' : '.';
+
+                for ( int i = 0; i < allLines.Length; i++ )
+                {
+                    DateTimeText = allLines[ i ].Substring( 0, 14 ); // DateTimeText[ 8 ] = ' ';
+                    tmp.Date = DateTime.ParseExact( DateTimeText, "dd-MM-yy;HH:mm", CUtils.Inv );
+                    if ( tmp.Date < Start ) continue;
+
+                    ValuesAsText = CuSupport.StringRemoveWhiteSpace( allLines[ i ].Substring( 15 ), " " );
+                    ValuesAsTextArray = ValuesAsText.Trim( new char[] { ' ' } ).Split( new char[] { ' ' } );
+                    tmp.Value = new List<double>();
+
+                    if ( thisLog.TagNames.Count() != ValuesAsTextArray.Count() )
+                    {
+                        if ( !WarningWritten )
+                        {
+                            Sup.LogTraceWarningMessage( $"CustomLogs : There are more/less webtags than values in the log on line {i}: {allLines[ i ]}" );
+                            Sup.LogTraceWarningMessage( $"CustomLogs : The chart may not be what you want, please correct the content of the datafile. Continuing..." );
+                            WarningWritten = true;
+                        }
+
+                        continue;
+                    }
+
+                    for ( int j = 0; j < ValuesAsTextArray.Length; j++ )
+                    {
+                        try
+                        {
+                            tmp.Value.Add( Convert.ToDouble( ValuesAsTextArray[ j ] ) ); // Use the local separator assuming it is the same as for CMX in writing
+                        }
+                        catch ( Exception e )
+                        {
+                            Sup.LogTraceErrorMessage( $"CustomLogs ReadRecentCustomLog: Cannot parse value in CustomLog {fullFilename}" );
+                            Sup.LogTraceErrorMessage( $"CustomLogs ReadRecentCustomLog: {e.Message}" );
+                            break;
+                        }
+                    }
+
+                    thisList.Add( tmp );
+                }
+
+                // handle a possible file boundary
+                if ( File.Exists( copyFilename ) ) File.Delete( copyFilename );
+
+                Sup.LogTraceInfoMessage( $"CustomLogs ReadRecentCustomLog: Deciding: tmp.Date: {tmp.Date} ; End: {End} ; thisList.Last: {thisList.Last().Date}" );
+
+                if ( tmp.Date >= End || NextFileTried )
+                {
+                    Sup.LogTraceInfoMessage( $"CustomLogs ReadRecentCustomLog: Finished reading the log at {tmp.Date}" );
+                    PeriodComplete = true;
+                }
+                else
+                {
+                    NextFileTried = true;
+
+                    FilenamePostFix = Start.Date.AddMonths( 1 ).ToString( "-YYYYMM" ) + ".txt";
+                    Sup.LogTraceInfoMessage( $"CustomLogs ReadRecentCustomLog: Require the  next logfile: {thisLog.Name}" );
+
+                    if ( !File.Exists( "data/" + thisLog.Name + FilenamePostFix ) )
+                    {
+                        Sup.LogTraceErrorMessage( $"CustomLogs ReadRecentCustomLog: Require {thisLog.Name} to continue but it does not exist, continuing with next CustomsLog" );
+                        PeriodComplete = true;
+                    }
+                }
+            }
+
+            return thisList;
+        }
+
+        private List<CustomLogValue> ReadDailyCustomLog( CustomLog thisLog )
+        {
+            bool WarningWritten = false;
+            char thisSeparator = '.';
+
+            string FilenamePostFix = ".txt";
+            string DateTimeText, ValuesAsText;
+            string[] ValuesAsTextArray;
+
+            CustomLogValue tmp = new CustomLogValue();
+
+            List<CustomLogValue> thisList = new List<CustomLogValue>();
+
+            string fullFilename = "data/" + thisLog.Name + FilenamePostFix;
+            string copyFilename = "data/copy_" + thisLog.Name + FilenamePostFix;
+            Sup.LogTraceInfoMessage( $"CustomLogs ReadDailyLog: {fullFilename}" );
+
+            if ( File.Exists( copyFilename ) ) File.Delete( copyFilename );
+            File.Copy( fullFilename, copyFilename );
+
+            string[] allLines = File.ReadAllLines( copyFilename );
+            thisSeparator = allLines[ 0 ].Contains( thisSeparator ) ? ',' : '.';
+
+            for ( int i = 0; i < allLines.Length; i++ )
+            {
+                DateTimeText = allLines[ i ].Substring( 0, 8 ); // DateTimeText[ 8 ] = ' ';
+                tmp.Date = DateTime.ParseExact( DateTimeText, "dd-MM-yy", CUtils.Inv );
+
+                ValuesAsText = CuSupport.StringRemoveWhiteSpace( allLines[ i ].Substring( 9 ), " " );
+                ValuesAsTextArray = ValuesAsText.Split( new char[] { ' ' } );
+                tmp.Value = new List<double>();
+
+                if ( thisLog.TagNames.Count() != ValuesAsTextArray.Count() )
+                {
+                    if ( !WarningWritten )
+                    {
+                        Sup.LogTraceWarningMessage( $"CustomLogs : There are more/less webtags than values in the log on line {i}: {allLines[ i ]}" );
+                        Sup.LogTraceWarningMessage( $"CustomLogs : The chart may not be what you want, please correct the content of the datafile. Continuing..." );
+                        WarningWritten = true;
+                    }
+
+                    continue;
+                }
+
+                for ( int j = 0; j < ValuesAsTextArray.Length; j++ )
+                {
+                    try
+                    {
+                        tmp.Value.Add( Convert.ToDouble( ValuesAsTextArray[ j ] ) ); // Use the local separator assuming it is the same as for CMX in writing
+                    }
+                    catch ( Exception e )
+                    {
+                        Sup.LogTraceErrorMessage( $"CustomLogs GenerateCustomLogsDataJson: Cannot parse value in CustomLog {fullFilename}" );
+                        Sup.LogTraceErrorMessage( $"CustomLogs GenerateCustomLogsDataJson: {e.Message}" );
+                        break;
+                    }
+                }
+
+                thisList.Add( tmp );
+            }
+
+            return thisList;
         }
 
         #endregion
@@ -438,8 +699,10 @@ namespace CumulusUtils
 
         public string GetTagUnit( string name )
         {
-            int i = Array.FindIndex( Tagname, word => word.Equals( name, CUtils.Cmp ) );
-            return TagUnit[ i ];
+            //int i = Array.FindIndex( Tagname, word => word.Equals( name, CUtils.Cmp ) );
+            //return TagUnit[ i ];
+
+            return "";
         }
 
         public bool IsValidWebtag( string name )
@@ -456,7 +719,7 @@ namespace CumulusUtils
             if ( Start >= 0 )
             {
                 int b = s.IndexOf( ">", Start );
-                if ( b >= 0 ) { tmp = s.Substring( Start, b - Start + 1 ); Start = b + 1; }// startindex and length
+                if ( b > Start ) { tmp = s.Substring( Start, b - Start + 1 ); Start = b + 1; }// startindex and length
                 else tmp = null;
             }
             else tmp = null;

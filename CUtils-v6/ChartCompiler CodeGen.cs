@@ -748,7 +748,7 @@ namespace CumulusUtils
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.Distance ) && !AxisSet.HasFlag( AxisType.Distance ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Distance", "Distance", true )} " +
-                        $"({(string.IsNullOrEmpty(thisPlotvar.Unit) ? new Distance(DistanceDim.meter).Text() : thisPlotvar.Unit) })'}}," );
+                        $"({( string.IsNullOrEmpty( thisPlotvar.Unit ) ? new Distance( DistanceDim.meter ).Text() : thisPlotvar.Unit )})'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( $"softMax: 10,softMin: 0," );
                     buf.Append( "allowDecimals: false," );

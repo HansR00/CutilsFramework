@@ -27,7 +27,6 @@
  */
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 
 namespace CumulusUtils
@@ -520,7 +519,7 @@ namespace CumulusUtils
 
             if ( !string.IsNullOrEmpty( ExternalExtraSensors[ 0 ] ) )
             {
-
+                // There is a lot to optimize here I guess
                 foreach ( string thisExternal in ExternalExtraSensors )
                 {
                     List<string> tmpStr;
@@ -547,6 +546,73 @@ namespace CumulusUtils
                 }
             }
 
+            // Prepare for possible CustomLogs!
+
+            CustomLogs thisCustomLogs = new CustomLogs( Sup );
+
+            if ( thisCustomLogs.CustomLogsList.Count != 0 )
+            {
+                // There is a lot to optimize here I guess
+                foreach ( CustomLogs.CustomLog thisList in thisCustomLogs.CustomLogsList )
+                {
+                    if ( thisList.Frequency == -1 )
+                    {
+                        foreach ( string webtag in thisList.TagNames )
+                        {
+                            List<string> tmpStr;
+
+                            List<AxisType> tmp = PlotvarAxisALL.ToList();
+                            tmp.Add( AxisType.Free );
+                            PlotvarAxisALL = tmp.ToArray();
+
+                            tmpStr = PlotvarUnitsALL.ToList();
+                            tmpStr.Add( thisList.Name + webtag );
+                            PlotvarUnitsALL = tmpStr.ToArray();
+
+                            tmpStr = PlotvarTypesALL.ToList();
+                            tmpStr.Add( thisList.Name + webtag );
+                            PlotvarTypesALL = tmpStr.ToArray();
+
+                            tmpStr = PlotvarKeywordALL.ToList();
+                            tmpStr.Add( thisList.Name + webtag );
+                            PlotvarKeywordALL = tmpStr.ToArray();
+
+                            tmpStr = DatafilesALL.ToList();
+                            tmpStr.Add( "customlogsdata.json" );
+                            DatafilesALL = tmpStr.ToArray();
+                        }
+                    }
+                    else
+                    {
+                        foreach ( string webtag in thisList.TagNames )
+                        {
+                            List<string> tmpStr;
+
+                            List<AxisType> tmp = PlotvarAxisEXTRA.ToList();
+                            tmp.Add( AxisType.Free );
+                            PlotvarAxisEXTRA = tmp.ToArray();
+
+                            tmpStr = PlotvarUnitsEXTRA.ToList();
+                            tmpStr.Add( thisList.Name + webtag );
+                            PlotvarUnitsEXTRA = tmpStr.ToArray();
+
+                            tmpStr = PlotvarTypesEXTRA.ToList();
+                            tmpStr.Add( thisList.Name + webtag );
+                            PlotvarTypesEXTRA = tmpStr.ToArray();
+
+                            tmpStr = PlotvarKeywordEXTRA.ToList();
+                            tmpStr.Add( thisList.Name + webtag );
+                            PlotvarKeywordEXTRA = tmpStr.ToArray();
+
+                            tmpStr = DatafilesEXTRA.ToList();
+                            tmpStr.Add( "customlogsdata.json" );
+                            DatafilesEXTRA = tmpStr.ToArray();
+                        }
+                    }
+                }
+            }
+
+            // Is there need to destroy the CustomLogs object?? Don't think so...
         } // ChartsCompiler Constructor End
 
         #endregion

@@ -22,7 +22,6 @@
  */
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -171,7 +170,7 @@ namespace CumulusUtils
 
             // Make sure the current period is added to the list
             if ( DryPeriodActive ) { DryPeriodList.Add( previous ); }
-            else { WetPeriodList.Add( previous );}
+            else { WetPeriodList.Add( previous ); }
 
             Top10List[ (int) Top10Types.longestDryPeriod ] = DryPeriodList.OrderByDescending( x => x.DryPeriod ).Take( 10 ).ToList();
 

@@ -13,7 +13,7 @@
  *
  * File encoding = UTF-8
  *
- *
+ * *
  * Stripped and modified to be used for CumulusUtils by Hans Rottier in March 2020.
  * Note that the original distribution has remained in tact but the only modifications are made
  * in gauges.js which has become part of the CumulusUtils distribution together with the language file. 
@@ -38,7 +38,9 @@
  *     Afaik this version does not go well with FF on Android. All other browsers seem to go.
  * Version 2.0.1 HR (based on Marks gauges.js v 2.7.6) - Updated: 11 February 2023 / (Went with CU 6.15.7)
  *   - call to init after loading was too early, init is called from DoGaugeSettings().
- *
+ * Version 2.0.2 HR (based on Marks gauges.js v 2.7.7) - Updated: 27 september 2023 / (Went with CU 6.20.1)
+ *   - Changed the Wind conversions conform the CMX gauges.js 2.7.7.
+
  */
 
 /* exported gauges */
@@ -67,8 +69,8 @@ gauges = (function () {
   'use strict';
   var strings = LANG.EN, // Set to your default language. Store all the strings in one object
     config = {
-      // Script configuration parameters you may want to 'tweak'
-      scriptVer: '2.0.0CU',
+      // CumulusUtils users: don't tweak anything, this is handled through parameters of CUtils !! If you want things changed...
+      scriptVer: '2.0.2CU',
       weatherProgram: 0, // Set 0=Cumulus, 1=Weather Display, 2=VWS, 3=WeatherCat, 4=Meteobridge, 5=WView, 6=WeeWX, 7=WLCOM
       imgPathURL: './images/', // *** Change this to the relative path for your 'Trend' graph images
       oldGauges: 'gauges.htm', // *** Change this to the relative path for your 'old' gauges page.
@@ -3426,86 +3428,73 @@ gauges = (function () {
         extractDecimal(data.humidex, deflt));
     },
 
-    // Celsius to Fahrenheit
-    c2f = function c2f(val) {
-      return (extractDecimal(val) * 9 / 5 + 32).toFixed(1);
-    },
-    // Fahrenheit to Celsius
-    f2c = function f2c(val) {
-      return ((extractDecimal(val) - 32) * 5 / 9).toFixed(1);
-    },
-    // mph to ms
-    mph2ms = function mph2ms(val) {
-      return (extractDecimal(val) * 0.447).toFixed(1);
-    },
-    // knots to ms
-    kts2ms = function kts2ms(val) {
-      return (extractDecimal(val) * 0.515).toFixed(1);
-    },
-    // kph to ms
-    kmh2ms = function kmh2ms(val) {
-      return (extractDecimal(val) * 0.2778).toFixed(1);
-    },
-    // ms to kts
-    ms2kts = function ms2kts(val) {
-      return (extractDecimal(val) * 1.9426).toFixed(1);
-    },
-    // ms to mph
-    ms2mph = function ms2mph(val) {
-      return (extractDecimal(val) * 2.237).toFixed(1);
-    },
-    // ms to kph
-    ms2kmh = function ms2kmh(val) {
-      return (extractDecimal(val) * 3.6).toFixed(1);
-    },
-    // mm to inches
-    mm2in = function mm2in(val) {
-      return (extractDecimal(val) / 25.4).toFixed(2);
-    },
-    // inches to mm
-    in2mm = function in2mm(val) {
-      return (extractDecimal(val) * 25.4).toFixed(1);
-    },
-    // miles to km
-    miles2km = function miles2km(val) {
-      return (extractDecimal(val) * 1.609344).toFixed(1);
-    },
-    // nautical miles to km
-    nmiles2km = function nmiles2km(val) {
-      return (extractDecimal(val) * 1.85200).toFixed(1);
-    },
-    // km to miles
-    km2miles = function km2miles(val) {
-      return (extractDecimal(val) / 1.609344).toFixed(1);
-    },
-    // km to nautical miles
-    km2nmiles = function km2nmiles(val) {
-      return (extractDecimal(val) / 1.85200).toFixed(1);
-    },
-    // hPa to inHg (@0°C)
-    hpa2inhg = function hpa2inhg(val, decimals) {
-      return (extractDecimal(val) * 0.029528744).toFixed(decimals || 3);
-    },
-    // inHg to hPa (@0°C)
-    inhg2hpa = function inhg2hpa(val) {
-      return (extractDecimal(val) / 0.029528744).toFixed(1);
-    },
-    // kPa to hPa
-    kpa2hpa = function kpa2hpa(val) {
-      return (extractDecimal(val) * 10).toFixed(1);
-    },
-    // hPa to kPa
-    hpa2kpa = function hpa2kpa(val, decimals) {
-      return (extractDecimal(val) / 10).toFixed(decimals || 2);
-    },
-    // m to ft
-    m2ft = function m2ft(val) {
-      return (val * 3.2808399).toFixed(0);
-    },
-    // ft to m
-    ft2m = function ft2m(val) {
-      return (val / 3.2808399).toFixed(0);
-    },
+        // Celsius to Fahrenheit
+        c2f = function (val) {
+          return (extractDecimal(val) * 9 / 5 + 32).toFixed(1);
+      },
+      // Fahrenheit to Celsius
+      f2c = function (val) {
+          return ((extractDecimal(val) - 32) * 5 / 9).toFixed(1);
+      },
+      // kph to ms
+      kmh2ms = function (val) {
+          return (extractDecimal(val) * 0.2778).toFixed(1);
+      },
+      // ms to kph
+      ms2kmh = function (val) {
+          return (extractDecimal(val) * 3.6).toFixed(1);
+      },
+      kmh2ms = function (val){
+          return (extractDecimal(val) / 3.6).toFixed(1);
+      },
+      // mm to inches
+      mm2in = function (val) {
+          return (extractDecimal(val) / 25.4).toFixed(2);
+      },
+      // inches to mm
+      in2mm = function (val) {
+          return (extractDecimal(val) * 25.4).toFixed(1);
+      },
+      // miles to km
+      miles2km = function (val) {
+          return (extractDecimal(val) * 1.609344).toFixed(1);
+      },
+      // nautical miles to km
+      nmiles2km = function (val) {
+          return (extractDecimal(val) * 1.85200).toFixed(1);
+      },
+      // km to miles
+      km2miles = function (val) {
+          return (extractDecimal(val) / 1.609344).toFixed(1);
+      },
+      // km to nautical miles
+      km2nmiles = function (val) {
+          return (extractDecimal(val) / 1.85200).toFixed(1);
+      },
+      // hPa to inHg (@0°C)
+      hpa2inhg = function (val, decimals) {
+          return (extractDecimal(val) * 0.029528744).toFixed(decimals || 3);
+      },
+      // inHg to hPa (@0°C)
+      inhg2hpa = function (val) {
+          return (extractDecimal(val) / 0.029528744).toFixed(1);
+      },
+      // kPa to hPa
+      kpa2hpa = function (val) {
+          return (extractDecimal(val) * 10).toFixed(1);
+      },
+      // hPa to kPa
+      hpa2kpa = function (val, decimals) {
+          return (extractDecimal(val) / 10).toFixed(decimals || 2);
+      },
+      // m to ft
+      m2ft = function (val) {
+          return (val * 3.2808399).toFixed(0);
+      },
+      // ft to m
+      ft2m = function (val) {
+          return (val / 3.2808399).toFixed(0);
+      },
 
     //
     // setCookie() writes the 'obj' in cookie 'name' for persistent storage
@@ -3605,46 +3594,46 @@ gauges = (function () {
           return val;
         };
 
-      // convert to m/s & km
-      switch (from) {
-        case 'mph':
-          fromFunc1 = mph2ms;
+    // convert to km/h & km
+    switch (from) {
+      case 'mph':
+          fromFunc1 = miles2km;
           fromFunc2 = miles2km;
           break;
-        case 'kts':
-          fromFunc1 = kts2ms;
+      case 'kts':
+          fromFunc1 = nmiles2km;
           fromFunc2 = nmiles2km;
           break;
-        case 'km/h':
-          fromFunc1 = kmh2ms;
+      case 'm/s':
+          fromFunc1 = ms2kmh;
           fromFunc2 = dummy;
           break;
-        case 'm/s':
-          // falls through
-        default:
+      case 'km/h':
+      // falls through
+      default:
           fromFunc1 = dummy;
           fromFunc2 = dummy;
       }
       // conversion function from km to required units
       switch (to) {
-        case 'mph':
-          toFunc1 = ms2mph;
+      case 'mph':
+          toFunc1 = km2miles;
           toFunc2 = km2miles;
           displayUnits.windrun = 'miles';
           break;
-        case 'kts':
-          toFunc1 = ms2kts;
+      case 'kts':
+          toFunc1 = km2nmiles;
           toFunc2 = km2nmiles;
           displayUnits.windrun = 'n.miles';
           break;
-        case 'km/h':
-          toFunc1 = ms2kmh;
+      case 'm/s':
+          toFunc1 = kmh2ms;
           toFunc2 = dummy;
           displayUnits.windrun = 'km';
           break;
-        case 'm/s':
-          // falls through
-        default:
+      case 'km/h':
+      // falls through
+      default:
           toFunc1 = dummy;
           toFunc2 = dummy;
           displayUnits.windrun = 'km';

@@ -554,8 +554,8 @@ namespace CumulusUtils
             try
             {
                 remoteFiles = localFluentFTP.DownloadDirectory( localDir, CumulusDir );
-                localFluentFTP.DeleteDirectory( CumulusDir );
-                localFluentFTP.CreateDirectory( CumulusDir );
+                localFluentFTP.DeleteDirectory( CumulusDir, FtpListOption.AllFiles );
+                localFluentFTP.CreateDirectory( CumulusDir, true );
 
                 Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: {remoteFiles.Count} Signature files successfully Downloaded to {localDir}" );
             }

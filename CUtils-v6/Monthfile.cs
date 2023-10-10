@@ -23,7 +23,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -144,7 +143,6 @@ namespace CumulusUtils
             {
                 if ( MonthfileList[ i ].Contains( "alltimelog" ) || MonthfileList[ i ].Contains( "AirLink" ) )
                 {
-                    Sup.LogTraceInfoMessage( $"MonthfileList removing from list of monthfiles to read: {MonthfileList[ i ]}" );
                     var foos = new List<string>( MonthfileList );
                     foos.RemoveAt( i-- );
                     MonthfileList = foos.ToArray();

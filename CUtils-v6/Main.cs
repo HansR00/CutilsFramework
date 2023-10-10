@@ -129,7 +129,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FluentFTP.Helpers;
 
 namespace CumulusUtils
 {
@@ -144,6 +143,8 @@ namespace CumulusUtils
 
     public class CUtils
     {
+        #region Declarations
+
         private bool DoPwsFWI;
         private bool DoTop10;
         private bool DoSystemChk;
@@ -220,6 +221,8 @@ namespace CumulusUtils
 
         public static List<DayfileValue> MainList = new List<DayfileValue>();
 
+        #endregion
+
         #region Main
         private static async Task Main( string[] args )
         {
@@ -261,15 +264,15 @@ namespace CumulusUtils
 
                 // So, here we go... for FluentFTP
                 // The only time CuSupport is instantiated; Can't be in the different classes
-                if ( Sup.GetUtilsIniValue( "FTP site", "FtpLog", "Off" ).Equals( "On", CUtils.Cmp ) )
-                {
-                    FtpTrace.LogPassword = false;
-                    FtpTrace.LogUserName = false;
-                    FtpTrace.LogIP = false;
+                //if ( Sup.GetUtilsIniValue( "FTP site", "FtpLog", "Off" ).Equals( "On", Cmp ) )
+                //{
+                //    FtpTrace.LogPassword = false;
+                //    FtpTrace.LogUserName = false;
+                //    FtpTrace.LogIP = false;
 
-                    FtpListener = new TextWriterTraceListener( $"utils/utilslog/{DateTime.Now.ToString( "yyMMddHHmm", CUtils.Inv )}FTPlog.txt" );
-                    FtpTrace.AddListener( FtpListener );
-                }
+                //    FtpListener = new TextWriterTraceListener( $"utils/utilslog/{DateTime.Now.ToString( "yyMMddHHmm", CUtils.Inv )}FTPlog.txt" );
+                //    FtpTrace.AddListener( FtpListener );
+                //}
 
                 Isup = new InetSupport( Sup );
 
@@ -578,17 +581,17 @@ namespace CumulusUtils
 
             if ( DoCustomLogs && HasCustomLogs )
             {
-                //#if TIMING
-                //                watch = Stopwatch.StartNew();
-                //#endif
+#if TIMING
+                watch = Stopwatch.StartNew();
+#endif
 
-                //                CustomLogs fncs = new CustomLogs( Sup );
-                //                fncs.DoCustomLogs();
+                CustomLogs fncs = new CustomLogs( Sup );
+                fncs.DoCustomLogs();
 
-                //#if TIMING
-                //                watch.Stop();
-                //                Sup.LogTraceInfoMessage( $"Timing of CustomLogs generation = {watch.ElapsedMilliseconds} ms" );
-                //#endif
+#if TIMING
+                watch.Stop();
+                Sup.LogTraceInfoMessage( $"Timing of CustomLogs generation = {watch.ElapsedMilliseconds} ms" );
+#endif
             }
 
             // These were the tasks without [weather]data.
@@ -890,14 +893,29 @@ namespace CumulusUtils
                         catch ( Exception e )
                         {
                             Sup.LogTraceInfoMessage( $"UserAskedData: Failing in GenerateExtraSensorDataJson - i.e. ExtraSensors (incl External) data)" );
-                            Sup.LogTraceInfoMessage( $"UserAskedData: Message {e.Message})" );
+                            Sup.LogTraceInfoMessage( $"UserAskedData: Message - {e.Message})" );
+                            Sup.LogTraceInfoMessage( $"UserAskedData: Continuing" );
+                        }
+                    }
+
+                    if ( HasCustomLogs )
+                    {
+                        Sup.LogTraceInfoMessage( $"UserAskedData Doing the CustomLogs stuff..." );
+                        CustomLogs fncs = new CustomLogs( Sup );
+                        try
+                        {
+                            fncs.GenerateCustomLogsDataJson();
+                        }
+                        catch ( Exception e )
+                        {
+                            Sup.LogTraceInfoMessage( $"UserAskedData: Failing in GenerateCustomLogsDataJson" );
+                            Sup.LogTraceInfoMessage( $"UserAskedData: Message - {e.Message})" );
                             Sup.LogTraceInfoMessage( $"UserAskedData: Continuing" );
                         }
                     }
 
                     // No matter what happened, set the upload date/time
                     Sup.SetUtilsIniValue( "General", "LastUploadTime", tmpTimeEnd.ToString( "dd/MM/yy HH:mm", CUtils.Inv ) );
-
 
 #if TIMING
                     watch.Stop();
@@ -1027,14 +1045,15 @@ namespace CumulusUtils
             if ( DoAirLink && !Thrifty )
             {
                 await Isup.UploadFileAsync( $"{Sup.AirLinkOutputFilename}", $"{Sup.PathUtils}{Sup.AirLinkOutputFilename}" );
-            }
-
-            if ( DoExtraSensors && HasExtraSensors && !Thrifty )
-            {
-                await Isup.UploadFileAsync( $"{Sup.ExtraSensorsOutputFilename}", $"{Sup.PathUtils}{Sup.ExtraSensorsOutputFilename}" );
                 if ( ParticipatesSensorCommunity )
                     await Isup.UploadFileAsync( $"{Sup.SensorCommunityOutputFilename}", $"{Sup.PathUtils}{Sup.SensorCommunityOutputFilename}" );
             }
+
+            if ( DoExtraSensors && HasExtraSensors && !Thrifty )
+                await Isup.UploadFileAsync( $"{Sup.ExtraSensorsOutputFilename}", $"{Sup.PathUtils}{Sup.ExtraSensorsOutputFilename}" );
+
+            if ( DoCustomLogs && HasCustomLogs && !Thrifty )
+                await Isup.UploadFileAsync( $"{Sup.CustomLogsOutputFilename}", $"{Sup.PathUtils}{Sup.CustomLogsOutputFilename}" );
 
             if ( DoYadr )
             {
@@ -1161,7 +1180,11 @@ namespace CumulusUtils
                             DoCompileOnly = true;  // Implicit for Extra Sensors
                         }
                         if ( s.Equals( "UserAskedData", CUtils.Cmp ) ) DoUserAskedData = true;
-                        if ( s.Equals( "CustomLogs", CUtils.Cmp ) ) DoCustomLogs = true;
+                        if ( s.Equals( "CustomLogs", CUtils.Cmp ) )
+                        {
+                            DoCustomLogs = true;
+                            DoCompileOnly = true;  // Implicit for Custom Logs
+                        }
                     }
                 }
             }

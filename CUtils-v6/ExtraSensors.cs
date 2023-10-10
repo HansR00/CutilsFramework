@@ -477,12 +477,10 @@ namespace CumulusUtils
 
         private void GenerateExtraSensorsCharts()
         {
-            const string DemarcationLine = "; ExtraSensorCharts";
-
             bool OutputWritten = false;
-            bool DemarcationLineFound = false;
-            int i, j;
-            string[] CutilsCharts;
+            int i;
+            string[] CutilsChartsIn;
+
             List<string> CutilsChartsMods;
 
             Sup.LogDebugMessage( $"GenerateExtraSensorsCharts: Generating the ExtraSensor Charts CDL code into {Sup.PathUtils}{Sup.CutilsChartsDef}..." );
@@ -498,23 +496,27 @@ namespace CumulusUtils
 
             if ( Sup.GetUtilsIniValue( "ExtraSensors", "UserModificationExtraSensorCharts", "false" ).Equals( "true", CUtils.Cmp ) ) return;
 
-            CutilsCharts = File.ReadAllLines( $"{Sup.PathUtils}{Sup.CutilsChartsDef}" );
+            CutilsChartsIn = File.ReadAllLines( $"{Sup.PathUtils}{Sup.CutilsChartsDef}" );
 
-            for ( i = 0; i < CutilsCharts.Length; i++ )
-                if ( CutilsCharts[ i ].Contains( DemarcationLine ) )
+            for ( i = 0; i < CutilsChartsIn.Length; i++ )
+            {
+                if ( CutilsChartsIn[ i ].Contains( Sup.DemarcationLineExtraSensors ) && i < CutilsChartsIn.Length )
                 {
-                    if ( i < CutilsCharts.Length - 1 )
-                        for ( j = CutilsCharts.Length - 1; j > i; j-- )
-                            CutilsCharts = CutilsCharts.RemoveAt( j );
-                    DemarcationLineFound = true;
-                }
+                    for ( ; i < CutilsChartsIn.Length && !CutilsChartsIn[ i ].Contains( Sup.DemarcationLineCustomLogs ); )
+                        CutilsChartsIn = CutilsChartsIn.RemoveAt( i );
 
-            CutilsChartsMods = CutilsCharts.ToList();
-            if ( !DemarcationLineFound ) CutilsChartsMods.Add( DemarcationLine );
+                    if ( i >= CutilsChartsIn.Length || CutilsChartsIn[ i ].Contains( Sup.DemarcationLineCustomLogs ) ) break;
+                }
+            }
+
+            CutilsChartsMods = CutilsChartsIn.ToList();
+
+            CutilsChartsMods.Add( "" );
+            CutilsChartsMods.Add( Sup.DemarcationLineExtraSensors );
+            CutilsChartsMods.Add( "" );
 
             // Now the road is clear to add the charts from the list of plotparameters per class (Temp, Humidity etc....
             ExtraSensorType currentType;
-            CutilsChartsMods.Add( "" );
 
             for ( i = 0; i < ExtraSensorList.Count; )
             {

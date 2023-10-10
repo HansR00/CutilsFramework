@@ -390,6 +390,20 @@ namespace CumulusUtils
 
                     thisBuffer.AppendLine( "<script>" );
 
+                    //Sup.LogTraceInfoMessage( "GraphsTest : Temp graphs after the libraries" );
+                    //Sup.LogTraceInfoMessage( $"GraphsTest : Starting the main chart script. DoWebsite = {CUtils.DoWebsite}" );
+
+                    if ( !CUtils.DoWebsite )
+                    {
+                        //Sup.LogTraceInfoMessage( "GraphsTest : starting with DayNumber2Date" );
+                        // When DoWebsite==true this function is in cumulusutils.js
+                        thisBuffer.AppendLine(
+                                  "function DayNumber2Date(dayNumber, year){" +
+                                  "  const date = new Date( year, 0, dayNumber );" +
+                                  $"  return date.toLocaleDateString('{Sup.Locale}');" +
+                                  "}" );
+                    }
+
                     thisBuffer.AppendLine( "$(function() {" );
                     thisBuffer.AppendLine( "  $('#graph').change(function() {" );
                     thisBuffer.AppendLine( "    handleChange();" );
@@ -960,6 +974,16 @@ namespace CumulusUtils
                     }
 
                     thisBuffer.AppendLine( "<script>" );
+
+                    if ( !CUtils.DoWebsite )
+                    {
+                        // When DoWebsite==true this function is in cumulusutils.js
+                        thisBuffer.AppendLine(
+                                  "function DayNumber2Date(dayNumber, year){" +
+                                  "  const date = new Date( year, 0, dayNumber );" +
+                                  $"  return date.toLocaleDateString('{Sup.Locale}');" +
+                                  "}" );
+                    }
 
                     thisBuffer.AppendLine( "$(function() {" );
                     thisBuffer.AppendLine( "  $('#graph').change(function() {" );

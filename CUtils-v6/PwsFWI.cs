@@ -1015,7 +1015,7 @@ namespace CumulusUtils
 
                         // The actual carry over from the history is done in SetExtraValues
                         //
-                        if ( ThisValue.TotalRainThisDay >= (float) Sup.StationRain.Convert( RainDim.millimeter, Sup.StationRain.Dim, GlobConst.RainLimit ) ) { ThisValue.DryPeriod = 0; ThisValue.WetPeriod = 1;  }
+                        if ( ThisValue.TotalRainThisDay >= (float) Sup.StationRain.Convert( RainDim.millimeter, Sup.StationRain.Dim, GlobConst.RainLimit ) ) { ThisValue.DryPeriod = 0; ThisValue.WetPeriod = 1; }
                         else { ThisValue.DryPeriod = 1; ThisValue.WetPeriod = 0; }
 
                         ThisList.Add( ThisValue );

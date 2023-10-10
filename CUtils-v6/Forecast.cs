@@ -22,7 +22,6 @@
  */
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -61,7 +60,7 @@ namespace CumulusUtils
             string ForecastSystem;
 
             // Make sure the parameters exist in one run, otherwise the user has to run, define and run again
-            ForecastSystem = Sup.GetUtilsIniValue( "Forecasts", "ForecastSystem", "Yourweather" );
+            ForecastSystem = Sup.GetUtilsIniValue( "Forecasts", "ForecastSystem", "SpotWx" );
 
             if ( ForecastSystem.Equals( "Yourweather", CUtils.Cmp ) )
             {
