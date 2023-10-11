@@ -279,6 +279,7 @@ namespace CumulusUtils
                 buf.Append( $"<style>.centerItem {{width: 80%; max-height: 80vh; margin: 6vh auto;overflow-y: auto; }}</style>" );
 
                 buf.Append( $"<div class='centerItem' style='text-align:left;'><table style='width:100%'>" );
+                buf.Append( $"<a class='centerItem' href='https://www.cumuluswiki.org/a/Full_list_of_Webtags' target='_blank'>Cumulus Webtags -  Full List</a><br/>" );
                 buf.Append( $"<tr " +
                     $"style='background-color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarBackground", "#C5C55B" )}; " +
                     $"color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarText", "White" )}; width:100%'>" );
@@ -475,18 +476,16 @@ namespace CumulusUtils
 
             Sup.LogTraceInfoMessage( $"CustomLogs GenerateCustomLogsDataJson: timeStart = {timeStart}; timeEnd = {timeEnd}" );
 
-            // Required for separate DAILY JSON files... not (yet) implemented
-            //_ = DateTime.TryParse( Sup.GetUtilsIniValue( "CustomLogs", "DoneToday", $"{Now.AddDays( -1 ):s}" ), out DateTime DoneToday );
-            //Sup.LogTraceInfoMessage( $"GCustomLogs GenerateCustomLogsDataJson: DoneToday = {DoneToday}." );
-            //bool DoDailyAsWell = !Sup.DateIsToday( DoneToday );
-
             // Purpose is to create the JSON for the CustomLogs data and offering the possibility to do only that to accomodate the fact that
             // CMX does not (and probably will never) generate that JSON like it generates the temperature JSON for graphing.
             // CumulusUtils will only generate the CustomLogs JSON by issueing the command: "./utils/bin/cumulusutils.exe UserAskedData"
 
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sbRecent = new StringBuilder();
+            StringBuilder sbDaily = new StringBuilder();
+            StringBuilder sb = sbRecent;
 
-            sb.Append( "{" );
+            sbRecent.Append( "{" );
+            sbDaily.Append( "{" );
 
             // Fill the json with the variables needed:
             // 1) Read the logfile belonging to one Custom Log and write the values in the list.
@@ -494,12 +493,29 @@ namespace CumulusUtils
             // 3) prefix the webtag name with the table name: that is how they are known to the compiler
             // 4) the date/time format is dd-mm-yy;hh:mm; (the semicolons are CMX generated as are the formats).
 
+            // Required for separate DAILY JSON files which need only be sent once per day
+            _ = DateTime.TryParse( Sup.GetUtilsIniValue( "CustomLogs", "DoneToday", $"{Now.AddDays( -1 ):d}" ), out DateTime DoneToday );
+            bool DoDailyAsWell =  DoneToday < DateTime.Today;
+            Sup.LogTraceInfoMessage( $"GCustomLogs GenerateCustomLogsDataJson: DoneToday = {DoneToday}... DoDailyAsWell = {DoDailyAsWell}" );
+
             List<CustomLogValue> thisList;
 
             foreach ( CustomLog thisLog in CustomLogsList )
             {
-                if ( thisLog.Frequency == -1 ) thisList = ReadDailyCustomLog( thisLog ); // Activate this if we use another JSON for the DAILY CustomLogs
-                else thisList = ReadRecentCustomLog( thisLog, timeStart, timeEnd );
+                if ( thisLog.Frequency == -1 )
+                {
+                    if ( DoDailyAsWell )
+                    {
+                        thisList = ReadDailyCustomLog( thisLog ); // Activate this if we use another JSON for the DAILY CustomLogs
+                        sb = sbDaily;
+                    }
+                    else continue;
+                }
+                else
+                {
+                    thisList = ReadRecentCustomLog( thisLog, timeStart, timeEnd );
+                    sb = sbRecent;
+                }
 
                 Sup.LogTraceInfoMessage( $"CustomLogs GenerateCustomLogsDataJson: Doing {thisLog.Name}" );
 
@@ -515,13 +531,26 @@ namespace CumulusUtils
                 }
             }
 
-            sb.Remove( sb.Length - 1, 1 );
-            sb.Append( "}" );
+            sbRecent.Remove( sbRecent.Length - 1, 1 );
+            sbRecent.Append( "}" );
 
-            using ( StreamWriter thisJSON = new StreamWriter( $"{Sup.PathUtils}{Sup.CustomLogsJSON}", false, Encoding.UTF8 ) )
+            using ( StreamWriter thisJSON = new StreamWriter( $"{Sup.PathUtils}{Sup.CustomLogsRecentJSON}", false, Encoding.UTF8 ) )
             {
-                thisJSON.WriteLine( sb.ToString() );
+                thisJSON.WriteLine( sbRecent.ToString() );
             }
+
+            if ( DoDailyAsWell )
+            {
+                sbDaily.Remove( sbDaily.Length - 1, 1 );
+                sbDaily.Append( "}" );
+
+                using ( StreamWriter thisJSON = new StreamWriter( $"{Sup.PathUtils}{Sup.CustomLogsDailyJSON}", false, Encoding.UTF8 ) )
+                {
+                    thisJSON.WriteLine( sbDaily.ToString() );
+                }
+            }
+
+            Sup.SetUtilsIniValue( "CustomLogs", "DoneToday", $"{Now:s}" );
 
             return;
         }
@@ -532,8 +561,6 @@ namespace CumulusUtils
 
             bool PeriodComplete = false, NextFileTried = false;
             bool WarningWritten = false;
-
-            char thisSeparator = '.';
 
             string FilenamePostFix = Start.Date.ToString( "-yyyyMM" ) + ".txt";
             string DateTimeText, ValuesAsText;
@@ -552,16 +579,17 @@ namespace CumulusUtils
                 File.Copy( fullFilename, copyFilename );
 
                 string[] allLines = File.ReadAllLines( copyFilename );
-                thisSeparator = allLines[ 0 ].Contains( thisSeparator ) ? ',' : '.';
 
                 for ( int i = 0; i < allLines.Length; i++ )
                 {
-                    DateTimeText = allLines[ i ].Substring( 0, 14 ); // DateTimeText[ 8 ] = ' ';
-                    tmp.Date = DateTime.ParseExact( DateTimeText, "dd-MM-yy;HH:mm", CUtils.Inv );
+                    // Set the separators correct and do the reading: / in the date and the . as decimal separator.
+                    //
+                    DateTimeText = allLines[ i ].Substring( 0, 14 ).Replace('-','/').Replace('.','/');
+                    tmp.Date = DateTime.ParseExact( DateTimeText, "dd/MM/yy;HH:mm", CUtils.Inv );
                     if ( tmp.Date < Start ) continue;
 
-                    ValuesAsText = CuSupport.StringRemoveWhiteSpace( allLines[ i ].Substring( 15 ), " " );
-                    ValuesAsTextArray = ValuesAsText.Trim( new char[] { ' ' } ).Split( new char[] { ' ' } );
+                    ValuesAsText = CuSupport.StringRemoveWhiteSpace( allLines[ i ].Substring( 15 ).Replace( ',', '.' ), " " );
+                    ValuesAsTextArray = ValuesAsText.Split( new char[] { ' ' } );
                     tmp.Value = new List<double>();
 
                     if ( thisLog.TagNames.Count() != ValuesAsTextArray.Count() )
@@ -580,7 +608,7 @@ namespace CumulusUtils
                     {
                         try
                         {
-                            tmp.Value.Add( Convert.ToDouble( ValuesAsTextArray[ j ] ) ); // Use the local separator assuming it is the same as for CMX in writing
+                            tmp.Value.Add( Convert.ToDouble( ValuesAsTextArray[ j ], CUtils.Inv ) ); // Use the local separator assuming it is the same as for CMX in writing
                         }
                         catch ( Exception e )
                         {
@@ -624,7 +652,6 @@ namespace CumulusUtils
         private List<CustomLogValue> ReadDailyCustomLog( CustomLog thisLog )
         {
             bool WarningWritten = false;
-            char thisSeparator = '.';
 
             string FilenamePostFix = ".txt";
             string DateTimeText, ValuesAsText;
@@ -642,14 +669,13 @@ namespace CumulusUtils
             File.Copy( fullFilename, copyFilename );
 
             string[] allLines = File.ReadAllLines( copyFilename );
-            thisSeparator = allLines[ 0 ].Contains( thisSeparator ) ? ',' : '.';
 
             for ( int i = 0; i < allLines.Length; i++ )
             {
-                DateTimeText = allLines[ i ].Substring( 0, 8 ); // DateTimeText[ 8 ] = ' ';
-                tmp.Date = DateTime.ParseExact( DateTimeText, "dd-MM-yy", CUtils.Inv );
+                DateTimeText = allLines[ i ].Substring( 0, 8 ).Replace( '-', '/' ).Replace( '.', '/' );
+                tmp.Date = DateTime.ParseExact( DateTimeText, "dd/MM/yy", CUtils.Inv );
 
-                ValuesAsText = CuSupport.StringRemoveWhiteSpace( allLines[ i ].Substring( 9 ), " " );
+                ValuesAsText = CuSupport.StringRemoveWhiteSpace( allLines[ i ].Substring( 9 ).Replace( ',', '.' ), " " );
                 ValuesAsTextArray = ValuesAsText.Split( new char[] { ' ' } );
                 tmp.Value = new List<double>();
 
@@ -669,7 +695,7 @@ namespace CumulusUtils
                 {
                     try
                     {
-                        tmp.Value.Add( Convert.ToDouble( ValuesAsTextArray[ j ] ) ); // Use the local separator assuming it is the same as for CMX in writing
+                        tmp.Value.Add( Convert.ToDouble( ValuesAsTextArray[ j ], CUtils.Inv ) ); // Use the local separator assuming it is the same as for CMX in writing
                     }
                     catch ( Exception e )
                     {

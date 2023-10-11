@@ -578,7 +578,7 @@ namespace CumulusUtils
                             PlotvarKeywordALL = tmpStr.ToArray();
 
                             tmpStr = DatafilesALL.ToList();
-                            tmpStr.Add( "customlogsdata.json" );
+                            tmpStr.Add( Sup.CustomLogsDailyJSON );
                             DatafilesALL = tmpStr.ToArray();
                         }
                     }
@@ -605,7 +605,7 @@ namespace CumulusUtils
                             PlotvarKeywordEXTRA = tmpStr.ToArray();
 
                             tmpStr = DatafilesEXTRA.ToList();
-                            tmpStr.Add( "customlogsdata.json" );
+                            tmpStr.Add( Sup.CustomLogsRecentJSON );
                             DatafilesEXTRA = tmpStr.ToArray();
                         }
                     }
