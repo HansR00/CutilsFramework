@@ -496,10 +496,10 @@ namespace CumulusUtils
             // Even if it is the millionth time or more... Certainly when adding more keywords later on.
             foreach ( string k in PlotvarKeywordRECENT )
                 if ( !string.IsNullOrEmpty( k ) )
-                    Sup.GetCUstringValue( "Compiler", k, k, false );
+                    _ = Sup.GetCUstringValue( "Compiler", k, k, false );
             foreach ( string k in PlotvarKeywordALL )
                 if ( !string.IsNullOrEmpty( k ) )
-                    Sup.GetCUstringValue( "Compiler", k, k, false );
+                    _ = Sup.GetCUstringValue( "Compiler", k, k, false );
 
             try
             {
@@ -562,11 +562,11 @@ namespace CumulusUtils
                             List<string> tmpStr;
 
                             List<AxisType> tmp = PlotvarAxisALL.ToList();
-                            tmp.Add( AxisType.Free );
+                            tmp.Add( AxisType.Free ); // AxisType.Temp
                             PlotvarAxisALL = tmp.ToArray();
 
                             tmpStr = PlotvarUnitsALL.ToList();
-                            tmpStr.Add( thisList.Name + webtag );
+                            tmpStr.Add( "" ); // thisCustomLogs.WebTags.TagUnit[0]
                             PlotvarUnitsALL = tmpStr.ToArray();
 
                             tmpStr = PlotvarTypesALL.ToList();

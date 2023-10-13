@@ -56,7 +56,7 @@ namespace CumulusUtils
 
             Sup.LogTraceInfoMessage( "CustomLogs constructor: start" );
 
-            WebTags = new WebtagInfo();
+            WebTags = new WebtagInfo( Sup );
 
             // Fetch the Interval CustomLogs Content
             for ( int i = 0; ; i++ )
@@ -496,7 +496,7 @@ namespace CumulusUtils
             // Required for separate DAILY JSON files which need only be sent once per day
             _ = DateTime.TryParse( Sup.GetUtilsIniValue( "CustomLogs", "DoneToday", $"{Now.AddDays( -1 ):d}" ), out DateTime DoneToday );
             bool DoDailyAsWell =  DoneToday < DateTime.Today;
-            Sup.LogTraceInfoMessage( $"GCustomLogs GenerateCustomLogsDataJson: DoneToday = {DoneToday}... DoDailyAsWell = {DoDailyAsWell}" );
+            Sup.LogTraceInfoMessage( $"CustomLogs GenerateCustomLogsDataJson: DoneToday = {DoneToday}... DoDailyAsWell = {DoDailyAsWell}" );
 
             List<CustomLogValue> thisList;
 
@@ -579,16 +579,21 @@ namespace CumulusUtils
                 File.Copy( fullFilename, copyFilename );
 
                 string[] allLines = File.ReadAllLines( copyFilename );
+                DetectSeparators( allLines[ 0 ] );
 
                 for ( int i = 0; i < allLines.Length; i++ )
                 {
                     // Set the separators correct and do the reading: / in the date and the . as decimal separator.
                     //
-                    DateTimeText = allLines[ i ].Substring( 0, 14 ).Replace('-','/').Replace('.','/');
-                    tmp.Date = DateTime.ParseExact( DateTimeText, "dd/MM/yy;HH:mm", CUtils.Inv );
+                    string thisLine = ChangeSeparators( allLines[ i ] );
+
+                    //DateTimeText = allLines[ i ].Substring( 0, 14 ).Replace('-','/').Replace('.','/');
+
+                    DateTimeText = thisLine.Substring( 0, 14 );
+                    tmp.Date = DateTime.ParseExact( DateTimeText, "dd/MM/yy HH:mm", CUtils.Inv );
                     if ( tmp.Date < Start ) continue;
 
-                    ValuesAsText = CuSupport.StringRemoveWhiteSpace( allLines[ i ].Substring( 15 ).Replace( ',', '.' ), " " );
+                    ValuesAsText = thisLine.Substring( 15 );
                     ValuesAsTextArray = ValuesAsText.Split( new char[] { ' ' } );
                     tmp.Value = new List<double>();
 
@@ -608,7 +613,7 @@ namespace CumulusUtils
                     {
                         try
                         {
-                            tmp.Value.Add( Convert.ToDouble( ValuesAsTextArray[ j ], CUtils.Inv ) ); // Use the local separator assuming it is the same as for CMX in writing
+                            tmp.Value.Add( Convert.ToDouble( ValuesAsTextArray[ j ], CUtils.Inv ) );
                         }
                         catch ( Exception e )
                         {
@@ -669,13 +674,16 @@ namespace CumulusUtils
             File.Copy( fullFilename, copyFilename );
 
             string[] allLines = File.ReadAllLines( copyFilename );
+            DetectSeparators( allLines[ 0 ] );
 
             for ( int i = 0; i < allLines.Length; i++ )
             {
-                DateTimeText = allLines[ i ].Substring( 0, 8 ).Replace( '-', '/' ).Replace( '.', '/' );
+                string thisLine = ChangeSeparators( allLines[ i ] );
+
+                DateTimeText = thisLine.Substring( 0, 8 );
                 tmp.Date = DateTime.ParseExact( DateTimeText, "dd/MM/yy", CUtils.Inv );
 
-                ValuesAsText = CuSupport.StringRemoveWhiteSpace( allLines[ i ].Substring( 9 ).Replace( ',', '.' ), " " );
+                ValuesAsText = thisLine.Substring( 9 );
                 ValuesAsTextArray = ValuesAsText.Split( new char[] { ' ' } );
                 tmp.Value = new List<double>();
 
@@ -710,6 +718,65 @@ namespace CumulusUtils
 
             return thisList;
         }
+        #endregion
+
+        #region Separator handling
+
+        char DateSeparator;
+        char FieldSeparator;
+        char DecimalSeparator;
+
+        private void DetectSeparators(string line)
+        {
+            if ( line[ 2 ] == '-' && line[ 8 ] == ';' )
+            {
+                DateSeparator = '-';
+                FieldSeparator = ';';
+                DecimalSeparator = ',';
+            }
+            else if ( line[ 2 ] == '/' && line[ 8 ] == ';' )
+            {
+                DateSeparator = '/';
+                FieldSeparator = ';';
+                DecimalSeparator = ',';
+            }
+            else if ( line[ 2 ] == '.' && line[ 8 ] == ';' )
+            {
+                DateSeparator = '.';
+                FieldSeparator = ';';
+                DecimalSeparator = ',';
+            }
+            else if ( line[ 2 ] == '-' && line[ 8 ] == ',' )
+            {
+                DateSeparator = '-';
+                FieldSeparator = ',';
+                DecimalSeparator = '.';
+            }
+            else if ( line[ 2 ] == '/' && line[ 8 ] == ',' )
+            {
+                DateSeparator = '/';
+                FieldSeparator = ',';
+                DecimalSeparator = '.';
+            }
+            else
+            {
+                Sup.LogTraceErrorMessage( "CustomLogs Logreaders: Internal Error - Unkown format of inputfile. Please get help." );
+                Environment.Exit( 0 );
+            }
+
+            return;
+        }
+
+        private string ChangeSeparators( string line ) 
+        {
+            string thisLine;
+
+            thisLine = line.Substring(0,8).Replace( DateSeparator, '/') ;
+            thisLine = thisLine + line.Substring(8).Replace( FieldSeparator, ' ' ).Replace( DecimalSeparator, '.' );
+            thisLine = CuSupport.StringRemoveWhiteSpace( thisLine, " " );
+
+            return thisLine;
+        }
 
         #endregion
 
@@ -718,15 +785,49 @@ namespace CumulusUtils
     #region WebtagInfo
     public class WebtagInfo
     {
-        public WebtagInfo()
+        CuSupport Sup;
+
+        public WebtagInfo(CuSupport s)
         {
             // Constructor
+            Sup = s;
+
+            TagUnit = new string[] 
+            {
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),    // Index 5 (no 6)
+
+            };
+
+            TagAxis = new AxisType []
+            {
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,             // Index 5 (no 6)
+
+            };
+
         }
+
 
         public string GetTagUnit( string name )
         {
             //int i = Array.FindIndex( Tagname, word => word.Equals( name, CUtils.Cmp ) );
             //return TagUnit[ i ];
+
+            return "";
+        }
+
+        public string GetTagAxis( string name )
+        {
+            //return TagAxis[ i ];
 
             return "";
         }
@@ -760,9 +861,10 @@ namespace CumulusUtils
             if ( a == -1 ) return s.Substring( 2, s.Length - 3 );
             else return s.Substring( 2, a - 2 );
         }
-        static readonly string[] TagUnit = new string[] {
 
-        };
+        public readonly string[] TagUnit;
+
+        public readonly AxisType[] TagAxis;
 
         static readonly bool[] changeIndicator = new bool[] {
         };
@@ -774,6 +876,7 @@ namespace CumulusUtils
             "temprange",
             "heatindex",
             "avgtemp",
+
             "hum",
             "humidex",
             "press",
