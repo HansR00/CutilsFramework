@@ -48,6 +48,7 @@ namespace CumulusUtils
         public int TotalNrOfWebtags = 0;
 
         readonly CuSupport Sup;
+        readonly InetSupport Inet;
 
         #region Constructor
         public CustomLogs( CuSupport s )
@@ -164,10 +165,17 @@ namespace CumulusUtils
             // I: create the customlogsrealtime.txt which has to be processed by CMX and transferred to the webroot.
             // II: Create the charts to be compiled by the chartscompiler
             // III: generate the  module which rules it all
+            // IV: When generating CustomLogs always generate a full JSON to counter for changes in the logs definition (notably addition of webtags)
+            //     Deletion of webtags occurs by falling out of the datetime window.
             //
             GenerateCustomLogsRealtime();
             GenerateCustomLogsCharts();
             GenerateCustomLogsModule();
+
+            // Generate the corresponding JSONs (Interval and DAily) to account for possible changes.
+            // These JSONs must be full period and not incremental!!
+
+            GenerateCustomLogsDataJson( NonIncremental: true );
 
             Sup.LogDebugMessage( "DoCustomLogs - Stop" );
 
@@ -413,7 +421,7 @@ namespace CumulusUtils
                     //       For the same webtag with different modifiers currently two charts are required. Maybe in future the same webtag 
                     //       can be used more often with different modifiers in the same chart... wishlist.
                     if ( thisLog.Frequency == -1 ) // Meaning a DAILY log
-                        CutilsChartsMods.Add( $"  PLOT DAILY {thisLog.Name}{thisTagName}" );
+                        CutilsChartsMods.Add( $"  PLOT ALL {thisLog.Name}{thisTagName}" );
                     else
                         CutilsChartsMods.Add( $"  PLOT EXTRA {thisLog.Name}{thisTagName}" );
 
@@ -450,31 +458,51 @@ namespace CumulusUtils
             public List<double> Value { get; set; }
         }
 
-        public void GenerateCustomLogsDataJson()
+        public void GenerateCustomLogsDataJson(bool NonIncremental)
         {
+            bool DoDailyAsWell;
+
+            DateTime timeStart, timeEnd;
+            DateTime DoneToday;
+
             DateTime Now = DateTime.Now;
             Now = new DateTime( Now.Year, Now.Month, Now.Day, Now.Hour, Now.Minute, 0 );
-            DateTime timeEnd = Now.AddMinutes( -Now.Minute % Math.Max( CUtils.FTPIntervalInMinutes, CUtils.LogIntervalInMinutes ) );
-            DateTime timeStart;
 
-            if ( CUtils.Isup.IsIncrementalAllowed() )
+            timeEnd = Now.AddMinutes( -Now.Minute % Math.Max( CUtils.FTPIntervalInMinutes, CUtils.LogIntervalInMinutes ) );
+
+            if ( NonIncremental )
             {
-                try
+                DoneToday = Now.AddDays( -1 );
+                timeStart = timeEnd.AddHours( -CUtils.HoursInGraph );
+            }
+            else
+            {
+                _ = DateTime.TryParse( Sup.GetUtilsIniValue( "CustomLogs", "DoneToday", $"{Now.AddDays( -1 ):d}" ), out DoneToday );
+                
+                if ( CUtils.Isup.IsIncrementalAllowed() )
                 {
-                    timeStart = DateTime.ParseExact( Sup.GetUtilsIniValue( "General", "LastUploadTime", "" ), "dd/MM/yy HH:mm", CUtils.Inv ).AddMinutes( 1 );
+                    try
+                    {
+                        timeStart = DateTime.ParseExact( Sup.GetUtilsIniValue( "General", "LastUploadTime", "" ), "dd/MM/yy HH:mm", CUtils.Inv ).AddMinutes( 1 );
+                    }
+                    catch
+                    {
+                        timeStart = timeEnd.AddHours( -CUtils.HoursInGraph );
+                    }
+
                 }
-                catch
+                else
                 {
                     timeStart = timeEnd.AddHours( -CUtils.HoursInGraph );
                 }
 
             }
-            else
-            {
-                timeStart = timeEnd.AddHours( -CUtils.HoursInGraph );
-            }
 
             Sup.LogTraceInfoMessage( $"CustomLogs GenerateCustomLogsDataJson: timeStart = {timeStart}; timeEnd = {timeEnd}" );
+
+            // Required for separate DAILY JSON files which need only be sent once per day
+            DoDailyAsWell = DoneToday < DateTime.Today;
+            Sup.LogTraceInfoMessage( $"CustomLogs GenerateCustomLogsDataJson: DoneToday = {DoneToday}... DoDailyAsWell = {DoDailyAsWell}" );
 
             // Purpose is to create the JSON for the CustomLogs data and offering the possibility to do only that to accomodate the fact that
             // CMX does not (and probably will never) generate that JSON like it generates the temperature JSON for graphing.
@@ -482,21 +510,16 @@ namespace CumulusUtils
 
             StringBuilder sbRecent = new StringBuilder();
             StringBuilder sbDaily = new StringBuilder();
-            StringBuilder sb = sbRecent;
+            StringBuilder sb;
 
-            sbRecent.Append( "{" );
-            sbDaily.Append( "{" );
+            sbRecent.Append( "{ " );
+            sbDaily.Append( "{ " );
 
             // Fill the json with the variables needed:
             // 1) Read the logfile belonging to one Custom Log and write the values in the list.
             // 2) Don't use more than the nr of hrs as defined in parameter [Graphs] / GraphHours
             // 3) prefix the webtag name with the table name: that is how they are known to the compiler
             // 4) the date/time format is dd-mm-yy;hh:mm; (the semicolons are CMX generated as are the formats).
-
-            // Required for separate DAILY JSON files which need only be sent once per day
-            _ = DateTime.TryParse( Sup.GetUtilsIniValue( "CustomLogs", "DoneToday", $"{Now.AddDays( -1 ):d}" ), out DateTime DoneToday );
-            bool DoDailyAsWell =  DoneToday < DateTime.Today;
-            Sup.LogTraceInfoMessage( $"CustomLogs GenerateCustomLogsDataJson: DoneToday = {DoneToday}... DoDailyAsWell = {DoDailyAsWell}" );
 
             List<CustomLogValue> thisList;
 
@@ -506,29 +529,48 @@ namespace CumulusUtils
                 {
                     if ( DoDailyAsWell )
                     {
-                        thisList = ReadDailyCustomLog( thisLog ); // Activate this if we use another JSON for the DAILY CustomLogs
-                        sb = sbDaily;
+                        try
+                        {
+                            thisList = ReadDailyCustomLog( thisLog ); // we use another JSON for the DAILY CustomLogs
+                            sb = sbDaily;
+                        }
+                        catch
+                        {
+                            continue;
+                        }
                     }
                     else continue;
                 }
                 else
                 {
-                    thisList = ReadRecentCustomLog( thisLog, timeStart, timeEnd );
-                    sb = sbRecent;
+                    try
+                    {
+                        thisList = ReadRecentCustomLog( thisLog, timeStart, timeEnd );
+                        sb = sbRecent;
+                    }
+                    catch
+                    {
+                        continue;
+                    }
                 }
 
                 Sup.LogTraceInfoMessage( $"CustomLogs GenerateCustomLogsDataJson: Doing {thisLog.Name}" );
 
-                for ( int i = 0; i < thisLog.TagNames.Count; i++ )
+                if ( thisList != null )
                 {
-                    sb.Append( $"\"{thisLog.Name}{thisLog.TagNames[ i ]}\":[" );
+                    for ( int i = 0; i < thisLog.TagNames.Count; i++ )
+                    {
+                        sb.Append( $"\"{thisLog.Name}{thisLog.TagNames[ i ]}\":[" );
 
-                    foreach ( CustomLogValue entry in thisList )
-                        sb.Append( $"[{CuSupport.DateTimeToJS( entry.Date )},{entry.Value[ i ].ToString( "F1", CUtils.Inv )}]," );
+                        foreach ( CustomLogValue entry in thisList )
+                            sb.Append( $"[{CuSupport.DateTimeToJS( entry.Date )},{entry.Value[ i ].ToString( "F1", CUtils.Inv )}]," );
 
-                    sb.Remove( sb.Length - 1, 1 );
-                    sb.Append( $"]," );
+                        sb.Remove( sb.Length - 1, 1 );
+                        sb.Append( $"]," );
+                    }
                 }
+                else return; // In case no CustomLog is found but the module is activated anyway
+
             }
 
             sbRecent.Remove( sbRecent.Length - 1, 1 );
@@ -1063,13 +1105,13 @@ namespace CumulusUtils
             "AirQualityAvg3",
             "AirQualityAvg4",
             "CO2",
-            "CO2-24h",
-            "CO2-pm2p5",
-            "CO2-pm2p5-24h",
-            "CO2-pm10",
-            "CO2-pm10-24h",
-            "CO2-temp",
-            "CO2-hum",
+            "CO2_24h",
+            "CO2_pm2p5",
+            "CO2_pm2p5_24h",
+            "CO2_pm10",
+            "CO2_pm10_24h",
+            "CO2_temp",
+            "CO2_hum",
             "LightningDistance",
             "LightningStrikesToday",
             "LeafTemp1",

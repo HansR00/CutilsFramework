@@ -87,7 +87,8 @@ namespace CumulusUtils
                 FileInfo fi = new FileInfo( localfile );
                 ext = fi.Extension;
 
-                incremental = ext == ".json" && !( fi.Name.Contains( "ALL", CUtils.Cmp ) || fi.Name.Contains( "DAILY", CUtils.Cmp ) );
+                if ( ext == ".json" && !CUtils.DoingUserAskedData ) incremental = false;
+                else incremental = ext == ".json" && !( fi.Name.Contains( "ALL", CUtils.Cmp ) || fi.Name.Contains( "DAILY", CUtils.Cmp ) );
 
                 Sup.LogTraceInfoMessage( $"Incremental = {incremental}; filename = {fi.Name}; ext = {ext}; HoursInGraph = {CUtils.HoursInGraph}" );
             }

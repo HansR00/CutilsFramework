@@ -216,6 +216,7 @@ namespace CumulusUtils
         public static int DaysInGraph { get; set; }
         public static int LogIntervalInMinutes { get; set; }
         public static int FTPIntervalInMinutes { get; set; }
+        public static bool DoingUserAskedData { get; set; }
 
         public static int[] PossibleIntervals = { 1, 5, 10, 15, 20, 30 };
 
@@ -332,8 +333,6 @@ namespace CumulusUtils
                 DaysInGraph = Convert.ToInt32( Sup.GetCumulusIniValue( "Graphs", "ChartMaxDays", "" ) );
                 LogIntervalInMinutes = PossibleIntervals[ Convert.ToInt32( Sup.GetCumulusIniValue( "Station", "DataLogInterval", "" ), CUtils.Inv ) ];
                 FTPIntervalInMinutes = Convert.ToInt32( Sup.GetCumulusIniValue( "FTP site", "UpdateInterval", "" ) );
-                DaysInGraph = Convert.ToInt32( Sup.GetCumulusIniValue( "Graphs", "ChartMaxDays", "" ) );
-
 
                 // Now start doing things
                 CUtils p = new CUtils();
@@ -409,6 +408,8 @@ namespace CumulusUtils
 
                 Environment.Exit( 0 );
             }
+            
+            DoingUserAskedData = DoUserAskedData;
 
             // Now we're going
             //
@@ -904,7 +905,7 @@ namespace CumulusUtils
                         CustomLogs fncs = new CustomLogs( Sup );
                         try
                         {
-                            fncs.GenerateCustomLogsDataJson();
+                            fncs.GenerateCustomLogsDataJson( NonIncremental: false );
                         }
                         catch ( Exception e )
                         {
