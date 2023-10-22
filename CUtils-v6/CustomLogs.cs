@@ -48,7 +48,6 @@ namespace CumulusUtils
         public int TotalNrOfWebtags = 0;
 
         readonly CuSupport Sup;
-        readonly InetSupport Inet;
 
         #region Constructor
         public CustomLogs( CuSupport s )
@@ -563,7 +562,16 @@ namespace CumulusUtils
                         sb.Append( $"\"{thisLog.Name}{thisLog.TagNames[ i ]}\":[" );
 
                         foreach ( CustomLogValue entry in thisList )
-                            sb.Append( $"[{CuSupport.DateTimeToJS( entry.Date )},{entry.Value[ i ].ToString( "F1", CUtils.Inv )}]," );
+                        {
+                            try
+                            {
+                                sb.Append( $"[{CuSupport.DateTimeToJS( entry.Date )},{entry.Value[ i ].ToString( "F1", CUtils.Inv )}]," );
+                            }
+                            catch
+                            {
+                                continue;
+                            }
+                        }
 
                         sb.Remove( sb.Length - 1, 1 );
                         sb.Append( $"]," );
@@ -647,8 +655,6 @@ namespace CumulusUtils
                             Sup.LogTraceWarningMessage( $"CustomLogs : The chart may not be what you want, please correct the content of the datafile. Continuing..." );
                             WarningWritten = true;
                         }
-
-                        continue;
                     }
 
                     for ( int j = 0; j < ValuesAsTextArray.Length; j++ )
@@ -668,11 +674,11 @@ namespace CumulusUtils
                     thisList.Add( tmp );
                 }
 
-                // handle a possible file boundary
                 if ( File.Exists( copyFilename ) ) File.Delete( copyFilename );
 
                 Sup.LogTraceInfoMessage( $"CustomLogs ReadRecentCustomLog: Deciding: tmp.Date: {tmp.Date} ; End: {End} ; thisList.Last: {thisList.Last().Date}" );
 
+                // handle a possible file boundary crossing
                 if ( tmp.Date >= End || NextFileTried )
                 {
                     Sup.LogTraceInfoMessage( $"CustomLogs ReadRecentCustomLog: Finished reading the log at {tmp.Date}" );
@@ -737,15 +743,13 @@ namespace CumulusUtils
                         Sup.LogTraceWarningMessage( $"CustomLogs : The chart may not be what you want, please correct the content of the datafile. Continuing..." );
                         WarningWritten = true;
                     }
-
-                    continue;
                 }
 
                 for ( int j = 0; j < ValuesAsTextArray.Length; j++ )
                 {
                     try
                     {
-                        tmp.Value.Add( Convert.ToDouble( ValuesAsTextArray[ j ], CUtils.Inv ) ); // Use the local separator assuming it is the same as for CMX in writing
+                        tmp.Value.Add( Convert.ToDouble( ValuesAsTextArray[ j ], CUtils.Inv ) );
                     }
                     catch ( Exception e )
                     {
@@ -757,6 +761,8 @@ namespace CumulusUtils
 
                 thisList.Add( tmp );
             }
+
+            if ( File.Exists( copyFilename ) ) File.Delete( copyFilename );
 
             return thisList;
         }
@@ -876,7 +882,7 @@ namespace CumulusUtils
 
         public bool IsValidWebtag( string name )
         {
-            return Array.FindIndex( Tagname, word => word.Equals( name, CUtils.Cmp ) ) != -1;
+            return Array.FindIndex( Tagname, word => word.Equals( name ) ) != -1;  // Check in this rare case must be case-sensitive!!
         }
 
         public string FetchWebtagRaw( string s, ref int Start )
@@ -1274,7 +1280,8 @@ namespace CumulusUtils
             "ByMonthLongestDryPeriod",
             "ByMonthLongestWetPeriod",
             "ByMonthLowDailyTempRange",
-            "ByMonthHighDailyTempRange"
+            "ByMonthHighDailyTempRange",
+            "CPUTemp"
         };
 
     }

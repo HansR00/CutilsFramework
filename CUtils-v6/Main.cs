@@ -408,11 +408,10 @@ namespace CumulusUtils
 
                 Environment.Exit( 0 );
             }
-            
-            DoingUserAskedData = DoUserAskedData;
 
             // Now we're going
             //
+            DoingUserAskedData = DoUserAskedData;
             DoAirLink &= HasAirLink;
 
             ThisDayfile = new Dayfile( Sup );

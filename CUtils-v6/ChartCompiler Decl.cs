@@ -593,7 +593,7 @@ namespace CumulusUtils
                             PlotvarAxisEXTRA = tmp.ToArray();
 
                             tmpStr = PlotvarUnitsEXTRA.ToList();
-                            tmpStr.Add( thisList.Name + webtag );
+                            tmpStr.Add( "" ); // thisCustomLogs.WebTags.TagUnit[0]
                             PlotvarUnitsEXTRA = tmpStr.ToArray();
 
                             tmpStr = PlotvarTypesEXTRA.ToList();

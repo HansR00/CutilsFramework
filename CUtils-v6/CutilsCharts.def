@@ -1,0 +1,298 @@
+﻿;
+; ChartsCompiler definitions - Part of CumulusUtils
+; Dutch version
+;
+; © Copyright 2019 - 2022 Hans Rottier <hans.rottier@gmail.com>
+;
+; 
+; Author:      Hans Rottier <hans.rottier@gmail.com>
+; Project:     CumulusUtils meteo-wagenborgen.nl
+; Date:        18-11-2022
+;
+; This file is  part of the distribution. Users may modify this file up to the indicator line
+; Anything beyond that line will be removed at generation time (by the ExtraSensors module)
+;
+
+Equations
+; See https://www.omnicalculator.com/physics/cloud-base#how-to-use-the-cloud-altitude-calculator
+  CloudBase EVAL [ (Temperature - DewPoint) / 10*1247 ]
+
+; Water Vapour Saturation Pressure according to the August-Roche-Magnus equation for the 1980 version, the 2008 version and the sub-zero version
+  Psat2008 EVAL [ 6.112 * EXP(17.62*Temperature/(243.12+Temperature)) ]
+  Psat2008ALL EVAL [ 6.112 * EXP(17.62*AverageTemp/(243.12+AverageTemp)) ]
+  Psat1980 EVAL [ 6.112 * EXP(17.67*Temperature/(243.5+Temperature)) ]
+  PsatSub0 EVAL [ 6.112 * EXP(22.46*Temperature/(272.62+Temperature)) ]
+
+; Actual Vapour Pressure
+  Avp Eval [ Humidity / 100.0 * Psat2008 ]
+
+; WetbulbTemperature in degr Celsius
+  WetBulbTemp Eval [ 0.00066 * Pressure * Temperature + 4098 * Psat2008 / (Pow( Dewpoint + 237.7, 2) * Dewpoint) / (0.00066 * Pressure + 4098 * Psat2008 / Pow(Dewpoint + 237.7, 2)) ]
+
+; Apparent Temperature as in CMX (WindSpeed in ms so convert to Kmh, divide by 3.6
+  AppTemp Eval [ Temperature + 0.33 * Avp - 0.7 * WindSpeed / 3.6 - 4.0 ]
+
+; Humidex as in CMX
+  CDLHumidex Eval [ (Temperature + 5.0 / 9.0 * (Psat2008 - 10.0)) ]
+
+
+Chart Overzicht Title Overzicht van het huidige weer
+ConnectsTo 2 4 15 20
+Has WindBarbs Above colour black
+ZOOM 3
+  PLOT Temperature Colour #058DC7 zindex 90
+  PLOT DewPoint Colour #50B432 zindex 80
+  PLOT pressure Colour red zindex 70
+  Plot Humidity Colour #64E572 zindex 60
+  Plot CurrentSolarRad As Area Opacity 0.2 Colour #FFA500 zindex 20
+  Plot RainFall As Area colour #33B4FF opacity 0.2 zindex 10
+EndChart
+
+Chart Temperatuur Title Temperatuur en Afgeleiden 
+ConnectsTo 1 13 14
+Has WindBarbs Below
+  Plot Extra Temp2 Invisible As Spline Colour #DDDF00 zIndex 100
+;  Plot InsideTemp Invisible As Spline Colour #DDDF00 zIndex 100
+  PLOT Temperature As SPline Colour #058DC7 zindex 90
+  PLOT FeelsLike As SPline Colour #ED561B zindex 80
+  PLOT DewPoint As SPline Colour #50B432 zindex 70
+EndCHART
+
+Chart Wind Title Wind 
+ConnectsTo 5 8 17
+	Plot WindGust
+	Plot WindSpeed
+EndCHART
+
+Chart Richting Title Windrichting 
+ConnectsTo 6 7 18 19
+;Has WindBarbs below colour red
+  Plot Bearing As Scatter
+  Plot AverageBearing As Scatter
+;  Plot Windspeed
+EndCHART
+
+Chart Regen Title Regen en Regensnelheid
+ConnectsTo 3 21 22
+;  Plot RainFall As Area Colour #008000 Opacity 0.2
+  Plot RainFall As Area Colour green Opacity 0.2
+  Plot RainRate zIndex 100
+EndChart
+
+Chart Vochtigheid Title Relatieve Vochtigheid binnen en buiten
+ConnectsTo 11 16
+  Plot Humidity
+  Plot InsideHumidity Invisible
+EndChart
+
+Chart Zon Title (Max)Straling en UV 
+ConnectsTo 12 23 24
+	Plot	UV	zIndex 100
+	Plot 	CurrentSolarRad As Area Opacity 0.4 Colour Orange zIndex 50 
+	Plot	TheoreticalSolarMax As Area Colour Gold zIndex 10 Opacity 0.2
+EndChart
+
+Chart Wolkenbasis Title Hoogte van wolken boven zeeniveau 
+ConnectsTo 20
+  PLOT CloudBase EVAL [ CloudBase ] Axis Distance
+EndChart 
+Info " This is the estimate of the height at which the clouds start to form. It is calculated with the formula shown in the <a href='https://en.wikipedia.org/wiki/Cloud_base'>wiki</a> "
+
+CHART DagelijkseTemp TITLE Dagelijkse Gemiddelde Temperatuur met Columnrange
+  PLOT DAILY AverageTemp colour green As ColumnRange
+  PLOT DAILY AverageTemp colour black As spline
+EndChart OUTPUT DailyCharts.txt
+
+CHART DagelijkseBaro TITLE DAgelijkse Gemiddelde Barometer met Columnrange
+  PLOT DAILY MinBarometer colour Crimson As ColumnRange
+  PLOT DAILY AverageBarometer EVAL [ (MinBarometer + MaxBarometer)/2.0 ] colour black As spline Axis Pressure
+EndChart
+
+Chart DagelijkseRegen Title Dagelijkse Regen
+  Plot DAILY DayRain As Column Colour green Opacity 0.2
+EndChart 
+
+Chart DagelijkseZonuren Title Zonuren per dag van afgelopen jaar
+  Plot DAILY SunHours As Column colour gold
+EndChart 
+
+Chart CoolingDays Title Cooling-Heating Degree Days
+  Plot ALL AverageTemp
+  Plot ALL CoolingDegreeDays
+  Plot ALL HeatingDegreeDays
+EndChart
+
+Chart TempEVT Title Temperatuur en EVT Historic Data
+  PLOT ALL AverageTemp As SPline Colour #058DC7 zindex 90
+  PLOT ALL DayEVT As Column Colour #cc0000
+EndCHART Output TempEvtCharts.txt
+
+Chart TempEVTRecent Title Temperatuur and EVT - Recente Data
+  PLOT Temperature As SPline Colour #058DC7 zindex 90
+  PLOT Evapotranspiration As Area Colour #cc0000
+EndCHART
+
+;Experimental charts
+;See : https://library.wmo.int/doc_num.php?explnum_id=7450
+;
+Chart DewpointCalcs Title Dewpoint Calculations in CDL
+  Plot Humidity
+  Plot Dewpoint
+  Plot Approximation1 EVAL [ (243.12 * LN(Avp) - 440.1) / (19.43 - LN(Avp)) ] Axis Temp
+  Plot Approximation2 EVAL [ Temperature - ((100.0 - Humidity)/5) ] Axis Temp
+EndChart 
+Output Experiments.txt
+Info " Dewpoint is usually calculated as a derivative of the Water Vapour Saturation Pressure according to the August-Roche-Magnus equation. Also there is an easy approximation, see links below:<br/><br/>
+Documentation:<br/>
+<a href='https://en.wikipedia.org/wiki/Dew_point' target='_blank'>https://en.wikipedia.org/wiki/Dew_point</a><br/>
+<a href='https://iridl.ldeo.columbia.edu/dochelp/QA/Basic/dewpoint.html' target='_blank'>https://iridl.ldeo.columbia.edu/dochelp/QA/Basic/dewpoint.html</a><br/><br/>
+The chart is defined as follows:<br/><br/>
+<pre>
+Chart DewpointCalcs Title Dewpoint Calculations in CDL<br/>
+&nbsp;&nbsp;Plot Humidity<br/>
+&nbsp;&nbsp;Plot Dewpoint<br/>
+&nbsp;&nbsp;Plot Approximation1 EVAL [ (243.12 * LN(Avp) - 440.1) / (19.43 - LN(Avp)) ] Axis Temp<br/>
+&nbsp;&nbsp;Plot Approximation2 EVAL [ Temperature - ((100.0 - Humidity)/5) ] Axis Temp<br/>
+EndChart
+</pre>
+See next chart for Staurated Vapour Pressure and Actual Vapour Pressure.<br/>
+   "
+
+Chart VapourPressure Title August-Roche-Magnus Eqn 1980/2008/SubZero in CDL
+  Plot Temperature
+  Plot Psat2008 Eval [ Psat2008 ] Axis Free
+  Plot Psat1980 Eval [ Psat1980 ] Axis Free
+  Plot PsatSub0 Eval [ PsatSub0 ] Axis Free
+  Plot Avp Eval [ Avp ] Axis Free
+EndChart 
+Info " The water saturation pressure according to the August-Roche-Magnus equation as used in the DewPoint charts (and for many meteorological calculations) can  be plotted separately as well. This chart is defined as follows:<br/><br/>
+<pre>
+Chart VapourPressure Title August-Roche-Magnus Eqn 1980/2008/SubZero in CDL<br/>
+&nbsp;&nbsp;Plot Temperature<br/>
+&nbsp;&nbsp;Plot Psat2008 Eval [ Psat2008 ] Axis Free<br/>
+&nbsp;&nbsp;Plot Psat1980 Eval [ Psat1980 ] Axis Free<br/>
+&nbsp;&nbsp;Plot PsatSub0 Eval [ PsatSub0 ] Axis Free<br/>
+&nbsp;&nbsp;Plot Avp Eval [ Avp ] Axis Free<br/>
+EndChart</pre>
+Where the Psat2008 and Psat1980 are two different versions of the August-Roche-Magnus equation by the WMO. It is assumed the 2008 is the better approximation. Avp is the Actual Vapour Pressure as  <pre>Humidity / 100.0 * Psat2008</pre><br/>
+
+2008 : 6.112 * EXP(17.62*Temperature/(243.12+Temperature)) <br/>
+1980 : 6.1094 * EXP(17.625*Temperature/(243.04+Temperature)) <br/><br/>
+The third equation is the water saturation pressure over ice.
+   "
+
+Chart TempDerivatives Title Temperature Derivatives full in CDL
+  Plot Temperature
+;  Plot CDLWindChill Eval [ CDLWindChill ] Axis Temp
+  Plot AppTemp Eval [ AppTemp ] Axis Temp
+  Plot WetBulbTemp Eval [ WetBulbTemp ] Axis Temp
+  Plot CDLHumidex Eval [ CDLHumidex ] Axis Temp
+EndChart
+Info " Specification and explanation follows later. "
+
+Chart pwsFWI Title Raw pwsFWI as a chart
+  Plot DAILY pwsFWI Eval [ Psat2008ALL * (1.0 - MinHumidity/100.0)*HighAvgWindSpeed ] As spline Axis Free Colour Crimson
+EndChart Output pwsFWIcharts.txt
+
+Chart pwsFWInow Title Raw pwsFWI intraday as a chart
+  Plot RECENT pwsFWI Eval [ Psat2008 * (1.0 - Humidity/100.0)*WindSpeed ] As spline Axis Free Colour Red
+EndChart
+
+; DO NOT CHANGE ANYTHING BELOW THIS INDICATOR LINE
+
+; ExtraSensorCharts
+
+Chart SoilTemperatures Title Trend Chart of Extra Outside Temperature Sensors
+;Has WindBarbs Above
+  PLOT Temperature Colour #0000cc zindex 90
+  Plot Extra Temp1 
+  Plot Extra Humidity1
+  Plot Extra Dewpoint1
+  Plot Extra UserTemp1
+EndChart Output extrasensorscharts.txt
+
+Chart SoilMoisture Title Trend Chart of Extra Soil Moisture Sensors
+;Has WindBarbs Above
+  PLOT Temperature Colour #0000cc zindex 90
+  Plot Humidity Colour #64E572 zindex 60
+  Plot Extra SoilMoisture1 axis free zindex 40 Colour Red
+  Plot RainFall As Area colour #33B4FF opacity 0.2 zindex 10
+EndChart
+
+Chart StevensonScreen Title Trend Chart of Stevenson Screen Sensors
+Has WindBarbs Above
+  PLOT Temperature Colour #0000cc zindex 90
+  Plot Extra Temp2
+  Plot Extra Humidity2
+  Plot Extra Dewpoint2
+EndChart
+
+Chart GeigerCounter Title Trend Chart of the Geiger Counter
+Has Windbarbs Above
+  Plot Extra geiger
+  STATS Extra geiger SMA Colour red
+;  For the radiation where 
+;  Plot Extra Radiation Eval [ geiger * 0.008120 * 24 * 365 / 1000 ] 
+EndChart
+Info " This chart displays geiger counter clicks per minute and its Simple Moving Average with a period 180 samples.<br/><br/>
+It should be understood, that one click per minute equals 0.008120 µSv/h for the J305 geiger tube, this is roughly 142 µSv/year. In the Dutch situation the background radiation is 1600 µSv/year 
+(which is roughly 11 times more than what is measured, so the sensitivity could be upped a bit) 
+and dangerlevels are set to be 50.000 µSv/year. This to give you an idea of what you are looking at.<br/><br/>
+The mesurements are between 1.8 and 3.5 clicks/min (highest observed so far). "
+
+
+;Chart WeerkastAnalysis Title Trend grafiek van Extra Weerkast Analysis
+;  PLOT AverageScreenTemp EVAL [ Temperature - Temp2 ] AXIS FREE
+;  PLOT Temperature Colour #0000cc zindex 90
+;  Plot Extra Temp2
+;EndChart
+
+; CustomLogsCharts
+
+Chart Rain Title Trend chart of CustomLog Rain 
+  PLOT EXTRA Rainrfall
+  PLOT EXTRA Rainrrate
+  PLOT EXTRA Rainrhour
+  PLOT EXTRA Rainrmidnight
+  PLOT EXTRA Rainr24hour
+EndChart Output customlogscharts.txt
+
+Chart Temp Title Trend chart of CustomLog Temp 
+  PLOT EXTRA Temptemp
+  PLOT EXTRA Tempintemp
+  PLOT EXTRA Tempapptemp
+  PLOT EXTRA Tempwchill
+  PLOT EXTRA Tempfeelslike
+  PLOT EXTRA Tempwetbulb
+EndChart
+
+Chart Airlink Title Trend chart of CustomLog Airlink 
+  PLOT EXTRA AirlinkAirLinkPm2p5Out
+  PLOT EXTRA AirlinkAirLinkPm10Out
+EndChart
+
+Chart Lightning Title Trend chart of CustomLog Lightning 
+  PLOT EXTRA LightningLightningStrikesToday
+  PLOT EXTRA LightningLightningDistance
+EndChart
+
+Chart DailyLightning Title Trend chart of CustomLog DailyLightning 
+  PLOT ALL DailyLightningLightningStrikesToday
+EndChart
+
+Chart DailyAllTemps Title Trend chart of CustomLog DailyAllTemps 
+  PLOT ALL DailyAllTempstemp
+  PLOT ALL DailyAllTempsintemp
+  PLOT ALL DailyAllTempsapptemp
+  PLOT ALL DailyAllTempswchill
+  PLOT ALL DailyAllTempsfeelslike
+  PLOT ALL DailyAllTempswetbulb
+EndChart
+
+Chart DailyImportant Title Trend chart of CustomLog DailyImportant 
+  PLOT ALL DailyImportantavgtemp
+  PLOT ALL DailyImportantwindAvg
+  PLOT ALL DailyImportantrmidnight
+  PLOT ALL DailyImportantET
+EndChart
+

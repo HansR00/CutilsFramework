@@ -92,9 +92,6 @@ namespace CumulusUtils
                         DeviceInfo.AppendLine( "The transmitter battery condition: <#txbattery>" );
                         DeviceInfo.AppendLine( "" );
 
-                        tmp = await thisIPC.ReplaceWebtagsPostAsync( DeviceInfo.ToString() );
-
-                        of.WriteLine( tmp );
                         break;
 
                     case 11: // WLL
@@ -121,9 +118,15 @@ namespace CumulusUtils
                             DeviceInfo.AppendLine( "" );
                         }
 
-                        tmp = await thisIPC.ReplaceWebtagsPostAsync( DeviceInfo.ToString() );
+                        break;
 
-                        of.WriteLine( tmp );
+                    case 12:
+                    case 14:
+                    case 20:
+                        DeviceInfo.AppendLine( "The Ecowitt firmware <#GW1000FirmwareVersion>" );
+                        DeviceInfo.AppendLine( $"Extra Station Info: {Sup.GetUtilsIniValue( "SysInfo", "ExtraStationInfo", "" )}" );
+                        DeviceInfo.AppendLine( "" );
+
                         break;
 
                     default:
@@ -131,6 +134,9 @@ namespace CumulusUtils
                         of.WriteLine( "" );
                         break;
                 } // End Switch for device stats if any
+
+                tmp = await thisIPC.ReplaceWebtagsPostAsync( DeviceInfo.ToString() );
+                of.WriteLine( tmp );
 
                 // Now do the OS dependent stuff
                 //
