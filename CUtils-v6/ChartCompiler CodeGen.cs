@@ -214,7 +214,7 @@ namespace CumulusUtils
 
                         // Make a distinction between CumulusUtils JSONfiles and regular CMX JSONfiles
                         // CumulusUtils JSONs are always in the CumulusUtils directory. So: the current webroot
-                        if ( df.StartsWith( "CUserdata" ) || df.StartsWith( "extrasensors" ) )
+                        if ( df.StartsWith( "CUserdata" ) || df.StartsWith( "extrasensors" ) || df.StartsWith( "customlogs" ) )
                             AjaxJavascript.AppendLine( $"    url: '{df}'," );
                         else
                             AjaxJavascript.AppendLine( $"    url: '{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}{df}'," );

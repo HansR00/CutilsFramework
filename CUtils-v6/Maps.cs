@@ -63,7 +63,7 @@ namespace CumulusUtils
                     !Website.StartsWith( "https:", CUtils.Cmp ) &&
                     !string.IsNullOrEmpty( Website ) )
                 {
-                    Website = "http://" + Website;
+                    Website = "https://" + Website;
                 }
 
                 Sup.LogTraceInfoMessage( $" MapsOn: Adding Station: {Name}" );
