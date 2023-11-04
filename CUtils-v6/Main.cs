@@ -442,32 +442,6 @@ namespace CumulusUtils
                 }
             }
 
-            // Reading the Monthly logfile has no Async and is independent of InetSupport!!
-            if ( DoCheckOnly )
-            {
-#if TIMING
-                watch = Stopwatch.StartNew();
-#endif
-
-                //_ = await Isup.UploadFileAsync( "TagsToReplace.txt", $"{Sup.PathUtils}TagsToReplace.txt" );
-
-                //CheckOnlyAsked = DoCheckOnly;
-
-                //Monthfile fncs = new Monthfile( Sup );
-                //fncs.ReadMonthlyLogs();
-                //fncs.Dispose();
-
-#if TIMING
-                watch.Stop();
-                Sup.LogTraceInfoMessage( $"Timing DocheckOnly = {watch.ElapsedMilliseconds} ms" );
-#endif
-
-                Sup.LogTraceInfoMessage( "CheckOnly is no longer functional!" );
-                Sup.LogTraceInfoMessage( "Main CmulusUtils: Exiting!" );
-
-                return;
-            }
-
             if ( DoSystemChk )
             {
                 // Timing of the SysInfo

@@ -477,12 +477,6 @@ namespace CumulusUtils
                         }
                         else
                         {
-                            if ( thisPlotvar.PlotvarRange == PlotvarRangeType.Extra )
-                            {
-                                _ = Sup.GetCUstringValue( "Compiler", thisPlotvar.Keyword, "", true );
-                                //AddSeriesJavascript.AppendLine( $"    name:'{Sup.GetCUstringValue( "Compiler", thisPlotvar.Keyword, thisPlotvar.Keyword, true )}'," );
-                            }
-
                             AddSeriesJavascript.AppendLine( $"    name:'{Sup.GetCUstringValue( "Compiler", thisPlotvar.Keyword, thisPlotvar.Keyword, true )}'," );
                             AddSeriesJavascript.AppendLine( $"    id:'{thisPlotvar.Keyword}'," );
                             AddSeriesJavascript.AppendLine( $"    data: {thisPlotvar.Keyword}," );

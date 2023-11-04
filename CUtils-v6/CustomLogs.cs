@@ -44,8 +44,7 @@ namespace CumulusUtils
         public WebtagInfo WebTags { get; set; }
         public List<CustomLog> CustomLogsList = new();
 
-        public int TotalNrOfCustomLogs = 0;
-        public int TotalNrOfWebtags = 0;
+        private readonly int TotalNrOfWebtags = 0;
 
         readonly CuSupport Sup;
 
@@ -79,7 +78,6 @@ namespace CumulusUtils
                     };
 
                     CustomLogsList.Add( tmp );
-                    TotalNrOfCustomLogs += 1;
                 }
                 else if ( IntervalEnabled.Equals( "0" ) ) continue;     // take next entry (if it exists)
                 else break;                                             // No more Interval Custom Logs, the Enabled value must  be empty
@@ -104,13 +102,12 @@ namespace CumulusUtils
                     };
 
                     CustomLogsList.Add( tmp );
-                    TotalNrOfCustomLogs += 1;
                 }
                 else if ( DailyEnabled.Equals( "0" ) ) continue;    // take next entry (if it exists)
                 else break;                                         // No more Daily Custom Logs, the Enabled value must  be empty
             }
 
-            // Split the content lines into a list of full Webtags specifications (inclusing their modifiers)
+            // Split the content lines into a list of full Webtags specifications (including their modifiers)
             foreach ( CustomLog thisLog in CustomLogsList )
             {
                 int CurrentIndex = 0;
@@ -171,7 +168,7 @@ namespace CumulusUtils
             GenerateCustomLogsCharts();
             GenerateCustomLogsModule();
 
-            // Generate the corresponding JSONs (Interval and DAily) to account for possible changes.
+            // Generate the corresponding JSONs (Interval and Daily) to account for possible changes.
             // These JSONs must be full period and not incremental!!
 
             GenerateCustomLogsDataJson( NonIncremental: true );
@@ -214,7 +211,7 @@ namespace CumulusUtils
                 sb.AppendLine( $"  SetupCustomLogsTable();" );
                 sb.AppendLine( $"  $('#Dashboard').hide();" );
                 sb.AppendLine( $"  $('#Gauges').hide();" );
-                sb.AppendLine( $"  $('#ExtraAndCustom').show();" );  //misuse the ExtraSensors place for this.
+                sb.AppendLine( $"  $('#ExtraAndCustom').show();" );
                 sb.AppendLine( "  loadCustomLogsRealtime();" );
                 sb.AppendLine( "  if (CustomLogsTimer == null) CustomLogsTimer = setInterval(loadCustomLogsRealtime, 60 * 1000);" );
                 sb.AppendLine( $"  LoadUtilsReport( '{Sup.CustomLogsCharts}', false );" );
@@ -285,9 +282,9 @@ namespace CumulusUtils
 
                 buf.Append( $"<style>.centerItem {{width: 80%; max-height: 80vh; margin: 6vh auto;overflow-y: auto; }}</style>" );
 
-                buf.Append( $"<div class='centerItem' style='text-align:left;'><table style='width:100%'>" );
+                buf.Append( $"<div class='centerItem' style='text-align:left;'>" );
                 buf.Append( $"<a class='centerItem' href='https://www.cumuluswiki.org/a/Full_list_of_Webtags' target='_blank'>Cumulus Webtags -  Full List</a><br/>" );
-                buf.Append( $"<tr " +
+                buf.Append( $"<table style='width:100%'><tr " +
                     $"style='background-color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarBackground", "#C5C55B" )}; " +
                     $"color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarText", "White" )}; width:100%'>" );
                 buf.Append( $"<th {thisPadding()}>{Sup.GetCUstringValue( "CustomLogs", "WebtagName", "Webtag Name", false )}</th>" +
@@ -415,7 +412,7 @@ namespace CumulusUtils
 
                 foreach ( string thisTagName in thisLog.TagNames )
                 {
-                    // Note: the webtag names have been added to the compiler in the declarations contructor
+                    // Note: the webtag names will be added to the compiler in the declarations contructor
                     //       the names are formed {logname}{tagname} so the webtag can be used in more than one chart. 
                     //       For the same webtag with different modifiers currently two charts are required. Maybe in future the same webtag 
                     //       can be used more often with different modifiers in the same chart... wishlist.
@@ -423,11 +420,6 @@ namespace CumulusUtils
                         CutilsChartsMods.Add( $"  PLOT ALL {thisLog.Name}{thisTagName}" );
                     else
                         CutilsChartsMods.Add( $"  PLOT EXTRA {thisLog.Name}{thisTagName}" );
-
-                    // Set the string for meaning and translation. The user will have to modify this after initial creation to make sense of the chart.
-                    // 
-                    string tmp = thisLog.Name + thisTagName;
-                    //Sup.GetCUstringValue( "CustomLogs", tmp, tmp, false );
                 }
 
                 if ( !OutputWritten )
@@ -441,7 +433,7 @@ namespace CumulusUtils
                 CutilsChartsMods.Add( "" );
             }
 
-            Sup.LogDebugMessage( $"GenerateCustomLogsCharts: Writing the CutilsCharts.def" );
+            Sup.LogDebugMessage( "GenerateCustomLogsCharts: Writing the CutilsCharts.def" );
             File.WriteAllLines( $"{Sup.PathUtils}{Sup.CutilsChartsDef}", CutilsChartsMods, Encoding.UTF8 );
 
             return;
@@ -621,8 +613,12 @@ namespace CumulusUtils
 
             while ( !PeriodComplete )
             {
-                string fullFilename = "data/" + thisLog.Name + FilenamePostFix;
-                string copyFilename = "data/copy_" + thisLog.Name + FilenamePostFix;
+                string fullFilename;
+                string copyFilename;
+
+                fullFilename = "data/" + thisLog.Name + FilenamePostFix;
+                copyFilename = "data/copy_" + thisLog.Name + FilenamePostFix;
+
                 Sup.LogTraceInfoMessage( $"CustomLogs ReadRecentCustomLog: {fullFilename} - Start: {Start} ; End: {End} ;" );
 
                 if ( File.Exists( copyFilename ) ) File.Delete( copyFilename );
@@ -636,8 +632,6 @@ namespace CumulusUtils
                     // Set the separators correct and do the reading: / in the date and the . as decimal separator.
                     //
                     string thisLine = ChangeSeparators( allLines[ i ] );
-
-                    //DateTimeText = allLines[ i ].Substring( 0, 14 ).Replace('-','/').Replace('.','/');
 
                     DateTimeText = thisLine.Substring( 0, 14 );
                     tmp.Date = DateTime.ParseExact( DateTimeText, "dd/MM/yy HH:mm", CUtils.Inv );
@@ -688,12 +682,13 @@ namespace CumulusUtils
                 {
                     NextFileTried = true;
 
-                    FilenamePostFix = Start.Date.AddMonths( 1 ).ToString( "-YYYYMM" ) + ".txt";
-                    Sup.LogTraceInfoMessage( $"CustomLogs ReadRecentCustomLog: Require the  next logfile: {thisLog.Name}" );
+                    FilenamePostFix = Start.Date.AddMonths( 1 ).ToString( "-yyyyMM" ) + ".txt";
+                    fullFilename = $"data/{thisLog.Name}{FilenamePostFix}";
+                    Sup.LogTraceInfoMessage( $"CustomLogs ReadRecentCustomLog: Require the  next logfile: {fullFilename}" );
 
-                    if ( !File.Exists( "data/" + thisLog.Name + FilenamePostFix ) )
+                    if ( !File.Exists( fullFilename ) )
                     {
-                        Sup.LogTraceErrorMessage( $"CustomLogs ReadRecentCustomLog: Require {thisLog.Name} to continue but it does not exist, continuing with next CustomsLog" );
+                        Sup.LogTraceErrorMessage( $"CustomLogs ReadRecentCustomLog: Require {fullFilename} to continue but it does not exist, continuing with next CustomsLog" );
                         PeriodComplete = true;
                     }
                 }
@@ -835,55 +830,854 @@ namespace CumulusUtils
     {
         CuSupport Sup;
 
-        public WebtagInfo(CuSupport s)
+        public WebtagInfo(CuSupport s )          // Constructor
         {
-            // Constructor
             Sup = s;
 
-            TagUnit = new string[] 
+            TagUnit = new string[]
             {
+                Sup.StationTemp.Text(),             // 0
                 Sup.StationTemp.Text(),
                 Sup.StationTemp.Text(),
                 Sup.StationTemp.Text(),
                 Sup.StationTemp.Text(),
                 Sup.StationTemp.Text(),
-                Sup.StationTemp.Text(),    // Index 5 (no 6)
+                "%",
+                "",
+                Sup.StationPressure.Text(),
+                Sup.StationPressure.Text(),
+
+                Sup.StationDistance.Text(),         // 10
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationPressure.Text(),
+                Sup.StationPressure.Text(),
+                Sup.StationDistance.Text(),
+                "",
+                "",
+                "",
+                Sup.StationWind.Text(),
+
+                Sup.StationWind.Text(),              // 20
+                "",
+                "",
+                Sup.StationWind.Text(),
+                Sup.StationWind.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationRain.Text() + Sup.PerHour,
+                "",
+                "",
+                "",
+
+                "",                                 // 30
+                "",
+                "",
+                "",
+                Sup.StationRain.Text(),
+                "",
+                "",
+                Sup.StationRain.Text(),
+                Sup.StationRain.Text(),
+                Sup.StationRain.Text(),
+
+                Sup.StationRain.Text(),             // 40
+                Sup.StationRain.Text(),
+                "%",
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+
+                Sup.StationTemp.Text(),             // 50
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                "",
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationPressure.Text(),
+                Sup.StationPressure.Text(),
+
+                "%",                                // 60
+                "%",
+                Sup.StationWind.Text(),
+                Sup.StationWind.Text(),
+                "",
+                Sup.StationRain.Text() + Sup.PerHour,
+                Sup.StationRain.Text(),
+                Sup.StationRain.Text(),
+                "",
+                "",
+
+                Sup.StationTemp.Text(),             // 70
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                "",
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+
+                Sup.StationWind.Text(),             // 80
+                Sup.StationWind.Text(),
+                Sup.StationDistance.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationRain.Text() + Sup.PerHour,
+                Sup.StationRain.Text(),
+                Sup.StationRain.Text(),
+                Sup.StationRain.Text(),
+                Sup.StationRain.Text(),
+                Sup.StationPressure.Text(),
+
+                Sup.StationPressure.Text(),         // 90
+                "%",
+                "%",
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                "",
+                "",
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                "hr",
+
+                "hr",                               // 100
+                "hr",
+                "hr",
+                "min",
+                Sup.StationRain.Text(),
+                Sup.StationRain.Text(),
+                "",
+                "W/m²",
+                "",
+                "W/m²",
+
+                "hr",                               // 110
+                "hr",
+                "hr",
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+
+                Sup.StationTemp.Text(),             // 120
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),             // An extra one as there are 11 webtags in this blok
+                                                    // My bad :(
+
+                Sup.StationTemp.Text(),             // 130
+                Sup.StationTemp.Text(),
+                "%",
+                "%",
+                "%",
+                "%",
+                "%",
+                "%",
+                "%",
+                "%",
+
+                "%",                                // 140
+                "%",
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+
+                Sup.StationTemp.Text(),             // 150
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                "",
+                "",
+
+                "",                                 // 160
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+
+                "",                                 // 170
+                "",
+                "",
+                "",
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+
+                Sup.StationTemp.Text(),             // 180
+                Sup.StationTemp.Text(),
+                PMconc.Text(),
+                PMconc.Text(),
+                PMconc.Text(),
+                PMconc.Text(),
+                PMconc.Text(),
+                PMconc.Text(),
+                PMconc.Text(),
+                PMconc.Text(),
+
+                CO2conc.Text(),                     // 190
+                CO2conc.Text(),
+                CO2conc.Text(),
+                CO2conc.Text(),
+                CO2conc.Text(),
+                CO2conc.Text(),
+                Sup.StationTemp.Text(),
+                "%",
+                Sup.StationDistance.Text(),
+                "",
+
+                Sup.StationTemp.Text(),             // 200
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+
+                "",                                 // 210
+                "",
+                Sup.StationTemp.Text(),
+                "%",
+                PMconc.Text(),
+                PMconc.Text(),
+                PMconc.Text(),
+                PMconc.Text(),
+                PMconc.Text(),
+                PMconc.Text(),
+
+                PMconc.Text(),                      // 220
+                PMconc.Text(),
+                PMconc.Text(),
+                PMconc.Text(),
+                PMconc.Text(),
+                Sup.StationTemp.Text(),
+                "%",
+                PMconc.Text(),
+                PMconc.Text(),
+                PMconc.Text(),
+
+                PMconc.Text(),                      // 230
+                PMconc.Text(),
+                PMconc.Text(),
+                PMconc.Text(),
+                PMconc.Text(),
+                PMconc.Text(),
+                PMconc.Text(),
+                PMconc.Text(),
+                "",
+                "",
+
+                "",                                 // 240
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+
+                "",                                 // 250
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "%",
+                "%",
+
+                "%",                                // 260
+                "%",
+                "%",
+                "%",
+                "%",
+                "%",
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+
+                Sup.StationTemp.Text(),             // 270
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                "",
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationPressure.Text(),
+                Sup.StationPressure.Text(),
+                "%",
+
+                "%",                                // 280
+                Sup.StationWind.Text(),
+                Sup.StationWind.Text(),
+                Sup.StationRain.Text() + Sup.PerHour,
+                Sup.StationRain.Text(),
+                Sup.StationRain.Text(),
+                Sup.StationRain.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationDistance.Text(),
+
+                "",                                 // 290
+                "",
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+
+                Sup.StationTemp.Text(),             // 300
+                Sup.StationTemp.Text(),
+                "",
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationPressure.Text(),
+                Sup.StationPressure.Text(),
+                "%",
+                "%",
+                Sup.StationWind.Text(),
+
+                Sup.StationWind.Text(),             // 310
+                Sup.StationRain.Text() + Sup.PerHour,
+                Sup.StationRain.Text(),
+                Sup.StationRain.Text(),
+                Sup.StationRain.Text(),
+                Sup.StationRain.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationDistance.Text(),
+                "",
+
+                "",                                 // 320
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                "%",
+                "%",
+                "",
+                "",
+                "",
+                "",
+                "",
+
+                "",                                 // 330
+                "%",
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                "",
+                Sup.StationTemp.Text(),
+
+                Sup.StationTemp.Text(),             // 340
+                Sup.StationTemp.Text(),
+                Sup.StationWind.Text(),
+                Sup.StationWind.Text(),
+                Sup.StationDistance.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationRain.Text() + Sup.PerHour,
+                Sup.StationRain.Text(),
+                Sup.StationRain.Text(),
+                Sup.StationRain.Text(),
+
+                Sup.StationRain.Text(),             // 350
+                Sup.StationPressure.Text(),
+                Sup.StationPressure.Text(),
+                "%",
+                "%",
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                "",
+                "",
+                Sup.StationTemp.Text(),
+
+                Sup.StationTemp.Text(),             // 360
+                Sup.StationTemp.Text(),
 
             };
 
             TagAxis = new AxisType []
             {
+                AxisType.Temp,              // 0
                 AxisType.Temp,
                 AxisType.Temp,
                 AxisType.Temp,
                 AxisType.Temp,
+                AxisType.Temp, 
+                AxisType.Humidity,
                 AxisType.Temp,
-                AxisType.Temp,             // Index 5 (no 6)
+                AxisType.Pressure,
+                AxisType.Pressure,
 
+                AxisType.Distance,          // 10
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Pressure,
+                AxisType.Pressure,
+                AxisType.Distance,
+                AxisType.Direction,
+                AxisType.DegreeDays,
+                AxisType.DegreeDays,
+                AxisType.Wind,
+
+                AxisType.Wind,              // 20
+                AxisType.Direction,
+                AxisType.Direction,
+                AxisType.Wind,
+                AxisType.Wind,
+                AxisType.Temp,
+                AxisType.Rrate,
+                AxisType.Direction,
+                AxisType.Direction,
+                AxisType.Direction,
+
+                AxisType.Direction,         // 30
+                AxisType.Direction,
+                AxisType.Direction,
+                AxisType.Free,
+                AxisType.Rain,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Rain,
+                AxisType.Rain,
+                AxisType.Rain,
+
+                AxisType.Rain,              // 40
+                AxisType.Rain,
+                AxisType.Humidity,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+
+                AxisType.Temp,              // 50
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Pressure,
+                AxisType.Pressure,
+
+                AxisType.Humidity,          // 60
+                AxisType.Humidity,
+                AxisType.Wind,
+                AxisType.Wind,
+                AxisType.Direction,
+                AxisType.Rrate,
+                AxisType.Rain,
+                AxisType.Rain,
+                AxisType.Solar,
+                AxisType.UV,
+
+                AxisType.Temp,              // 70
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+
+                AxisType.Wind,              // 80
+                AxisType.Wind,
+                AxisType.Wind,
+                AxisType.Temp,
+                AxisType.Rrate,
+                AxisType.Rain,
+                AxisType.Rain,
+                AxisType.Rain,
+                AxisType.Rain,
+                AxisType.Pressure,
+
+                AxisType.Pressure,          // 90
+                AxisType.Humidity,
+                AxisType.Humidity,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Free,
+
+                AxisType.Hours,             // 100
+                AxisType.Hours,
+                AxisType.Hours,
+                AxisType.Free,
+                AxisType.Rain,
+                AxisType.Rain,
+                AxisType.UV,
+                AxisType.Solar,
+                AxisType.Free,
+                AxisType.Solar,
+
+                AxisType.Hours,             // 110
+                AxisType.Hours,
+                AxisType.Hours,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+
+                AxisType.Temp,              // 120
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,              // An extra one as there are 11 webtags in this blok
+                                            // My bad :(
+
+                AxisType.Temp,              // 130
+                AxisType.Temp,
+                AxisType.Humidity,
+                AxisType.Humidity,
+                AxisType.Humidity,
+                AxisType.Humidity,
+                AxisType.Humidity,
+                AxisType.Humidity,
+                AxisType.Humidity,
+                AxisType.Humidity,
+
+                AxisType.Humidity,          // 140
+                AxisType.Humidity,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+
+                AxisType.Temp,              // 150
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Free,
+                AxisType.Free,
+
+                AxisType.Free,              // 160
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+
+                AxisType.Free,              // 170
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+
+                AxisType.Temp,              // 180
+                AxisType.Temp,
+                AxisType.AQ,
+                AxisType.AQ,
+                AxisType.AQ,
+                AxisType.AQ,
+                AxisType.AQ,
+                AxisType.AQ,
+                AxisType.AQ,
+                AxisType.AQ,
+
+                AxisType.ppm,               // 190
+                AxisType.ppm,
+                AxisType.ppm,
+                AxisType.ppm,
+                AxisType.ppm,
+                AxisType.ppm,
+                AxisType.Temp,
+                AxisType.Humidity,
+                AxisType.Distance,
+                AxisType.Free,
+
+                AxisType.Temp,              // 200
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+
+                AxisType.Free,              // 210
+                AxisType.Free,
+                AxisType.Temp,
+                AxisType.Humidity,
+                AxisType.AQ,
+                AxisType.AQ,
+                AxisType.AQ,
+                AxisType.AQ,
+                AxisType.AQ,
+                AxisType.AQ,
+
+                AxisType.AQ,                // 220
+                AxisType.AQ,
+                AxisType.AQ,
+                AxisType.AQ,
+                AxisType.AQ,
+                AxisType.Temp,
+                AxisType.Humidity,
+                AxisType.AQ,
+                AxisType.AQ,
+                AxisType.AQ,
+
+                AxisType.AQ,                // 230
+                AxisType.AQ,
+                AxisType.AQ,
+                AxisType.AQ,
+                AxisType.AQ,
+                AxisType.AQ,
+                AxisType.AQ,
+                AxisType.AQ,
+                AxisType.Free,
+                AxisType.Free,
+
+                AxisType.Free,              // 240
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+
+                AxisType.Free,              // 250
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+
+                AxisType.Free,              // 260
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+
+                AxisType.Temp,              // 270
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Pressure,
+                AxisType.Pressure,
+                AxisType.Humidity,
+
+                AxisType.Humidity,          // 280
+                AxisType.Wind,
+                AxisType.Wind,
+                AxisType.Rrate,
+                AxisType.Rain,
+                AxisType.Rain,
+                AxisType.Rain,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Distance,
+
+                AxisType.Free,              // 290
+                AxisType.Free,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+
+                AxisType.Temp,              // 300
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Pressure,
+                AxisType.Pressure,
+                AxisType.Humidity,
+                AxisType.Humidity,
+                AxisType.Wind,
+
+                AxisType.Wind,              // 310
+                AxisType.Rrate,
+                AxisType.Rain,
+                AxisType.Rain,
+                AxisType.Rain,
+                AxisType.Rain,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Distance,
+                AxisType.Free,
+
+                AxisType.Free,              // 320
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+
+                AxisType.Free,              // 330
+                AxisType.Free,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+
+                AxisType.Temp,              // 340
+                AxisType.Temp,
+                AxisType.Wind,
+                AxisType.Wind,
+                AxisType.Distance,
+                AxisType.Temp,
+                AxisType.Rrate,
+                AxisType.Rain,
+                AxisType.Rain, 
+                AxisType.Rain,
+
+                AxisType.Rain,              // 350
+                AxisType.Pressure,
+                AxisType.Pressure,
+                AxisType.Humidity,
+                AxisType.Humidity,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Temp,
+
+                AxisType.Temp,              // 360
+                AxisType.Temp
             };
 
+            if ( Tagname.Length != TagUnit.Length )
+            {
+                Sup.LogTraceErrorMessage( $"CustomLogs WebtagInfo constructor: number of defined Webtag Units ({TagUnit.Length}) != number of Webtags ({Tagname.Length}). Exiting" );
+                Environment.Exit( 0 );
+            }
+
+            if ( TagUnit.Length != TagAxis.Length )
+            {
+                Sup.LogTraceErrorMessage( $"CustomLogs WebtagInfo constructor: number of defined Webtag Axis ({TagAxis.Length}) != number of Webtags ({Tagname.Length}). Exiting" );
+                Environment.Exit( 0 );
+            }
+
+            Sup.LogTraceInfoMessage( $"CustomLogs WebtagInfo constructor: number of defined Webtag Units: {TagUnit.Length}, everything OK. " );
+
+            if ( !CUtils.DoWebsite && Sup.LoggingOn && Sup.CUTraceSwitch.Level == System.Diagnostics.TraceLevel.Verbose ) 
+            {
+                Sup.LogTraceVerboseMessage( $"CustomLogs WebtagInfo Verbose info:" );
+
+                for ( int i = 0; i < Tagname.Length; i++) 
+                {
+                    Sup.LogTraceVerboseMessage( $"    {Tagname[i]} => unit {TagUnit[i]} => axis {TagAxis[i]}" );
+                }
+
+                Environment.Exit( 0 );
+            }
+
+            return;
         }
 
 
-        public string GetTagUnit( string name )
-        {
-            //int i = Array.FindIndex( Tagname, word => word.Equals( name, CUtils.Cmp ) );
-            //return TagUnit[ i ];
+        public string GetTagUnit( string name ) => TagUnit[ Array.FindIndex( Tagname, word => word.Equals( name, CUtils.Cmp ) ) ];
 
-            return "";
-        }
+        public AxisType GetTagAxis( string name ) => TagAxis[ Array.FindIndex( Tagname, word => word.Equals( name, CUtils.Cmp ) ) ];
 
-        public string GetTagAxis( string name )
-        {
-            //return TagAxis[ i ];
-
-            return "";
-        }
-
-        public bool IsValidWebtag( string name )
-        {
-            return Array.FindIndex( Tagname, word => word.Equals( name ) ) != -1;  // Check in this rare case must be case-sensitive!!
-        }
+        public bool IsValidWebtag( string name ) => Array.FindIndex( Tagname, word => word.Equals( name ) ) != -1; 
 
         public string FetchWebtagRaw( string s, ref int Start )
         {
@@ -910,26 +1704,25 @@ namespace CumulusUtils
             else return s.Substring( 2, a - 2 );
         }
 
-        public readonly string[] TagUnit;
+        static readonly bool[] changeIndicator = new bool[] { };
 
-        public readonly AxisType[] TagAxis;
+        private readonly string[] TagUnit;
 
-        static readonly bool[] changeIndicator = new bool[] {
-        };
+        private readonly AxisType[] TagAxis;
 
         static readonly string[] Tagname = new string[] {
-            "temp",
+            "temp",                     // 0
             "apptemp",
             "feelslike",
             "temprange",
             "heatindex",
             "avgtemp",
-
             "hum",
             "humidex",
             "press",
             "altimeterpressure",
-            "cloudbase",
+
+            "cloudbase",                // 10
             "dew",
             "wetbulb",
             "presstrendval",
@@ -939,7 +1732,8 @@ namespace CumulusUtils
             "heatdegdays",
             "cooldegdays",
             "wlatest",
-            "wspeed",
+
+            "wspeed",                   // 20
             "currentwdir",
             "wdir",
             "wgust",
@@ -949,7 +1743,8 @@ namespace CumulusUtils
             "bearing",
             "avgbearing",
             "BearingRangeFrom",
-            "BearingRangeTo",
+
+            "BearingRangeTo",           // 30
             "BearingRangeFrom10",
             "BearingRangeTo10",
             "beaufortnumber",
@@ -959,7 +1754,8 @@ namespace CumulusUtils
             "rmidnight",
             "rmonth",
             "rhour",
-            "r24hour",
+
+            "r24hour",                  // 40
             "ryear",
             "inhum",
             "intemp",
@@ -969,7 +1765,8 @@ namespace CumulusUtils
             "tempMidnightTL",
             "tempMidnightRangeT",
             "wchillTL",
-            "apptempTH",
+
+            "apptempTH",                // 50
             "apptempTL",
             "feelslikeTH",
             "feelslikeTL",
@@ -979,7 +1776,8 @@ namespace CumulusUtils
             "heatindexTH",
             "pressTH",
             "pressTL",
-            "humTH",
+
+            "humTH",                    // 60
             "humTL",
             "windTM",
             "wgustTM",
@@ -989,7 +1787,8 @@ namespace CumulusUtils
             "rain24hourTH",
             "solarTH",
             "UVTH",
-            "tempH",
+
+            "tempH",                    // 70
             "tempL",
             "apptempH",
             "apptempL",
@@ -999,7 +1798,8 @@ namespace CumulusUtils
             "dewpointH",
             "dewpointL",
             "heatindexH",
-            "gustM",
+
+            "gustM",                    // 80
             "wspeedH",
             "windrunH",
             "wchillH",
@@ -1009,7 +1809,8 @@ namespace CumulusUtils
             "rfallhH",
             "rfallmH",
             "pressH",
-            "pressL",
+
+            "pressL",                   // 90
             "humH",
             "humL",
             "mintempH",
@@ -1019,7 +1820,8 @@ namespace CumulusUtils
             "LowDailyTempRange",
             "HighDailyTempRange",
             "daylength",
-            "daylightlength",
+
+            "daylightlength",           // 100
             "chillhours",
             "chillhoursToday",
             "MinutesSinceLastRainTip",
@@ -1029,7 +1831,8 @@ namespace CumulusUtils
             "SolarRad",
             "Light",
             "CurrentSolarMax",
-            "SunshineHours",
+
+            "SunshineHours",            // 110
             "SunshineHoursMonth",
             "SunshineHoursYear",
             "ExtraTemp1",
@@ -1039,7 +1842,8 @@ namespace CumulusUtils
             "ExtraTemp5",
             "ExtraTemp6",
             "ExtraTemp7",
-            "ExtraTemp8",
+
+            "ExtraTemp8",               // 120
             "ExtraTemp9",
             "ExtraTemp10",
             "ExtraDP1",
@@ -1050,7 +1854,8 @@ namespace CumulusUtils
             "ExtraDP6",
             "ExtraDP7",
             "ExtraDP8",
-            "ExtraDP9",
+
+            "ExtraDP9",                 // 130
             "ExtraDP10",
             "ExtraHum1",
             "ExtraHum2",
@@ -1060,7 +1865,8 @@ namespace CumulusUtils
             "ExtraHum6",
             "ExtraHum7",
             "ExtraHum8",
-            "ExtraHum9",
+
+            "ExtraHum9",                // 140
             "ExtraHum10",
             "SoilTemp1",
             "SoilTemp2",
@@ -1070,7 +1876,8 @@ namespace CumulusUtils
             "SoilTemp6",
             "SoilTemp7",
             "SoilTemp8",
-            "SoilTemp9",
+
+            "SoilTemp9",                // 150
             "SoilTemp10",
             "SoilTemp11",
             "SoilTemp12",
@@ -1080,7 +1887,8 @@ namespace CumulusUtils
             "SoilTemp16",
             "SoilMoisture1",
             "SoilMoisture2",
-            "SoilMoisture3",
+
+            "SoilMoisture3",            // 160
             "SoilMoisture4",
             "SoilMoisture5",
             "SoilMoisture6",
@@ -1090,7 +1898,8 @@ namespace CumulusUtils
             "SoilMoisture10",
             "SoilMoisture11",
             "SoilMoisture12",
-            "SoilMoisture13",
+
+            "SoilMoisture13",           // 170
             "SoilMoisture14",
             "SoilMoisture15",
             "SoilMoisture16",
@@ -1100,7 +1909,8 @@ namespace CumulusUtils
             "UserTemp4",
             "UserTemp5",
             "UserTemp6",
-            "UserTemp7",
+
+            "UserTemp7",                // 180
             "UserTemp8",
             "AirQuality1",
             "AirQuality2",
@@ -1110,7 +1920,8 @@ namespace CumulusUtils
             "AirQualityAvg2",
             "AirQualityAvg3",
             "AirQualityAvg4",
-            "CO2",
+
+            "CO2",                      // 190
             "CO2_24h",
             "CO2_pm2p5",
             "CO2_pm2p5_24h",
@@ -1120,7 +1931,8 @@ namespace CumulusUtils
             "CO2_hum",
             "LightningDistance",
             "LightningStrikesToday",
-            "LeafTemp1",
+
+            "LeafTemp1",                // 200
             "LeafTemp2",
             "LeafTemp3",
             "LeafTemp4",
@@ -1130,7 +1942,8 @@ namespace CumulusUtils
             "LeafWetness4",
             "LeafWetness5",
             "LeafWetness6",
-            "LeafWetness7",
+
+            "LeafWetness7",             // 210
             "LeafWetness8",
             "AirLinkTempIn",
             "AirLinkHumIn",
@@ -1140,7 +1953,8 @@ namespace CumulusUtils
             "AirLinkPm2p5_3hrIn",
             "AirLinkPm2p5_24hrIn",
             "AirLinkPm2p5_NowcastIn",
-            "AirLinkPm10In",
+
+            "AirLinkPm10In",            // 220
             "AirLinkPm10_1hrIn",
             "AirLinkPm10_3hrIn",
             "AirLinkPm10_24hrIn",
@@ -1150,7 +1964,8 @@ namespace CumulusUtils
             "AirLinkPm1Out",
             "AirLinkPm2p5Out",
             "AirLinkPm2p5_1hrOut",
-            "AirLinkPm2p5_3hrOut",
+
+            "AirLinkPm2p5_3hrOut",      // 230
             "AirLinkPm2p5_24hrOut",
             "AirLinkPm2p5_NowcastOut",
             "AirLinkPm10Out",
@@ -1160,7 +1975,8 @@ namespace CumulusUtils
             "AirLinkPm10_NowcastOut",
             "AirLinkAqiPm2p5In",
             "AirLinkAqiPm2p5_1hrIn",
-            "AirLinkAqiPm2p5_3hrIn",
+
+            "AirLinkAqiPm2p5_3hrIn",    // 240
             "AirLinkAqiPm2p5_24hrIn",
             "AirLinkAqiPm2p5_NowcastIn",
             "AirLinkAqiPm10In",
@@ -1170,7 +1986,8 @@ namespace CumulusUtils
             "AirLinkAqiPm10_NowcastIn",
             "AirLinkAqiPm2p5Out",
             "AirLinkAqiPm2p5_1hrOut",
-            "AirLinkAqiPm2p5_3hrOut",
+
+            "AirLinkAqiPm2p5_3hrOut",   // 250
             "AirLinkAqiPm2p5_24hrOut",
             "AirLinkAqiPm2p5_NowcastOut",
             "AirLinkAqiPm10Out",
@@ -1180,7 +1997,8 @@ namespace CumulusUtils
             "AirLinkAqiPm10_NowcastOut",
             "AirLinkPct_1hrIn",
             "AirLinkPct_3hrIn",
-            "AirLinkPct_24hrIn",
+
+            "AirLinkPct_24hrIn",        // 260
             "AirLinkPct_NowcastIn",
             "AirLinkPct_1hrOut",
             "AirLinkPct_3hrOut",
@@ -1190,7 +2008,8 @@ namespace CumulusUtils
             "MonthTempL",
             "MonthHeatIndexH",
             "MonthWChillL",
-            "MonthAppTempH",
+
+            "MonthAppTempH",            // 270
             "MonthAppTempL",
             "MonthFeelsLikeH",
             "MonthFeelsLikeL",
@@ -1200,7 +2019,8 @@ namespace CumulusUtils
             "MonthPressH",
             "MonthPressL",
             "MonthHumH",
-            "MonthHumL",
+
+            "MonthHumL",                // 280
             "MonthGustH",
             "MonthWindH",
             "MonthRainRateH",
@@ -1210,7 +2030,8 @@ namespace CumulusUtils
             "MonthDewPointH",
             "MonthDewPointL",
             "MonthWindRunH",
-            "MonthLongestDryPeriod",
+
+            "MonthLongestDryPeriod",    // 290
             "MonthLongestWetPeriod",
             "MonthHighDailyTempRange",
             "MonthLowDailyTempRange",
@@ -1220,7 +2041,8 @@ namespace CumulusUtils
             "YearWChillL",
             "YearAppTempH",
             "YearAppTempL",
-            "YearFeelsLikeH",
+
+            "YearFeelsLikeH",           // 300
             "YearFeelsLikeL",
             "YearHumidexH",
             "YearMinTempH",
@@ -1230,7 +2052,8 @@ namespace CumulusUtils
             "YearHumH",
             "YearHumL",
             "YearGustH",
-            "YearWindH",
+
+            "YearWindH",                // 310
             "YearRainRateH",
             "YearHourlyRainH",
             "YearRain24HourH",
@@ -1240,7 +2063,8 @@ namespace CumulusUtils
             "YearDewPointL",
             "YearWindRunH",
             "YearLongestDryPeriod",
-            "YearLongestWetPeriod",
+
+            "YearLongestWetPeriod",     // 320
             "YearHighDailyTempRange",
             "YearLowDailyTempRange",
             "MoonPercent",
@@ -1250,7 +2074,8 @@ namespace CumulusUtils
             "DavisTotalPacketsMissed",
             "DavisNumberOfResynchs",
             "DavisMaxInARow",
-            "DavisNumCRCerrors",
+
+            "DavisNumCRCerrors",        // 330
             "DavisReceptionPercent",
             "ByMonthTempH",
             "ByMonthTempL",
@@ -1260,7 +2085,8 @@ namespace CumulusUtils
             "ByMonthFeelsLikeL",
             "ByMonthHumidexH",
             "ByMonthDewPointH",
-            "ByMonthDewPointL",
+
+            "ByMonthDewPointL",         // 340
             "ByMonthHeatIndexH",
             "ByMonthGustH",
             "ByMonthWindH",
@@ -1270,7 +2096,8 @@ namespace CumulusUtils
             "ByMonthDailyRainH",
             "ByMonthHourlyRainH",
             "ByMonthRain24HourH",
-            "ByMonthMonthlyRainH",
+
+            "ByMonthMonthlyRainH",          // 350
             "ByMonthPressH",
             "ByMonthPressL",
             "ByMonthHumH",
@@ -1280,7 +2107,8 @@ namespace CumulusUtils
             "ByMonthLongestDryPeriod",
             "ByMonthLongestWetPeriod",
             "ByMonthLowDailyTempRange",
-            "ByMonthHighDailyTempRange",
+
+            "ByMonthHighDailyTempRange",    // 360
             "CPUTemp"
         };
 

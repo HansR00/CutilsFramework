@@ -47,6 +47,7 @@ namespace CumulusUtils
         public Distance StationDistance { get; set; }
         public string PerHour { get; set; }
 
+
         public string PathUtils { get; } = "utils/";
         public string PathUtilsLog { get; } = "utils/utilslog/";
 
@@ -86,6 +87,10 @@ namespace CumulusUtils
         public string CutilsChartsDef { get; } = "CutilsCharts.def";
         public string CutilsMenuDef { get; } = "CutilsMenu.def";
         public string CUhelptexts { get; } = "CUhelptexts.txt";
+        public bool LoggingOn {  get; set; }
+        public TraceSwitch CUTraceSwitch { get; set; }
+
+
 
         public string DemarcationLineExtraSensors { get; } = "; ExtraSensorCharts";
         public string DemarcationLineCustomLogs { get; } = "; CustomLogsCharts";
@@ -95,8 +100,6 @@ namespace CumulusUtils
         private readonly IniFile StringsIni;    // that is: strings.ini
         private readonly IniFile MyIni;         // that is: cumulusutils.ini
         private readonly IniFile CUstringIni;   // that is: CUstrings.ini
-
-        private bool LoggingOn;
 
         public string Locale { get; private set; }
         public string Language { get; private set; }
@@ -479,7 +482,6 @@ namespace CumulusUtils
         #region Diagnostics
 
         TextWriterTraceListener ThisListener;
-        TraceSwitch CUTraceSwitch;
         bool NormalMessageToConsole;
 
         public void InitLogging()

@@ -242,7 +242,6 @@ namespace CumulusUtils
                 of.WriteLine( "  $('#year').change(function() {" );
                 of.WriteLine( "    SetMonthsDisabled();" );
                 of.WriteLine( "    $('#month').trigger('change');" );
-                //        of.WriteLine("    $('#MOnext').trigger('click');");
                 of.WriteLine( "  });" );
                 of.WriteLine( "  $('#month').change(function() {" );
                 of.WriteLine( "    $('.jqueryOptions').slideUp();" );

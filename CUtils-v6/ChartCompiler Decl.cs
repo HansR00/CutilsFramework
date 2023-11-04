@@ -148,7 +148,7 @@ namespace CumulusUtils
             AxisType.Rain,  AxisType.Rrate,
             AxisType.Pressure, AxisType.Pressure,
             AxisType.Humidity, AxisType.Humidity,
-            AxisType.DegreeDays, AxisType.DegreeDays, AxisType.EVT, AxisType.Free
+            AxisType.DegreeDays, AxisType.DegreeDays, AxisType.EVT
         };
 
         public readonly AxisType[] PlotvarAxisEXTRA = {
@@ -258,7 +258,7 @@ namespace CumulusUtils
           /*"RainFall",*/ "DayRain", "MaxRainRate",
           "MinBarometer", "MaxBarometer",
           "MinHumidity", "MaxHumidity",
-          "HeatingDegreeDays","CoolingDegreeDays","DayEVT" /*"EvapoTranspiration"*/
+          "HeatingDegreeDays","CoolingDegreeDays","DayEVT"      /*"EvapoTranspiration"*/
         };
 
         public static string[] PlotvarKeywordEXTRA = {
@@ -562,11 +562,11 @@ namespace CumulusUtils
                             List<string> tmpStr;
 
                             List<AxisType> tmp = PlotvarAxisALL.ToList();
-                            tmp.Add( AxisType.Free ); // AxisType.Temp
+                            tmp.Add( thisCustomLogs.WebTags.GetTagAxis( webtag ) ); 
                             PlotvarAxisALL = tmp.ToArray();
 
                             tmpStr = PlotvarUnitsALL.ToList();
-                            tmpStr.Add( "" ); // thisCustomLogs.WebTags.TagUnit[0]
+                            tmpStr.Add( thisCustomLogs.WebTags.GetTagUnit( webtag ) );
                             PlotvarUnitsALL = tmpStr.ToArray();
 
                             tmpStr = PlotvarTypesALL.ToList();
@@ -589,11 +589,11 @@ namespace CumulusUtils
                             List<string> tmpStr;
 
                             List<AxisType> tmp = PlotvarAxisEXTRA.ToList();
-                            tmp.Add( AxisType.Free );
+                            tmp.Add( thisCustomLogs.WebTags.GetTagAxis( webtag ) );
                             PlotvarAxisEXTRA = tmp.ToArray();
 
                             tmpStr = PlotvarUnitsEXTRA.ToList();
-                            tmpStr.Add( "" ); // thisCustomLogs.WebTags.TagUnit[0]
+                            tmpStr.Add( thisCustomLogs.WebTags.GetTagUnit( webtag ) ); 
                             PlotvarUnitsEXTRA = tmpStr.ToArray();
 
                             tmpStr = PlotvarTypesEXTRA.ToList();
