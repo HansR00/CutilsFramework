@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using ServiceStack.Text;
 
 namespace CumulusUtils
 {
@@ -237,14 +238,12 @@ namespace CumulusUtils
 
                 foreach ( CustomLog tmp in CustomLogsList )
                 {
-                    prefix = tmp.Frequency == -1 ? "Daily" : "";
-
                     foreach ( string thisTag in tmp.TagNames )
                     {
                         sb.AppendLine( $"  if ( oldobsCustomLogs[{i}] != CustomLogsRT[{i}]) {{" );
                         sb.AppendLine( $"    oldobsCustomLogs[{i}] = CustomLogsRT[{i}];" );
-                        sb.AppendLine( $"    $('#ajxCustomLogs{prefix}{thisTag}').html(CustomLogsRT[ {i} ] + ' {WebTags.GetTagUnit( thisTag )}');" );
-                        sb.AppendLine( $"    $('#ajxCustomLogs{prefix}{thisTag}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                        sb.AppendLine( $"    $('#ajxCustomLogs{tmp.Name}{thisTag}').html(CustomLogsRT[ {i} ] + ' {WebTags.GetTagUnit( thisTag )}');" );
+                        sb.AppendLine( $"    $('#ajxCustomLogs{tmp.Name}{thisTag}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
                         sb.AppendLine( "  }" );
 
                         i++;
@@ -280,18 +279,18 @@ namespace CumulusUtils
                     return "style='padding: 5px 5px 5px 5px;'";
                 }
 
-                buf.Append( $"<style>.centerItem {{width: 80%; max-height: 80vh; margin: 6vh auto;overflow-y: auto; }}</style>" );
+                buf.Append( $"<style>.centerItem {{width: 90%; max-height: 67vh; margin: 6vh auto;overflow-y: auto; }}</style>" );
 
-                buf.Append( $"<div class='centerItem' style='text-align:left;'>" );
-                buf.Append( $"<a class='centerItem' href='https://www.cumuluswiki.org/a/Full_list_of_Webtags' target='_blank'>Cumulus Webtags -  Full List</a><br/>" );
+                //buf.Append( $"<a href='https://www.cumuluswiki.org/a/Full_list_of_Webtags' target='_blank'>Cumulus Webtags -  Full List</a><br/>" );
+                buf.Append( $"<div id='RecentCustomLogs' class='slideOptions centerItem' style='text-align:left;'>" );
                 buf.Append( $"<table style='width:100%'><tr " +
                     $"style='background-color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarBackground", "#C5C55B" )}; " +
                     $"color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarText", "White" )}; width:100%'>" );
-                buf.Append( $"<th {thisPadding()}>{Sup.GetCUstringValue( "CustomLogs", "WebtagName", "Webtag Name", false )}</th>" +
+                buf.Append( $"<th {thisPadding()}>{Sup.GetCUstringValue( "CustomLogs", "WebtagName", "Webtag Name", false )}&nbsp&nbsp" +
+                    $"<a href='https://www.cumuluswiki.org/a/Full_list_of_Webtags' target='_blank'>(Cumulus Webtags -  Full List)</a></th>" +
                     $"<th>{Sup.GetCUstringValue( "CustomLogs", "RecentValue", "RECENT Value", false )}</th></tr>" );
 
                 bool RecentDone = false;
-                prefix = "";
 
                 foreach ( CustomLog tmp in CustomLogsList )
                 {
@@ -300,21 +299,21 @@ namespace CumulusUtils
                         // End the table and start a new one
                         buf.Append( "</table></div>" );
 
-                        buf.Append( $"<div class='centerItem' style='text-align:left;'><table style='width:100%'>" );
+                        buf.Append( $"<div id='DailyCustomLogs' class='slideOptions centerItem' style='text-align:left;'><table style='width:100%'>" );
                         buf.Append( $"<tr " +
                             $"style='background-color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarBackground", "#C5C55B" )}; " +
                             $"color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarText", "White" )}; width:100%'>" );
-                        buf.Append( $"<th {thisPadding()}>{Sup.GetCUstringValue( "CustomLogs", "WebtagName", "Webtag Name", false )}</th>" +
+                        buf.Append( $"<th {thisPadding()}>{Sup.GetCUstringValue( "CustomLogs", "WebtagName", "Webtag Name", false )}&nbsp&nbsp" +
+                            $"<a href='https://www.cumuluswiki.org/a/Full_list_of_Webtags' target='_blank'>(Cumulus Webtags -  Full List)</a></th>" +
                             $"<th>{Sup.GetCUstringValue( "CustomLogs", "DailyValue", "DAILY Value", false )}</th></tr>" );
 
                         RecentDone = true;
-                        prefix = "Daily";
                     }
 
-                    buf.Append( $"<tr {RowColour()}><td {thisPadding()}>{tmp.Name}:</td><td></td></tr>" );
+                    buf.Append( $"<tr {RowColour()}><td {thisPadding()}><strong>{tmp.Name}:</strong></td><td></td></tr>" );
                     foreach ( string thisTag in tmp.TagNames )
                     {
-                        buf.Append( $"<tr {RowColour()} onclick='Do{thisTag}();'><td {thisPadding()}>&nbsp;&nbsp;{thisTag}</td><td id='ajxCustomLogs{prefix}{thisTag}'></td></tr>" );
+                        buf.Append( $"<tr {RowColour()} onclick='Do{thisTag}();'><td {thisPadding()}>&nbsp;&nbsp;{thisTag}</td><td id='ajxCustomLogs{tmp.Name}{thisTag}'></td></tr>" );
                     }
                 }
 
@@ -1049,10 +1048,10 @@ namespace CumulusUtils
 
                 CO2conc.Text(),                     // 190
                 CO2conc.Text(),
-                CO2conc.Text(),
-                CO2conc.Text(),
-                CO2conc.Text(),
-                CO2conc.Text(),
+                PMconc.Text(),
+                PMconc.Text(),
+                PMconc.Text(),
+                PMconc.Text(),
                 Sup.StationTemp.Text(),
                 "%",
                 Sup.StationDistance.Text(),
@@ -1454,10 +1453,10 @@ namespace CumulusUtils
 
                 AxisType.ppm,               // 190
                 AxisType.ppm,
-                AxisType.ppm,
-                AxisType.ppm,
-                AxisType.ppm,
-                AxisType.ppm,
+                AxisType.AQ,
+                AxisType.AQ,
+                AxisType.AQ,
+                AxisType.AQ,
                 AxisType.Temp,
                 AxisType.Humidity,
                 AxisType.Distance,

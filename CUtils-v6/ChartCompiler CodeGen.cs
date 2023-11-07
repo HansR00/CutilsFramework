@@ -117,6 +117,7 @@ namespace CumulusUtils
                 Html.AppendLine( $"<select id='graph{UniqueOutputId}'>" );
 
                 MenuJavascript.AppendLine( $"$('#graph{UniqueOutputId}').change(function(){{CurrentChart{UniqueOutputId}=document.getElementById('graph{UniqueOutputId}').value; handleChange{UniqueOutputId}();}});" );
+                MenuJavascript.AppendLine(  "var prevChartRange;" );
                 MenuJavascript.AppendLine( $"function handleChange{UniqueOutputId}() {{" );
                 MenuJavascript.AppendLine( $"  var w1 = document.getElementById('graph{UniqueOutputId}').value = CurrentChart{UniqueOutputId};" );
 
@@ -267,7 +268,19 @@ namespace CumulusUtils
                     AxisType AxisSet = AxisType.None;
 
                     Html.AppendLine( $"  <option value='{thisChart.Id}'{( first ? " selected" : "" )}>{thisChart.Id}</option>" );
-                    MenuJavascript.AppendLine( $"  if (w1=='{thisChart.Id}') {{do{thisChart.Id}()}}" );
+                    MenuJavascript.AppendLine( $"  if (w1=='{thisChart.Id}') {{ " );
+                    if ( filename.Equals( Sup.CustomLogsCharts ) ) // Meaning we are dealing with CustomLogs; A bit awkward method, may change that sometime haha...
+                    {
+                        // Add some code to subdivide the realtime tables into RECENT and DAILY and show only one of them. 
+                        // They are already defined of limited length and have an overflow.
+                        MenuJavascript.AppendLine( $"if (prevChartRange != {(int) thisChart.Range} ) {{" );
+                        MenuJavascript.AppendLine( "  $( '.slideOptions' ).hide();" );
+                        MenuJavascript.Append( thisChart.Range == PlotvarRangeType.Extra ? "  $( '#RecentCustomLogs' )" : "  $( '#DailyCustomLogs' )" );
+                        MenuJavascript.AppendLine( ".slideDown(); " );
+                        MenuJavascript.AppendLine( $"prevChartRange = {(int) thisChart.Range};" );
+                        MenuJavascript.AppendLine( "}" );
+                    }
+                    MenuJavascript.AppendLine( $"    do{thisChart.Id}()}}" );
 
                     // AlignTicks must be true!! (is the default of HighCharts) this also makes softMax superfluous
                     TheCharts.AppendLine( $"function do{thisChart.Id}() {{" );

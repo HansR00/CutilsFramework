@@ -58,6 +58,7 @@ namespace CumulusUtils
                                      "CUgauges-ss.css"};
 
         private readonly string[] PanelsConfiguration;
+        private string StatisticsType;
 
         private readonly CuSupport Sup;
         private readonly InetSupport Isup;
@@ -68,7 +69,7 @@ namespace CumulusUtils
         private readonly bool AltitudeInFeet;
         private readonly bool ShowSolar;
         private readonly bool ShowUV;
-        private readonly bool DoGoogleStats;
+        private readonly bool DoStatistics;
         private readonly bool PermitGoogleOptOut;
         private InfoFromCMX thisCMXInfo;
         private CmxIPC thisIPC;
@@ -90,7 +91,8 @@ namespace CumulusUtils
             ShowSolar = CUtils.HasSolar;
             ShowUV = Sup.GetUtilsIniValue( "Website", "ShowUV", "true" ).Equals( "true", CUtils.Cmp );
 
-            DoGoogleStats = !string.IsNullOrEmpty( Sup.GetUtilsIniValue( "Website", "GoogleStatsId", "" ) );
+            StatisticsType = Sup.GetUtilsIniValue( "Website", "StatisticsType", "" );
+            DoStatistics = !string.IsNullOrEmpty( Sup.GetUtilsIniValue( "Website", "StatisticsType", "" ) );
             PermitGoogleOptOut = Sup.GetUtilsIniValue( "Website", "PermitGoogleOptout", "false" ).Equals( "true", CUtils.Cmp );
 
             PanelsConfiguration = new string[ 24 ]
@@ -179,43 +181,7 @@ namespace CumulusUtils
                 //    "<script>eruda.init();</script>" );
 #endif
 
-                if ( DoGoogleStats )
-                {
-                    // -----------------------------------------------------------------------------------
-                    // https://developers.google.com/analytics/devguides/collection/gajs/#disable
-                    // https://webgilde.com/en/analytics-opt-out/
-                    // -----------------------------------------------------------------------------------
-                    //
-                    indexFile.Append( "<script async src=\"https://www.googletagmanager.com/gtag/js?id=" + $"{Sup.GetUtilsIniValue( "Website", "GoogleStatsId", "" )}" + "\"></script>" );
-                    indexFile.Append( "<script>" +
-                                     "  window.dataLayer = window.dataLayer || [];" +
-                                     "  function gtag() {dataLayer.push(arguments);}" +
-                                     "  gtag('js', new Date());" +
-                                     $"  gtag('config', '{Sup.GetUtilsIniValue( "Website", "GoogleStatsId", "" )}');" +
-                                     "</script>" );
-
-                    if ( PermitGoogleOptOut )
-                    {
-                        indexFile.Append( "<script>" +
-                                         $"  var gaProperty = '{Sup.GetUtilsIniValue( "Website", "GoogleStatsId", "" )}';" +
-                                         "  var disableStr = 'ga-disable-' + gaProperty;" +
-                                         "  if (document.cookie.indexOf(disableStr + '=true') > -1){" +
-                                         "    console.log('Analytics Opt-Out found and set');" +
-                                         "    window[disableStr] = true;" +
-                                         "  }" +
-                                         "  else {" +
-                                         "    console.log('Analytics Opt-Out Fail');" +
-                                         "  }" );
-                        indexFile.Append( "function gaOptout(){" +
-                                         "  document.cookie = disableStr + '=true; " +
-                                         "  expires=Thu, 31 Dec 2099 23:59:59 UTC; " +
-                                         "  path=/';" +
-                                         "  window[disableStr] = true;" +
-                                         "  console.log('Analytics Opt-Out Set');" +
-                                         "}" +
-                                         "</script>" );
-                    }
-                }
+                indexFile.Append( DoStatistics ? GenerateStatisticsCode( StatisticsType, false ) : "" );
 
                 // Setting of DST moved to Index so it is always done even under thrifty
                 TimeZoneInfo TZ;
@@ -725,7 +691,9 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "    console.log('No Usermenu present...' + textStatus + ' : ' + errorThrown );" +
                   "  } )" +
                   "}" +
-                  "" +
+                  "" );
+
+                CUlibFile.Append( "" +
                   "function LoadUtilsReport(ReportName, ChartLoading) {" +
                   "  if (ajaxLoadReportObject !== null) {" +
                   "    ajaxLoadReportObject.abort();" +
@@ -757,10 +725,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "  })" +
                   "  .done(function (response, responseStatus) {" );
 
-                if ( DoGoogleStats )
-                {
-                    CUlibFile.Append( "   gtag('event', 'LoadReport', {'event_category' : ReportName.replace(/\\.[^/.]+$/, '') });" );
-                }
+                CUlibFile.Append( DoStatistics ? GenerateStatisticsCode( StatisticsType, true ) : "" );
 
                 CUlibFile.Append( "" +
                   "    $('#CUReportView').html(response);" +
@@ -2772,7 +2737,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
             }
             else
             {
-                Sup.LogTraceInfoMessage( $"Website Menu generator: No Menu definition found, using standard menu" );
+                Sup.LogTraceWarningMessage( $"Website Menu generator: No Menu definition found, using standard menu" );
 
                 // No user definition found so generate the default standard menu
                 //
@@ -3096,6 +3061,94 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
             return tmpMenu.ToString();
         }
 
+
+        #endregion
+
+        #region GenerateStatisticsCode
+
+        string GenerateStatisticsCode( string StatisticsType, bool Event )
+        {
+            StringBuilder Buf = new StringBuilder();
+
+            Sup.LogTraceInfoMessage( $"GenerateStatisticsCode: StatisticsType is '{StatisticsType}'; Event is '{Event}'" );
+
+            if ( StatisticsType.Equals("Google"))
+            {
+                if ( Event ) 
+                {
+                    // Now Event is the parameter, it might be usefull to have a string giving the variable ("ReportName") ???
+                    Buf.Append( $" gtag('event', 'LoadReport', {{'event_category' : ReportName.replace(/\\.[^/.]+$/, '') }});" );
+                }
+                else // generate the generic code 
+                {
+                    // -----------------------------------------------------------------------------------
+                    // https://developers.google.com/analytics/devguides/collection/gajs/#disable
+                    // https://webgilde.com/en/analytics-opt-out/
+                    // -----------------------------------------------------------------------------------
+                    //
+                    Buf.Append( "<script async src=\"https://www.googletagmanager.com/gtag/js?id=" + $"{Sup.GetUtilsIniValue( "Website", "GoogleStatsId", "" )}" + "\"></script>" );
+                    Buf.Append( "<script>" +
+                                        "  window.dataLayer = window.dataLayer || [];" +
+                                        "  function gtag() {dataLayer.push(arguments);}" +
+                                        "  gtag('js', new Date());" +
+                                        $"  gtag('config', '{Sup.GetUtilsIniValue( "Website", "GoogleStatsId", "" )}');" +
+                                        "</script>" );
+
+                    if ( PermitGoogleOptOut )
+                    {
+                        Buf.Append( "<script>" +
+                                            $"  var gaProperty = '{Sup.GetUtilsIniValue( "Website", "GoogleStatsId", "" )}';" +
+                                            "  var disableStr = 'ga-disable-' + gaProperty;" +
+                                            "  if (document.cookie.indexOf(disableStr + '=true') > -1){" +
+                                            "    console.log('Analytics Opt-Out found and set');" +
+                                            "    window[disableStr] = true;" +
+                                            "  }" +
+                                            "  else {" +
+                                            "    console.log('Analytics Opt-Out Fail');" +
+                                            "  }" );
+                        Buf.Append( "function gaOptout(){" +
+                                            "  document.cookie = disableStr + '=true; " +
+                                            "  expires=Thu, 31 Dec 2099 23:59:59 UTC; " +
+                                            "  path=/';" +
+                                            "  window[disableStr] = true;" +
+                                            "  console.log('Analytics Opt-Out Set');" +
+                                            "}" +
+                                            "</script>" );
+                    }
+                }
+            }
+            else if (StatisticsType.Equals("Matomo"))
+            {
+                if ( Event )
+                {
+                    Sup.LogTraceWarningMessage( $"GenerateStatisticsCode: No Matomo events implemented yet" );
+                }
+                else
+                {
+                    Buf.Append( "<!-- Matomo -->" +
+                        "<script>" +
+                        "  var _paq = window._paq = window._paq || [];" +
+                        "/* tracker methods like \"setCustomDimension\" should be called before \"trackPageView\" */" +
+                        "_paq.push(['trackPageView']);" +
+                        "_paq.push(['enableLinkTracking']);" +
+                        "(function() {" +
+                        $"    var u='{Sup.GetUtilsIniValue( "Website", "MatomoTrackerUrl", "" )}';" +
+                        $"    _paq.push(['setTrackerUrl', u+'matomo.php']);" +
+                        $"    _paq.push(['setSiteId', '{Sup.GetUtilsIniValue( "Website", "MatomoSiteId", "" )}']);" +
+                        "    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];" +
+                        "    g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);" +
+                        "  })();" +
+                        "</script>" +
+                        "<!-- End Matomo Code -->" );
+                }
+            }
+            else
+            {
+                Sup.LogTraceErrorMessage( $"GenerateStatisticsCode: StatisticsType '{StatisticsType}' is unknown, nothing generated" );
+            }
+
+            return Buf.ToString();
+        }
 
         #endregion
 
