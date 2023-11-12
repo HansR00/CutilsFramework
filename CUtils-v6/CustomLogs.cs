@@ -13,7 +13,8 @@
  *                               Website Generator      (version 3.0)
  *                               ChartsCompiler         (version 5.0)
  *                               Maintenance releases   (version 6.x)
- *              Startdate : 16 november 2021 start of conversion to .NET 5, 6 and 7
+ *                               CustomLogs             (version 6.21)
+ *              Startdate : 16 november 2021 start of conversion to .NET 5, 6 and 7 (abandoned)
  *              
  * Environment: Raspberry Pi 3B+ and up
  *              Raspberry Pi OS  for testruns
@@ -26,7 +27,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using ServiceStack.Text;
 
 namespace CumulusUtils
 {
@@ -189,7 +189,6 @@ namespace CumulusUtils
                 #region Javascript
 
                 StringBuilder sb = new StringBuilder();
-                string prefix;
 
                 Sup.LogDebugMessage( $"GenerateCustomLogsModule: Generating the Module Javascript code..." );
 
@@ -448,7 +447,7 @@ namespace CumulusUtils
             public List<double> Value { get; set; }
         }
 
-        public void GenerateCustomLogsDataJson(bool NonIncremental)
+        public void GenerateCustomLogsDataJson( bool NonIncremental )
         {
             bool DoDailyAsWell;
 
@@ -468,7 +467,7 @@ namespace CumulusUtils
             else
             {
                 _ = DateTime.TryParse( Sup.GetUtilsIniValue( "CustomLogs", "DoneToday", $"{Now.AddDays( -1 ):d}" ), out DoneToday );
-                
+
                 if ( CUtils.Isup.IsIncrementalAllowed() )
                 {
                     try
@@ -485,7 +484,6 @@ namespace CumulusUtils
                 {
                     timeStart = timeEnd.AddHours( -CUtils.HoursInGraph );
                 }
-
             }
 
             Sup.LogTraceInfoMessage( $"CustomLogs GenerateCustomLogsDataJson: timeStart = {timeStart}; timeEnd = {timeEnd}" );
@@ -687,7 +685,14 @@ namespace CumulusUtils
 
                     if ( !File.Exists( fullFilename ) )
                     {
-                        Sup.LogTraceErrorMessage( $"CustomLogs ReadRecentCustomLog: Require {fullFilename} to continue but it does not exist, continuing with next CustomsLog" );
+                        if ( CUtils.FTPIntervalInMinutes % Frequencies[ thisLog.Frequency ] != 0 )
+                        {
+                            Sup.LogTraceWarningMessage( $"CustomLogs ReadRecentCustomLog {thisLog.Name}: Log Frequency {thisLog.Frequency} Min. is larger or not In Sync with Internet Interval of {CUtils.FTPIntervalInMinutes} Min." );
+                            Sup.LogTraceWarningMessage( $"CustomLogs ReadRecentCustomLog: {fullFilename} does not exist and most likely is not required." );
+                        }
+                        else
+                            Sup.LogTraceErrorMessage( $"CustomLogs ReadRecentCustomLog: Require {fullFilename} to continue but it does not exist, continuing with next CustomsLog" );
+
                         PeriodComplete = true;
                     }
                 }
@@ -768,7 +773,7 @@ namespace CumulusUtils
         char FieldSeparator;
         char DecimalSeparator;
 
-        private void DetectSeparators(string line)
+        private void DetectSeparators( string line )
         {
             if ( line[ 2 ] == '-' && line[ 8 ] == ';' )
             {
@@ -809,12 +814,12 @@ namespace CumulusUtils
             return;
         }
 
-        private string ChangeSeparators( string line ) 
+        private string ChangeSeparators( string line )
         {
             string thisLine;
 
-            thisLine = line.Substring(0,8).Replace( DateSeparator, '/') ;
-            thisLine = thisLine + line.Substring(8).Replace( FieldSeparator, ' ' ).Replace( DecimalSeparator, '.' );
+            thisLine = line.Substring( 0, 8 ).Replace( DateSeparator, '/' );
+            thisLine = thisLine + line.Substring( 8 ).Replace( FieldSeparator, ' ' ).Replace( DecimalSeparator, '.' );
             thisLine = CuSupport.StringRemoveWhiteSpace( thisLine, " " );
 
             return thisLine;
@@ -829,7 +834,7 @@ namespace CumulusUtils
     {
         CuSupport Sup;
 
-        public WebtagInfo(CuSupport s )          // Constructor
+        public WebtagInfo( CuSupport s )          // Constructor
         {
             Sup = s;
 
@@ -1235,17 +1240,19 @@ namespace CumulusUtils
 
                 Sup.StationTemp.Text(),             // 360
                 Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text()
 
             };
 
-            TagAxis = new AxisType []
+            TagAxis = new AxisType[]
             {
                 AxisType.Temp,              // 0
                 AxisType.Temp,
                 AxisType.Temp,
                 AxisType.Temp,
                 AxisType.Temp,
-                AxisType.Temp, 
+                AxisType.Temp,
                 AxisType.Humidity,
                 AxisType.Temp,
                 AxisType.Pressure,
@@ -1624,7 +1631,7 @@ namespace CumulusUtils
                 AxisType.Temp,
                 AxisType.Rrate,
                 AxisType.Rain,
-                AxisType.Rain, 
+                AxisType.Rain,
                 AxisType.Rain,
 
                 AxisType.Rain,              // 350
@@ -1639,6 +1646,8 @@ namespace CumulusUtils
                 AxisType.Temp,
 
                 AxisType.Temp,              // 360
+                AxisType.Temp,
+                AxisType.Temp,
                 AxisType.Temp
             };
 
@@ -1656,13 +1665,13 @@ namespace CumulusUtils
 
             Sup.LogTraceInfoMessage( $"CustomLogs WebtagInfo constructor: number of defined Webtag Units: {TagUnit.Length}, everything OK. " );
 
-            if ( !CUtils.DoWebsite && Sup.LoggingOn && Sup.CUTraceSwitch.Level == System.Diagnostics.TraceLevel.Verbose ) 
+            if ( !CUtils.DoWebsite && Sup.LoggingOn && Sup.CUTraceSwitch.Level == System.Diagnostics.TraceLevel.Verbose )
             {
                 Sup.LogTraceVerboseMessage( $"CustomLogs WebtagInfo Verbose info:" );
 
-                for ( int i = 0; i < Tagname.Length; i++) 
+                for ( int i = 0; i < Tagname.Length; i++ )
                 {
-                    Sup.LogTraceVerboseMessage( $"    {Tagname[i]} => unit {TagUnit[i]} => axis {TagAxis[i]}" );
+                    Sup.LogTraceVerboseMessage( $"    {Tagname[ i ]} => unit {TagUnit[ i ]} => axis {TagAxis[ i ]}" );
                 }
 
                 Environment.Exit( 0 );
@@ -1676,7 +1685,7 @@ namespace CumulusUtils
 
         public AxisType GetTagAxis( string name ) => TagAxis[ Array.FindIndex( Tagname, word => word.Equals( name, CUtils.Cmp ) ) ];
 
-        public bool IsValidWebtag( string name ) => Array.FindIndex( Tagname, word => word.Equals( name ) ) != -1; 
+        public bool IsValidWebtag( string name ) => Array.FindIndex( Tagname, word => word.Equals( name ) ) != -1;
 
         public string FetchWebtagRaw( string s, ref int Start )
         {
@@ -2108,7 +2117,9 @@ namespace CumulusUtils
             "ByMonthLowDailyTempRange",
 
             "ByMonthHighDailyTempRange",    // 360
-            "CPUTemp"
+            "CPUTemp",
+            "THWindex",
+            "THSWindex",
         };
 
     }

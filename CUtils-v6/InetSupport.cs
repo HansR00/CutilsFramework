@@ -294,9 +294,11 @@ namespace CumulusUtils
             bool Upload = Sup.GetUtilsIniValue( "FTP site", "DoUploadFTP", "false" ).ToLower() == "true";
             if ( !Upload ) { Sup.LogTraceInfoMessage( $"UploadFile: DoUploadFTP configured false => No Upload." ); return false; }      // No reason to do the whole procedure if we don't have to upload
 
-            string CumulusURL = Sup.GetCumulusIniValue( "FTP site", "Host", "" );
+            string CumulusURL;
             string CumulusDir = Sup.GetCumulusIniValue( "FTP site", "Directory", "" );
             string CumulusUtilsDir = Sup.GetUtilsIniValue( "FTP site", "UploadDir", "" );
+
+            CumulusURL = ProtocolUsed == FtpProtocols.PHP ? Sup.GetCumulusIniValue( "FTP site", "PHP-URL", "" ) : Sup.GetCumulusIniValue( "FTP site", "Host", "" );
 
             if ( string.IsNullOrEmpty( CumulusURL ) ) Upload = false; // Kind of paranoia check but well,you never know :|
             else

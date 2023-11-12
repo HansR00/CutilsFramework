@@ -562,7 +562,7 @@ namespace CumulusUtils
                             List<string> tmpStr;
 
                             List<AxisType> tmp = PlotvarAxisALL.ToList();
-                            tmp.Add( thisCustomLogs.WebTags.GetTagAxis( webtag ) ); 
+                            tmp.Add( thisCustomLogs.WebTags.GetTagAxis( webtag ) );
                             PlotvarAxisALL = tmp.ToArray();
 
                             tmpStr = PlotvarUnitsALL.ToList();
@@ -593,7 +593,7 @@ namespace CumulusUtils
                             PlotvarAxisEXTRA = tmp.ToArray();
 
                             tmpStr = PlotvarUnitsEXTRA.ToList();
-                            tmpStr.Add( thisCustomLogs.WebTags.GetTagUnit( webtag ) ); 
+                            tmpStr.Add( thisCustomLogs.WebTags.GetTagUnit( webtag ) );
                             PlotvarUnitsEXTRA = tmpStr.ToArray();
 
                             tmpStr = PlotvarTypesEXTRA.ToList();

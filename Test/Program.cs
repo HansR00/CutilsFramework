@@ -6,25 +6,35 @@ namespace Test
     {
         public static void Main()
         {
-            int count = 0;
-            DateTime epochDate = new DateTime( 1970, 1, 1, 0, 0, 0, 0 );
+            //int count = 0;
+            //DateTime epochDate = new DateTime( 1970, 1, 1, 0, 0, 0, 0 );
 
-            long firstDate = javascriptValues [ 0 ];
+            //long firstDate = javascriptValues[ 0 ];
 
-            foreach ( long thisDate in javascriptValues )
+            //foreach ( long thisDate in javascriptValues )
+            //{
+
+            //    if ( thisDate < firstDate ) Console.WriteLine( $"Thisdate is not sorted in list: {count}:{epochDate.AddMilliseconds( thisDate )}" );
+            //    count++;
+            //}
+
+            //Console.WriteLine( $"Done - press any key..." );
+            //Console.ReadKey();
+
+            int[] Frequencies = { 1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30, 60 };
+
+            foreach(int a in Frequencies)
             {
-
-                if ( thisDate < firstDate ) Console.WriteLine( $"Thisdate is not sorted in list: {count}:{epochDate.AddMilliseconds( thisDate )}" );
-                count++;
+                int b = 10;
+                Console.WriteLine( $"{b} % {a} = {b % a}" );
             }
 
-            Console.WriteLine( $"Done - press any key..." );
-            Console.ReadKey();
+            Console.ReadLine();
 
             return;
         }
 
-        static long [] javascriptValues = {
+        static long[] javascriptValues = {
         1697445300000,
         1697445600000,
         1697445900000,

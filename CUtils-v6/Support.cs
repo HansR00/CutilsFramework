@@ -74,20 +74,20 @@ namespace CumulusUtils
         public string ExtraSensorsOutputFilename { get; } = "extrasensors.txt";
         public string ExtraSensorsRealtimeFilename { get; } = "extrasensorsrealtime.txt";
         public string ExtraSensorsCharts { get; } = "extrasensorscharts.txt";
-        public string ExtraSensorsJSON { get; } = "extrasensorsdata.json";
         public string CustomLogsOutputFilename { get; } = "customlogs.txt";
         public string CustomLogsRealtimeFilename { get; } = "customlogsrealtime.txt";
         public string CustomLogsCharts { get; } = "customlogscharts.txt";
-        public string CustomLogsRecentJSON { get; } = "customlogsRecentdata.json";
-        public string CustomLogsDailyJSON { get; } = "customlogsDailydata.json";
         public string SensorCommunityOutputFilename { get; } = "sensorcommunity.txt";
         public string CUserdataRECENT { get; } = "CUserdataRECENT.json";
         public string CUserdataDAILY { get; } = "CUserdataDAILY.json";
         public string CUserdataALL { get; } = "CUserdataALL.json";
+        public string ExtraSensorsJSON { get; } = "extrasensorsdata.json";
+        public string CustomLogsRecentJSON { get; } = "customlogsRecentdata.json";
+        public string CustomLogsDailyJSON { get; } = "customlogsDailydata.json";
         public string CutilsChartsDef { get; } = "CutilsCharts.def";
         public string CutilsMenuDef { get; } = "CutilsMenu.def";
         public string CUhelptexts { get; } = "CUhelptexts.txt";
-        public bool LoggingOn {  get; set; }
+        public bool LoggingOn { get; set; }
         public TraceSwitch CUTraceSwitch { get; set; }
 
 

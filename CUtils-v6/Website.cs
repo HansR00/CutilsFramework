@@ -3072,9 +3072,9 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
             Sup.LogTraceInfoMessage( $"GenerateStatisticsCode: StatisticsType is '{StatisticsType}'; Event is '{Event}'" );
 
-            if ( StatisticsType.Equals("Google"))
+            if ( StatisticsType.Equals( "Google" ) )
             {
-                if ( Event ) 
+                if ( Event )
                 {
                     // Now Event is the parameter, it might be usefull to have a string giving the variable ("ReportName") ???
                     Buf.Append( $" gtag('event', 'LoadReport', {{'event_category' : ReportName.replace(/\\.[^/.]+$/, '') }});" );
@@ -3117,7 +3117,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     }
                 }
             }
-            else if (StatisticsType.Equals("Matomo"))
+            else if ( StatisticsType.Equals( "Matomo" ) )
             {
                 if ( Event )
                 {

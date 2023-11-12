@@ -189,6 +189,8 @@ namespace CumulusUtils
         public static int ThriftyMiscGraphsPeriod { get; private set; }
 
         public static bool DoWebsite { get; set; }
+        public static bool DoModular { get; set; }
+        public static string ModulePath { get; set; }
         public static bool DoLibraryIncludes { get; set; }
         public static bool DojQueryInclude { get; set; }
         public static bool MapParticipant { get; private set; }
@@ -311,6 +313,8 @@ namespace CumulusUtils
                 else
                     CanDoMap = true;
 
+                DoModular = Sup.GetUtilsIniValue( "General", "DoModular", "false" ).Equals( "true", Cmp );
+                ModulePath = Sup.GetUtilsIniValue( "General", "ModulePath", "" );
 
                 HasStationMapMenu = Sup.GetUtilsIniValue( "StationMap", "StationMapMenu", "true" ).Equals( "true", CUtils.Cmp );
                 HasMeteoCamMenu = Sup.GetUtilsIniValue( "MeteoCam", "MeteoCamMenu", "true" ).Equals( "true", CUtils.Cmp );
@@ -389,6 +393,13 @@ namespace CumulusUtils
             // Here we start the actual program Handle commandline arguments
             CommandLineArgs( args );
 
+            if ( DoModular && DoWebsite )
+            {
+                Sup.LogTraceErrorMessage( $"CumulusUtils : Conflicting settings - DoModular is {DoModular} while running Website." );
+                Sup.LogTraceErrorMessage( $"CumulusUtils : Cannot handle this, Exiting." );
+
+                Environment.Exit( 0 );
+            }
             if ( !DoPwsFWI && !DoTop10 && !DoSystemChk && !DoGraphs && !DoCreateMap && !DoYadr && !DoRecords && !DoCompileOnly && !DoUserAskedData && !DoCustomLogs &&
                 !DoNOAA && !DoDayRecords && !DoCheckOnly && !DoWebsite && !DoForecast && !DoUserReports && !DoStationMap && !DoMeteoCam && !DoAirLink && !DoExtraSensors )
             {
@@ -1066,8 +1077,8 @@ namespace CumulusUtils
             }
 
             // This block takes care  of the JSON upload (if any JSON present).
-            // This is unconditional.
-            // JSONs will be deleted after upload else they remain.
+            // This is unconditional. 
+            // JSONs will be deleted after succesful upload else they remain.
             {
                 // Now upload the JSON files if any
                 string[] files = Directory.GetFiles( $"{Sup.PathUtils}", $"*.json" );

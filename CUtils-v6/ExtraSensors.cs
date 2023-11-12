@@ -357,7 +357,7 @@ namespace CumulusUtils
                     return "style='padding: 5px 5px 5px 5px;'";
                 }
 
-                buf.Append( $"<style>.centerItem {{width: 80%; max-height: 80vh; margin: 6vh auto;overflow-y: auto; }}</style>" );
+                buf.Append( $"<style>.centerItem {{width: 80%; max-height: 70vh; margin: 6vh auto;overflow-y: auto; }}</style>" );
                 buf.Append( $"<div class='centerItem' style='text-align:left;'><table style='width:100%'>" );
                 buf.Append( $"<tr " +
                     $"style='background-color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarBackground", "#C5C55B" )}; " +

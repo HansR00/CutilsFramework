@@ -117,7 +117,7 @@ namespace CumulusUtils
                 Html.AppendLine( $"<select id='graph{UniqueOutputId}'>" );
 
                 MenuJavascript.AppendLine( $"$('#graph{UniqueOutputId}').change(function(){{CurrentChart{UniqueOutputId}=document.getElementById('graph{UniqueOutputId}').value; handleChange{UniqueOutputId}();}});" );
-                MenuJavascript.AppendLine(  "var prevChartRange;" );
+                MenuJavascript.AppendLine( "var prevChartRange;" );
                 MenuJavascript.AppendLine( $"function handleChange{UniqueOutputId}() {{" );
                 MenuJavascript.AppendLine( $"  var w1 = document.getElementById('graph{UniqueOutputId}').value = CurrentChart{UniqueOutputId};" );
 
@@ -216,7 +216,10 @@ namespace CumulusUtils
                         // Make a distinction between CumulusUtils JSONfiles and regular CMX JSONfiles
                         // CumulusUtils JSONs are always in the CumulusUtils directory. So: the current webroot
                         if ( df.StartsWith( "CUserdata" ) || df.StartsWith( "extrasensors" ) || df.StartsWith( "customlogs" ) )
-                            AjaxJavascript.AppendLine( $"    url: '{df}'," );
+                            if ( CUtils.DoModular )
+                                AjaxJavascript.AppendLine( $"    url: '{CUtils.ModulePath}{df}'," );
+                            else
+                                AjaxJavascript.AppendLine( $"    url: '{df}'," );
                         else
                             AjaxJavascript.AppendLine( $"    url: '{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}{df}'," );
 
@@ -269,14 +272,17 @@ namespace CumulusUtils
 
                     Html.AppendLine( $"  <option value='{thisChart.Id}'{( first ? " selected" : "" )}>{thisChart.Id}</option>" );
                     MenuJavascript.AppendLine( $"  if (w1=='{thisChart.Id}') {{ " );
-                    if ( filename.Equals( Sup.CustomLogsCharts ) ) // Meaning we are dealing with CustomLogs; A bit awkward method, may change that sometime haha...
+
+                    // Meaning we are dealing with CustomLogs in the website (with realtime values table);
+                    // A bit awkward method, may change that sometime haha...
+                    if ( filename.Equals( Sup.CustomLogsCharts ) )
                     {
                         // Add some code to subdivide the realtime tables into RECENT and DAILY and show only one of them. 
                         // They are already defined of limited length and have an overflow.
                         MenuJavascript.AppendLine( $"if (prevChartRange != {(int) thisChart.Range} ) {{" );
-                        MenuJavascript.AppendLine( "  $( '.slideOptions' ).hide();" );
+                        MenuJavascript.AppendLine( "  $( '.slideOptions' ).slideUp('slow');" );
                         MenuJavascript.Append( thisChart.Range == PlotvarRangeType.Extra ? "  $( '#RecentCustomLogs' )" : "  $( '#DailyCustomLogs' )" );
-                        MenuJavascript.AppendLine( ".slideDown(); " );
+                        MenuJavascript.AppendLine( ".slideDown('slow'); " );
                         MenuJavascript.AppendLine( $"prevChartRange = {(int) thisChart.Range};" );
                         MenuJavascript.AppendLine( "}" );
                     }
