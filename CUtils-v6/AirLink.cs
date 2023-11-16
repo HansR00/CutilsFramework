@@ -737,7 +737,7 @@ namespace CumulusUtils
                     of.AppendLine( "  cache: false," );
                     of.AppendLine( "  dataType: 'json'" );
                     of.AppendLine( "  })" );
-                    of.AppendLine( ".fail( function (xhr, textStatus, errorThrown) { console.log('airlinkdata[InOut][Conc].json ' + textStatus + ' : ' + 'errorThrown'); })" );
+                    of.AppendLine( ".fail( function (xhr, textStatus, errorThrown) { console.log('airlinkdata[InOut][Conc].json ' + textStatus + ' : ' + errorThrown); })" );
                     of.AppendLine( ".done( function(resp){" );
 
                     tmpBuilder.Clear();
@@ -745,7 +745,7 @@ namespace CumulusUtils
                     foreach ( string thisSerie in Series )
                         tmpBuilder.Append( $"'{InOut}_pm{thisConc}{thisSerie}': '{InOut}_pm{thisConc}{thisSerie}'," );
                     if ( WantToSeeWind )
-                        tmpBuilder.Append( $"'wind': 'wind'," );
+                        tmpBuilder.Append( $"'wind': '{Sup.GetCUstringValue( "AirQuality", "WindBarbs", "WindBarbs", true )}'," );
                     tmpBuilder.Remove( tmpBuilder.Length - 1, 1 );
                     of.AppendLine( tmpBuilder.ToString() + "};" );
 

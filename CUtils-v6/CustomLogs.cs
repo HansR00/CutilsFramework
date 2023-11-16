@@ -310,10 +310,15 @@ namespace CumulusUtils
                     }
 
                     buf.Append( $"<tr {RowColour()}><td {thisPadding()}><strong>{tmp.Name}:</strong></td><td></td></tr>" );
-                    foreach ( string thisTag in tmp.TagNames )
+
+                    for (int c = 0; c < tmp.TagNames.Count; c++ )
                     {
-                        buf.Append( $"<tr {RowColour()} onclick='Do{thisTag}();'><td {thisPadding()}>&nbsp;&nbsp;{thisTag}</td><td id='ajxCustomLogs{tmp.Name}{thisTag}'></td></tr>" );
+                        buf.Append( $"<tr {RowColour()}><td {thisPadding()}>&nbsp;&nbsp;{tmp.TagsRaw[ c ]}</td><td id='ajxCustomLogs{tmp.Name}{tmp.TagNames[ c ]}'></td></tr>" );
                     }
+                    //foreach ( string thisTag in tmp.TagNames )
+                    //{
+                    //    buf.Append( $"<tr {RowColour()} onclick='Do{thisTag}();'><td {thisPadding()}>&nbsp;&nbsp;{thisTag}</td><td id='ajxCustomLogs{tmp.Name}{thisTag}'></td></tr>" );
+                    //}
                 }
 
                 buf.Append( "</table></div>" );
@@ -851,7 +856,7 @@ namespace CumulusUtils
                 Sup.StationPressure.Text(),
                 Sup.StationPressure.Text(),
 
-                Sup.StationDistance.Text(),         // 10
+                Sup.StationHeight.Text(),         // 10
                 Sup.StationTemp.Text(),
                 Sup.StationTemp.Text(),
                 Sup.StationPressure.Text(),
@@ -1241,8 +1246,32 @@ namespace CumulusUtils
                 Sup.StationTemp.Text(),             // 360
                 Sup.StationTemp.Text(),
                 Sup.StationTemp.Text(),
-                Sup.StationTemp.Text()
+                Sup.StationTemp.Text(),
+                Sup.StationDistance.Text(),
+                Sup.StationRain.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
 
+                "%",                                // 370
+                Sup.StationWind.Text(),
+                Sup.StationWind.Text(),
+                Sup.StationWind.Text(),
+                "",
+                "",
+                Sup.StationPressure.Text(),
+                Sup.StationRain.Text(),
+                "W/m²",
+                "",
+
+                Sup.StationTemp.Text(),             // 380
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                "",
+                "",
+                "",
+                ""
             };
 
             TagAxis = new AxisType[]
@@ -1258,7 +1287,7 @@ namespace CumulusUtils
                 AxisType.Pressure,
                 AxisType.Pressure,
 
-                AxisType.Distance,          // 10
+                AxisType.Height,          // 10
                 AxisType.Temp,
                 AxisType.Temp,
                 AxisType.Pressure,
@@ -1648,7 +1677,32 @@ namespace CumulusUtils
                 AxisType.Temp,              // 360
                 AxisType.Temp,
                 AxisType.Temp,
-                AxisType.Temp
+                AxisType.Temp,
+                AxisType.Distance,
+                AxisType.Rain,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+
+                AxisType.Humidity,          // 370
+                AxisType.Wind,
+                AxisType.Wind,
+                AxisType.Wind,
+                AxisType.Direction,
+                AxisType.Direction,
+                AxisType.Pressure,
+                AxisType.Rain,
+                AxisType.Solar,
+                AxisType.UV,
+
+                AxisType.Temp,             // 380
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free,
+                AxisType.Free
             };
 
             if ( Tagname.Length != TagUnit.Length )
@@ -1730,7 +1784,7 @@ namespace CumulusUtils
             "press",
             "altimeterpressure",
 
-            "cloudbase",                // 10
+            "cloudbasevalue",                // 10
             "dew",
             "wetbulb",
             "presstrendval",
@@ -2120,6 +2174,31 @@ namespace CumulusUtils
             "CPUTemp",
             "THWindex",
             "THSWindex",
+            "windrunmonth",
+            "StormRain",
+            "RecentOutsideTemp",
+            "RecentWindChill",
+            "RecentDewPoint",
+            "RecentHeatIndex",
+
+            "RecentHumidity",               // 370
+            "RecentWindSpeed",
+            "RecentWindGust",
+            "RecentWindLatest",
+            "RecentWindDir",
+            "RecentWindAvgDir",
+            "RecentPressure",
+            "RecentRainToday",
+            "RecentSolarRad",
+            "RecentUV",
+
+            "RecentWindChill",              // 380
+            "RecentFeelsLike",
+            "RecentHumidex",
+            "snowdepth",
+            "snowlying",
+            "snowfalling",
+            "Tbeaufortnumber"
         };
 
     }

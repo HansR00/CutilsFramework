@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+// using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -123,7 +124,8 @@ namespace CumulusUtils
                     case 12:
                     case 14:
                     case 20:
-                        DeviceInfo.AppendLine( "The Ecowitt firmware <#GW1000FirmwareVersion>" );
+                        DeviceInfo.AppendLine( "The Ecowitt firmware: <#EcowittFirmwareVersion>" );
+                        DeviceInfo.AppendLine( "The Ecowitt firmware: <#EcowittReception>" );
                         DeviceInfo.AppendLine( $"Extra Station Info: {Sup.GetUtilsIniValue( "SysInfo", "ExtraStationInfo", "" )}" );
                         DeviceInfo.AppendLine( "" );
 

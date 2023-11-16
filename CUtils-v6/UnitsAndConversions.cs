@@ -33,11 +33,12 @@ namespace CumulusUtils
      *   
      */
 
-    public enum DistanceDim { meter, mile, kilometer, nauticalmile }
+    public enum TempDim { celsius, fahrenheit }
+    public enum WindDim { ms, mph, kmh, knots }
     public enum RainDim { millimeter, inch }
     public enum PressureDim { millibar, hectopascal, inchHg }
-    public enum WindDim { ms, mph, kmh, knots }
-    public enum TempDim { celsius, fahrenheit }
+    public enum DistanceDim { meter, mile, kilometer, nauticalmile }
+    public enum HeightDim { meter, feet }
 
     //public enum
 
@@ -155,15 +156,15 @@ namespace CumulusUtils
     public class Distance
     {
         // Note: when speed is m/s,  distance is expressed in km
-        string[] UnitDistanceText { get; } = { "km", "mi", "km", "nm" };
+        string[] UnitDistanceText { get; } = { "m", "mi", "km", "nm" };
 
         readonly double[,] ConversionFactors =
         {
-      { 0.001,     0.000621371, 0.001, 0.000539957 } ,  // m to mi, km, nm
-      { 1.60934, 1.0,      1.60934, 0.868976 } ,  // mi to m, km, nm
-      { 1.0,     0.621371, 1.0,     0.539957 } ,  // km to m, mp, nm
-      { 1.852,   1.15078,  1.852,   1.0}          // nm to m, km, mi
-    };
+          { 1.0,     0.000621371, 0.001,   0.000539957 } ,  // m to mi, km, nm
+          { 1609.34, 1.0,         1.60934, 0.868976 } ,     // mi to m, km, nm
+          { 1000,    0.621371,    1.0,     0.539957 } ,     // km to m, mp, nm
+          { 1852,    1.15078,     1.852,   1.0}             // nm to m, km, mi
+        };
 
         public readonly DistanceDim Dim;
 
@@ -179,6 +180,33 @@ namespace CumulusUtils
 
         public static string Format( float value ) => $"{value:F1}";
     }
+
+    public class Height
+    {
+        // Note: Height is either in feet or in meters
+        string[] UnitHeightText { get; } = { "m", "ft" };
+
+        readonly double[,] ConversionFactors =
+        {
+            { 1.0,     3.28084 } ,  // m to feet
+            { 0.3048,  1.0     }    // feet to m
+        };
+
+        public readonly HeightDim Dim;
+
+        public Height( HeightDim d ) { Dim = d; }
+
+        public string Text() { return UnitHeightText[ (int) Dim ]; }
+        public string Text( HeightDim d ) { return UnitHeightText[ (int) d ]; }
+
+        public double Convert( HeightDim from, HeightDim to, double val )
+        {
+            return val * ConversionFactors[ (int) from, (int) to ];
+        }
+
+        public static string Format( float value ) => $"{value:F1}";
+    }
+
     public class CO2conc
     {
         public static string Text() => "ppm";

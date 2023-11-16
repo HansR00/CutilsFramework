@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 
 namespace Test
 {
@@ -21,16 +22,21 @@ namespace Test
             //Console.WriteLine( $"Done - press any key..." );
             //Console.ReadKey();
 
-            int[] Frequencies = { 1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30, 60 };
+            //int[] Frequencies = { 1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30, 60 };
 
-            foreach(int a in Frequencies)
+            //foreach(int a in Frequencies)
+            //{
+            //    int b = 10;
+            //    Console.WriteLine( $"{b} % {a} = {b % a}" );
+            //}
+
+            using ( System.Drawing.Graphics graphics = System.Drawing.Graphics.FromImage( new Bitmap( 1, 1 ) ) )
             {
-                int b = 10;
-                Console.WriteLine( $"{b} % {a} = {b % a}" );
+                SizeF size = graphics.MeasureString( "Hello World", new Font( "Segoe UI", 11, FontStyle.Regular, GraphicsUnit.Pixel ) );
+                Console.WriteLine( $"Hello World measures {size}" );
             }
 
             Console.ReadLine();
-
             return;
         }
 

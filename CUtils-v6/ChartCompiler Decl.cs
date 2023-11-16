@@ -37,7 +37,7 @@ namespace CumulusUtils
     public enum AxisType
     {
         None = 0, Temp = 1, Pressure = 2, Rain = 4, Rrate = 8, Wind = 16, Direction = 32, Humidity = 64, Solar = 128, UV = 256, Hours = 512,
-        Distance = 1024, DegreeDays = 2048, EVT = 4096, Free = 8192, AQ = 16384, ppm = 32768
+        Distance = 1024, Height = 2048, DegreeDays = 4096, EVT = 8192, Free = 16384, AQ = 32768, ppm = 65536
     };
     public enum PlotvarRangeType { Recent, Extra, Daily, All };
 
@@ -290,7 +290,7 @@ namespace CumulusUtils
 
         public readonly string[] PlotvarUnitsRECENT, PlotvarUnitsALL, PlotvarUnitsEXTRA;     // Init in constructor
         public readonly string[] LinetypeKeywords = { "Line", "SpLine", "Area", "Column", "Scatter", "ColumnRange" };
-        public readonly string[] AxisKeywords = { "Temp", "Wind", "Distance", "Hours", "Solar", "UV", "Rain", "Rrate", "Pressure", "Humidity", "DegreeDays", "EVT", "Free", "AQ", "ppm" };
+        public readonly string[] AxisKeywords = { "Temp", "Wind", "Distance", "Height", "Hours", "Solar", "UV", "Rain", "Rrate", "Pressure", "Humidity", "DegreeDays", "EVT", "Free", "AQ", "ppm" };
         public readonly string[] StatsTypeKeywords = { "SMA" };
 
         readonly CuSupport Sup;

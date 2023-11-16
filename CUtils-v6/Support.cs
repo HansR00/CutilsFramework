@@ -45,8 +45,8 @@ namespace CumulusUtils
         public Rain StationRain { get; set; }
         public Temp StationTemp { get; set; }
         public Distance StationDistance { get; set; }
+        public Height StationHeight { get; set; }
         public string PerHour { get; set; }
-
 
         public string PathUtils { get; } = "utils/";
         public string PathUtilsLog { get; } = "utils/utilslog/";
@@ -239,7 +239,9 @@ namespace CumulusUtils
             StationPressure = new Pressure( (PressureDim) Ini.GetValue( "Station", "PressureUnit", 1 ) );    // default does not count: comes from CMX, for me hPa
             StationRain = new Rain( (RainDim) Ini.GetValue( "Station", "RainUnit", 0 ) );                    // default does not count: comes from CMX, for me mm
             StationTemp = new Temp( (TempDim) Ini.GetValue( "Station", "TempUnit", 0 ) );                    // default does not count: comes from CMX, for me C
-            StationDistance = new Distance( (DistanceDim) Ini.GetValue( "Station", "WindUnit", 2 ) );
+            StationDistance = new Distance( (DistanceDim) Ini.GetValue( "Station", "DistanceUnit", 2 ) );
+            StationHeight = new Height( (HeightDim) Ini.GetValue( "Station", "CloudBaseInFeet", 0 ) );       // We use the CloudBaseInFeet param of CMX as default.
+                                                                                                             // We'll see later if that needs modification
 
             LogDebugMessage( $"CumulusUtils version: {UnformattedVersion()}" );
             LogDebugMessage( $" CuSupport constructor : Unit Wind (m/s, mph, km/h, kts): {StationWind.Text()}" );
@@ -247,6 +249,7 @@ namespace CumulusUtils
             LogDebugMessage( $" CuSupport constructor : Unit Rain (mm,in): {StationRain.Text()}" );
             LogDebugMessage( $" CuSupport constructor : Unit T (C,F): {StationTemp.Text()}" );
             LogDebugMessage( $" CuSupport constructor : Unit Distance (m, mi, km, kn): {StationDistance.Text()}" );
+            LogDebugMessage( $" CuSupport constructor : Unit Height (m, ft): {StationHeight.Text()}" );
 
         }
 

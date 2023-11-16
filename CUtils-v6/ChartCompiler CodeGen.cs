@@ -526,7 +526,7 @@ namespace CumulusUtils
                         // 
 
                         AddSeriesJavascript.AppendLine( "  thisChart.addSeries({ " );
-                        AddSeriesJavascript.AppendLine( "    name: 'WindBarbs'," );
+                        AddSeriesJavascript.AppendLine( $"    name: '{Sup.GetCUstringValue( "Compiler", "WindBarbs", "WindBarbs", true )}'," );
                         AddSeriesJavascript.AppendLine( "    xAxis: 1," );
                         AddSeriesJavascript.AppendLine( $"    color: '{thisChart.WindBarbColor}'," );
                         AddSeriesJavascript.AppendLine( "    type: 'windbarb'," );
@@ -761,12 +761,22 @@ namespace CumulusUtils
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.Distance ) && !AxisSet.HasFlag( AxisType.Distance ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Distance", "Distance", true )} " +
-                        $"({( string.IsNullOrEmpty( thisPlotvar.Unit ) ? new Distance( DistanceDim.meter ).Text() : thisPlotvar.Unit )})'}}," );
+                        $"({( string.IsNullOrEmpty( thisPlotvar.Unit ) ? new Distance( DistanceDim.kilometer ).Text() : thisPlotvar.Unit )})'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( $"softMax: 10,softMin: 0," );
                     buf.Append( "allowDecimals: false," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}," );
                     AxisSet |= AxisType.Distance;
+                }
+                else if ( thisPlotvar.Axis.HasFlag( AxisType.Height ) && !AxisSet.HasFlag( AxisType.Height ) )
+                {
+                    buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Compiler", "Height", "Height", true )} " +
+                        $"({( string.IsNullOrEmpty( thisPlotvar.Unit ) ? Sup.StationHeight.Text() : thisPlotvar.Unit )})'}}," );
+                    buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
+                    buf.Append( $"softMax: 100,softMin: 0," );
+                    buf.Append( "allowDecimals: false," );
+                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}," );
+                    AxisSet |= AxisType.Height;
                 }
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.DegreeDays ) && !AxisSet.HasFlag( AxisType.DegreeDays ) )
                 {

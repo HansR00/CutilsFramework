@@ -71,6 +71,7 @@ namespace CumulusUtils
         private readonly bool ShowUV;
         private readonly bool DoStatistics;
         private readonly bool PermitGoogleOptOut;
+        private readonly bool PwsfwiButtonInHeader;
         private InfoFromCMX thisCMXInfo;
         private CmxIPC thisIPC;
         private bool NewVersionAvailable;
@@ -84,7 +85,7 @@ namespace CumulusUtils
             Latitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Latitude", "" ), CUtils.Inv );
             Longitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Longitude", "" ), CUtils.Inv );
             Altitude = Convert.ToInt32( Sup.GetCumulusIniValue( "Station", "Altitude", "" ), CUtils.Inv );
-            AltitudeInFeet = Sup.GetCumulusIniValue( "Station", "AltitudeInFeet", "" ) == "1";
+            AltitudeInFeet = Sup.GetCumulusIniValue( "Station", "AltitudeInFeet", "" ).Equals( "1" );
 
             // ShowSolar and HasSolar are the same for now, but it may be different as HasSolar determines whether there is a sensor, ShowSolar is to show it on screen....
             // Difficult. May change into one variable (which must be global then: also used in Graphs
@@ -94,6 +95,7 @@ namespace CumulusUtils
             StatisticsType = Sup.GetUtilsIniValue( "Website", "StatisticsType", "" );
             DoStatistics = !string.IsNullOrEmpty( Sup.GetUtilsIniValue( "Website", "StatisticsType", "" ) );
             PermitGoogleOptOut = Sup.GetUtilsIniValue( "Website", "PermitGoogleOptout", "false" ).Equals( "true", CUtils.Cmp );
+            PwsfwiButtonInHeader = Sup.GetUtilsIniValue( "Website", "PwsfwiButtonInHeader", "true" ).Equals( "true", CUtils.Cmp );
 
             PanelsConfiguration = new string[ 24 ]
             {
@@ -245,22 +247,36 @@ namespace CumulusUtils
                     "</style>" +
                     "</head>" );
 
+                // The body begins here
                 indexFile.Append(
                     $"<body style='background-color: {Sup.GetUtilsIniValue( "Website", "ColorBodyBackground", "white" )};'>" + //whitesmoke
-                    "<div class='container-fluid border' style='padding: 5px'>" +
+                    "<div class='container-fluid border' style='padding: 5px'>" );
+
+                // Start the header
+                indexFile.Append(
                     "<div class='col-sm-12 CUTitle'>" +
                     "<table style='table-layout:fixed; width:100%; margin:auto' class='CUTable'><tr>" +
-                    $"<td style='width:20%;text-align:left'><span onclick=\"LoadUtilsReport('pwsFWI.txt', false);\">{Sup.GetUtilsIniValue( "pwsFWI", "CurrentPwsFWI", "" )}</span><br/>" +
-                    $"{Sup.GetUtilsIniValue( "Website", "HeaderLeftText", "" )}</td>" +
-                    "  <td style='width:60%;text-align:center'>" +
+                    $"<td style='width:20%;text-align:left'>" );
+
+                if (PwsfwiButtonInHeader)
+                {
+                    indexFile.Append(
+                        $"  <span onclick=\"LoadUtilsReport('pwsFWI.txt', false);\">{Sup.GetUtilsIniValue( "pwsFWI", "CurrentPwsFWI", "" )}</span><br/>" );
+                }
+
+                indexFile.Append(
+                    $"  {Sup.GetUtilsIniValue( "Website", "HeaderLeftText", "" )}</td>" +
+                    "<td style='width:60%;text-align:center'>" +
                     $"  <h2 style = 'padding:10px' >{Sup.GetCumulusIniValue( "Station", "LocName", "" )} {Sup.GetUtilsIniValue( "Website", "SiteTitleAddition", "" )}</h2 > " +
-                    $"   <h5 style='padding:2px'>" +
-                    $"     {Sup.GetCUstringValue( "Website", "Latitude", "Latitude", false )}: {Latitude:F4}  " +
-                    $"     {Sup.GetCUstringValue( "Website", "Longitude", "Longitude", false )}: {Longitude:F4} " +
-                    $"     {Sup.GetCUstringValue( "Website", "Altitude", "Altitude", false )}: {Altitude} {( AltitudeInFeet ? "ft" : "m" )}" +
-                    $"   </h5>" +
+                    $"  <h5 style='padding:2px'>" +
+                    $"      {Sup.GetCUstringValue( "Website", "Latitude", "Latitude", false )}: {Latitude:F4}  " +
+                    $"      {Sup.GetCUstringValue( "Website", "Longitude", "Longitude", false )}: {Longitude:F4} " +
+                    $"      {Sup.GetCUstringValue( "Website", "Altitude", "Altitude", false )}: {Altitude} {( AltitudeInFeet ? "ft" : "m" )}" +
+                    $"  </h5>" +
                     "</td>" +
-                    $"  <td style='width:20%;text-align:right'>{Sup.GetUtilsIniValue( "Website", "HeaderRightText", "" )}</td>" +
+                    $"<td style='width:20%;text-align:right'>" +
+                    $"  {Sup.GetUtilsIniValue( "Website", "HeaderRightText", "" )}" +
+                    $"</td>" +
                     "</tr></table>" +
                     "</div >" );
 
@@ -268,6 +284,8 @@ namespace CumulusUtils
                 //
                 indexFile.Append( await GenerateMenu() );
 
+                // Do the modal forms for the About's
+                //
                 indexFile.Append(
                   "<div class='modal fade' id='CUabout' tabindex='-1' role='dialog' aria-hidden='true'>" +
                   "  <div class='modal-dialog modal-dialog-centered modal-dialog modal-lg' role='document'>" +
@@ -338,7 +356,11 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   $"    <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>{Sup.GetCUstringValue( "Website", "Close", "Close", false )}</button>" +
                   "  </div></div></div>" +
                   "</div>" +
-                  "<div id='popup'></div>" +
+                  "<div id='popup'></div>" );
+
+                // Start the dashboard bootstrap Cells
+                //
+                indexFile.Append(
                   "<div class='row' style='margin:auto'>" +
                   "  <div class='col-xl-5 scrollable' id='NormalDashboard'>" +
                   "<section id='Dashboard'>" +
@@ -494,8 +516,6 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
                     "<script defer src='lib/suncalc.js'></script>" +
 
-                    //          "<script src='lib/tween.js'></script>" +
-                    //          "<script src='lib/steelseries.js'></script>" +
                     "<script defer src='lib/CUtween.min.js'></script>" +
                     "<script defer  src='lib/CUsteelseries.min.js'></script>" +
 
@@ -508,8 +528,6 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     "<script defer src='lib/HighchartsLanguage.js'></script>" +
                     "<script defer src='lib/cumulusutils.js'></script>" +
                     "" );
-
-                //indexFile.Append( $"<script >{GenerateLocalLeafletPluginRotatedMarker()}</script>" );
 
                 indexFile.Append(
                 "</body>" +
@@ -2709,8 +2727,6 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                             // https://jsfiddle.net/jdavidzapatab/6sctvg2z/
 
                             WritePrintMenu( tmpMenu );
-                            //AllMenuFiles.AddRange( WriteUserItems( Keywords, true, tmpMenu, ref i ) );
-                            //tmpMenu.Append( "</ul></li>" );
                             break;
                         case "ToggleDashboard":
                             WriteToggleMenu( tmpMenu );
@@ -3026,10 +3042,6 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     "      <li class='nav-item'>" +
                     $"        <span class='nav-link' onclick=\"PrintScreen('CUReportView');\">{Sup.GetCUstringValue( "Website", "Print", "Print", false )}</span>" +
                     "      </li>" );
-
-                //s.Append( $"<li class='nav-link' onclick=\"PrintScreen('CUReportView');\">{Sup.GetCUstringValue( "Website", "ReportView", "ReportView", false )}</li>" );
-                //s.Append( $"<li class='nav-link' onclick=\"PrintScreen('Dashboard');\">{Sup.GetCUstringValue( "Website", "Dashboard", "Dashboard", false )}</li>" );
-
             }
 
             void WriteToggleMenu( StringBuilder s )
@@ -3050,7 +3062,13 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     "  </div>" + // id='navbarSupportedContent'
                     "  <button class='navbar-toggler navbar-toggler-right custom-toggler ms-auto' type='button' data-bs-toggle='collapse' data-bs-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation'>" +
                     "    <span class='navbar-toggler-icon'></span>" +
-                    "  </button>" +
+                    "  </button>" );
+
+                if ( !PwsfwiButtonInHeader )
+                    s.Append(
+                        $"  <span onclick=\"LoadUtilsReport('pwsFWI.txt', false);\">{Sup.GetUtilsIniValue( "pwsFWI", "CurrentPwsFWI", "" )}</span><br/>" );
+
+                s.Append(
                     $"  <canvas id='canvas_led' width=30 height=30 style='float:left;'></canvas><span class='navbar-text'>{Sup.GetCUstringValue( "Website", "StationStatus", "Station Status", false )}</span>" +
                     "  </div>" + // Containerfluid, required for bootstrap 5.2 ??
                     "</nav>" );
