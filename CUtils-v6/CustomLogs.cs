@@ -75,7 +75,7 @@ namespace CumulusUtils
                         Content = Sup.GetCumulusIniValue( "CustomLogs", $"IntervalContent{i}", "" ),
                         Frequency = Frequencies[ Convert.ToInt32( Sup.GetCumulusIniValue( "CustomLogs", $"IntervalIdx{i}", "" ) ) ],
                         TagsRaw = new List<string>(),
-                        TagNames = new List<string>()
+                        TagNames = new List<string>(),
                     };
 
                     CustomLogsList.Add( tmp );
@@ -99,7 +99,7 @@ namespace CumulusUtils
                         Content = Sup.GetCumulusIniValue( "CustomLogs", $"DailyContent{i}", "" ),
                         Frequency = -1,      // Indicates a Daily log
                         TagsRaw = new List<string>(),
-                        TagNames = new List<string>()
+                        TagNames = new List<string>(),
                     };
 
                     CustomLogsList.Add( tmp );
@@ -237,12 +237,12 @@ namespace CumulusUtils
 
                 foreach ( CustomLog tmp in CustomLogsList )
                 {
-                    foreach ( string thisTag in tmp.TagNames )
+                    foreach( string thisName in tmp.TagNames )
                     {
                         sb.AppendLine( $"  if ( oldobsCustomLogs[{i}] != CustomLogsRT[{i}]) {{" );
                         sb.AppendLine( $"    oldobsCustomLogs[{i}] = CustomLogsRT[{i}];" );
-                        sb.AppendLine( $"    $('#ajxCustomLogs{tmp.Name}{thisTag}').html(CustomLogsRT[ {i} ] + ' {WebTags.GetTagUnit( thisTag )}');" );
-                        sb.AppendLine( $"    $('#ajxCustomLogs{tmp.Name}{thisTag}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                        sb.AppendLine( $"    $('#ajxCustomLogs{tmp.Name}{thisName}').html(CustomLogsRT[ {i} ] + ' {WebTags.GetTagUnit(thisName)}');" );
+                        sb.AppendLine( $"    $('#ajxCustomLogs{tmp.Name}{thisName}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
                         sb.AppendLine( "  }" );
 
                         i++;
@@ -311,14 +311,11 @@ namespace CumulusUtils
 
                     buf.Append( $"<tr {RowColour()}><td {thisPadding()}><strong>{tmp.Name}:</strong></td><td></td></tr>" );
 
-                    for (int c = 0; c < tmp.TagNames.Count; c++ )
+                    for ( int c = 0 ; c < tmp.TagNames.Count; c++ )
                     {
-                        buf.Append( $"<tr {RowColour()}><td {thisPadding()}>&nbsp;&nbsp;{tmp.TagsRaw[ c ]}</td><td id='ajxCustomLogs{tmp.Name}{tmp.TagNames[ c ]}'></td></tr>" );
+                        buf.Append( $"<tr {RowColour()}><td {thisPadding()}>&nbsp;&nbsp;{tmp.TagsRaw[ c ]}</td>" +
+                            $"<td id='ajxCustomLogs{tmp.Name}{tmp.TagNames[ c ]}'></td></tr>" );
                     }
-                    //foreach ( string thisTag in tmp.TagNames )
-                    //{
-                    //    buf.Append( $"<tr {RowColour()} onclick='Do{thisTag}();'><td {thisPadding()}>&nbsp;&nbsp;{thisTag}</td><td id='ajxCustomLogs{tmp.Name}{thisTag}'></td></tr>" );
-                    //}
                 }
 
                 buf.Append( "</table></div>" );
@@ -1271,7 +1268,10 @@ namespace CumulusUtils
                 "",
                 "",
                 "",
-                ""
+                "",
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                "%"
             };
 
             TagAxis = new AxisType[]
@@ -1696,13 +1696,16 @@ namespace CumulusUtils
                 AxisType.Solar,
                 AxisType.UV,
 
-                AxisType.Temp,             // 380
+                AxisType.Temp,              // 380
                 AxisType.Temp,
                 AxisType.Temp,
                 AxisType.Free,
                 AxisType.Free,
                 AxisType.Free,
-                AxisType.Free
+                AxisType.Free,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Humidity
             };
 
             if ( Tagname.Length != TagUnit.Length )
@@ -2198,7 +2201,10 @@ namespace CumulusUtils
             "snowdepth",
             "snowlying",
             "snowfalling",
-            "Tbeaufortnumber"
+            "Tbeaufortnumber",
+            "RecentApparent",
+            "RecentIndoorTemp",
+            "RecentIndoorHumidity"
         };
 
     }

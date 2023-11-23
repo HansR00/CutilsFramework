@@ -1,9 +1,9 @@
 ﻿/*
- * Webcam - Part of CumulusUtils
+ * Webcam - Part sb CumulusUtils
  *
  * © Copyright 2019-2023 Hans Rottier <hans.rottier@gmail.com>
  *
- * The code of CumulusUtils is public domain and distributed under the  
+ * The code sb CumulusUtils is public domain and distributed under the  
  * Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
  * 
  * Author:      Hans Rottier <hans.rottier@gmail.com>
@@ -13,7 +13,7 @@
  *                               Website Generator      (version 3.0)
  *                               ChartsCompiler         (version 5.0)
  *                               Maintenance releases   (version 6.x)
- *              Startdate : 16 november 2021 start of conversion to .NET 5, 6 and 7
+ *              Startdate : 16 november 2021 start sb conversion to .NET 5, 6 and 7
  *              
  * Environment: Raspberry Pi 3B+ and up
  *              Raspberry Pi OS  for testruns
@@ -36,97 +36,150 @@ namespace CumulusUtils
 
         public void GenerateMeteoCam()
         {
+            if ( !CUtils.HasMeteoCamMenu )
+            {
+                return; // Don't generate, ignore everything, just get back.
+            }
+
             Sup.LogDebugMessage( "MeteoCam: start" );
 
-            if ( !CUtils.HasMeteoCamMenu )
-                return; // Don't generate, ignore everything, just get back.
-
-            //string MeteoCamName = Sup.GetUtilsIniValue( "MeteoCam", "MeteoCamName", "" );
+            string MeteoCamType = Sup.GetUtilsIniValue( "MeteoCam", "CamType", "Manual" ).ToLower();
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.MeteoCamOutputFilename}", false, Encoding.UTF8 ) )
             {
-                of.WriteLine( "<script>" );
-                of.WriteLine( "  console.log('Meteocam starting...')" );
-                of.WriteLine( "  $( function() {" );
-                of.WriteLine( $"    $.get( '{Sup.GetUtilsIniValue( "MeteoCam", "MeteoCamDir", "." )}/', function( data ) {{" );
-                of.WriteLine( "      thing = data;" );
-                of.WriteLine( $"      searchFor = /.{Sup.GetUtilsIniValue( "MeteoCam", "TimelapseExtension", "mp4" )}</g;" );
-                of.WriteLine( "      a = 0; b = 0;" );
-                of.WriteLine( "      var str = '';" );
-                of.WriteLine( "      while ( ( doextensions = searchFor.exec( thing ) ) != null ) {" );
-                of.WriteLine( "      str = '';" );
-                of.WriteLine( "      a = doextensions.index;" );
-                of.WriteLine( "      while(thing[a]!='>'){a--} a++; while(thing[a]!='<' ) {str=str+thing[a];a++;}" );
-                of.WriteLine( "      $('#timelapses').append('<option value=\"' + str + '\" select>' + str + '</option>' );" );
-                of.WriteLine( "    }" );
-                of.WriteLine( "  });" );
-                of.WriteLine( "  $('#timelapses').change(function() {" );
-                of.WriteLine( $"    $('#videoSource').attr('src','{Sup.GetUtilsIniValue( "MeteoCam", "MeteoCamDir", "." )}/' + $( '#timelapses' ).val() );" );
-                of.WriteLine( "    video = $('#videoPlayer')[0];" );
-                of.WriteLine( "    video.load();" );
-                of.WriteLine( "    video.play();" );
-                of.WriteLine( "  });" );
-                of.WriteLine( "  RadioViewerChange();" );
-                of.WriteLine( "  UpdateWebCam();" );
-                of.WriteLine( "});" ); // Document load function
+                of.WriteLine( "<!-- This file is generated as part of CumulusUtils - 18-11-2023 04:52:37 " +
+                    "This header must not be removed and the user must comply to the Creative Commons 4.0 license " +
+                    "The license conditions imply the non-commercial use of HighCharts for which the user is held responsible " +
+                    "© Copyright 2019 - 2023 Hans Rottier <hans.rottier@gmail.com> " +
+                    "See also License conditions of CumulusUtils: https://meteo-wagenborgen.nl/ -->" );
 
-                of.WriteLine( "function RadioViewerChange() {" );
-                of.WriteLine( "  if ($('input[name=\"viewer\"]:checked').val() == 'Image') {" );
-                of.WriteLine( "    $('#videoPlayer').hide();" );
-                of.WriteLine( "    $('#imageViewer').show();" );
+                switch( MeteoCamType )
+                {
+                    case "manual":
+                        of.WriteLine( MeteoCamManual() );
+                        break;
 
-                of.WriteLine( "    $('#videoPlayer')[0].pause();" );
-                of.WriteLine( "    DoWebCam = true;" );
-                of.WriteLine( "  } else {" );
-                of.WriteLine( "    $('#videoPlayer').show();" );
-                of.WriteLine( "    $('#imageViewer').hide();" );
-                of.WriteLine( "    $('#timelapses').change();" );
-                of.WriteLine( "    DoWebCam = false;" );
-                of.WriteLine( "  }" );
-                of.WriteLine( "}" );
+                    case "ecowitthp10":
+                        of.WriteLine( MeteoCamEcowittHP10() );
+                        break;
 
-                of.WriteLine( "function UpdateWebCam() {" );
-                of.WriteLine( $"  $('#imageViewer').attr('src', " +
-                    $"'{Sup.GetUtilsIniValue( "MeteoCam", "MeteoCamDir", "." )}/{Sup.GetUtilsIniValue( "MeteoCam", "MeteoCamName", "meteocam.jpg" )}' + '?v=' + Math.random() );" );
-                of.WriteLine( "}" );
-                of.WriteLine( "</script>" );
-
-                of.WriteLine( "<style>" );
-                of.WriteLine( ".CURadioButton {width: 20px !important;height: 20px !important;position: relative !important;vertical-align: -2px !important;margin-right: 3px !important;}" );
-                of.WriteLine( ".CURadioLabel {height: 15px !important;text-align: left !important;font-size: 15px !important;vertical-align: 0px !important;}" );
-
-                of.WriteLine( "#report {" );
-                of.WriteLine( "  text-align: center;" );
-                of.WriteLine( "  font-family: arial;" );
-                of.WriteLine( "  border-radius: 15px;" );
-                of.WriteLine( "  border-spacing: 0;" );
-                of.WriteLine( "  border: 1px solid #b0b0b0;" );
-                of.WriteLine( "}" );
-                of.WriteLine( "</style>" );
-
-                of.WriteLine( "<div id='report'>" );
-                of.WriteLine( "<br />" );
-                of.WriteLine( "  <input type='radio' class='CURadioButton' id='nowViewer' name='viewer' value='Image' onchange='RadioViewerChange();' checked>" +
-                    $"<label for='nowViewer' class='CURadioLabel'>{Sup.GetCUstringValue( "Website", "MeteoLabel", "Meteocam", false )}</label>" );
-                of.WriteLine( "  <input type='radio' class='CURadioButton' id='timelapseViewer' name='viewer' value='Timelapse' onchange='RadioViewerChange();'>" +
-                    $"<label for='timelapseViewer' class='CURadioLabel'>{Sup.GetCUstringValue( "Website", "TimeLapseLabel", "TimeLapse", false )}</label>&nbsp;&nbsp;" );
-
-                of.WriteLine( "  <select id='timelapses'></select><br />" );
-                of.WriteLine( "  <br />" );
-
-                of.WriteLine( "  <image id='imageViewer' src='' width='100%' height='100%' frameborder='0' style='border: 0;'>" );
-
-                of.WriteLine( "  <video id='videoPlayer' width='100%' height='100%' autoplay muted controls>" );
-                of.WriteLine( $"    <source id='videoSource' src='' type='video/{Sup.GetUtilsIniValue( "MeteoCam", "TimelapseExtension", "mp4" )}'>" );
-                of.WriteLine( "    Your browser does not support the video tag." );
-                of.WriteLine( "  </video>" );
-                of.WriteLine( "  <br /><br />" );
-                of.WriteLine( "</div>" );
+                    default:
+                        Sup.LogTraceInfoMessage( $"MeteoCam: CamType unknown: {MeteoCamType}" );
+                        Sup.LogTraceInfoMessage( $"MeteoCam: Nothing to do." );
+                        break;
+                }
             }
 
             Sup.LogDebugMessage( "MeteoCam: End" );
 
             return;
         }
+
+        private string MeteoCamManual()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            Sup.LogTraceInfoMessage( $"MeteoCam CamType : Manual" );
+
+            sb.AppendLine( "<script>" );
+            sb.AppendLine( "  console.log('Meteocam starting...');" );
+            sb.AppendLine( "  $( function() {" );
+            sb.AppendLine( $"    $.get( '{Sup.GetUtilsIniValue( "MeteoCam", "MeteoCamDir", "." )}/', function( data ) {{" );
+            sb.AppendLine( "      thing = data;" );
+            sb.AppendLine( $"      searchFor = /.{Sup.GetUtilsIniValue( "MeteoCam", "TimelapseExtension", "mp4" )}</g;" );
+            sb.AppendLine( "      a = 0; b = 0;" );
+            sb.AppendLine( "      var str = '';" );
+            sb.AppendLine( "      while ( ( doextensions = searchFor.exec( thing ) ) != null ) {" );
+            sb.AppendLine( "      str = '';" );
+            sb.AppendLine( "      a = doextensions.index;" );
+            sb.AppendLine( "      while(thing[a]!='>'){a--} a++; while(thing[a]!='<' ) {str=str+thing[a];a++;}" );
+            sb.AppendLine( "      $('#timelapses').append('<option value=\"' + str + '\" select>' + str + '</option>' );" );
+            sb.AppendLine( "    }" );
+            sb.AppendLine( "  });" );
+            sb.AppendLine( "  $('#timelapses').change(function() {" );
+            sb.AppendLine( $"    $('#videoSource').attr('src','{Sup.GetUtilsIniValue( "MeteoCam", "MeteoCamDir", "." )}/' + $( '#timelapses' ).val() );" );
+            sb.AppendLine( "    video = $('#videoPlayer')[0];" );
+            sb.AppendLine( "    video.load();" );
+            sb.AppendLine( "    video.play();" );
+            sb.AppendLine( "  });" );
+            sb.AppendLine( "  RadioViewerChange();" );
+            sb.AppendLine( "  UpdateWebCam();" );
+            sb.AppendLine( "});" ); // Document load function
+
+            sb.AppendLine( "function RadioViewerChange() {" );
+            sb.AppendLine( "  if ($('input[name=\"viewer\"]:checked').val() == 'Image') {" );
+            sb.AppendLine( "    $('#videoPlayer').hide();" );
+            sb.AppendLine( "    $('#imageViewer').show();" );
+
+            sb.AppendLine( "    $('#videoPlayer')[0].pause();" );
+            sb.AppendLine( "    DoWebCam = true;" );
+            sb.AppendLine( "  } else {" );
+            sb.AppendLine( "    $('#videoPlayer').show();" );
+            sb.AppendLine( "    $('#imageViewer').hide();" );
+            sb.AppendLine( "    $('#timelapses').change();" );
+            sb.AppendLine( "    DoWebCam = false;" );
+            sb.AppendLine( "  }" );
+            sb.AppendLine( "}" );
+
+            sb.AppendLine( "function UpdateWebCam() {" );
+            sb.AppendLine( $"  $('#imageViewer').attr('src', " +
+                $"'{Sup.GetUtilsIniValue( "MeteoCam", "MeteoCamDir", "." )}/{Sup.GetUtilsIniValue( "MeteoCam", "MeteoCamName", "meteocam.jpg" )}' + '?v=' + Math.random() );" );
+            sb.AppendLine( "}" );
+            sb.AppendLine( "</script>" );
+
+            sb.AppendLine( "<style>" );
+            sb.AppendLine( ".CURadioButton {width: 20px !important;height: 20px !important;position: relative !important;vertical-align: -2px !important;margin-right: 3px !important;}" );
+            sb.AppendLine( ".CURadioLabel {height: 15px !important;text-align: left !important;font-size: 15px !important;vertical-align: 0px !important;}" );
+
+            sb.AppendLine( "#report {" );
+            sb.AppendLine( "  text-align: center;" );
+            sb.AppendLine( "  font-family: arial;" );
+            sb.AppendLine( "  border-radius: 15px;" );
+            sb.AppendLine( "  border-spacing: 0;" );
+            sb.AppendLine( "  border: 1px solid #b0b0b0;" );
+            sb.AppendLine( "}" );
+            sb.AppendLine( "</style>" );
+
+            sb.AppendLine( "<div id='report'>" );
+            sb.AppendLine( "<br />" );
+            sb.AppendLine( "  <input type='radio' class='CURadioButton' id='nowViewer' name='viewer' value='Image' onchange='RadioViewerChange();' checked>" +
+                $"<label for='nowViewer' class='CURadioLabel'>{Sup.GetCUstringValue( "Website", "MeteoLabel", "Meteocam", false )}</label>" );
+            sb.AppendLine( "  <input type='radio' class='CURadioButton' id='timelapseViewer' name='viewer' value='Timelapse' onchange='RadioViewerChange();'>" +
+                $"<label for='timelapseViewer' class='CURadioLabel'>{Sup.GetCUstringValue( "Website", "TimeLapseLabel", "TimeLapse", false )}</label>&nbsp;&nbsp;" );
+
+            sb.AppendLine( "  <select id='timelapses'></select><br />" );
+            sb.AppendLine( "  <br />" );
+
+            sb.AppendLine( "  <image id='imageViewer' src='' width='100%' height='100%' frameborder='0' style='border: 0;'>" );
+
+            sb.AppendLine( "  <video id='videoPlayer' width='100%' height='100%' autoplay muted controls>" );
+            sb.AppendLine( $"    <source id='videoSource' src='' type='video/{Sup.GetUtilsIniValue( "MeteoCam", "TimelapseExtension", "mp4" )}'>" );
+            sb.AppendLine( "    Your browser does not support the video tag." );
+            sb.AppendLine( "  </video>" );
+            sb.AppendLine( "  <br /><br />" );
+            sb.AppendLine( "</div>" );
+
+#if !RELEASE
+            return sb.ToString();
+#else
+            return CuSupport.StringRemoveWhiteSpace( sb.ToString(), " " );
+#endif
+
+        }
+
+        private string MeteoCamEcowittHP10()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            Sup.LogTraceInfoMessage( $"MeteoCam CamType : EcowittHP10" );
+
+#if !RELEASE
+            return sb.ToString();
+#else
+            return CuSupport.StringRemoveWhiteSpace( sb.ToString(), " " );
+#endif
+
+        }
+
     }
 }

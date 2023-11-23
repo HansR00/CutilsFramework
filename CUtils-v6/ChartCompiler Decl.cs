@@ -587,13 +587,15 @@ namespace CumulusUtils
                         foreach ( string webtag in thisList.TagNames )
                         {
                             List<string> tmpStr;
+                            //string w = char.IsDigit( webtag, webtag.Length - 1 ) ? webtag.Substring(0, webtag.Length - 1) : webtag;
+                            string w = webtag;
 
                             List<AxisType> tmp = PlotvarAxisEXTRA.ToList();
-                            tmp.Add( thisCustomLogs.WebTags.GetTagAxis( webtag ) );
+                            tmp.Add( thisCustomLogs.WebTags.GetTagAxis( w ) );
                             PlotvarAxisEXTRA = tmp.ToArray();
 
                             tmpStr = PlotvarUnitsEXTRA.ToList();
-                            tmpStr.Add( thisCustomLogs.WebTags.GetTagUnit( webtag ) );
+                            tmpStr.Add( thisCustomLogs.WebTags.GetTagUnit( w ) );
                             PlotvarUnitsEXTRA = tmpStr.ToArray();
 
                             tmpStr = PlotvarTypesEXTRA.ToList();

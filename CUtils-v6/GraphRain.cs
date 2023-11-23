@@ -30,10 +30,12 @@ namespace CumulusUtils
 {
     partial class Graphx
     {
+
+        #region DailyRain
         private void GenDailyRainGraphData( List<DayfileValue> ThisList, StringBuilder thisBuffer )
         {
-            int i = 0, j;
-            float sum = 0, movingAverage = 0, MaxYearlyRainAlltime = 0;
+            int i, j;
+            float sum = 0, movingAverage = 0;
             int period = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "PeriodMovingAverage", "180" ), CUtils.Inv );
 
             Sup.LogDebugMessage( "GenDailyRainGraphData : starting" );
@@ -41,6 +43,7 @@ namespace CumulusUtils
             // First generate the general HTML and Graph chartcontainer stuff,
             // Then generate the dataseries.
 
+            thisBuffer.AppendLine( "console.log('Daily Rain Chart starting.');" );
             thisBuffer.AppendLine( "chart = Highcharts.stockChart('chartcontainer', {" );
             thisBuffer.AppendLine( "  rangeSelector:" );
             thisBuffer.AppendLine( "  {" );
@@ -79,64 +82,6 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "    }," );
             thisBuffer.AppendLine( "    opposite: true," );
             thisBuffer.AppendLine( "  }, {" );
-
-            // Now we have to determine the reference values for the total rainfall. A lot of work for two value :)
-            //
-
-            string NormalUsage;
-            float NOAARainNormYearAv = 0;
-            float StationRainYearAv = 0;
-
-            List<float> YearlyValues = new List<float>();
-
-            NormalUsage = Sup.GetUtilsIniValue( "Graphs", "UseNormalRainReference", "Normal" );
-
-            if ( NormalUsage.Equals( "Normal", CUtils.Cmp ) || NormalUsage.Equals( "Both", CUtils.Cmp ) )
-            {
-                StationNormal = true;
-
-                for ( i = (int) Months.Jan; i <= (int) Months.Dec; i++ )
-                {
-                    string iniKeyName = "NOAARainNorm" + Enum.GetNames( typeof( Months ) )[ i - 1 ];
-                    string iniResult = Sup.GetCumulusIniValue( "NOAA", iniKeyName, "0.0" );
-                    if ( iniResult.IndexOf( ',' ) > 0 )
-                        iniResult = iniResult.Replace( ',', '.' );
-                    NOAARainNormYearAv += (float) Convert.ToDouble( iniResult, CUtils.Inv );
-                }
-
-                YearlyValues.Add( NOAARainNormYearAv );
-
-                Sup.LogTraceInfoMessage( $" GenDailyRainGraphData normal values: {NOAARainNormYearAv:F1}" );
-            }
-
-            // Use station Average
-            if ( NormalUsage.Equals( "StationAverage", CUtils.Cmp ) || NormalUsage.Equals( "Both", CUtils.Cmp ) )
-            {
-                List<float> tmp = new List<float>();
-
-                StationAverage = true;
-
-                for ( j = YearMin; j <= YearMax; j++ )
-                {
-                    if ( ThisList.Where( x => x.ThisDate.Year == j ).Count() < 365 )
-                        continue; // Incomplete year
-                    tmp.Add( ThisList.Where( x => x.ThisDate.Year == j ).Select( x => x.TotalRainThisDay ).Sum() );
-                }
-
-                // Second pass to determine the average and StdDev
-                if ( tmp.Any() )
-                {
-                    StationRainYearAv = tmp.Average();
-                }
-
-                Sup.LogTraceInfoMessage( $" GenDailyRainGraphData : StationRainYearAv {StationRainYearAv}" );
-            }
-
-            //  Now get the highest year rainfall ever
-            for ( j = YearMin; j <= YearMax; j++ )
-            {
-                MaxYearlyRainAlltime = Math.Max( ThisList.Where( x => x.ThisDate.Year == j ).Select( x => x.TotalRainThisDay ).Sum(), MaxYearlyRainAlltime );
-            }
 
             thisBuffer.AppendLine( "    min: 0," );
             thisBuffer.AppendLine( $"    max: {MaxYearlyRainAlltime.ToString( "F0", CUtils.Inv )}," );
@@ -214,6 +159,8 @@ namespace CumulusUtils
             cr.Append( "    yAxis: 2,\n" );
             cr.Append( "    data: [ \n" );
 
+            i = 0;
+
             do
             {
                 ds.Append( $"[{CuSupport.DateTimeToJS( ThisList[ i ].ThisDate )},{ThisList[ i ].TotalRainThisDay.ToString( "F1", NumberFormatInfo.InvariantInfo )}],\n" );
@@ -256,6 +203,10 @@ namespace CumulusUtils
 
             return;
         }
+
+        #endregion
+
+        #region MonthlyRain vs NOAA
 
         private void GenMonthlyRainvsNOAAGraphData( List<DayfileValue> ThisList, StringBuilder thisBuffer )
         {
@@ -346,6 +297,7 @@ namespace CumulusUtils
             Sup.LogTraceInfoMessage( "GenMonthlyRainvsNOAAGraphData : start Generation" );
 
             // Now generate the script
+            thisBuffer.AppendLine( "  console.log('Monthly Rain Chart starting.');" );
             thisBuffer.AppendLine( "  chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "  chart:" );
             thisBuffer.AppendLine( "  {" );
@@ -488,6 +440,9 @@ namespace CumulusUtils
             return;
         }
 
+        #endregion
+
+        #region YearRain Statistics
         private void GenerateYearRainStatistics( List<DayfileValue> Thislist, StringBuilder thisBuffer )
         {
             StringBuilder sb = new StringBuilder();
@@ -516,6 +471,7 @@ namespace CumulusUtils
                 maxrain.Add( yearlist.Select( x => x.TotalRainThisDay ).Max() );
             }
 
+            thisBuffer.AppendLine( "console.log('Year Rain Statistics Chart starting.');" );
             thisBuffer.AppendLine( "chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "chart:" );
             thisBuffer.AppendLine( "{" );
@@ -639,6 +595,10 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "});" );
         }
 
+        #endregion
+
+        #region YearMonthRain Statistics
+
         private void GenerateYearMonthRainStatistics( List<DayfileValue> Thislist, Months thisMonth, StringBuilder thisBuffer )
         {
             StringBuilder sb = new StringBuilder();
@@ -673,6 +633,7 @@ namespace CumulusUtils
                 return; // We're done, nothing here
             }
 
+            thisBuffer.AppendLine( $"console.log('Year Month ({thisMonth}) Rain Statistics Chart starting.');" );
             thisBuffer.AppendLine( "chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "chart:" );
             thisBuffer.AppendLine( "{" );
@@ -793,5 +754,147 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "  ]}]" );
             thisBuffer.AppendLine( "});" );
         }
+
+        #endregion
+
+        #region Daily RAIN vs EVT
+
+        private void GenDailyRAINvsEVT( List<DayfileValue> ThisList, StringBuilder thisBuffer )
+        {
+            int i = 0;
+            float sum = 0, sum2 = 0;
+
+            // For the range colouring see: https://stackoverflow.com/questions/46473151/color-area-between-two-lines-based-on-difference
+            // https://jsfiddle.net/BlackLabel/q4jyb9ch/
+            //
+            Sup.LogDebugMessage( "GenDailyRAINvsEVT : starting" );
+
+            thisBuffer.AppendLine( "console.log( 'RAIN vs EVT Chart starting.' ); " );
+
+            StringBuilder a = new StringBuilder();
+            StringBuilder b = new StringBuilder();
+            StringBuilder c = new StringBuilder();
+
+            while ( i < ThisList.Count )
+            {
+                if ( ThisList[ i ].ThisDate.Month == 1 && ThisList[ i ].ThisDate.Day == 1 ) // reset the sums on newyear
+                {
+                    sum = 0; sum2 = 0;
+                }
+
+                sum += ThisList[ i ].TotalRainThisDay;
+                sum2 += ThisList[ i ].EvapoTranspiration;
+                a.Append( $"{sum.ToString( "F1", NumberFormatInfo.InvariantInfo )}," );
+                b.Append( $"{sum2.ToString( "F1", NumberFormatInfo.InvariantInfo )}," );
+                c.Append( $"{CuSupport.DateTimeToJS( ThisList[ i ].ThisDate )}," );
+
+                i++;
+            }
+            thisBuffer.AppendLine( $"let DailyRain = [ {a} ]; " );
+            thisBuffer.AppendLine( $"let DailyEVT = [ {b} ]; " );
+            thisBuffer.AppendLine( $"let XaxisValue = [ {c} ]; " );
+
+            thisBuffer.AppendLine( "rainBigger = true;" );
+
+            thisBuffer.AppendLine( "const positiveColor = '#d4ffd4' /*'#bfeebf'*/, negativeColor = 'red'/*'#fde3e3'*/, ranges = [], DailyRainZones = []; " );
+
+            //thisBuffer.AppendLine( "function intersect( x1, x2, y1, y2, y3, y4) { " );
+            //thisBuffer.AppendLine( "  return ( ( x2 * y1 - x1 * y2 ) - ( x2 * y3 - x1 * y4 ) ) / ( ( y4 - y3 ) - ( y2 - y1 ) );" );
+            //thisBuffer.AppendLine( "}" );
+            // Use the following line for the Push to the DailyRainZones to use intersetion:
+            //   thisBuffer.AppendLine( "        value: intersect( XaxisValue[ i - 1], XaxisValue[ i ], DailyRain[ i - 1 ], DailyRain[ i ], DailyEVT[ i - 1 ], DailyEVT[ i ] ), " );
+
+            thisBuffer.AppendLine( "  for ( i = 0; i < DailyRain.length; i++ ) { " );
+            thisBuffer.AppendLine( "    ranges.push( [ XaxisValue[ i ], DailyRain[ i ], DailyEVT[ i ] ] ); " );
+            thisBuffer.AppendLine( "    if ( DailyRain[ i ] < DailyEVT[ i ] && rainBigger ) {" );
+            thisBuffer.AppendLine( "      DailyRainZones.push({" );
+            thisBuffer.AppendLine( "        value: XaxisValue[ i ]," );
+            thisBuffer.AppendLine( "        fillColor: positiveColor" );
+            thisBuffer.AppendLine( "      });" );
+            thisBuffer.AppendLine( "      rainBigger = false;" );
+            thisBuffer.AppendLine( "    } else if ( DailyRain[ i ] > DailyEVT[ i ] && !rainBigger ) { " );
+            thisBuffer.AppendLine( "      DailyRainZones.push({ " );
+            thisBuffer.AppendLine( "        value: XaxisValue[ i ]," );
+            thisBuffer.AppendLine( "        fillColor: negativeColor " );
+            thisBuffer.AppendLine( "      });" );
+            thisBuffer.AppendLine( "      rainBigger = true;" );
+            thisBuffer.AppendLine( "    }" );
+            thisBuffer.AppendLine( "  }" );
+
+            thisBuffer.AppendLine( "  if (rainBigger) { DailyRainZones.push({value: XaxisValue[ XaxisValue.length - 1 ],fillColor: positiveColor});" );
+            thisBuffer.AppendLine( "  } else {" );
+            thisBuffer.AppendLine( "    DailyRainZones.push({value: XaxisValue[ XaxisValue.length - 1 ], fillColor: negativeColor}) " );
+            thisBuffer.AppendLine( "  }" );
+
+            thisBuffer.AppendLine( "chart = Highcharts.stockChart('chartcontainer', {" );
+            thisBuffer.AppendLine( "  chart:" );
+            thisBuffer.AppendLine( "  {" );
+            thisBuffer.AppendLine( "    type: 'arearange'" );
+            thisBuffer.AppendLine( "  }," );
+            thisBuffer.AppendLine( "  rangeSelector:" );
+            thisBuffer.AppendLine( "  {" );
+            thisBuffer.AppendLine( "    selected: 4" );
+            thisBuffer.AppendLine( "  }," );
+
+            string tmp = Sup.GetUtilsIniValue( "Graphs", "GraphColors", graphColors );
+            if ( !string.IsNullOrEmpty( tmp ) )
+            {
+                thisBuffer.AppendLine( $"    colors: {tmp}," );  // Else fall back to HighchartsDefaults
+            }
+
+            thisBuffer.AppendLine( "  title:" );
+            thisBuffer.AppendLine( "  {" );
+            thisBuffer.AppendLine( $"    text: '{Sup.GetCUstringValue( "Graphs", "RAINvsEVTitle", "Rain versus EVT", true )}'" );
+            thisBuffer.AppendLine( "  }," );
+            thisBuffer.AppendLine( "  subtitle:" );
+            thisBuffer.AppendLine( "  {" );
+            thisBuffer.AppendLine( $"    text: \"{Sup.GetCumulusIniValue( "Station", "LocDesc", "Unknown Station" )}\"" );
+            thisBuffer.AppendLine( "  }," );
+            thisBuffer.AppendLine( "  xAxis:" );
+            thisBuffer.AppendLine( "  {" );
+            thisBuffer.AppendLine( "    type: 'datetime'," );
+            thisBuffer.AppendLine( "    crosshair: true" );
+            thisBuffer.AppendLine( "  }," );
+            thisBuffer.AppendLine( "  yAxis: [{" );
+            thisBuffer.AppendLine( "    min: 0," );
+            thisBuffer.AppendLine( "    title:" );
+            thisBuffer.AppendLine( "    {" );
+            thisBuffer.AppendLine( $"    text: '{Sup.GetCUstringValue( "Graphs", "RAINvsEVT-axisTitle", "Rain / EVT", true )} ({Sup.StationRain.Text()})' }}, opposite: false," );
+
+            if ( StationNormal )
+            {
+                thisBuffer.AppendLine( "    plotLines: [{" );
+                thisBuffer.AppendLine( $"      value: {NOAARainNormYearAv.ToString( "F1", CUtils.Inv )}," );
+                thisBuffer.AppendLine( "      zindex: 2," );
+                thisBuffer.AppendLine( "      color: 'red'," );
+                thisBuffer.AppendLine( "      dashStyle: 'shortdash'," );
+                thisBuffer.AppendLine( "      width: 2," );
+                thisBuffer.AppendLine( $"      label: {{ text: 'Normal Yearly Rainfall ({NOAARainNormYearAv.ToString( "F0", CUtils.Inv )})', align: 'left'  }}" );
+                thisBuffer.AppendLine( "    }]," );
+            }
+
+            thisBuffer.AppendLine( "    }," );
+            thisBuffer.AppendLine( "    { " );
+            thisBuffer.AppendLine( "      linkedTo: 0," );
+            thisBuffer.AppendLine( "      opposite: true," );
+            thisBuffer.AppendLine( "      title:{ text: null}" );
+            thisBuffer.AppendLine( "    }], " );
+
+            thisBuffer.AppendLine( "  tooltip:" );
+            thisBuffer.AppendLine( "  {" );
+            thisBuffer.AppendLine( "    headerFormat: '<b><span style=\"font-size: 10px\">{point.key}</span></b><table>'," );
+            thisBuffer.AppendLine( "    pointFormatter: function() {" +
+                "return 'Daily Rain: <b>' + this.low + '</b> -  Daily EVT: <b>' + this.high + '</b>' }," );
+            thisBuffer.AppendLine( "    footerFormat: '</table>'," );
+            thisBuffer.AppendLine( "    useHTML: true" );
+            thisBuffer.AppendLine( "  }," );
+            thisBuffer.AppendLine( "  series: [{ name: 'DailyRain', lineWidth: 1, data: ranges, zoneAxis: 'x', zones: DailyRainZones }]" );
+            thisBuffer.AppendLine( "});" );
+
+            return;
+        }
+
+        #endregion
+
     }
 }

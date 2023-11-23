@@ -96,6 +96,34 @@ namespace CumulusUtils
         public static string Format( float value ) => $"{value:F1}";
     }
 
+    public class Distance
+    {
+        // Note: when speed is m/s,  distance is expressed in km
+        string[] UnitDistanceText { get; } = { "m", "mi", "km", "nm" };
+
+        readonly double[,] ConversionFactors =
+        {
+          { 1.0,     0.000621371, 0.001,   0.000539957 } ,  // m to mi, km, nm
+          { 1609.34, 1.0,         1.60934, 0.868976 } ,     // mi to m, km, nm
+          { 1000,    0.621371,    1.0,     0.539957 } ,     // km to m, mp, nm
+          { 1852,    1.15078,     1.852,   1.0}             // nm to m, km, mi
+        };
+
+        public readonly DistanceDim Dim;
+
+        public Distance( DistanceDim d ) { Dim = d; }
+
+        public string Text() { return UnitDistanceText[ (int) Dim ]; }
+        public string Text( WindDim d ) { return UnitDistanceText[ (int) d ]; }
+
+        public double Convert( DistanceDim from, DistanceDim to, double val )
+        {
+            return val * ConversionFactors[ (int) from, (int) to ];
+        }
+
+        public static string Format( float value ) => $"{value:F1}";
+    }
+
     public class Rain
     {
         string[] UnitRainText { get; } = { "mm", "in" };
@@ -151,34 +179,6 @@ namespace CumulusUtils
             if ( Dim == PressureDim.inchHg ) return $"{value:F2}";
             else return $"{value:F1}";
         }
-    }
-
-    public class Distance
-    {
-        // Note: when speed is m/s,  distance is expressed in km
-        string[] UnitDistanceText { get; } = { "m", "mi", "km", "nm" };
-
-        readonly double[,] ConversionFactors =
-        {
-          { 1.0,     0.000621371, 0.001,   0.000539957 } ,  // m to mi, km, nm
-          { 1609.34, 1.0,         1.60934, 0.868976 } ,     // mi to m, km, nm
-          { 1000,    0.621371,    1.0,     0.539957 } ,     // km to m, mp, nm
-          { 1852,    1.15078,     1.852,   1.0}             // nm to m, km, mi
-        };
-
-        public readonly DistanceDim Dim;
-
-        public Distance( DistanceDim d ) { Dim = d; }
-
-        public string Text() { return UnitDistanceText[ (int) Dim ]; }
-        public string Text( WindDim d ) { return UnitDistanceText[ (int) d ]; }
-
-        public double Convert( DistanceDim from, DistanceDim to, double val )
-        {
-            return val * ConversionFactors[ (int) from, (int) to ];
-        }
-
-        public static string Format( float value ) => $"{value:F1}";
     }
 
     public class Height

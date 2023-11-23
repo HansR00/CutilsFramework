@@ -235,15 +235,18 @@ namespace CumulusUtils
 
             PerHour = GetCUstringValue( "General", "PerHour", "/hr", false );
 
-            StationWind = new Wind( (WindDim) Ini.GetValue( "Station", "WindUnit", 2 ), this );              // default does not count: comes from CMX, for me km/h
-            StationPressure = new Pressure( (PressureDim) Ini.GetValue( "Station", "PressureUnit", 1 ) );    // default does not count: comes from CMX, for me hPa
-            StationRain = new Rain( (RainDim) Ini.GetValue( "Station", "RainUnit", 0 ) );                    // default does not count: comes from CMX, for me mm
-            StationTemp = new Temp( (TempDim) Ini.GetValue( "Station", "TempUnit", 0 ) );                    // default does not count: comes from CMX, for me C
-            StationDistance = new Distance( (DistanceDim) Ini.GetValue( "Station", "DistanceUnit", 2 ) );
-            StationHeight = new Height( (HeightDim) Ini.GetValue( "Station", "CloudBaseInFeet", 0 ) );       // We use the CloudBaseInFeet param of CMX as default.
-                                                                                                             // We'll see later if that needs modification
+            StationWind = new Wind( (WindDim) Ini.GetValue( "Station", "WindUnit", 2 ), this );             // default does not count: comes from CMX, for me km/h
+            StationPressure = new Pressure( (PressureDim) Ini.GetValue( "Station", "PressureUnit", 1 ) );   // default does not count: comes from CMX, for me hPa
+            StationRain = new Rain( (RainDim) Ini.GetValue( "Station", "RainUnit", 0 ) );                   // default does not count: comes from CMX, for me mm
+            StationTemp = new Temp( (TempDim) Ini.GetValue( "Station", "TempUnit", 0 ) );                   // default does not count: comes from CMX, for me C
 
-            LogDebugMessage( $"CumulusUtils version: {UnformattedVersion()}" );
+            int tmpDim = Ini.GetValue( "Station", "WindUnit", 2 ) == 0 ? 2 : Ini.GetValue( "Station", "WindUnit", 2 );
+            StationDistance = new Distance( (DistanceDim) tmpDim );                                         // CMX does not know Distance(unit) but Wind can be misused for this
+
+            StationHeight = new Height( (HeightDim) Ini.GetValue( "Station", "CloudBaseInFeet", 0 ) );      // We use the CloudBaseInFeet param of CMX as default.
+                                                                                                            // We'll see later if that needs modification
+
+            LogDebugMessage( $" CumulusUtils version: {UnformattedVersion()}" );
             LogDebugMessage( $" CuSupport constructor : Unit Wind (m/s, mph, km/h, kts): {StationWind.Text()}" );
             LogDebugMessage( $" CuSupport constructor : Unit Pressure (mb,hPa,inHg): {StationPressure.Text()}" );
             LogDebugMessage( $" CuSupport constructor : Unit Rain (mm,in): {StationRain.Text()}" );
