@@ -23,8 +23,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using MySqlConnector;
 
 
 namespace CumulusUtils
@@ -119,115 +117,50 @@ namespace CumulusUtils
         public bool Valid { get; set; }
     }
 
-
-    public enum DayfileType
-    {
-        DashSemicolonComma,   // - date separator, ; fieldseparator, , decimal fraction
-        SlashSemicolonComma,  // / date separator, ; fieldseparator, , decimal fraction
-        PointSemicolonComma,  // . date separator, ; fieldseparator, , decimal fraction
-        DashCommaPoint,       // - date separator, , fieldseparator, . decimal fraction
-        SlashCommaPoint       // / date separator, , fieldseparator, . decimal fraction
-    };
-
     public class Dayfile : IDisposable
     {
-        private readonly string filenameCopy;
-        private readonly StreamReader df;
-        private readonly DayfileType type;
         private readonly CuSupport Sup;
+        private readonly string filename;
+        private readonly string[] lines;
+
         private readonly bool IgnoreDataErrors;
         private readonly string[] enumFieldTypeNames;
-        private readonly bool UseSQL;
 
         private bool disposed;
 
         public Dayfile( CuSupport s )
         {
-            string line;
-
             Sup = s;
-            string path = "data/";
-            string filename = "dayfile.txt";
 
-            try
-            {
-                Sup.LogDebugMessage( $"Dayfile constructor: Using path: | data/ |; file: | dayfile.txt" );
+            filename = "data/dayfile.txt";
 
-                filenameCopy = path + "copy_" + filename;
-                if ( File.Exists( filenameCopy ) )
-                    File.Delete( filenameCopy );
-                File.Copy( path + filename, filenameCopy );
-                df = new StreamReader( filenameCopy ); //File.OpenRead(filenameCopy);
+            Sup.LogDebugMessage( "Dayfile: Reading the dayfile.txt..." );
+            lines = File.ReadAllLines( filename );
 
-                Sup.LogTraceInfoMessage( $"Dayfile constructor: Working on: {filenameCopy}" );
-            }
-            catch ( Exception e )
-            {
-                Sup.LogTraceErrorMessage( $"Dayfile constructor exiting: {e.Message}" );
-                Environment.Exit( 0 );
-                throw; // satisfy the compiler
-            }
-
-            line = df.ReadLine();
-            df.Dispose();
-            df = new StreamReader( filenameCopy ); //reset to start
-
-            if ( line[ 2 ] == '-' && line[ 8 ] == ';' )
-                type = DayfileType.DashSemicolonComma;
-            else if ( line[ 2 ] == '/' && line[ 8 ] == ';' )
-                type = DayfileType.SlashSemicolonComma;
-            else if ( line[ 2 ] == '.' && line[ 8 ] == ';' )
-                type = DayfileType.PointSemicolonComma;
-            else if ( line[ 2 ] == '-' && line[ 8 ] == ',' )
-                type = DayfileType.DashCommaPoint;
-            else if ( line[ 2 ] == '/' && line[ 8 ] == ',' )
-                type = DayfileType.SlashCommaPoint;
-            else
-            {
-                Sup.LogTraceErrorMessage( "Dayfile constructor: Internal Error - Unkown format of inputfile. Please notify programmer." );
-                Environment.Exit( 0 );
-            }
-
-            Sup.LogTraceVerboseMessage( $"Dayfile constructor: DayfileType is {type}" );
+            Sup.LogDebugMessage( "Dayfile: Detecting Separators..." );
+            Sup.DetectSeparators( lines[ 0 ] );
 
             enumFieldTypeNames = Enum.GetNames( typeof( FieldName ) );
             IgnoreDataErrors = Sup.GetUtilsIniValue( "General", "IgnoreDataErrors", "true" ).Equals( "true", CUtils.Cmp );
-            UseSQL = Sup.GetUtilsIniValue( "General", "UseSQL", "false" ).Equals( "true", CUtils.Cmp );
 
             return;
         }
 
         public List<DayfileValue> DayfileRead()
         {
-            string line;
-            DayfileValue tmp;
             List<DayfileValue> tmpMainlist = new List<DayfileValue>();
+            DayfileValue tmp;
 
-            // Start the p rocessing of dayfile.txt
-            Sup.LogTraceInfoMessage( "CumulusUtils : Creating class dayfile -> Opening dayfile.txt" );
-
-            if ( UseSQL )
+            foreach ( string line in lines )
             {
-                tmpMainlist = ReadDayfileFromSQL();
-            }
-            else
-            {
-                // Use classical Dayfile read
-                line = ReadLine();
+                tmp = SetValues( Sup.ChangeSeparators( line ), new DayfileValue() );
 
-                while ( !String.IsNullOrEmpty( line ) )
+                // valid is a consequence of errors in the datafile while the user expressed the wish to continue
+                // through the ini parameter 'IgnoreDataErrors=true'
+                if ( tmp.Valid )
                 {
-                    tmp = SetValues( line, new DayfileValue() );
-
-                    // valid is a consequence of errors in the datafile while the user expressed the wish to continue
-                    // through the ini parameter 'IgnoreDataErrors=true'
-                    if ( tmp.Valid )
-                    {
-                        tmpMainlist.Add( tmp );
-                        SetExtraValues( tmpMainlist );
-                    }
-
-                    line = ReadLine();
+                    tmpMainlist.Add( tmp );
+                    SetExtraValues( tmpMainlist );
                 }
             }
 
@@ -236,53 +169,10 @@ namespace CumulusUtils
             return tmpMainlist;
         }
 
-        private string ReadLine()
-        {
-            //int i, separatorCount = 0;
-            StringBuilder tmpLine = new StringBuilder();
-
-            if ( df.EndOfStream )
-                Sup.LogTraceVerboseMessage( "Dayfile : EOF detected" ); // nothing to do;
-            else
-            {
-                tmpLine.Append( df.ReadLine() );
-
-                /*
-                 * make a uniform line to read: convert all to SlashCommaPoint
-                 */
-                if ( type == DayfileType.DashSemicolonComma )
-                {
-                    tmpLine[ 2 ] = '/';
-                    tmpLine[ 5 ] = '/';
-                    tmpLine.Replace( ',', '.' );
-                    tmpLine.Replace( ';', ',' );
-                }
-                else if ( type == DayfileType.PointSemicolonComma )
-                {
-                    tmpLine[ 2 ] = '/';
-                    tmpLine[ 5 ] = '/';
-                    tmpLine.Replace( ',', '.' );
-                    tmpLine.Replace( ';', ',' );
-                }
-                else if ( type == DayfileType.SlashSemicolonComma )
-                {
-                    tmpLine.Replace( ',', '.' );
-                    tmpLine.Replace( ';', ',' );
-                }
-                else if ( type == DayfileType.DashCommaPoint )
-                {
-                    tmpLine[ 2 ] = '/';
-                    tmpLine[ 5 ] = '/';
-                }
-            }
-
-            return tmpLine.ToString();
-        }
-
         private DayfileValue SetValues( string line, DayfileValue ThisValue )
         {
             string tmpDatestring;
-            string[] lineSplit = line.Split( ',' );
+            string[] lineSplit = line.Split( ' ' );  // Always fields separated by ' '
             int FieldInUse = (int) FieldName.thisDate;
 
             try
@@ -471,7 +361,7 @@ namespace CumulusUtils
                 const string m = "DayfileValue.SetValues";
 
                 Sup.LogTraceErrorMessage( $"{m} fail: " + e.Message );
-                Sup.LogTraceErrorMessage( $"{m}: in field nr {FieldInUse} does  not exist in this file {filenameCopy}" );
+                Sup.LogTraceErrorMessage( $"{m}: in field nr {FieldInUse} does  not exist in this file {filename}" );
                 Sup.LogTraceErrorMessage( $"{m}: line is: '{line}')" );
 
                 if ( IgnoreDataErrors )
@@ -541,116 +431,11 @@ namespace CumulusUtils
             {
                 if ( disposing )
                 {
-                    // release the large, managed resource here
-                    df.Dispose();
-                    File.Delete( filenameCopy );
                 }
 
                 // release unmagaed resources here
                 disposed = true;
             }
-        }
-
-        List<DayfileValue> ReadDayfileFromSQL()
-        {
-            List<DayfileValue> tmpList = new List<DayfileValue>();
-
-            try
-            {
-                MySqlConnectionStringBuilder builder = new MySqlConnectionStringBuilder
-                {
-                    Server = Sup.GetCumulusIniValue( "MySQL", "Host", "" ),
-                    Port = Convert.ToUInt32( Sup.GetCumulusIniValue( "MySQL", "Port", "" ) ),
-                    UserID = Sup.GetCumulusIniValue( "MySQL", "User", "" ),
-                    Password = Sup.GetCumulusIniValue( "MySQL", "Pass", "" ),
-                    Database = Sup.GetCumulusIniValue( "MySQL", "Database", "" )
-                };
-
-                Sup.LogDebugMessage( $"ReadDayfileFromSQL: Reading Dayfile records from {builder.Database}@{builder.Server}" );
-
-                using ( MySqlConnection connection = new MySqlConnection( builder.ConnectionString ) )
-                {
-                    string sql = "SELECT * FROM Dayfile;";
-
-                    using ( MySqlCommand command = new MySqlCommand( sql, connection ) )
-                    {
-                        connection.Open();
-
-                        using ( MySqlDataReader reader = command.ExecuteReader() )
-                        {
-                            while ( reader.Read() )
-                            {
-                                string DateAsString = reader.GetDateTime( (int) FieldName.thisDate ).ToString( "dd-MM-yyyy " );
-
-                                DayfileValue tmp = new DayfileValue
-                                {
-                                    ThisDate = reader.GetDateTime( (int) FieldName.thisDate ),
-                                    HighWindGust = reader.GetFloat( (int) FieldName.highWindGust ),
-                                    TimeHighWindGust = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeHighWindGust ), "dd-MM-yyyy HH:mm", CUtils.Inv ),
-                                    MinTemp = reader.GetFloat( (int) FieldName.minTemp ),
-                                    TimeMinTemp = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeMinTemp ), "dd-MM-yyyy HH:mm", CUtils.Inv ),
-                                    MaxTemp = reader.GetFloat( (int) FieldName.maxTemp ),
-                                    TimeMaxTemp = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeMaxTemp ), "dd-MM-yyyy HH:mm", CUtils.Inv ),
-                                    MinBarometer = reader.GetFloat( (int) FieldName.minBarometer ),
-                                    TimeMinBarometer = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeMinBarometer ), "dd-MM-yyyy HH:mm", CUtils.Inv ),
-                                    MaxBarometer = reader.GetFloat( (int) FieldName.maxBarometer ),
-                                    TimeMaxBarometer = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeMaxBarometer ), "dd-MM-yyyy HH:mm", CUtils.Inv ),
-                                    MaxRainRate = reader.GetFloat( (int) FieldName.maxRainRate ),
-                                    TimeMaxRainRate = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeMaxRainRate ), "dd-MM-yyyy HH:mm", CUtils.Inv ),
-                                    TotalRainThisDay = reader.GetFloat( (int) FieldName.totalRainThisDay ),
-                                    AverageTempThisDay = reader.GetFloat( (int) FieldName.averageTempThisDay ),
-                                    TotalWindRun = reader.GetFloat( (int) FieldName.totalWindRunThisDay ),
-                                    HighAverageWindSpeed = reader.GetFloat( (int) FieldName.highAverageWindSpeed ),
-                                    TimeHighAverageWindSpeed = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeHighAverageWindSpeed ), "dd-MM-yyyy HH:mm", CUtils.Inv ),
-                                    LowHumidity = reader.GetFloat( (int) FieldName.lowHumidity ),
-                                    TimeLowHumidity = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeLowHumidity ), "dd-MM-yyyy HH:mm", CUtils.Inv ),
-                                    HighHumidity = reader.GetFloat( (int) FieldName.highHumidity ),
-                                    TimeHighHumidity = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeHighHumidity ), "dd-MM-yyyy HH:mm", CUtils.Inv ),
-                                    EvapoTranspiration = reader.GetFloat( (int) FieldName.evapotranspiration ),
-                                    HrsOfSunshine = reader.GetFloat( (int) FieldName.hrsofsunshine ),
-
-                                    // here some additional data are skipped
-                                    HighHourlyRain = reader.GetFloat( (int) FieldName.highHourlyRain ),
-                                    TimeHighHourlyRain = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeHighHourlyRain ), "dd-MM-yyyy HH:mm", CUtils.Inv ),
-
-                                    // here some additional data are skipped
-                                    HeatingDegreeDays = reader.GetFloat( (int) FieldName.heatingdegreedays ),
-                                    CoolingDegreeDays = reader.GetFloat( (int) FieldName.coolingdegreedays ),
-
-                                    // here some additional data are skipped
-                                    //HighFeelsLike = reader.GetFloat( (int) FieldName.highFeelsLike ),
-                                    //TimeHighFeelsLike = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeofhighFeelsLike ), "dd-MM-yyyy HH:mm", ci ),
-                                    //LowFeelsLike = reader.GetFloat( (int) FieldName.highFeelsLike ),
-                                    //TimeLowFeelsLike = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeoflowFeelsLike ), "dd-MM-yyyy HH:mm", ci ),
-                                    //HighHumidex = reader.GetFloat( (int) FieldName.highHumidex ),
-                                    //TimeHighHumidex = DateTime.ParseExact( DateAsString + reader.GetString( (int) FieldName.timeofhighHumidex ), "dd-MM-yyyy HH:mm", ci ),
-
-                                    Valid = true
-                                };
-
-                                // Special handling of the rain periods, finished after the caller gets control back;
-                                if ( tmp.TotalRainThisDay > 0 ) { tmp.DryPeriod = 0; tmp.WetPeriod = 1; }
-                                else { tmp.DryPeriod = 1; tmp.WetPeriod = 0; }
-
-                                tmp.MonthlyRain = tmp.TotalRainThisDay;     // do the actual work in SetExtraValues
-                                tmp.YearToDateRain = tmp.TotalRainThisDay;  // do the actual work in SetExtraValues
-
-                                tmpList.Add( tmp );
-                                SetExtraValues( tmpList );
-                            } // Loop over the records
-                        } // using: Execute the reader
-                    } // using: Execute the command
-
-                } // using: Connection
-
-                Sup.LogDebugMessage( $"Reading Dayfile MySQL Done" );
-            }
-            catch ( MySqlException e )
-            {
-                Console.WriteLine( $"ReadDayfileFromSQL: Exception - {e.ErrorCode} - {e.Message}" );
-            }
-
-            return tmpList;
         }
     }
 }

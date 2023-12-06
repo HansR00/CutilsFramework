@@ -218,6 +218,7 @@ namespace CumulusUtils
         public static int DaysInGraph { get; set; }
         public static int LogIntervalInMinutes { get; set; }
         public static int FTPIntervalInMinutes { get; set; }
+        public static int UtilsRealTimeInterval { get; set; }
         public static bool DoingUserAskedData { get; set; }
 
         public static int[] PossibleIntervals = { 1, 5, 10, 15, 20, 30 };
@@ -337,6 +338,7 @@ namespace CumulusUtils
                 DaysInGraph = Convert.ToInt32( Sup.GetCumulusIniValue( "Graphs", "ChartMaxDays", "" ) );
                 LogIntervalInMinutes = PossibleIntervals[ Convert.ToInt32( Sup.GetCumulusIniValue( "Station", "DataLogInterval", "" ), CUtils.Inv ) ];
                 FTPIntervalInMinutes = Convert.ToInt32( Sup.GetCumulusIniValue( "FTP site", "UpdateInterval", "" ) );
+                UtilsRealTimeInterval = Convert.ToInt32( Sup.GetUtilsIniValue( "Website", "CumulusRealTimeInterval", "15" ) ); // Sorry for the confused naming
 
                 // Now start doing things
                 CUtils p = new CUtils();

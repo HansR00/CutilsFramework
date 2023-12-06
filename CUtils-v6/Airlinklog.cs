@@ -218,28 +218,7 @@ namespace CumulusUtils
 
             string Filename;
 
-            DateTime Now = DateTime.Now;
-            Now = new DateTime( Now.Year, Now.Month, Now.Day, Now.Hour, Now.Minute, 0 );
-            DateTime timeEnd = Now.AddMinutes( -Now.Minute % Math.Max( CUtils.FTPIntervalInMinutes, CUtils.LogIntervalInMinutes ) );
-            DateTime timeStart;
-
-            if ( CUtils.Isup.IsIncrementalAllowed() )
-            {
-                try
-                {
-                    timeStart = DateTime.ParseExact( Sup.GetUtilsIniValue( "General", "LastUploadTime", "" ), "dd/MM/yy HH:mm", CUtils.Inv ).AddMinutes( 1 );
-                }
-                catch
-                {
-                    timeStart = timeEnd.AddHours( -CUtils.HoursInGraph );
-                }
-
-            }
-            else
-            {
-                timeStart = timeEnd.AddHours( -CUtils.HoursInGraph );
-            }
-
+            Sup.SetStartAndEndForData( out DateTime timeStart, out DateTime timeEnd );
             Sup.LogDebugMessage( $"AirLinklog: timeStart = {timeStart}; timeEnd = {timeEnd}" );
 
             AirlinklogValue tmp;

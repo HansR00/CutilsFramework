@@ -67,6 +67,7 @@ namespace CumulusUtils
         public string ForecastOutputFilename { get; } = "forecast.txt";
         public string StationMapOutputFilename { get; } = "stationmap.txt";
         public string MeteoCamOutputFilename { get; } = "meteocam.txt";
+        public string MeteocamRealtimeFilename { get; } = "meteocamrealtime.txt";
         public string AirLinkOutputFilename { get; } = "airlink.txt";
         public string AirLinkStandaloneOutputFilename { get; } = "airlink.html";
         public string AirLinkRealtimeFilename { get; } = "airlinkrealtime.txt";
@@ -258,7 +259,7 @@ namespace CumulusUtils
 
         #endregion
 
-        #region Methods
+        #region Methods INI
         public string GetCumulusIniValue( string section, string key, string def ) => Ini.GetValue( section, key, def );
         public string GetStringsIniValue( string section, string key, string def ) => StringsIni.GetValue( section, key, def );
         public string GetAlltimeRecordValue( string section, string key, string def ) => AtrIni.GetValue( section, key, def );
@@ -311,7 +312,11 @@ namespace CumulusUtils
 
         public void SetCUstringValue( string section, string key, string def ) => CUstringIni.SetValue( section, key, def );
 
-        #region Highcharts
+        private void EndMyIniFile() { if ( MyIni != null ) { MyIni.Flush(); MyIni.Refresh(); } if ( CUstringIni != null ) { CUstringIni.Flush(); CUstringIni.Refresh(); } }
+
+        #endregion
+
+        #region Methods Highcharts
 
         public int HighChartsWindBarbSpacing()
         {
@@ -340,18 +345,14 @@ namespace CumulusUtils
 
         #endregion
 
+        #region Methods Utilities
+
         // Replace white space with either nothing (empty replacement string) or with whatever you want (mostly single space)
         private static readonly Regex sWhitespace = new Regex( @"\s+" );
         public static string StringRemoveWhiteSpace( string InputWithSpaces, string ReplacementOfSpaces ) => sWhitespace.Replace( InputWithSpaces, ReplacementOfSpaces );
 
         public static string StationInUse( int i )
         {
-            //string[] StationDesc = { "Davis Vantage Pro", "Davis Vantage Pro2", "Oregon Scientific WMR-928", "Oregon Scientific WM-918", "EasyWeather",
-            //    "Fine Offset", "LaCrosse WS2300", "Fine Offset with Solar", "Oregon Scientific WMR100", "Oregon Scientific WMR200", "Instromet", "Davis WLL", "GW1000",
-            //    "HTTP WUnderground", "HTTP Ecowitt", "HTTP Ambient", "WeatherFlow Tempest" };
-
-            //"enum": [-1,17,0,1,11,19,20,12,18,14,13,15,16,5,7,4,10,6,8,9,3,2],
-
             string[] StationDesc =
             {
                 "Davis Vantage Pro",			// 0
@@ -428,6 +429,10 @@ namespace CumulusUtils
 
         public static string Copyright() => "&copy; Hans Rottier";
 
+        #endregion
+
+        #region Methods Includes
+
         public string GenjQueryIncludestring() => ( CUtils.DojQueryInclude && !CUtils.DoWebsite ) ?
                 "<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js\" type=\"text/javascript\"></script>" : "";
 
@@ -481,7 +486,36 @@ namespace CumulusUtils
             return sb;
         }
 
-        private void EndMyIniFile() { if ( MyIni != null ) { MyIni.Flush(); MyIni.Refresh(); } if ( CUstringIni != null ) { CUstringIni.Flush(); CUstringIni.Refresh(); } }
+        #endregion
+
+        #region Methods Incremental Dates
+
+        public void SetStartAndEndForData( out DateTime Start, out DateTime End )
+        {
+            DateTime Now = DateTime.Now;
+            Now = new DateTime( Now.Year, Now.Month, Now.Day, Now.Hour, Now.Minute, 0 );
+
+            End = Now.AddMinutes( -Now.Minute % Math.Max( CUtils.FTPIntervalInMinutes, CUtils.LogIntervalInMinutes ) );
+
+            if ( CUtils.Isup.IsIncrementalAllowed() )
+            {
+                try
+                {
+                    Start = DateTime.ParseExact( GetUtilsIniValue( "General", "LastUploadTime", "" ), "dd/MM/yy HH:mm", CUtils.Inv ).AddMinutes( 1 );
+                }
+                catch
+                {
+                    Start = End.AddHours( -CUtils.HoursInGraph );
+                }
+
+            }
+            else
+            {
+                Start = End.AddHours( -CUtils.HoursInGraph );
+            }
+
+            return;
+        }
 
         #endregion
 
@@ -549,6 +583,70 @@ namespace CumulusUtils
         public static long DateTimeToJS( DateTime timestamp ) => (long) ( timestamp - new DateTime( 1970, 1, 1, 0, 0, 0 ) ).TotalSeconds * 1000;
         public static long DateTimeToUnix( DateTime timestamp ) => (long) ( timestamp - new DateTime( 1970, 1, 1, 0, 0, 0 ) ).TotalSeconds;
         public static long DateTimeToUnixUTC( DateTime timestamp ) => (long) ( timestamp.ToUniversalTime() - new DateTime( 1970, 1, 1, 0, 0, 0 ) ).TotalSeconds;
+
+        #endregion
+
+        #region Separator handling
+
+        public char DateSeparator { get; set; }
+        public char FieldSeparator { get; set; }
+        public char DecimalSeparator { get; set; }
+
+        public void DetectSeparators( string line )
+        {
+            if ( line[ 2 ] == '-' && line[ 8 ] == ';' )
+            {
+                DateSeparator = '-';
+                FieldSeparator = ';';
+                DecimalSeparator = ',';
+            }
+            else if ( line[ 2 ] == '/' && line[ 8 ] == ';' )
+            {
+                DateSeparator = '/';
+                FieldSeparator = ';';
+                DecimalSeparator = ',';
+            }
+            else if ( line[ 2 ] == '.' && line[ 8 ] == ';' )
+            {
+                DateSeparator = '.';
+                FieldSeparator = ';';
+                DecimalSeparator = ',';
+            }
+            else if ( line[ 2 ] == '-' && line[ 8 ] == ',' )
+            {
+                DateSeparator = '-';
+                FieldSeparator = ',';
+                DecimalSeparator = '.';
+            }
+            else if ( line[ 2 ] == '/' && line[ 8 ] == ',' )
+            {
+                DateSeparator = '/';
+                FieldSeparator = ',';
+                DecimalSeparator = '.';
+            }
+            else
+            {
+                LogTraceErrorMessage( "CustomLogs Logreaders: Internal Error - Unkown format of inputfile. Please get help." );
+                Environment.Exit( 0 );
+            }
+
+            LogDebugMessage( $"DetectSeparators: date: {DateSeparator} | Field: {FieldSeparator} | Decimal {DecimalSeparator}" );
+
+            return;
+        }
+
+        public string ChangeSeparators( string line )
+        {
+            string thisLine;
+
+            // Make the line always datesep '/' | Fieldsep ' ' and Decimalsep '.'
+
+            thisLine = line.Substring( 0, 8 ).Replace( DateSeparator, '/' );
+            thisLine += line.Substring( 8 ).Replace( FieldSeparator, ' ' ).Replace( DecimalSeparator, '.' );
+            //thisLine = StringRemoveWhiteSpace( thisLine, " " );  // PErformance costs too high (de Regex) !!! 
+
+            return thisLine;
+        }
 
         #endregion
 
@@ -742,9 +840,9 @@ namespace CumulusUtils
 
     #endregion
 
-    /*
-        #region Encryption
+    #region Encryption
 
+    /*
         /// <summary>
         /// Cipher class 
         /// Stole from https://stackoverflow.com/questions/10168240/encrypting-decrypting-a-string-in-c-sharp
@@ -847,7 +945,7 @@ namespace CumulusUtils
                 return randomBytes;
             }
         }
-
-        #endregion
     */
+
+    #endregion
 }

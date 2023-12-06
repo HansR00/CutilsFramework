@@ -904,30 +904,9 @@ namespace CumulusUtils
             // Then go the hours in Graphs back to complete the full cycle. 
             // So with a 10 min FTP cycle and Now = 08h09 the endtime must be 08h00 -> the minute value MOD FTP frequency
             // This should give it the same starttime as the CMX JSONS, this is relevant for the wind addition later on.
-            // This is also shared with the ChartsCompiler -> make some shared function for start and endtime related to the intervals.
+            // This is also shared with the UserAskedData JSON creation -> it has become a shared function for start and endtime related to the intervals.
             //
-            DateTime Now = DateTime.Now;
-            Now = new DateTime( Now.Year, Now.Month, Now.Day, Now.Hour, Now.Minute, 0 );
-            DateTime timeEnd = Now.AddMinutes( -Now.Minute % Math.Max( CUtils.FTPIntervalInMinutes, CUtils.LogIntervalInMinutes ) );
-            DateTime timeStart;
-
-            if ( CUtils.Isup.IsIncrementalAllowed() )
-            {
-                try
-                {
-                    timeStart = DateTime.ParseExact( Sup.GetUtilsIniValue( "General", "LastUploadTime", "" ), "dd/MM/yy HH:mm", CUtils.Inv ).AddMinutes( 1 );
-                }
-                catch
-                {
-                    timeStart = timeEnd.AddHours( -CUtils.HoursInGraph );
-                }
-
-            }
-            else
-            {
-                timeStart = timeEnd.AddHours( -CUtils.HoursInGraph );
-            }
-
+            Sup.SetStartAndEndForData( out DateTime timeStart, out DateTime timeEnd );
             Sup.LogTraceInfoMessage( $"GenerateUserAskedData: timeStart = {timeStart}; timeEnd = {timeEnd}" );
 
             StringBuilder Recent = new StringBuilder( "{" );
@@ -942,7 +921,7 @@ namespace CumulusUtils
 
             // Do the ALL/DAILY only once a day
 
-            _ = DateTime.TryParse( Sup.GetUtilsIniValue( "Compiler", "DoneToday", $"{Now.AddDays( -1 ):s}" ), out DateTime DoneToday );
+            _ = DateTime.TryParse( Sup.GetUtilsIniValue( "Compiler", "DoneToday", $"{DateTime.Now.AddDays( -1 ):s}" ), out DateTime DoneToday );
 
             Sup.LogTraceInfoMessage( $"Generate UserAskedData: DoneToday = {DoneToday}." );
 
@@ -951,7 +930,7 @@ namespace CumulusUtils
             if ( DoDailyAndAll )
             {
                 Sup.LogTraceInfoMessage( $"Generate UserAskedData: Must generate the ALL Range." );
-                Sup.SetUtilsIniValue( "Compiler", "DoneToday", $"{Now:s}" );
+                Sup.SetUtilsIniValue( "Compiler", "DoneToday", $"{DateTime.Now:s}" );
             }
             else
                 Sup.LogTraceInfoMessage( $"Generate UserAskedData: Must NOT generate the ALL Range." );

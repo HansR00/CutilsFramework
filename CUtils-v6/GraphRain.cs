@@ -96,11 +96,11 @@ namespace CumulusUtils
             if ( StationNormal )
             {
                 thisBuffer.AppendLine( $"        value: {NOAARainNormYearAv.ToString( "F1", CUtils.Inv )}," );
-                thisBuffer.AppendLine( "        zindex: 2," );
+                thisBuffer.AppendLine( "        zIndex: 2," );
                 thisBuffer.AppendLine( "        color: 'red'," );
                 thisBuffer.AppendLine( "        dashStyle: 'shortdash'," );
                 thisBuffer.AppendLine( "        width: 2," );
-                thisBuffer.AppendLine( $"        label: {{ text: 'Normal Yearly Rainfall ({NOAARainNormYearAv.ToString( "F0", CUtils.Inv )})', align: 'left'  }}" );
+                thisBuffer.AppendLine( $"        label: {{ text: '{Sup.GetCUstringValue( "Graphs", "NormalYearlyRainfall", "Normal Yearly Rainfall", true )} ({NOAARainNormYearAv.ToString( "F0", CUtils.Inv )})', align: 'left'  }}" );
             }
 
             if ( StationAverage && StationNormal )
@@ -109,11 +109,11 @@ namespace CumulusUtils
             if ( StationAverage ) // Must be StationAverage
             {
                 thisBuffer.AppendLine( $"      value: {StationRainYearAv.ToString( "F1", CUtils.Inv )}," );
-                thisBuffer.AppendLine( "      zindex: 2," );
+                thisBuffer.AppendLine( "      zIndex: 2," );
                 thisBuffer.AppendLine( "      color: 'green'," );
                 thisBuffer.AppendLine( "      dashStyle: 'shortdash'," );
                 thisBuffer.AppendLine( "      width: 2," );
-                thisBuffer.AppendLine( $"      label: {{ text: 'Station Yearly Rainfall ({StationRainYearAv.ToString( "F0", CUtils.Inv )})', align: 'right', textAlign: 'right' }}" );
+                thisBuffer.AppendLine( $"      label: {{ text: '{Sup.GetCUstringValue( "Graphs", "StationYearlyRainfall", "Station Yearly Rainfall", true )} ({NOAARainNormYearAv.ToString( "F0", CUtils.Inv )})', align: 'right'  }}" );
             }
 
             thisBuffer.AppendLine( "    }] " ); // closing the plotLines
@@ -827,14 +827,8 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "  }" );
 
             thisBuffer.AppendLine( "chart = Highcharts.stockChart('chartcontainer', {" );
-            thisBuffer.AppendLine( "  chart:" );
-            thisBuffer.AppendLine( "  {" );
-            thisBuffer.AppendLine( "    type: 'arearange'" );
-            thisBuffer.AppendLine( "  }," );
-            thisBuffer.AppendLine( "  rangeSelector:" );
-            thisBuffer.AppendLine( "  {" );
-            thisBuffer.AppendLine( "    selected: 4" );
-            thisBuffer.AppendLine( "  }," );
+            thisBuffer.AppendLine( "  chart:{type: 'arearange'}," );
+            thisBuffer.AppendLine( "  rangeSelector:{selected: 4}," );
 
             string tmp = Sup.GetUtilsIniValue( "Graphs", "GraphColors", graphColors );
             if ( !string.IsNullOrEmpty( tmp ) )
@@ -842,52 +836,30 @@ namespace CumulusUtils
                 thisBuffer.AppendLine( $"    colors: {tmp}," );  // Else fall back to HighchartsDefaults
             }
 
-            thisBuffer.AppendLine( "  title:" );
-            thisBuffer.AppendLine( "  {" );
-            thisBuffer.AppendLine( $"    text: '{Sup.GetCUstringValue( "Graphs", "RAINvsEVTitle", "Rain versus EVT", true )}'" );
-            thisBuffer.AppendLine( "  }," );
-            thisBuffer.AppendLine( "  subtitle:" );
-            thisBuffer.AppendLine( "  {" );
-            thisBuffer.AppendLine( $"    text: \"{Sup.GetCumulusIniValue( "Station", "LocDesc", "Unknown Station" )}\"" );
-            thisBuffer.AppendLine( "  }," );
-            thisBuffer.AppendLine( "  xAxis:" );
-            thisBuffer.AppendLine( "  {" );
-            thisBuffer.AppendLine( "    type: 'datetime'," );
-            thisBuffer.AppendLine( "    crosshair: true" );
-            thisBuffer.AppendLine( "  }," );
-            thisBuffer.AppendLine( "  yAxis: [{" );
-            thisBuffer.AppendLine( "    min: 0," );
-            thisBuffer.AppendLine( "    title:" );
-            thisBuffer.AppendLine( "    {" );
-            thisBuffer.AppendLine( $"    text: '{Sup.GetCUstringValue( "Graphs", "RAINvsEVT-axisTitle", "Rain / EVT", true )} ({Sup.StationRain.Text()})' }}, opposite: false," );
+            thisBuffer.AppendLine( $"  title:{{text: '{Sup.GetCUstringValue( "Graphs", "RAINvsEVTitle", "Cumulative Rain versus Cumulative EVT", true )}'}}," );
+            thisBuffer.AppendLine( $"  subtitle:{{text: '{Sup.GetCumulusIniValue( "Station", "LocDesc", "Unknown Station" )}'}}," );
+            thisBuffer.AppendLine( "  xAxis:{type: 'datetime',crosshair: true}," );
+            thisBuffer.AppendLine( $"  yAxis: [{{min: 0,title:{{text: '{Sup.GetCUstringValue( "Graphs", "RAINvsEVT-axisTitle", "Rain / EVT", true )} ({Sup.StationRain.Text()})' }}, opposite: false," );
 
             if ( StationNormal )
             {
                 thisBuffer.AppendLine( "    plotLines: [{" );
                 thisBuffer.AppendLine( $"      value: {NOAARainNormYearAv.ToString( "F1", CUtils.Inv )}," );
-                thisBuffer.AppendLine( "      zindex: 2," );
-                thisBuffer.AppendLine( "      color: 'red'," );
+                thisBuffer.AppendLine( "      zIndex: 20," );
+                thisBuffer.AppendLine( "      color: 'blue'," );
                 thisBuffer.AppendLine( "      dashStyle: 'shortdash'," );
                 thisBuffer.AppendLine( "      width: 2," );
-                thisBuffer.AppendLine( $"      label: {{ text: 'Normal Yearly Rainfall ({NOAARainNormYearAv.ToString( "F0", CUtils.Inv )})', align: 'left'  }}" );
+                thisBuffer.AppendLine( $"      label: {{ text: '{Sup.GetCUstringValue( "Graphs", "NormalYearlyRainfall", "Normal Yearly Rainfall", true )} " +
+                    $"({NOAARainNormYearAv.ToString( "F0", CUtils.Inv )})', align: 'left'  }}" );
                 thisBuffer.AppendLine( "    }]," );
             }
 
             thisBuffer.AppendLine( "    }," );
-            thisBuffer.AppendLine( "    { " );
-            thisBuffer.AppendLine( "      linkedTo: 0," );
-            thisBuffer.AppendLine( "      opposite: true," );
-            thisBuffer.AppendLine( "      title:{ text: null}" );
-            thisBuffer.AppendLine( "    }], " );
+            thisBuffer.AppendLine( "    { linkedTo: 0, opposite: true }], " );
 
-            thisBuffer.AppendLine( "  tooltip:" );
-            thisBuffer.AppendLine( "  {" );
-            thisBuffer.AppendLine( "    headerFormat: '<b><span style=\"font-size: 10px\">{point.key}</span></b><table>'," );
-            thisBuffer.AppendLine( "    pointFormatter: function() {" +
-                "return 'Daily Rain: <b>' + this.low + '</b> -  Daily EVT: <b>' + this.high + '</b>' }," );
-            thisBuffer.AppendLine( "    footerFormat: '</table>'," );
-            thisBuffer.AppendLine( "    useHTML: true" );
-            thisBuffer.AppendLine( "  }," );
+            thisBuffer.AppendLine( "  tooltip:{ pointFormatter: function() {return " +
+                $"'{Sup.GetCUstringValue( "Graphs", "DailyRain", "Daily rain", true )}: <b>' + this.low + " +
+                $"'</b><br/>{Sup.GetCUstringValue( "Graphs", "DailyEVT", "Daily EVT", true )}: <b>' + this.high + '</b><br/>' }} }}," );
             thisBuffer.AppendLine( "  series: [{ name: 'DailyRain', lineWidth: 1, data: ranges, zoneAxis: 'x', zones: DailyRainZones }]" );
             thisBuffer.AppendLine( "});" );
 

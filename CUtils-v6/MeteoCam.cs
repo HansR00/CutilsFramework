@@ -53,7 +53,7 @@ namespace CumulusUtils
                     "© Copyright 2019 - 2023 Hans Rottier <hans.rottier@gmail.com> " +
                     "See also License conditions of CumulusUtils: https://meteo-wagenborgen.nl/ -->" );
 
-                switch( MeteoCamType )
+                switch ( MeteoCamType )
                 {
                     case "manual":
                         of.WriteLine( MeteoCamManual() );
@@ -172,6 +172,54 @@ namespace CumulusUtils
             StringBuilder sb = new StringBuilder();
 
             Sup.LogTraceInfoMessage( $"MeteoCam CamType : EcowittHP10" );
+
+            // I: First generate the RealTime AirLink file
+            //    Although the file is named Realtime, it is best to have this processed at the Interval frequency because the HP10 has an
+            //    interval of 5, 10, 15, 20 or 25 minutes and it is the user who sets that interval.
+            File.WriteAllText( $"{Sup.PathUtils}{Sup.MeteocamRealtimeFilename}", "<#EcowittCameraUrl>" );
+
+            // II: write the module
+            sb.AppendLine( "<script>" );
+            sb.AppendLine( "console.log('Meteocam starting...');" );
+            sb.AppendLine( "var prevMeteocamURL;" );
+            sb.AppendLine( "$(function () {" );
+            sb.AppendLine( "  UpdateWebCam();" );
+            sb.AppendLine( "});" );
+            sb.AppendLine( "function loadWebcamURL() {" );
+            sb.AppendLine( "  $.ajax({" );
+            sb.AppendLine( "    url: 'meteocamrealtime.txt'," );
+            sb.AppendLine( "    cache:false," );
+            sb.AppendLine( "    timeout: 2000," );
+            sb.AppendLine( "    headers: { 'Access-Control-Allow-Origin': '*' }," );
+            sb.AppendLine( "    crossDomain: true" );
+            sb.AppendLine( "  })" );
+            sb.AppendLine( "  .done( function (response, responseStatus) {" +
+                "if (response !== prevMeteocamURL){" +
+#if !RELEASE
+                "  console.log('Setting new image in the viewer...');" +
+#endif
+                "  $('#imageViewer').attr('src', response);" +
+                "  prevMeteocamURL = response;" +
+                "} } )" );
+            sb.AppendLine( "  .fail( function (xhr, textStatus, errorThrown) {console.log('webcamrealtime.txt ' + textStatus + ' : ' + errorThrown) })" );
+            sb.AppendLine( "}" );
+            sb.AppendLine( "function UpdateWebCam() {" );
+            sb.AppendLine( $"  loadWebcamURL();" );
+            sb.AppendLine( "}" );
+            sb.AppendLine( "</script>" );
+            sb.AppendLine( "" );
+            sb.AppendLine( "<style>" );
+            sb.AppendLine( "#report {" );
+            sb.AppendLine( "  text-align: center;" );
+            sb.AppendLine( "  font-family: arial;" );
+            sb.AppendLine( "  border-radius: 15px;" );
+            sb.AppendLine( "  border-spacing: 0;" );
+            sb.AppendLine( "  border: 1px solid #b0b0b0;" );
+            sb.AppendLine( "}" );
+            sb.AppendLine( "</style>" );
+            sb.AppendLine( "<div id='report'>" );
+            sb.AppendLine( "  <image id='imageViewer' src='' width='100%' height='100%' frameborder='0' style='border: 0;'>" );
+            sb.AppendLine( "</div>" );
 
 #if !RELEASE
             return sb.ToString();

@@ -24,19 +24,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace CumulusUtils
 {
-    public enum ExtraSensorslogType
-    {
-        DashSemicolonComma,   // date separator, ; fieldseparator, , decimal fraction
-        SlashSemicolonComma,  // date separator, ; fieldseparator, , decimal fraction
-        PointSemicolonComma,  // date separator, ; fieldseparator, , decimal fraction
-        DashCommaPoint,       // - date separator, , fieldseparator, . decimal fraction
-        SlashCommaPoint       // date separator, , fieldseparator, . decimal fraction
-    };
-
     public enum ExtraSensorslogFieldName
     {
         // From the headerfile in the CMX distribution (like all logreaders)
@@ -164,11 +154,14 @@ namespace CumulusUtils
 
     public class ExtraSensorslog : IDisposable
     {
-        private readonly ExtraSensorslogType type;
         private readonly CuSupport Sup;
+        public List<ExtraSensorslogValue> MainExtraSensorsValuesList;
+
         private readonly bool IgnoreDataErrors;
         private readonly string[] enumFieldTypeNames;
         private readonly string[] ExtraSensorslogList;
+
+        private string[] lines;
 
         private bool disposed;
         private string filenameCopy;
@@ -178,58 +171,16 @@ namespace CumulusUtils
 
         public ExtraSensorslog( CuSupport s )
         {
-            string line;
-
             Sup = s;
             Sup.LogTraceInfoMessage( $"ExtraSensorslog constructor: Using fixed path: | data/ |; file: | *log.txt" );
 
             // Get the list of monthly logfile in the datadirectory and check what type of delimeters we have
             ExtraSensorslogList = Directory.GetFiles( "data/", "ExtraLog*.txt" );
 
-            if ( ExtraSensorslogList.Length >= 0 )
-            {
-                filenameCopy = "data/" + "copy_" + Path.GetFileName( ExtraSensorslogList[ 0 ] );
-                Sup.LogTraceInfoMessage( $"ExtraSensorslog constructor: Using {filenameCopy}" );
-            }
-            else
-                return;
-
-            if ( File.Exists( filenameCopy ) )
-                File.Delete( filenameCopy );
-            File.Copy( ExtraSensorslogList[ 0 ], filenameCopy );
-
-            // Not sure about encoding of this file, let it be handled by the system. No presumtions.
-            //
-            using ( StreamReader mf = new StreamReader( filenameCopy ) )
-            {
-                Sup.LogTraceVerboseMessage( $"ExtraSensorslog constructor: Working on: {filenameCopy}" );
-
-                line = mf.ReadLine();
-
-                if ( line[ 2 ] == '-' && line[ 8 ] == ';' )
-                    type = ExtraSensorslogType.DashSemicolonComma;
-                else if ( line[ 2 ] == '/' && line[ 8 ] == ';' )
-                    type = ExtraSensorslogType.SlashSemicolonComma;
-                else if ( line[ 2 ] == '.' && line[ 8 ] == ';' )
-                    type = ExtraSensorslogType.PointSemicolonComma;
-                else if ( line[ 2 ] == '-' && line[ 8 ] == ',' )
-                    type = ExtraSensorslogType.DashCommaPoint;
-                else if ( line[ 2 ] == '/' && line[ 8 ] == ',' )
-                    type = ExtraSensorslogType.SlashCommaPoint;
-                else
-                {
-                    Sup.LogTraceErrorMessage( "ExtraSensorslog constructor: Internal Error - Unkown format of inputfile. Please notify programmer." );
-                    Environment.Exit( 0 );
-                }
-            }
-
-            File.Delete( filenameCopy );
-
-            Sup.LogTraceInfoMessage( $"ExtraSensorslog constructor: ExtraSensorslogType is {type}" );
             enumFieldTypeNames = Enum.GetNames( typeof( ExtraSensorslogFieldName ) );
             IgnoreDataErrors = Sup.GetUtilsIniValue( "General", "IgnoreDataErrors", "true" ).Equals( "true", CUtils.Cmp );
 
-            if ( ExtraSensorslogList.Length >= 0 && Sup.GetUtilsIniValue( "ExtraSensors", "CleanupExtraSensorslog", "false" ).Equals( "true", CUtils.Cmp ) )
+            if ( Sup.GetUtilsIniValue( "ExtraSensors", "CleanupExtraSensorslog", "false" ).Equals( "true", CUtils.Cmp ) )
             {
                 // We keep two month of data, the rest can be discarded
                 Sup.LogTraceInfoMessage( $"ExtraSensors constructor: Cleaning up Extra Sensors Logfiles..." );
@@ -247,8 +198,6 @@ namespace CumulusUtils
             return;
         }
 
-        public List<ExtraSensorslogValue> MainExtraSensorsValuesList;
-
         public List<ExtraSensorslogValue> ReadExtraSensorslog()
         {
             // Get the list of values starting datetime to Now - period by user definition GraphHours in section Graphs in Cumulus.ini
@@ -260,34 +209,13 @@ namespace CumulusUtils
 
             string Filename;
 
-            DateTime Now = DateTime.Now;
-            Now = new DateTime( Now.Year, Now.Month, Now.Day, Now.Hour, Now.Minute, 0 );
-            DateTime timeEnd = Now.AddMinutes( -Now.Minute % Math.Max( CUtils.FTPIntervalInMinutes, CUtils.LogIntervalInMinutes ) );
-            DateTime timeStart;
+            ExtraSensorslogValue tmp = new ExtraSensorslogValue();
 
-            if ( CUtils.Isup.IsIncrementalAllowed() )
-            {
-                try
-                {
-                    timeStart = DateTime.ParseExact( Sup.GetUtilsIniValue( "General", "LastUploadTime", "" ), "dd/MM/yy HH:mm", CUtils.Inv ).AddMinutes( 1 );
-                }
-                catch
-                {
-                    timeStart = timeEnd.AddHours( -CUtils.HoursInGraph );
-                }
-
-            }
-            else
-            {
-                timeStart = timeEnd.AddHours( -CUtils.HoursInGraph );
-            }
-
+            Sup.SetStartAndEndForData( out DateTime timeStart, out DateTime timeEnd );
             Sup.LogTraceInfoMessage( $"ExtraSensorslog: timeStart = {timeStart}; timeEnd = {timeEnd}" );
 
-            ExtraSensorslogValue tmp;
-            MainExtraSensorsValuesList = new List<ExtraSensorslogValue>();
-
             Filename = $"data/ExtraLog{timeStart:yyyy}{timeStart:MM}.txt";
+
             if ( !File.Exists( Filename ) )
             {
                 Sup.LogTraceInfoMessage( $"ExtraSensorslog: Require {Filename} to start but it does not exist, aborting ExtraSensorsLog" );
@@ -296,29 +224,24 @@ namespace CumulusUtils
 
             Sup.LogTraceInfoMessage( $"ExtraSensorslog: Require {Filename} to start" );
 
+            MainExtraSensorsValuesList = new List<ExtraSensorslogValue>();
+
             while ( !PeriodComplete )
             {
                 filenameCopy = "data/" + "copy_" + Path.GetFileName( Filename );
-                if ( File.Exists( filenameCopy ) )
-                    File.Delete( filenameCopy );
+                if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
                 File.Copy( Filename, filenameCopy );
 
-                using ( StreamReader af = new StreamReader( filenameCopy ) )
-                {
-                    string line = ReadLine( af, SanityCheck: true );
+                lines = File.ReadAllLines( filenameCopy );
+                Sup.DetectSeparators( lines[ 0 ] );
 
-                    // Loop over all lines in file
-                    do
-                    {
-                        // OK, continue here : check date and create only the list  we need (actually only read the files we need
-                        tmp = SetValues( line, timeStart );
-                        if ( tmp.Valid )
-                            MainExtraSensorsValuesList.Add( tmp );
-                        if ( tmp.ThisDate >= timeEnd )
-                            break; // we have our set of data required
-                        line = ReadLine( af, false );
-                    } while ( !string.IsNullOrEmpty( line ) );
-                } // End Using the ExtraSensorslog to Read
+                foreach ( string line in lines )
+                {
+                    tmp = SetValues( Sup.ChangeSeparators( line ), timeStart );
+
+                    if ( tmp.Valid ) MainExtraSensorsValuesList.Add( tmp );
+                    if ( tmp.ThisDate >= timeEnd ) break; // we have our set of data required
+                }
 
                 if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
 
@@ -348,103 +271,10 @@ namespace CumulusUtils
             return MainExtraSensorsValuesList;
         } // End ExtraSensorsLogs
 
-        private string ReadLine( StreamReader af, bool SanityCheck )
-        {
-            StringBuilder tmpLine = new StringBuilder();
-
-            if ( af.EndOfStream )
-            {
-                Sup.LogTraceInfoMessage( "ExtraSensorslog : EOF detected" ); // nothing to do;
-            }
-            else
-            {
-                bool SeparatorInconsistencyFound = false;
-
-                tmpLine.Append( af.ReadLine() );
-
-                if ( SanityCheck )
-                {
-                    // Do a sanity check on the presence of the correct separators which we determined when starting the reading process
-                    //
-                    switch ( type )
-                    {
-                        case ExtraSensorslogType.DashSemicolonComma:
-                            if ( !( ( tmpLine[ 2 ] == '-' ) && ( tmpLine[ 8 ] == ';' ) ) )
-                                SeparatorInconsistencyFound = true;
-                            break;
-
-                        case ExtraSensorslogType.PointSemicolonComma:
-                            if ( !( ( tmpLine[ 2 ] == '.' ) && ( tmpLine[ 8 ] == ';' ) ) )
-                                SeparatorInconsistencyFound = true;
-                            break;
-
-                        case ExtraSensorslogType.SlashSemicolonComma:
-                            if ( !( ( tmpLine[ 2 ] == '/' ) && ( tmpLine[ 8 ] == ';' ) ) )
-                                SeparatorInconsistencyFound = true;
-                            break;
-
-                        case ExtraSensorslogType.DashCommaPoint:
-                            if ( !( ( tmpLine[ 2 ] == '-' ) && ( tmpLine[ 8 ] == ',' ) ) )
-                                SeparatorInconsistencyFound = true;
-                            break;
-
-                        case ExtraSensorslogType.SlashCommaPoint:
-                            if ( !( ( tmpLine[ 2 ] == '/' ) && ( tmpLine[ 8 ] == ',' ) ) )
-                                SeparatorInconsistencyFound = true;
-                            break;
-
-                        default:
-                            // Should never be here
-                            SeparatorInconsistencyFound = true;
-                            break;
-                    }
-                }
-
-                if ( SeparatorInconsistencyFound )
-                {
-                    Sup.LogTraceErrorMessage( $"ExtraSensorslog: Illegal part of the code, should never be here, FATAL ERROR!" );
-                    Sup.LogTraceErrorMessage( $"ExtraSensorslog: Separator Inconsistency in {filenameCopy.Remove( 0, 5 )} found, FATAL ERROR!" );
-                    Sup.LogTraceErrorMessage( $"ExtraSensorslog: Please check {filenameCopy.Remove( 0, 5 )} and the data directory." );
-                }
-                else
-                {
-                    /*
-                     * make a uniform line to read: convert all to SlashCommaPoint
-                     */
-                    if ( type == ExtraSensorslogType.DashSemicolonComma )
-                    {
-                        tmpLine[ 2 ] = '/';
-                        tmpLine[ 5 ] = '/';
-                        tmpLine.Replace( ',', '.' );
-                        tmpLine.Replace( ';', ',' );
-                    }
-                    else if ( type == ExtraSensorslogType.PointSemicolonComma )
-                    {
-                        tmpLine[ 2 ] = '/';
-                        tmpLine[ 5 ] = '/';
-                        tmpLine.Replace( ',', '.' );
-                        tmpLine.Replace( ';', ',' );
-                    }
-                    else if ( type == ExtraSensorslogType.SlashSemicolonComma )
-                    {
-                        tmpLine.Replace( ',', '.' );
-                        tmpLine.Replace( ';', ',' );
-                    }
-                    else if ( type == ExtraSensorslogType.DashCommaPoint )
-                    {
-                        tmpLine[ 2 ] = '/';
-                        tmpLine[ 5 ] = '/';
-                    }
-                }// NO Separator Inconsistency
-            } // Not EOF
-
-            return tmpLine.ToString();
-        }
-
         private ExtraSensorslogValue SetValues( string line, DateTime StartTime )
         {
             string tmpDatestring;
-            string[] lineSplit = line.Split( ',' );
+            string[] lineSplit = line.Split( ' ' );
 
             ExtraSensorslogValue ThisValue = new ExtraSensorslogValue();
 
@@ -452,7 +282,6 @@ namespace CumulusUtils
 
             try
             {
-                // DateTime
                 tmpDatestring = lineSplit[ FieldInUse ];
                 FieldInUse = (int) ExtraSensorslogFieldName.thisTime;
                 tmpDatestring += " " + lineSplit[ FieldInUse ];

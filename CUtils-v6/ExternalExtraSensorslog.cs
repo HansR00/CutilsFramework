@@ -90,27 +90,7 @@ namespace CumulusUtils
 
             string Filename;
 
-            DateTime Now = DateTime.Now;
-            Now = new DateTime( Now.Year, Now.Month, Now.Day, Now.Hour, Now.Minute, 0 );
-            DateTime timeEnd = Now.AddMinutes( -Now.Minute % Math.Max( CUtils.FTPIntervalInMinutes, CUtils.LogIntervalInMinutes ) );
-            DateTime timeStart;
-
-            if ( CUtils.Isup.IsIncrementalAllowed() )
-            {
-                try
-                {
-                    timeStart = DateTime.ParseExact( Sup.GetUtilsIniValue( "General", "LastUploadTime", "" ), "dd/MM/yy HH:mm", CUtils.Inv ).AddMinutes( 1 );
-                }
-                catch
-                {
-                    timeStart = timeEnd.AddHours( -CUtils.HoursInGraph );
-                }
-
-            }
-            else
-            {
-                timeStart = timeEnd.AddHours( -CUtils.HoursInGraph );
-            }
+            Sup.SetStartAndEndForData( out DateTime timeStart, out DateTime timeEnd );
 
             Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog: timeStart = {timeStart}; timeEnd = {timeEnd}" );
 
@@ -133,27 +113,31 @@ namespace CumulusUtils
                 if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
                 File.Copy( Filename, filenameCopy );
 
-                string[] allLines = File.ReadAllLines( filenameCopy ); //got to use this sometime
+                string[] allLines = File.ReadAllLines( filenameCopy );
+
+                Sup.DetectSeparators( allLines[ 0 ] );
 
                 tmp = new ExternalExtraSensorslogValue();
 
                 foreach ( string line in allLines )
                 {
-                    string[] splitLine = line.Split( ',' );
+                    string[] splitLine = Sup.ChangeSeparators( line ).Split( ' ' );
 
                     try
                     {
-                        //Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog: Try block Parsing: {splitLine[0]} {splitLine[1]}" );
-                        tmp.ThisDate = DateTime.ParseExact( splitLine[ 0 ], "dd/MM/yy HH:mm", CUtils.Inv );
+                        string tmpDatestring;
 
-                        //Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog: Try block Parsing after parse {tmp.ThisDate} {timeStart} {timeEnd}" );
+                        tmpDatestring = splitLine[ 0 ]; // Date
+                        tmpDatestring += " " + splitLine[ 1 ]; // Time
+
+                        tmp.ThisDate = DateTime.ParseExact( tmpDatestring, "dd/MM/yy HH:mm", CUtils.Inv );
+
                         if ( tmp.ThisDate < timeStart ) continue;
-                        if ( tmp.ThisDate >= timeEnd ) break; // we have our set of data required
+                        if ( tmp.ThisDate > timeEnd ) break; // we have our set of data required
 
-                        //Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog: Try block Converting" );
-                        tmp.Value = Convert.ToSingle( splitLine[ 1 ] );
-
-                        //Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog: Try block Add: {tmp.ThisDate}" );
+                        // NOTE: formally this can be a series of values for all extra sensors in this definition
+                        //       requires additional coding ToDo when required
+                        tmp.Value = Convert.ToSingle( splitLine[ 2 ] );
                         ExternalExtraSensorsValuesList.Add( tmp );
                     }
                     catch ( Exception e ) when ( e is FormatException || e is OverflowException )

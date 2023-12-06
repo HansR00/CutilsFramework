@@ -25,8 +25,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Text;
-using MySqlConnector;
 
 namespace CumulusUtils
 {
@@ -81,25 +79,14 @@ namespace CumulusUtils
         public bool UseAverageBearing { get; set; }
     }
 
-
-    public enum MonthfileType
-    {
-        DashSemicolonComma,   // date separator, ; fieldseparator, , decimal fraction
-        SlashSemicolonComma,  // date separator, ; fieldseparator, , decimal fraction
-        PointSemicolonComma,  // date separator, ; fieldseparator, , decimal fraction
-        DashCommaPoint,       // - date separator, , fieldseparator, . decimal fraction
-        SlashCommaPoint       // date separator, , fieldseparator, . decimal fraction
-    };
-
     public class Monthfile : IDisposable
     {
-        readonly MonthfileType type;
         readonly CuSupport Sup;
         readonly bool IgnoreDataErrors;
         readonly string[] enumFieldTypeNames;
         readonly string[] MonthfileList;
         readonly string[] DaysOfMiracleAndWonder;
-        readonly bool UseSQL;
+
         readonly DateTime AncientCumulus = new DateTime( 2004, 01, 27 );
 
         bool disposed;
@@ -113,8 +100,6 @@ namespace CumulusUtils
 
         public Monthfile( CuSupport s )
         {
-            string line;
-
             Sup = s;
             Sup.LogDebugMessage( $"Monthfile constructor: Using fixed path: | data/ |; file: | *log.txt" );
 
@@ -151,41 +136,16 @@ namespace CumulusUtils
 
             filenameCopy = "data/" + "copy_" + Path.GetFileName( MonthfileList[ 0 ] );
 
-            if ( File.Exists( filenameCopy ) )
-                File.Delete( filenameCopy );
+            if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
             File.Copy( MonthfileList[ 0 ], filenameCopy );
 
-            // Not sure about encoding of this file, let it be handled by the system. No presumtions.
-            //
-            using ( StreamReader mf = new StreamReader( filenameCopy ) )
-            {
-                Sup.LogTraceInfoMessage( $"Monthfile constructor: Working on: {filenameCopy}" );
-
-                line = mf.ReadLine();
-
-                if ( line[ 2 ] == '-' && line[ 8 ] == ';' )
-                    type = MonthfileType.DashSemicolonComma;
-                else if ( line[ 2 ] == '/' && line[ 8 ] == ';' )
-                    type = MonthfileType.SlashSemicolonComma;
-                else if ( line[ 2 ] == '.' && line[ 8 ] == ';' )
-                    type = MonthfileType.PointSemicolonComma;
-                else if ( line[ 2 ] == '-' && line[ 8 ] == ',' )
-                    type = MonthfileType.DashCommaPoint;
-                else if ( line[ 2 ] == '/' && line[ 8 ] == ',' )
-                    type = MonthfileType.SlashCommaPoint;
-                else
-                {
-                    Sup.LogTraceErrorMessage( "Monthfile constructor: internal Error - Unkown format of inputfile. Please notify programmer." );
-                    Environment.Exit( 0 );
-                }
-            }
+            string[] lines = File.ReadAllLines( filenameCopy );
+            Sup.DetectSeparators( lines[ 0 ] );
 
             File.Delete( filenameCopy );
 
-            Sup.LogTraceInfoMessage( $"Monthfile constructor: MonthfileType is {type}" );
             enumFieldTypeNames = Enum.GetNames( typeof( MonthfileFieldName ) );
             IgnoreDataErrors = Sup.GetUtilsIniValue( "General", "IgnoreDataErrors", "true" ).Equals( "true", CUtils.Cmp );
-            UseSQL = Sup.GetUtilsIniValue( "General", "UseSQL", "false" ).Equals( "true", CUtils.Cmp );
             MaxErrors = Convert.ToInt32( Sup.GetUtilsIniValue( "General", "MaxErrors", "10" ), CUtils.Inv );
 
             return;
@@ -198,13 +158,6 @@ namespace CumulusUtils
             if ( MonthlyLogsRead )
             {
                 ;
-                // We  have the list already so immediately return that list
-                // Sup.LogTraceInfoMessage( $"ReadMonthlyLogs: MainMonthList was already created, returning existing list with {MainMonthList.Count} records." );
-            }
-            else if ( UseSQL )
-            {
-                MainMonthList = ReadMonthfileFromSQL();
-                MonthlyLogsRead = true;
             }
             else
             {
@@ -214,24 +167,18 @@ namespace CumulusUtils
                 foreach ( string file in MonthfileList )
                 {
                     ErrorCount = 0; // make sure we only log MaxErrors per file
-                    filenameCopy = "data/" + "copy_" + Path.GetFileName( file );
 
-                    if ( File.Exists( filenameCopy ) )
-                        File.Delete( filenameCopy );
+                    filenameCopy = "data/" + "copy_" + Path.GetFileName( file );
+                    if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
                     File.Copy( file, filenameCopy );
 
                     Sup.LogDebugMessage( $"ReadMonthlyLogs: reading {file}" );
 
-                    string[] allLines = File.ReadAllLines( filenameCopy ); //got to use this sometime
-
-                    bool SanityCheck = true;
+                    string[] allLines = File.ReadAllLines( filenameCopy );
 
                     foreach ( string line in allLines )
                     {
-                        string thisLine = ReadLine( line, SanityCheck );
-                        SanityCheck = false;
-
-                        tmp = SetValues( thisLine );
+                        tmp = SetValues( Sup.ChangeSeparators( line ) );
 
                         if ( tmp.ThisDate > AncientCumulus )
                         {
@@ -244,8 +191,7 @@ namespace CumulusUtils
                         }
                     }
 
-                    if ( File.Exists( filenameCopy ) )
-                        File.Delete( filenameCopy );
+                    if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
 
                 } // Loop over all files in MonthfileList
 
@@ -282,29 +228,22 @@ namespace CumulusUtils
             foreach ( string file in FilesToRead )
             {
                 ErrorCount = 0; // make sure we only log MaxErrors per file
-                filenameCopy = "data/" + "copy_" + Path.GetFileName( file );
 
-                if ( File.Exists( filenameCopy ) )
-                    File.Delete( filenameCopy );
+                filenameCopy = "data/" + "copy_" + Path.GetFileName( file );
+                if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
                 File.Copy( "data/" + file, filenameCopy );
 
                 Sup.LogTraceInfoMessage( $"ReadPartialMonthlyLogs: reading {file}" );
 
-                string[] allLines = File.ReadAllLines( filenameCopy ); //got to use this sometime
-
-                bool SanityCheck = true;
+                string[] allLines = File.ReadAllLines( filenameCopy );
 
                 foreach ( string line in allLines )
                 {
-                    string thisLine = ReadLine( line, SanityCheck );
-                    SanityCheck = false;
-
-                    tmp = SetValues( thisLine );
+                    tmp = SetValues( Sup.ChangeSeparators( line ) );
                     thisList.Add( tmp );
                 } // End Using the Monthly Log to Read
 
-                if ( File.Exists( filenameCopy ) )
-                    File.Delete( filenameCopy );
+                if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
             } // Loop over all files in FilesToRead
 
             Sup.LogTraceInfoMessage( $"ReadMonthlyLogs: End" );
@@ -321,105 +260,12 @@ namespace CumulusUtils
             return thisList;
         } // End ReadMonthlyLogs
 
-        private string ReadLine( string line, bool SanityCheck )
-        {
-            bool SeparatorInconsistencyFound = false;
-            StringBuilder tmpLine = new StringBuilder();
-
-            tmpLine.Append( line );
-
-            if ( SanityCheck )
-            {
-                // Do a sanity check on the presence of the correct separators which we determined when starting the reading process
-                //
-                switch ( type )
-                {
-                    case MonthfileType.DashSemicolonComma:
-                        if ( !( ( tmpLine[ 2 ] == '-' ) && ( tmpLine[ 8 ] == ';' ) ) )
-                            SeparatorInconsistencyFound = true;
-                        break;
-
-                    case MonthfileType.PointSemicolonComma:
-                        if ( !( ( tmpLine[ 2 ] == '.' ) && ( tmpLine[ 8 ] == ';' ) ) )
-                            SeparatorInconsistencyFound = true;
-                        break;
-
-                    case MonthfileType.SlashSemicolonComma:
-                        if ( !( ( tmpLine[ 2 ] == '/' ) && ( tmpLine[ 8 ] == ';' ) ) )
-                            SeparatorInconsistencyFound = true;
-                        break;
-
-                    case MonthfileType.DashCommaPoint:
-                        if ( !( ( tmpLine[ 2 ] == '-' ) && ( tmpLine[ 8 ] == ',' ) ) )
-                            SeparatorInconsistencyFound = true;
-                        break;
-
-                    case MonthfileType.SlashCommaPoint:
-                        if ( !( ( tmpLine[ 2 ] == '/' ) && ( tmpLine[ 8 ] == ',' ) ) )
-                            SeparatorInconsistencyFound = true;
-                        break;
-
-                    default:
-                        // Should never be here
-                        Sup.LogTraceErrorMessage( $"ReadMonthlyLogs: Illegal part of the code, should never be here, FATAL ERROR!" );
-                        SeparatorInconsistencyFound = true;
-                        break;
-                }
-            }// Sanity Check
-
-            if ( SeparatorInconsistencyFound )
-            {
-                // Serious issue: file with different separators detected, clean up datadirectory
-                // User has to decide what to do with it
-                Sup.LogTraceErrorMessage( $"ReadMonthlyLogs: Separator Inconsistency in {filenameCopy} found, FATAL ERROR! Exiting." );
-                Sup.LogTraceErrorMessage( $"ReadMonthlyLogs: Please check {filenameCopy.Remove( 0, 5 )}." );
-
-                if ( File.Exists( filenameCopy ) )
-                    File.Delete( filenameCopy );
-
-                Dispose();
-                Environment.Exit( 0 );
-            }
-            else
-            {
-                /*
-                 * make a uniform line to read: convert all to SlashCommaPoint
-                 */
-                if ( type == MonthfileType.DashSemicolonComma )
-                {
-                    tmpLine[ 2 ] = '/';
-                    tmpLine[ 5 ] = '/';
-                    tmpLine.Replace( ',', '.' );
-                    tmpLine.Replace( ';', ',' );
-                }
-                else if ( type == MonthfileType.PointSemicolonComma )
-                {
-                    tmpLine[ 2 ] = '/';
-                    tmpLine[ 5 ] = '/';
-                    tmpLine.Replace( ',', '.' );
-                    tmpLine.Replace( ';', ',' );
-                }
-                else if ( type == MonthfileType.SlashSemicolonComma )
-                {
-                    //tmpLine[ 2 ] = '/'; tmpLine[ 5 ] = '/';
-                    tmpLine.Replace( ',', '.' );
-                    tmpLine.Replace( ';', ',' );
-                }
-                else if ( type == MonthfileType.DashCommaPoint )
-                {
-                    tmpLine[ 2 ] = '/';
-                    tmpLine[ 5 ] = '/';
-                }
-            } // No Separator inconsistency found
-
-            return tmpLine.ToString();
-        }
-
         private MonthfileValue SetValues( string line )
         {
             int FieldInUse = 0;
+
             string tmpDatestring;
-            string[] lineSplit = line.Split( ',' );
+            string[] lineSplit = line.Split( ' ' );
 
             // Do check for the recordlength. If record length too short, then  return null
             // Upon return, the value null must trigger the skipping of the file The possibility that halfway the month the 
@@ -556,112 +402,5 @@ namespace CumulusUtils
                 this.disposed = true;
             }
         }
-
-        List<MonthfileValue> ReadMonthfileFromSQL()
-        {
-            const int BatchSize = 2500;
-            int NrOfRecords;
-
-            List<MonthfileValue> tmpList = new List<MonthfileValue>();
-
-            try
-            {
-                MySqlConnectionStringBuilder builder = new MySqlConnectionStringBuilder
-                {
-                    Server = Sup.GetCumulusIniValue( "MySQL", "Host", "" ),
-                    Port = Convert.ToUInt32( Sup.GetCumulusIniValue( "MySQL", "Port", "" ) ),
-                    UserID = Sup.GetCumulusIniValue( "MySQL", "User", "" ),
-                    Password = Sup.GetCumulusIniValue( "MySQL", "Pass", "" ),
-                    Database = Sup.GetCumulusIniValue( "MySQL", "Database", "" )
-                };
-
-                Sup.LogDebugMessage( $"ReadMonthfileFromSQL: Reading Monthfile records from {builder.Database}@{builder.Server}" );
-
-                using ( MySqlConnection connection = new MySqlConnection( builder.ConnectionString ) )
-                {
-                    using ( MySqlCommand command = new MySqlCommand( "SELECT COUNT(*) FROM Monthly;", connection ) )
-                    {
-
-                        // command.CommandTimeout = 120;
-                        connection.Open();
-                        using ( MySqlDataReader reader = command.ExecuteReader() )
-                        {
-                            reader.Read();
-                            NrOfRecords = reader.GetInt32( 0 );
-                        }
-
-
-                        for ( int i = 0; i < NrOfRecords; i += BatchSize )
-                        {
-                            command.CommandText = $"SELECT * FROM Monthly LIMIT {BatchSize} OFFSET {i}; ";
-
-                            Console.Write( $"{i}\r" );
-
-                            using ( MySqlDataReader reader = command.ExecuteReader() )
-                            {
-                                while ( reader.Read() )
-                                {
-                                    MonthfileValue tmp = new MonthfileValue
-                                    {
-                                        ThisDate = reader.GetDateTime( (int) MonthfileFieldName.thisDate ),
-                                        CMXAverageWind = reader.GetFloat( (int) MonthfileFieldName.CMXAverageWind - 1 ),
-                                        CMXGustSpeed = reader.GetFloat( (int) MonthfileFieldName.CMXGustSpeed - 1 ),
-                                        AvWindBearing = Convert.ToInt32( reader.GetString( (int) MonthfileFieldName.AvWindBearing - 1 ) ),
-                                        CurrPressure = reader.GetFloat( (int) MonthfileFieldName.CurrPressure - 1 ),
-                                        CMXLatestGust = reader.GetFloat( (int) MonthfileFieldName.CMXLatestGust - 1 ),
-                                        SolarRad = reader.GetInt32( (int) MonthfileFieldName.SolarRad - 1 ),
-                                        Evt = reader.GetFloat( (int) MonthfileFieldName.EVT - 1 ),
-                                        SolarTheoreticalMax = reader.GetInt32( (int) MonthfileFieldName.SolarTheoreticalMax - 1 ),
-                                        CurrWindBearing = Convert.ToInt32( reader.GetString( (int) MonthfileFieldName.CurrWindBearing - 1 ) ),
-
-                                        Valid = true
-                                    };
-
-                                    tmpList.Add( tmp );
-                                } // Loop over the records
-                            } // using: Execute the reader
-                        }
-                    } // using: Execute the command
-
-                } // using: Connection
-
-                Sup.LogDebugMessage( $"ReadMonthfileFromSQL: Reading Monthly MySQL Done" );
-            }
-            catch ( MySqlException e )
-            {
-                Console.WriteLine( $"ReadMonthfileFromSQL: Exception - {e.ErrorCode} - {e.Message}" );
-            }
-
-            return tmpList;
-        } // End ReadMonthfileFromSQL 
     } // End Class Monthfile
 }
-
-#region GrauweKiekendief
-
-#if GrauweKiekendief
-      // Maatwerk voor het Grauwe Kiekendief onderzoek, bewaard ivm de sort van de monthlist
-      // First part is from the reading of the monthly files, second  part is the sorting function
-      using (StreamWriter of = new StreamWriter("GrauweKiekendief.txt"))
-      {
-        foreach(MonthfileValue entry in MainMonthList)
-        {
-          of.WriteLine($"{entry.ThisDate:dd/MM/yy HH:mm},{entry.CurrPressure:F1}");
-        }
-      }
-
-      // We want a sorted list. Not really necessary but for debugging purposes nice.
-      MainMonthList.Sort(new compareDates());
-
-    private class compareDates : Comparer<MonthfileValue>
-    {
-      public override int Compare(MonthfileValue x, MonthfileValue y)
-      {
-        if (x.ThisDate > y.ThisDate) return (1);
-        else if (x.ThisDate < y.ThisDate) return (-1);
-        else return (0);
-      }
-    }
-#endif
-
-#endregion

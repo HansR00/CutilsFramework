@@ -258,7 +258,7 @@ namespace CumulusUtils
                     "<table style='table-layout:fixed; width:100%; margin:auto' class='CUTable'><tr>" +
                     $"<td style='width:20%;text-align:left'>" );
 
-                if (PwsfwiButtonInHeader)
+                if ( PwsfwiButtonInHeader )
                 {
                     indexFile.Append(
                         $"  <span onclick=\"LoadUtilsReport('pwsFWI.txt', false);\">{Sup.GetUtilsIniValue( "pwsFWI", "CurrentPwsFWI", "" )}</span><br/>" );
@@ -593,7 +593,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "  Promise.allSettled([ $.getScript('lib/CUgauges.js'), LoadCUsermenu('CUsermenu.txt'), LoadCUserAbout('CUserAbout.txt'), LoadUtilsReport('cumuluscharts.txt', true)])" +
                   "    .then(() => { " +
                   "      loadRealtimeTxt();" +
-                 $"      RT_timer = setInterval(loadRealtimeTxt, {Sup.GetUtilsIniValue( "Website", "CumulusRealTimeInterval", "15" )} * 1000);" +
+                 $"      RT_timer = setInterval(loadRealtimeTxt, {CUtils.UtilsRealTimeInterval} * 1000);" +
                   "      DoGaugeSettings();" +
                   "      worldClockZone(0);" +
                   "      CreateSun();" +
@@ -1504,7 +1504,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                  // http://www.boock.ch/meteo/gauges_SteelSeries/demoRadial.html
                  //
                  $"  gauges.config.realTimeURL = '{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}realtimegauges.txt';" +
-                 $"  gauges.config.realtimeInterval = {Sup.GetUtilsIniValue( "Website", "CumulusRealTimeInterval", "15" )};" +
+                 $"  gauges.config.realtimeInterval = {CUtils.UtilsRealTimeInterval};" +
                  $"  gauges.config.showIndoorTempHum = {ShowIndoorTempHum};" +
                  $"  gauges.config.showUvGauge = {ShowUVStr};" +
                  $"  gauges.config.showSolarGauge = {ShowSolarStr};" +

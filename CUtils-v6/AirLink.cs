@@ -435,12 +435,6 @@ namespace CumulusUtils
                 of.AppendLine( " <meta name=\"theme-color\" content=\"#ffffff\" />" );
                 of.AppendLine( " <title>AirLink Standalone - CumulusUtils</title>" );
                 of.AppendLine( " <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"> " );
-                //of.AppendLine( "<Style>" );
-                //of.AppendLine( ".CUTable { text-align: center; margin: auto; }" );
-                //of.AppendLine( ".CUTable a { color: #E87510; text-decoration: underline; }" );
-                //of.AppendLine( ".CUTable a:hover {color: OrangeRed;}" );
-                //of.AppendLine( "</Style>" );
-
 
                 CUtils.DojQueryInclude = true;
                 CUtils.DoLibraryIncludes = true;

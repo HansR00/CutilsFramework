@@ -191,7 +191,7 @@ namespace CumulusUtils
             NrofWindrunClasses = MaxWindrun / WindrunClassWidth + 1;
             WindrunClasses = new int[ NrofWindrunClasses ];   // { 100, 200, 300, 400, 500, 600, 700}; // in km, other unist need conversion
 
-            for ( int i = 0; i < NrofWindrunClasses; i++ ) 
+            for ( int i = 0; i < NrofWindrunClasses; i++ )
                 WindrunClasses[ i ] = WindrunClassWidth + WindrunClassWidth * i;
 
             // For scatter graph
@@ -1255,7 +1255,7 @@ namespace CumulusUtils
 
         #region Set Normal values
 
-        private void GenerateNOAAparameters( List<DayfileValue> ThisList)
+        private void GenerateNOAAparameters( List<DayfileValue> ThisList )
         {
             // Now we have to determine the reference values for the total rainfall. A lot of work for two value :)
             //
@@ -1296,7 +1296,7 @@ namespace CumulusUtils
                 }
 
                 // Second pass to determine the average and StdDev
-                if ( tmp.Any() ) 
+                if ( tmp.Any() )
                     StationRainYearAv = tmp.Average();
 
                 Sup.LogTraceInfoMessage( $" GenerateNOAAparameters : StationRainYearAv {StationRainYearAv}" );

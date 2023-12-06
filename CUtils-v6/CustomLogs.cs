@@ -237,11 +237,11 @@ namespace CumulusUtils
 
                 foreach ( CustomLog tmp in CustomLogsList )
                 {
-                    foreach( string thisName in tmp.TagNames )
+                    foreach ( string thisName in tmp.TagNames )
                     {
                         sb.AppendLine( $"  if ( oldobsCustomLogs[{i}] != CustomLogsRT[{i}]) {{" );
                         sb.AppendLine( $"    oldobsCustomLogs[{i}] = CustomLogsRT[{i}];" );
-                        sb.AppendLine( $"    $('#ajxCustomLogs{tmp.Name}{thisName}').html(CustomLogsRT[ {i} ] + ' {WebTags.GetTagUnit(thisName)}');" );
+                        sb.AppendLine( $"    $('#ajxCustomLogs{tmp.Name}{thisName}').html(CustomLogsRT[ {i} ] + ' {WebTags.GetTagUnit( thisName )}');" );
                         sb.AppendLine( $"    $('#ajxCustomLogs{tmp.Name}{thisName}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
                         sb.AppendLine( "  }" );
 
@@ -311,7 +311,7 @@ namespace CumulusUtils
 
                     buf.Append( $"<tr {RowColour()}><td {thisPadding()}><strong>{tmp.Name}:</strong></td><td></td></tr>" );
 
-                    for ( int c = 0 ; c < tmp.TagNames.Count; c++ )
+                    for ( int c = 0; c < tmp.TagNames.Count; c++ )
                     {
                         buf.Append( $"<tr {RowColour()}><td {thisPadding()}>&nbsp;&nbsp;{tmp.TagsRaw[ c ]}</td>" +
                             $"<td id='ajxCustomLogs{tmp.Name}{tmp.TagNames[ c ]}'></td></tr>" );
@@ -452,41 +452,18 @@ namespace CumulusUtils
         public void GenerateCustomLogsDataJson( bool NonIncremental )
         {
             bool DoDailyAsWell;
-
-            DateTime timeStart, timeEnd;
             DateTime DoneToday;
 
-            DateTime Now = DateTime.Now;
-            Now = new DateTime( Now.Year, Now.Month, Now.Day, Now.Hour, Now.Minute, 0 );
-
-            timeEnd = Now.AddMinutes( -Now.Minute % Math.Max( CUtils.FTPIntervalInMinutes, CUtils.LogIntervalInMinutes ) );
+            Sup.SetStartAndEndForData( out DateTime timeStart, out DateTime timeEnd );
 
             if ( NonIncremental )
             {
-                DoneToday = Now.AddDays( -1 );
+                DoneToday = DateTime.Now.AddDays( -1 );
                 timeStart = timeEnd.AddHours( -CUtils.HoursInGraph );
             }
             else
-            {
-                _ = DateTime.TryParse( Sup.GetUtilsIniValue( "CustomLogs", "DoneToday", $"{Now.AddDays( -1 ):d}" ), out DoneToday );
+                _ = DateTime.TryParse( Sup.GetUtilsIniValue( "CustomLogs", "DoneToday", $"{DateTime.Now.AddDays( -1 ):d}" ), out DoneToday );
 
-                if ( CUtils.Isup.IsIncrementalAllowed() )
-                {
-                    try
-                    {
-                        timeStart = DateTime.ParseExact( Sup.GetUtilsIniValue( "General", "LastUploadTime", "" ), "dd/MM/yy HH:mm", CUtils.Inv ).AddMinutes( 1 );
-                    }
-                    catch
-                    {
-                        timeStart = timeEnd.AddHours( -CUtils.HoursInGraph );
-                    }
-
-                }
-                else
-                {
-                    timeStart = timeEnd.AddHours( -CUtils.HoursInGraph );
-                }
-            }
 
             Sup.LogTraceInfoMessage( $"CustomLogs GenerateCustomLogsDataJson: timeStart = {timeStart}; timeEnd = {timeEnd}" );
 
@@ -591,7 +568,7 @@ namespace CumulusUtils
                 }
             }
 
-            Sup.SetUtilsIniValue( "CustomLogs", "DoneToday", $"{Now:s}" );
+            Sup.SetUtilsIniValue( "CustomLogs", "DoneToday", $"{DateTime.Now:s}" );
 
             return;
         }
@@ -624,13 +601,13 @@ namespace CumulusUtils
                 File.Copy( fullFilename, copyFilename );
 
                 string[] allLines = File.ReadAllLines( copyFilename );
-                DetectSeparators( allLines[ 0 ] );
+                Sup.DetectSeparators( allLines[ 0 ] );
 
                 for ( int i = 0; i < allLines.Length; i++ )
                 {
                     // Set the separators correct and do the reading: / in the date and the . as decimal separator.
                     //
-                    string thisLine = ChangeSeparators( allLines[ i ] );
+                    string thisLine = Sup.ChangeSeparators( allLines[ i ] );
 
                     DateTimeText = thisLine.Substring( 0, 14 );
                     tmp.Date = DateTime.ParseExact( DateTimeText, "dd/MM/yy HH:mm", CUtils.Inv );
@@ -723,11 +700,11 @@ namespace CumulusUtils
             File.Copy( fullFilename, copyFilename );
 
             string[] allLines = File.ReadAllLines( copyFilename );
-            DetectSeparators( allLines[ 0 ] );
+            Sup.DetectSeparators( allLines[ 0 ] );
 
             for ( int i = 0; i < allLines.Length; i++ )
             {
-                string thisLine = ChangeSeparators( allLines[ i ] );
+                string thisLine = Sup.ChangeSeparators( allLines[ i ] );
 
                 DateTimeText = thisLine.Substring( 0, 8 );
                 tmp.Date = DateTime.ParseExact( DateTimeText, "dd/MM/yy", CUtils.Inv );
@@ -769,65 +746,6 @@ namespace CumulusUtils
         }
         #endregion
 
-        #region Separator handling
-
-        char DateSeparator;
-        char FieldSeparator;
-        char DecimalSeparator;
-
-        private void DetectSeparators( string line )
-        {
-            if ( line[ 2 ] == '-' && line[ 8 ] == ';' )
-            {
-                DateSeparator = '-';
-                FieldSeparator = ';';
-                DecimalSeparator = ',';
-            }
-            else if ( line[ 2 ] == '/' && line[ 8 ] == ';' )
-            {
-                DateSeparator = '/';
-                FieldSeparator = ';';
-                DecimalSeparator = ',';
-            }
-            else if ( line[ 2 ] == '.' && line[ 8 ] == ';' )
-            {
-                DateSeparator = '.';
-                FieldSeparator = ';';
-                DecimalSeparator = ',';
-            }
-            else if ( line[ 2 ] == '-' && line[ 8 ] == ',' )
-            {
-                DateSeparator = '-';
-                FieldSeparator = ',';
-                DecimalSeparator = '.';
-            }
-            else if ( line[ 2 ] == '/' && line[ 8 ] == ',' )
-            {
-                DateSeparator = '/';
-                FieldSeparator = ',';
-                DecimalSeparator = '.';
-            }
-            else
-            {
-                Sup.LogTraceErrorMessage( "CustomLogs Logreaders: Internal Error - Unkown format of inputfile. Please get help." );
-                Environment.Exit( 0 );
-            }
-
-            return;
-        }
-
-        private string ChangeSeparators( string line )
-        {
-            string thisLine;
-
-            thisLine = line.Substring( 0, 8 ).Replace( DateSeparator, '/' );
-            thisLine = thisLine + line.Substring( 8 ).Replace( FieldSeparator, ' ' ).Replace( DecimalSeparator, '.' );
-            thisLine = CuSupport.StringRemoveWhiteSpace( thisLine, " " );
-
-            return thisLine;
-        }
-
-        #endregion
 
     } // Class CustomLogs
 
@@ -1867,7 +1785,7 @@ namespace CumulusUtils
             "gustM",                    // 80
             "wspeedH",
             "windrunH",
-            "wchillH",
+            "wchillL",
             "rrateM",
             "rfallH",
             "r24hourH",
