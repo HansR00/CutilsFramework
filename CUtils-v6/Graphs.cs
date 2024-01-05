@@ -1291,7 +1291,7 @@ namespace CumulusUtils
 
                 for ( int i = YearMin; i <= YearMax; i++ )
                 {
-                    if ( ThisList.Where( x => x.ThisDate.Year == i ).Count() < 365 ) continue; // Incomplete year
+                    if ( ThisList.Where( x => x.ThisDate.Year == i ).Count() < 364 ) continue; // Incomplete year - have to reset to nr of days per year 
                     tmp.Add( ThisList.Where( x => x.ThisDate.Year == i ).Select( x => x.TotalRainThisDay ).Sum() );
                 }
 

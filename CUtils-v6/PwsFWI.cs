@@ -130,8 +130,8 @@ namespace CumulusUtils
             int i, j, startValue;
 
             StructFWI localFWI = new StructFWI();
-            CultureInfo provider = CultureInfo.CurrentCulture;
-            string separator = provider.TextInfo.ListSeparator;
+            //CultureInfo provider = CultureInfo.CurrentCulture;
+            string separator = CUtils.ThisCulture.TextInfo.ListSeparator;
 
             string csvFilename = "pwsFWIanalyse.csv";
 
@@ -283,8 +283,7 @@ namespace CumulusUtils
                         localFWI.SmoothedFWI /= NrOfSmoothingDays;
                     }
 
-                    Sup.LogTraceVerboseMessage( "calculatePwsFWI : SmoothedFWI before DryPeriod addition i:" +
-                                        i.ToString( CultureInfo.CurrentCulture ) + " smoothedFWI:" + localFWI.SmoothedFWI.ToString( CultureInfo.CurrentCulture ) );
+                    Sup.LogTraceVerboseMessage( "calculatePwsFWI : SmoothedFWI before DryPeriod addition i: " + i + " smoothedFWI:" + localFWI.SmoothedFWI );
 
                     // 17/09/2019: New item in the pwsFWI: length of drought. Have to think about the weight
                     localFWI.DryPeriod = ThisList[ i ].DryPeriod;
@@ -293,21 +292,21 @@ namespace CumulusUtils
                     // Testing, testing, 123...
                     // localFWI.SmoothedFWI = i*10;
 
-                    Sup.LogTraceVerboseMessage( "calculatePwsFWI : SmoothedFWI after DryPeriod addition i: " + i.ToString( CultureInfo.CurrentCulture ) +
-                                                 " DryPeriod: " + ThisList[ i ].DryPeriod.ToString( CultureInfo.CurrentCulture ) +
-                                                 " smoothedFWI:" + localFWI.SmoothedFWI.ToString( CultureInfo.CurrentCulture ) );
+                    Sup.LogTraceVerboseMessage( "calculatePwsFWI : SmoothedFWI after DryPeriod addition i: " + i +
+                                                 " DryPeriod: " + ThisList[ i ] +
+                                                 " smoothedFWI:" + localFWI.SmoothedFWI );
 
                     Sup.LogTraceVerboseMessage( $"calculatePwsFWI : creating Listentry FWI for i={i}" );
 
                     FWIlist.Add( localFWI );
 
-                    Sup.LogTraceInfoMessage( $"   {localFWI.Date.ToString( "d", CUtils.ThisCulture )}; {localFWI.T:F1}; {localFWI.Wind:F1}; {localFWI.Rain:F1}; " +
+                    Sup.LogTraceInfoMessage( $"   {localFWI.Date.ToString( "d" )}; {localFWI.T:F1}; {localFWI.Wind:F1}; {localFWI.Rain:F1}; " +
                                         $"{localFWI.RH:F2}; {localFWI.Psat:F2}; {localFWI.VPD:F2}; " +
                                         $"{localFWI.dayFWI:F2}; {localFWI.DryPeriod:F0}; {localFWI.SmoothedFWI:F2}" );
 
                     if ( Analyse > DaysRequiredForHTML )
                     {
-                        af.WriteLine( $"{localFWI.Date.ToString( "d", CUtils.ThisCulture )}{separator}{localFWI.T:F1}{separator}{localFWI.Wind:F1}{separator}{localFWI.Rain:F1}" +
+                        af.WriteLine( $"{localFWI.Date.ToString( "d" )}{separator}{localFWI.T:F1}{separator}{localFWI.Wind:F1}{separator}{localFWI.Rain:F1}" +
                           $"{separator}{localFWI.RH:F2}{separator}{localFWI.Psat:F2}{separator}{localFWI.VPD:F2}{separator}{localFWI.dayFWI:F2}" +
                           $"{separator}{localFWI.DryPeriod:D}{separator}{localFWI.SmoothedFWI:F1}" );
                     }

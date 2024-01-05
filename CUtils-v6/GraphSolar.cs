@@ -51,6 +51,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.IO;
+using System.Web;
 
 #if TIMING
 using System.Diagnostics;
@@ -573,7 +575,6 @@ namespace CumulusUtils
         void GenerateYearMonthSolarEnergyStatistics( Months thisMonth, StringBuilder thisBuffer )
         {
             StringBuilder sb = new StringBuilder();
-            ;
 
             List<int> years = new List<int>();
             List<float> average = new List<float>();
@@ -804,6 +805,44 @@ namespace CumulusUtils
             watch.Stop();
             Sup.LogTraceInfoMessage( $"Solar Graphs: Timing of CreateListsFromMonthlyLogs = {watch.ElapsedMilliseconds} ms" );
 #endif
+
+            // Do the daily output in a CSV when asked for
+            //
+            if ( Sup.GetUtilsIniValue("General", "NeedSolarEnergyDailyValuesInCSV","false").Equals("true") )
+            {
+                int curMonth = -1;
+                string csvFilename = "DailySolarEnergy.csv";
+
+                using ( StreamWriter dse = new StreamWriter( $"{Sup.PathUtils}{csvFilename}", false, Encoding.UTF8 ) )
+                {
+                    dse.WriteLine( "Date,Solar Energy,Solar Hours" );
+
+                    // Calculate for each day the actual pwsFWI and create the csv file for the whole dayfile.txt
+                    Sup.LogDebugMessage( "Writing CSV DailySolarEnergy : starting" );
+
+                    foreach ( DaySolarValues tmp in DailySolarValuesList )
+                    {
+                        if ( curMonth.Equals( tmp.ThisDate.Month ) )
+                        {
+                            // Sam emonth, just print the values for the date
+                        }
+                        else
+                        {
+                            // New month, print new header
+                            curMonth = tmp.ThisDate.Month;
+
+                            dse.WriteLine( "" );
+                            dse.WriteLine( $"New month --- {tmp.ThisDate.ToString("Y", CUtils.ThisCulture)} :" );
+                        }
+
+                        dse.WriteLine($"{tmp.ThisDate.ToString("d", CUtils.ThisCulture)}{CUtils.ThisCulture.TextInfo.ListSeparator}" +
+                            $"{tmp.SolarEnergy.ToString("F2",CUtils.ThisCulture)}{CUtils.ThisCulture.TextInfo.ListSeparator}" +
+                            $"{tmp.SolarHours.ToString("F1",CUtils.ThisCulture)}");
+                    }
+
+                    Sup.LogDebugMessage( "Writing CSV DailySolarEnergy : Done" );
+                }
+            }
 
             return;
         }

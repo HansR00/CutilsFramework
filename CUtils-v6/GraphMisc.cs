@@ -22,6 +22,7 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -718,7 +719,7 @@ namespace CumulusUtils
             }
 
             thisBuffer.AppendLine( $"  title:{{text: '{Sup.GetCUstringValue( "Graphs", "YearlySeasonsTitle", "Yearly Thermal Seasons", true )} " +
-                $"- Limit values: {WinterToSpringTemperatureLimit} and {SpringToSummerTemperatureLimit} °C' }}," );
+                $"- {Sup.GetCUstringValue( "Graphs", "YearlySeasonsLimitValues", "Limit values", true )}: {WinterToSpringTemperatureLimit} and {SpringToSummerTemperatureLimit} °C' }}," );
             thisBuffer.AppendLine( $"  subtitle:{{text: \"{Sup.GetCumulusIniValue( "Station", "LocDesc", "Unknown Station" )}\" }}," );
             thisBuffer.AppendLine( "  xAxis:" );
             thisBuffer.AppendLine( "  {" );
@@ -758,11 +759,11 @@ namespace CumulusUtils
 
             if ( SeasonList.Any() )
             {
-                wi1.AppendLine( "{name:'Winter 1',data:[" );
-                sp.AppendLine( "{name:'Spring',data:[" );
-                su.AppendLine( "{name:'Summer',data:[" );
-                au.AppendLine( "{name:'Autumn',data:[" );
-                wi2.AppendLine( "{name:'Winter 2',data:[" );
+                wi1.AppendLine( $"{{name:'{Sup.GetCUstringValue( "Graphs", "YearlysSeasonsWinter1", "Winter 1" , true )}',data:[" );
+                sp.AppendLine( $"{{name:'{Sup.GetCUstringValue( "Graphs", "YearlysSeasonsSpring", "Spring", true )}',data:[" );
+                su.AppendLine( $"{{name:'{Sup.GetCUstringValue( "Graphs", "YearlysSeasonsSummer", "Summer", true )}',data:[" );
+                au.AppendLine( $"{{name:'{Sup.GetCUstringValue( "Graphs", "YearlysSeasonsAutumn", "Autumn", true )}',data:[" );
+                wi2.AppendLine( $"{{name:'{Sup.GetCUstringValue( "Graphs", "YearlysSeasonsWinter2", "Winter 2" , true )}',data:[" );
 
                 foreach ( YearSeasons seasonEntry in SeasonList )
                 {

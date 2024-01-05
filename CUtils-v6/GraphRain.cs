@@ -113,7 +113,7 @@ namespace CumulusUtils
                 thisBuffer.AppendLine( "      color: 'green'," );
                 thisBuffer.AppendLine( "      dashStyle: 'shortdash'," );
                 thisBuffer.AppendLine( "      width: 2," );
-                thisBuffer.AppendLine( $"      label: {{ text: '{Sup.GetCUstringValue( "Graphs", "StationYearlyRainfall", "Station Yearly Rainfall", true )} ({NOAARainNormYearAv.ToString( "F0", CUtils.Inv )})', align: 'right'  }}" );
+                thisBuffer.AppendLine( $"      label: {{ text: '{Sup.GetCUstringValue( "Graphs", "StationYearlyRainfall", "Station Yearly Rainfall", true )} ({StationRainYearAv.ToString( "F0", CUtils.Inv )})', align: 'right'  }}" );
             }
 
             thisBuffer.AppendLine( "    }] " ); // closing the plotLines

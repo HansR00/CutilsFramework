@@ -661,6 +661,7 @@ namespace CumulusUtils
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Temperature", "Temperature", true )} ({Sup.StationTemp.Text()})'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( "allowDecimals: false," );
+                    buf.Append( "softMin: freezing," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2" : "labels:{align: 'right',x: -5, y: -2" )}" +
                       $",formatter: function() {{return '<span style=\"fill: ' + (this.value <= freezing ? 'blue' : 'red') + '; \">' + this.value + '</span>';}} }}," );
                     buf.Append( "plotLines:[{value: freezing,color: 'rgb(0, 0, 180)',width: 1,zIndex: 2}]," );

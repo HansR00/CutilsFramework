@@ -101,22 +101,27 @@ namespace CumulusUtils
                         TxUsed = CuSupport.StringRemoveWhiteSpace( TxUsed, "" );        // Replace any space with nothing (empty string)
                         string[] TxUsedArray = TxUsed.Split( ',' );
 
-                        DeviceInfo.AppendLine( "The WLL firmware version: <#DavisFirmwareVersion>" );
-                        DeviceInfo.AppendLine( "The WLL battery condition in volts: <#battery> V" );
-                        DeviceInfo.AppendLine( "WLL WifiRssi: <#DavisTxRssi tx=0>" );
-                        DeviceInfo.AppendLine( "" );
-
-                        foreach ( string Tx in TxUsedArray )
+                        if (TxUsedArray.Length < 1 )
+                            DeviceInfo.AppendLine( "A value for the Transmitter used is needed - please set parameter Tx" );
+                        else
                         {
-                            DeviceInfo.AppendLine( $"WLL Stats for channel {Tx}:" );
-                            DeviceInfo.AppendLine( $"  WLL DavisReceptionPercent: <#DavisReceptionPercent tx={Tx}>" );
-                            DeviceInfo.AppendLine( $"  WLL TxRssi: <#DavisTxRssi  tx={Tx}>" );
-                            DeviceInfo.AppendLine( $"  Number of missed data packets: <#DavisTotalPacketsMissed tx={Tx}>" );
-                            DeviceInfo.AppendLine( $"  Number of times the console resynchronised with the transmitter: <#DavisNumberOfResynchs tx={Tx}>" );
-                            DeviceInfo.AppendLine( $"  Longest streak of consecutive packets received: <#DavisMaxInARow tx={Tx}>" );
-                            DeviceInfo.AppendLine( $"  Number of packets received with CRC errors: <#DavisNumCRCerrors tx={Tx}>" );
-                            DeviceInfo.AppendLine( $"  The transmitter battery condition: <#txbattery channel={Tx}>" );
+                            DeviceInfo.AppendLine( "The WLL firmware version: <#DavisFirmwareVersion>" );
+                            DeviceInfo.AppendLine( "The WLL battery condition in volts: <#battery> V" );
+                            DeviceInfo.AppendLine( "WLL WifiRssi: <#DavisTxRssi tx=0>" );
                             DeviceInfo.AppendLine( "" );
+
+                            foreach ( string Tx in TxUsedArray )
+                            {
+                                DeviceInfo.AppendLine( $"WLL Stats for channel {Tx}:" );
+                                DeviceInfo.AppendLine( $"  WLL DavisReceptionPercent: <#DavisReceptionPercent tx={Tx}>" );
+                                DeviceInfo.AppendLine( $"  WLL TxRssi: <#DavisTxRssi  tx={Tx}>" );
+                                DeviceInfo.AppendLine( $"  Number of missed data packets: <#DavisTotalPacketsMissed tx={Tx}>" );
+                                DeviceInfo.AppendLine( $"  Number of times the console resynchronised with the transmitter: <#DavisNumberOfResynchs tx={Tx}>" );
+                                DeviceInfo.AppendLine( $"  Longest streak of consecutive packets received: <#DavisMaxInARow tx={Tx}>" );
+                                DeviceInfo.AppendLine( $"  Number of packets received with CRC errors: <#DavisNumCRCerrors tx={Tx}>" );
+                                DeviceInfo.AppendLine( $"  The transmitter battery condition: <#txbattery channel={Tx}>" );
+                                DeviceInfo.AppendLine( "" );
+                            }
                         }
 
                         break;
@@ -124,8 +129,8 @@ namespace CumulusUtils
                     case 12:
                     case 14:
                     case 20:
-                        DeviceInfo.AppendLine( "The Ecowitt firmware: <#EcowittFirmwareVersion>" );
-                        DeviceInfo.AppendLine( "The Ecowitt firmware: <#EcowittReception>" );
+                        DeviceInfo.AppendLine( "The Ecowitt Firmware Version: <#EcowittFirmwareVersion>" );
+                        DeviceInfo.AppendLine( "The Ecowitt Reception Stats: <#EcowittReception>" );
                         DeviceInfo.AppendLine( $"Extra Station Info: {Sup.GetUtilsIniValue( "SysInfo", "ExtraStationInfo", "" )}" );
                         DeviceInfo.AppendLine( "" );
 

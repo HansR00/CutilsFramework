@@ -150,7 +150,7 @@ namespace CumulusUtils
             sb.AppendLine( "  <select id='timelapses'></select><br />" );
             sb.AppendLine( "  <br />" );
 
-            sb.AppendLine( "  <image id='imageViewer' src='' width='100%' height='100%' frameborder='0' style='border: 0;'>" );
+            sb.AppendLine( "  <image id='imageViewer' style='width:100%; height:75vh;'>" );
 
             sb.AppendLine( "  <video id='videoPlayer' width='100%' height='100%' autoplay muted controls>" );
             sb.AppendLine( $"    <source id='videoSource' src='' type='video/{Sup.GetUtilsIniValue( "MeteoCam", "TimelapseExtension", "mp4" )}'>" );
@@ -218,7 +218,7 @@ namespace CumulusUtils
             sb.AppendLine( "}" );
             sb.AppendLine( "</style>" );
             sb.AppendLine( "<div id='report'>" );
-            sb.AppendLine( "  <image id='imageViewer' src='' width='100%' height='100%' frameborder='0' style='border: 0;'>" );
+            sb.AppendLine( "  <image id='imageViewer' style='width:100%; height:75vh;'>" );
             sb.AppendLine( "</div>" );
 
 #if !RELEASE

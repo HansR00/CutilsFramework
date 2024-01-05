@@ -522,6 +522,8 @@ namespace CumulusUtils
             {
                 string thisKeyword;
 
+                if ( ExtraSensorList[ i ].Type == ExtraSensorType.Lightning ) { i++; continue; }; // atm no lightning data in the JSON, later...
+
                 if ( ExtraSensorList[ i ].Type == ExtraSensorType.External )
                 {
                     thisKeyword = ExtraSensorList[ i ].Name;

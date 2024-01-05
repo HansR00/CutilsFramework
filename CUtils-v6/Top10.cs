@@ -231,225 +231,239 @@ namespace CumulusUtils
 
             int i = 0, j;
 
-            Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
-            for ( j = 0; j < 10; j++ )
+            try
             {
-                Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].TimeMaxTemp:g} {Top10List[ i ][ j ].MaxTemp:F2}" );
-
-                if ( Top10List[ i ][ j ].TimeMaxTemp.Date == Yesterday.Date )
+                Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
+                for ( j = 0; j < 10; j++ )
                 {
-                    CUtils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
-                }
-            }
+                    Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
+                        $"{Top10List[ i ][ j ].TimeMaxTemp:g} {Top10List[ i ][ j ].MaxTemp:F2}" );
 
-            i++;
-            Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
-            for ( j = 0; j < 10; j++ )
+                    if ( Top10List[ i ][ j ].TimeMaxTemp.Date == Yesterday.Date )
+                    {
+                        CUtils.ThriftyTop10RecordsDirty = true;
+                        Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
+                    }
+                }
+
+                i++;
+                Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
+                for ( j = 0; j < 10; j++ )
+                {
+                    Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
+                        $"{Top10List[ i ][ j ].TimeMinTemp:g} {Top10List[ i ][ j ].MinTemp:F2}" );
+
+                    if ( Top10List[ i ][ j ].TimeMinTemp.Date == Yesterday.Date )
+                    {
+                        CUtils.ThriftyTop10RecordsDirty = true;
+                        Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
+                    }
+                }
+
+                i++;
+                Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
+                for ( j = 0; j < 10; j++ )
+                {
+                    Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
+                        $"{Top10List[ i ][ j ].TimeLowHumidity:g} {Top10List[ i ][ j ].LowHumidity:F2}" );
+
+                    if ( Top10List[ i ][ j ].TimeLowHumidity.Date == Yesterday.Date )
+                    {
+                        CUtils.ThriftyTop10RecordsDirty = true;
+                        Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
+                    }
+                }
+
+                i++;
+                Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
+                for ( j = 0; j < 10; j++ )
+                {
+                    Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
+                        $"{Top10List[ i ][ j ].TimeMaxBarometer:g} {Top10List[ i ][ j ].MaxBarometer:F2}" );
+
+                    if ( Top10List[ i ][ j ].TimeMaxBarometer.Date == Yesterday.Date )
+                    {
+                        CUtils.ThriftyTop10RecordsDirty = true;
+                        Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
+                    }
+                }
+
+                i++;
+                Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
+                for ( j = 0; j < 10; j++ )
+                {
+                    Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
+                        $"{Top10List[ i ][ j ].TimeMinBarometer:g} {Top10List[ i ][ j ].MinBarometer:F2}" );
+
+                    if ( Top10List[ i ][ j ].TimeMinBarometer.Date == Yesterday.Date )
+                    {
+                        CUtils.ThriftyTop10RecordsDirty = true;
+                        Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
+                    }
+                }
+
+                i++;
+                Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
+                for ( j = 0; j < 10; j++ )
+                {
+                    Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
+                        $"{Top10List[ i ][ j ].TimeHighAverageWindSpeed:g} {Top10List[ i ][ j ].HighAverageWindSpeed:F2}" );
+
+                    if ( Top10List[ i ][ j ].TimeHighAverageWindSpeed.Date == Yesterday.Date )
+                    {
+                        CUtils.ThriftyTop10RecordsDirty = true;
+                        Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
+                    }
+                }
+
+                i++;
+                Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
+                for ( j = 0; j < 10; j++ )
+                {
+                    Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
+                        $"{Top10List[ i ][ j ].TimeHighWindGust:g} {Top10List[ i ][ j ].HighWindGust:F2}" );
+
+                    if ( Top10List[ i ][ j ].TimeHighWindGust.Date == Yesterday.Date )
+                    {
+                        CUtils.ThriftyTop10RecordsDirty = true;
+                        Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
+                    }
+                }
+
+                i++;
+                Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
+                for ( j = 0; j < 10; j++ )
+                {
+                    Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
+                        $"{Top10List[ i ][ j ].ThisDate:d} {Top10List[ i ][ j ].TotalWindRun:F2}" );
+
+                    if ( Top10List[ i ][ j ].ThisDate.Date == Yesterday.Date )
+                    {
+                        CUtils.ThriftyTop10RecordsDirty = true;
+                        Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
+                    }
+                }
+
+                i++;
+                Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
+                for ( j = 0; j < 10; j++ )
+                {
+                    Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
+                        $"{Top10List[ i ][ j ].TimeMaxRainRate:g} {Top10List[ i ][ j ].MaxRainRate:F2}" );
+
+                    if ( Top10List[ i ][ j ].TimeMaxRainRate.Date == Yesterday.Date )
+                    {
+                        CUtils.ThriftyTop10RecordsDirty = true;
+                        Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
+                    }
+                }
+
+                i++;
+                Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
+                for ( j = 0; j < Top10List[ i ].Count; j++ )
+                {
+                    Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
+                        $"{Top10List[ i ][ j ].TimeHighHourlyRain:g} {Top10List[ i ][ j ].HighHourlyRain:F2}" );
+
+                    if ( Top10List[ i ][ j ].TimeHighHourlyRain.Date == Yesterday.Date )
+                    {
+                        CUtils.ThriftyTop10RecordsDirty = true;
+                        Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
+                    }
+                }
+
+                i++;
+                Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
+                for ( j = 0; j < Top10List[ i ].Count; j++ )
+                {
+                    Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
+                        $"{Top10List[ i ][ j ].ThisDate:d} {Top10List[ i ][ j ].TotalRainThisDay:F2}" );
+
+                    if ( Top10List[ i ][ j ].ThisDate.Date == Yesterday.Date )
+                    {
+                        CUtils.ThriftyTop10RecordsDirty = true;
+                        Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
+                    }
+                }
+
+                i++;
+                Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
+                for ( j = 0; j < Top10List[ i ].Count; j++ )
+                {
+                    Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
+                        $"{Top10List[ i ][ j ].ThisDate:MMM yyyy} {Top10List[ i ][ j ].MonthlyRain:F2}" );
+
+                    if ( Top10List[ i ][ j ].ThisDate.Date == Yesterday.Date )
+                    {
+                        CUtils.ThriftyTop10RecordsDirty = true;
+                        Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
+                    }
+                }
+
+                i++;
+                Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
+                for ( j = 0; j < Top10List[ i ].Count; j++ )
+                {
+                    Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
+                        $"{Top10List[ i ][ j ].ThisDate:MMM yyyy} {Top10List[ i ][ j ].MonthlyRain:F2}" );  // Lowest monthly rain, inverted from previous list
+
+                    if ( Top10List[ i ][ j ].ThisDate.Date == Yesterday.Date )
+                    {
+                        CUtils.ThriftyTop10RecordsDirty = true;
+                        Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
+                    }
+                }
+
+                i++;
+                Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
+                for ( j = 0; j < Top10List[ i ].Count; j++ )
+                {
+                    Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
+                        $"{Top10List[ i ][ j ].ThisDate:d} {Top10List[ i ][ j ].DryPeriod:F2}" );
+
+                    if ( Top10List[ i ][ j ].ThisDate.Date == Yesterday.Date )
+                    {
+                        CUtils.ThriftyTop10RecordsDirty = true;
+                        Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
+                    }
+                }
+
+                i++;
+                Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
+                for ( j = 0; j < Top10List[ i ].Count; j++ )
+                {
+                    Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
+                        $"{Top10List[ i ][ j ].ThisDate:d} {Top10List[ i ][ j ].WetPeriod:F2}" );
+
+                    if ( Top10List[ i ][ j ].ThisDate.Date == Yesterday.Date )
+                    {
+                        CUtils.ThriftyTop10RecordsDirty = true;
+                        Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
+                    }
+                }
+
+                // If the cycle is true then set records dirty so it is always uploaded; required to release accented records when 30 day period has  passed
+                //if ( CUtils.RunStarted.DayOfYear % CUtils.ThriftyTop10RecordsPeriod == 0 ) CUtils.ThriftyTop10RecordsDirty = true;
+                CUtils.ThriftyTop10RecordsDirty = true;
+
+                Sup.LogTraceInfoMessage( "Top10funcs: Starting the HTML Generation" );
+                if ( !CUtils.Thrifty || CUtils.ThriftyTop10RecordsDirty ) HTMLexportTop10();
+
+                //Sup.LogTraceInfoMessage( $"Thrifty: !Thrifty || ThriftyTop10RecordsDirty - {!CUtils.Thrifty || CUtils.ThriftyTop10RecordsDirty} => Top10 , NO HTML generated!" );
+
+                Sup.LogDebugMessage( "Top10funcs: Completed, returning from generating the Top10 list" );
+            }
+            catch ( Exception e ) // Not yet 32 days
             {
-                Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].TimeMinTemp:g} {Top10List[ i ][ j ].MinTemp:F2}" );
-
-                if ( Top10List[ i ][ j ].TimeMinTemp.Date == Yesterday.Date )
+                using ( StreamWriter of = new( $"{Sup.PathUtils}{Sup.Top10OutputFilename}", false, Encoding.UTF8 ) )
                 {
-                    CUtils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
+                    of.WriteLine( "GenerateTop10List: Not yet enough days, skipping module." );
                 }
+
+                Sup.LogDebugMessage( "GenerateTop10List: Not yet enough days, skipping module." );
+                Sup.LogTraceInfoMessage( $"GenerateTop10List: {e.Message}." );
+                return;
             }
-
-            i++;
-            Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
-            for ( j = 0; j < 10; j++ )
-            {
-                Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].TimeLowHumidity:g} {Top10List[ i ][ j ].LowHumidity:F2}" );
-
-                if ( Top10List[ i ][ j ].TimeLowHumidity.Date == Yesterday.Date )
-                {
-                    CUtils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
-                }
-            }
-
-            i++;
-            Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
-            for ( j = 0; j < 10; j++ )
-            {
-                Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].TimeMaxBarometer:g} {Top10List[ i ][ j ].MaxBarometer:F2}" );
-
-                if ( Top10List[ i ][ j ].TimeMaxBarometer.Date == Yesterday.Date )
-                {
-                    CUtils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
-                }
-            }
-
-            i++;
-            Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
-            for ( j = 0; j < 10; j++ )
-            {
-                Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].TimeMinBarometer:g} {Top10List[ i ][ j ].MinBarometer:F2}" );
-
-                if ( Top10List[ i ][ j ].TimeMinBarometer.Date == Yesterday.Date )
-                {
-                    CUtils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
-                }
-            }
-
-            i++;
-            Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
-            for ( j = 0; j < 10; j++ )
-            {
-                Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].TimeHighAverageWindSpeed:g} {Top10List[ i ][ j ].HighAverageWindSpeed:F2}" );
-
-                if ( Top10List[ i ][ j ].TimeHighAverageWindSpeed.Date == Yesterday.Date )
-                {
-                    CUtils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
-                }
-            }
-
-            i++;
-            Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
-            for ( j = 0; j < 10; j++ )
-            {
-                Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].TimeHighWindGust:g} {Top10List[ i ][ j ].HighWindGust:F2}" );
-
-                if ( Top10List[ i ][ j ].TimeHighWindGust.Date == Yesterday.Date )
-                {
-                    CUtils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
-                }
-            }
-
-            i++;
-            Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
-            for ( j = 0; j < 10; j++ )
-            {
-                Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].ThisDate:d} {Top10List[ i ][ j ].TotalWindRun:F2}" );
-
-                if ( Top10List[ i ][ j ].ThisDate.Date == Yesterday.Date )
-                {
-                    CUtils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
-                }
-            }
-
-            i++;
-            Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
-            for ( j = 0; j < 10; j++ )
-            {
-                Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].TimeMaxRainRate:g} {Top10List[ i ][ j ].MaxRainRate:F2}" );
-
-                if ( Top10List[ i ][ j ].TimeMaxRainRate.Date == Yesterday.Date )
-                {
-                    CUtils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
-                }
-            }
-
-            i++;
-            Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
-            for ( j = 0; j < Top10List[ i ].Count; j++ )
-            {
-                Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].TimeHighHourlyRain:g} {Top10List[ i ][ j ].HighHourlyRain:F2}" );
-
-                if ( Top10List[ i ][ j ].TimeHighHourlyRain.Date == Yesterday.Date )
-                {
-                    CUtils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
-                }
-            }
-
-            i++;
-            Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
-            for ( j = 0; j < Top10List[ i ].Count; j++ )
-            {
-                Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].ThisDate:d} {Top10List[ i ][ j ].TotalRainThisDay:F2}" );
-
-                if ( Top10List[ i ][ j ].ThisDate.Date == Yesterday.Date )
-                {
-                    CUtils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
-                }
-            }
-
-            i++;
-            Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
-            for ( j = 0; j < Top10List[ i ].Count; j++ )
-            {
-                Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].ThisDate:MMM yyyy} {Top10List[ i ][ j ].MonthlyRain:F2}" );
-
-                if ( Top10List[ i ][ j ].ThisDate.Date == Yesterday.Date )
-                {
-                    CUtils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
-                }
-            }
-
-            i++;
-            Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
-            for ( j = 0; j < Top10List[ i ].Count; j++ )
-            {
-                Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].ThisDate:MMM yyyy} {Top10List[ i ][ j ].MonthlyRain:F2}" );  // Lowest monthly rain, inverted from previous list
-
-                if ( Top10List[ i ][ j ].ThisDate.Date == Yesterday.Date )
-                {
-                    CUtils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
-                }
-            }
-
-            i++;
-            Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
-            for ( j = 0; j < Top10List[ i ].Count; j++ )
-            {
-                Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].ThisDate:d} {Top10List[ i ][ j ].DryPeriod:F2}" );
-
-                if ( Top10List[ i ][ j ].ThisDate.Date == Yesterday.Date )
-                {
-                    CUtils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
-                }
-            }
-
-            i++;
-            Sup.LogTraceVerboseMessage( "GenerateTop10List:" + enumNames[ i ] );
-            for ( j = 0; j < Top10List[ i ].Count; j++ )
-            {
-                Sup.LogTraceVerboseMessage( $"GenerateTop10List:\t\t " +
-                  $"{Top10List[ i ][ j ].ThisDate:d} {Top10List[ i ][ j ].WetPeriod:F2}" );
-
-                if ( Top10List[ i ][ j ].ThisDate.Date == Yesterday.Date )
-                {
-                    CUtils.ThriftyTop10RecordsDirty = true;
-                    Sup.LogTraceVerboseMessage( $"Generate Top10 Records: CUtils.ThriftyTop10RecordsDirty {CUtils.ThriftyTop10RecordsDirty} detected." );
-                }
-            }
-
-            // If the cycle is true then set records dirty so it is always uploaded; required to release accented records when 30 day period has  passed
-            //if ( CUtils.RunStarted.DayOfYear % CUtils.ThriftyTop10RecordsPeriod == 0 ) CUtils.ThriftyTop10RecordsDirty = true;
-            CUtils.ThriftyTop10RecordsDirty = true;
-
-            Sup.LogTraceInfoMessage( "Top10funcs: Starting the HTML Generation" );
-            if ( !CUtils.Thrifty || CUtils.ThriftyTop10RecordsDirty ) HTMLexportTop10();
-
-            //Sup.LogTraceInfoMessage( $"Thrifty: !Thrifty || ThriftyTop10RecordsDirty - {!CUtils.Thrifty || CUtils.ThriftyTop10RecordsDirty} => Top10 , NO HTML generated!" );
-
-            Sup.LogDebugMessage( "Top10funcs: Completed, returning from generating the Top10 list" );
 
             return; //all done
         }

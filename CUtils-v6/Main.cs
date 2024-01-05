@@ -13,7 +13,7 @@
  *              Initial release: pwsFWI                 (version 1.0)
  *                               Website Generator      (version 3.0)
  *                               ChartsCompiler         (version 5.0)
- *                               Maintenance releases   (version 6.x)
+ *                               Maintenance releases   (version 6.x) including CustomLogs
  *              Startdate : 16 november 2021 start of conversion to .NET 5, 6 and 7
  *              
  * Environment: Raspberry Pi 3B+ and up
@@ -66,21 +66,21 @@
  * Distribution:
  *              CutilsCharts-default-for-use.def
  *              CutilsMenu-example-for-use.def
- *              gauges.js
- *              gauges-ss.css
+ *              CUgauges.js
+ *              CUgauges-ss.css
  *              CUsermenu-example.txt
  *              HighchartsDefaults.js
  *              CutilsCharts-examples.def
- *              language.js
+ *              CUlanguage.js
  *              LICENCE
  *              CUserAbout-example.txt
  *              
  * External but in distribution:
- *              RGraph.common.core.js
- *              RGraph.rose.js
- *              steelseries.min.js
+ *              CURGraph.common.core.js
+ *              CURGraph.rose.js
+ *              CUsteelseries.min.js
  *              suncalc.js
- *              tween.min.js
+ *              CUtween.min.js
  * 
  */
 
@@ -431,6 +431,16 @@ namespace CumulusUtils
             MainList = ThisDayfile.DayfileRead();
             ThisDayfile.Dispose();
 
+            const int NrOfDaysForUsefulResults = 1;
+
+            if ( MainList.Count < NrOfDaysForUsefulResults )
+            {
+                Sup.LogDebugMessage( $" Main CmulusUtils: Not enough data. Only {MainList.Count} entries in dayfile.txt" );
+                Sup.LogDebugMessage( $" Main CmulusUtils: Need at least {NrOfDaysForUsefulResults} days for useful output." );
+                Sup.LogDebugMessage( " Main CmulusUtils: Exiting!" );
+                return; // not enough data
+            }
+
             // Adjust if RecordsBeganDate is set
             //
             string tmp = Sup.GetUtilsIniValue( "General", "RecordsBeganDate", "" );
@@ -587,16 +597,6 @@ namespace CumulusUtils
             if ( DoPwsFWI || DoTop10 || DoGraphs || DoYadr || DoRecords || DoNOAA || DoDayRecords || DoCheckOnly || DoWebsite || DoCreateMap || DoUserAskedData )
             {
                 //StartOfObservations = MainList.Select( x => x.ThisDate ).Min();
-                const int NrOfDaysForUsefulResults = 32;
-
-                if ( MainList.Count < NrOfDaysForUsefulResults )
-                {
-                    Sup.LogTraceInfoMessage( $" Main CmulusUtils: Not enough data. Only {MainList.Count} lines in dayfile.txt" );
-                    Sup.LogTraceInfoMessage( $" Main CmulusUtils: Need at least {NrOfDaysForUsefulResults} days for useful output." );
-                    Sup.LogTraceInfoMessage( "Main CmulusUtils: Exiting!" );
-                    return; // not enough data
-                }
-
                 if ( DoPwsFWI )
                 {
 #if TIMING
@@ -1027,7 +1027,7 @@ namespace CumulusUtils
             if ( DoForecast ) { await Isup.UploadFileAsync( $"{Sup.ForecastOutputFilename}", $"{Sup.PathUtils}{Sup.ForecastOutputFilename}" ); }
 
             if ( DoStationMap && ( !Thrifty || RunStarted.DayOfYear == 2 ) ) { await Isup.UploadFileAsync( $"{Sup.StationMapOutputFilename}", $"{Sup.PathUtils}{Sup.StationMapOutputFilename}" ); }
-            if ( DoMeteoCam && HasMeteoCamMenu && ( !Thrifty || RunStarted.DayOfYear == 2 ) ) { await Isup.UploadFileAsync( $"{Sup.MeteoCamOutputFilename}", $"{Sup.PathUtils}{Sup.MeteoCamOutputFilename}" ); }
+            if ( DoMeteoCam && HasMeteoCamMenu && !Thrifty ) { await Isup.UploadFileAsync( $"{Sup.MeteoCamOutputFilename}", $"{Sup.PathUtils}{Sup.MeteoCamOutputFilename}" ); }
 
             if ( DoAirLink && !Thrifty )
             {
