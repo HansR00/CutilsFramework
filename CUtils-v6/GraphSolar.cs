@@ -49,10 +49,9 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
-using System.Web;
 
 #if TIMING
 using System.Diagnostics;
@@ -808,7 +807,7 @@ namespace CumulusUtils
 
             // Do the daily output in a CSV when asked for
             //
-            if ( Sup.GetUtilsIniValue("General", "NeedSolarEnergyDailyValuesInCSV","false").Equals("true") )
+            if ( Sup.GetUtilsIniValue( "General", "NeedSolarEnergyDailyValuesInCSV", "false" ).Equals( "true" ) )
             {
                 int curMonth = -1;
                 string csvFilename = "DailySolarEnergy.csv";
@@ -832,12 +831,12 @@ namespace CumulusUtils
                             curMonth = tmp.ThisDate.Month;
 
                             dse.WriteLine( "" );
-                            dse.WriteLine( $"New month --- {tmp.ThisDate.ToString("Y", CUtils.ThisCulture)} :" );
+                            dse.WriteLine( $"New month --- {tmp.ThisDate.ToString( "Y", CUtils.ThisCulture )} :" );
                         }
 
-                        dse.WriteLine($"{tmp.ThisDate.ToString("d", CUtils.ThisCulture)}{CUtils.ThisCulture.TextInfo.ListSeparator}" +
-                            $"{tmp.SolarEnergy.ToString("F2",CUtils.ThisCulture)}{CUtils.ThisCulture.TextInfo.ListSeparator}" +
-                            $"{tmp.SolarHours.ToString("F1",CUtils.ThisCulture)}");
+                        dse.WriteLine( $"{tmp.ThisDate.ToString( "d", CUtils.ThisCulture )}{CUtils.ThisCulture.TextInfo.ListSeparator}" +
+                            $"{tmp.SolarEnergy.ToString( "F2", CUtils.ThisCulture )}{CUtils.ThisCulture.TextInfo.ListSeparator}" +
+                            $"{tmp.SolarHours.ToString( "F1", CUtils.ThisCulture )}" );
                     }
 
                     Sup.LogDebugMessage( "Writing CSV DailySolarEnergy : Done" );

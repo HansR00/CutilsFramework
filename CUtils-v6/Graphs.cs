@@ -1286,12 +1286,13 @@ namespace CumulusUtils
             if ( NormalUsage.Equals( "StationAverage", CUtils.Cmp ) || NormalUsage.Equals( "Both", CUtils.Cmp ) )
             {
                 List<float> tmp = new List<float>();
+                //Calendar Cal = new GregorianCalendar();
 
                 StationAverage = true;
 
                 for ( int i = YearMin; i <= YearMax; i++ )
                 {
-                    if ( ThisList.Where( x => x.ThisDate.Year == i ).Count() < 364 ) continue; // Incomplete year - have to reset to nr of days per year 
+                    if ( ThisList.Where( x => x.ThisDate.Year == i ).Count() < 364 /* Cal.GetDaysInYear(i) */ ) continue; // Incomplete year - have to reset to nr of days per year 
                     tmp.Add( ThisList.Where( x => x.ThisDate.Year == i ).Select( x => x.TotalRainThisDay ).Sum() );
                 }
 

@@ -42,7 +42,10 @@ namespace CumulusUtils
                 thisEq.Equation = ParseSingleEval( thisEq.Id );
 
                 if ( string.IsNullOrEmpty( thisEq.Equation ) )
+                {
+                    Sup.LogTraceErrorMessage( $"Parsing User Charts: Error in Equation {thisEq.Id}" );
                     return false;
+                }
                 else
                     AllEquations.Add( thisEq );
             } while ( !Keywords[ CurrPosition ].Equals( "Chart", CUtils.Cmp ) && CurrPosition < Keywords.Count - 1 );

@@ -89,7 +89,8 @@ namespace CumulusUtils
 
                     if ( !ParseEquationBlock() )
                     {
-                        Sup.LogTraceErrorMessage( $"Parsing User Charts: Error in Equations Block." );
+                        //Sup.LogTraceErrorMessage( $"Parsing User Charts: Error in Equations Block." );
+                        // ParseEquationBlock has its own error messaging
                         return null;
                     }
                 }
@@ -107,14 +108,14 @@ namespace CumulusUtils
                             foreach ( ChartDef entry in AllCharts )
                                 if ( thisChart.Id.Equals( entry.Id, CUtils.Cmp ) )
                                 {
-                                    Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : Duplicate and illegal ID '{entry.Id}'" );
+                                    Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : Duplicate and illegal Chart ID : '{entry.Id}'" );
                                     return null;
                                 }
                     }
                     else
                     {
                         // Error condition
-                        Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : No Chart at position '{CurrPosition}'" );
+                        Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : Unrecognised keyword '{Keywords[ --CurrPosition ]}' where Chart should be" );
                         return null;
                     }
 
@@ -134,7 +135,7 @@ namespace CumulusUtils
                     else
                     {
                         // Error condition
-                        Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' : Error at Title" );
+                        Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' : Missing keyword 'Title'" );
                         return null;
                     }
 
@@ -153,6 +154,7 @@ namespace CumulusUtils
                                 if ( AllOutputs.Count > 0 )
                                 {
                                     Sup.LogTraceWarningMessage( $"Parsing User Charts '{thisChart.Id}' : Skipping illegal ConnectTo '{DasboardPanelNr}'" );
+                                    Sup.LogTraceWarningMessage( $"Parsing User Charts '{thisChart.Id}' : ConnectsTo can only be used in the first - unspecified - output" );
                                     continue; // Only have Connects to from cumuluscharts.txt
                                 }
 
@@ -200,7 +202,7 @@ namespace CumulusUtils
                                 else
                                 {
                                     // Error condition
-                                    Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' : Missing BELOW or ABOVE Keyword" );
+                                    Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' : Missing BELOW or ABOVE Keyword after WindBarbs" );
                                     return null;
                                 }
 
@@ -310,7 +312,7 @@ namespace CumulusUtils
                             }
                             else
                             {
-                                Sup.LogTraceErrorMessage( $"Parsing User Charts: No Statitics definition found in STATS line of '{thisChart.Id}'" );
+                                Sup.LogTraceErrorMessage( $"Parsing User Charts: No Statistics definition found in STATS line of '{thisChart.Id}'" );
                                 return null;
                             }
                         }
@@ -695,6 +697,7 @@ namespace CumulusUtils
                     {
                         // Error condition
                         Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : Error at EndChart of Chart '{thisChart.Id}'" );
+                        Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : After position '{Keywords[ --CurrPosition ]}'" );
                         return null;
                     }
 

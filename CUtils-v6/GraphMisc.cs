@@ -22,7 +22,6 @@
  */
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -759,11 +758,11 @@ namespace CumulusUtils
 
             if ( SeasonList.Any() )
             {
-                wi1.AppendLine( $"{{name:'{Sup.GetCUstringValue( "Graphs", "YearlysSeasonsWinter1", "Winter 1" , true )}',data:[" );
+                wi1.AppendLine( $"{{name:'{Sup.GetCUstringValue( "Graphs", "YearlysSeasonsWinter1", "Winter 1", true )}',data:[" );
                 sp.AppendLine( $"{{name:'{Sup.GetCUstringValue( "Graphs", "YearlysSeasonsSpring", "Spring", true )}',data:[" );
                 su.AppendLine( $"{{name:'{Sup.GetCUstringValue( "Graphs", "YearlysSeasonsSummer", "Summer", true )}',data:[" );
                 au.AppendLine( $"{{name:'{Sup.GetCUstringValue( "Graphs", "YearlysSeasonsAutumn", "Autumn", true )}',data:[" );
-                wi2.AppendLine( $"{{name:'{Sup.GetCUstringValue( "Graphs", "YearlysSeasonsWinter2", "Winter 2" , true )}',data:[" );
+                wi2.AppendLine( $"{{name:'{Sup.GetCUstringValue( "Graphs", "YearlysSeasonsWinter2", "Winter 2", true )}',data:[" );
 
                 foreach ( YearSeasons seasonEntry in SeasonList )
                 {

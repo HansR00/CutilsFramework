@@ -849,6 +849,11 @@ namespace CumulusUtils
                                 Sup.LogTraceInfoMessage( $"UserAskedData: Continuing" );
                             }
                         }
+                        else
+                        {
+                            Sup.LogDebugMessage( $"Errors in Charts definition. See logfile, please correct and run again." );
+                            Sup.LogTraceErrorMessage( $"Errors in Charts definition. See logfile, please correct and run again." );
+                        }
                     }
 
                     Sup.LogDebugMessage( $"DoAirLink / AirQualitySensor  = {DoAirLink} / {HasAirLink}" );
@@ -940,6 +945,7 @@ namespace CumulusUtils
                 }
                 else
                 {
+                    Sup.LogDebugMessage( $"Errors in Charts definition. See logfile, please correct and run again." );
                     Sup.LogTraceErrorMessage( $"Errors in Charts definition. See logfile, please correct and run again." );
                 }
 

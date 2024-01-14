@@ -1603,6 +1603,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 }
                 else
                 {
+                    Sup.LogDebugMessage( $"Errors in Charts definition. See logfile, please correct and run again." );
                     Sup.LogTraceErrorMessage( $"Errors in Charts definition. See logfile, please correct and run again." );
                     Sup.LogTraceErrorMessage( $"No new cumuluscharts.txt is generated and the old one remains in place!" );
                 }

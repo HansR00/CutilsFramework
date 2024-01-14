@@ -101,7 +101,7 @@ namespace CumulusUtils
                         TxUsed = CuSupport.StringRemoveWhiteSpace( TxUsed, "" );        // Replace any space with nothing (empty string)
                         string[] TxUsedArray = TxUsed.Split( ',' );
 
-                        if (TxUsedArray.Length < 1 )
+                        if ( TxUsedArray.Length < 1 )
                             DeviceInfo.AppendLine( "A value for the Transmitter used is needed - please set parameter Tx" );
                         else
                         {

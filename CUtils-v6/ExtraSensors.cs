@@ -493,7 +493,6 @@ namespace CumulusUtils
             }
 
             Sup.LogDebugMessage( $"GenerateExtraSensorsCharts: Testing UserModificationExtraSensorCharts: {Sup.GetUtilsIniValue( "ExtraSensors", "UserModificationExtraSensorCharts", "false" )}" );
-
             if ( Sup.GetUtilsIniValue( "ExtraSensors", "UserModificationExtraSensorCharts", "false" ).Equals( "true", CUtils.Cmp ) ) return;
 
             CutilsChartsIn = File.ReadAllLines( $"{Sup.PathUtils}{Sup.CutilsChartsDef}" );
@@ -516,50 +515,74 @@ namespace CumulusUtils
             CutilsChartsMods.Add( "" );
 
             // Now the road is clear to add the charts from the list of plotparameters per class (Temp, Humidity etc....
-            ExtraSensorType currentType;
 
             for ( i = 0; i < ExtraSensorList.Count; )
             {
-                string thisKeyword;
-
-                if ( ExtraSensorList[ i ].Type == ExtraSensorType.Lightning ) { i++; continue; }; // atm no lightning data in the JSON, later...
-
-                if ( ExtraSensorList[ i ].Type == ExtraSensorType.External )
-                {
-                    thisKeyword = ExtraSensorList[ i ].Name;
-                    currentType = ExtraSensorType.External;
-                }
-                else
-                {
-                    thisKeyword = ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ];
-                    currentType = ExtraSensorList[ i ].Type;
-                }
+                if ( ExtraSensorList[ i ].Type == ExtraSensorType.Lightning ) { i++; continue; }; // atm no lightning data in the JSON, later...Maybe...
 
                 CutilsChartsMods.Add( $"Chart Extra{ExtraSensorList[ i ].Type} Title " +
                     $"{Sup.GetCUstringValue( "ExtraSensors", "Trend chart of Extra", "Trend chart of Extra", true )} " +
                     $"{ExtraSensorList[ i ].Type} " +
                     $"{Sup.GetCUstringValue( "ExtraSensors", "Sensors", "Sensors", true )}" );
 
-                while ( i < ExtraSensorList.Count && ( ExtraSensorList[ i ].Type == currentType || thisKeyword.Substring( 0, 3 ).Equals( "CO2", CUtils.Cmp ) ) )
+                if ( ExtraSensorList[ i ].Type == ExtraSensorType.CO2 )
                 {
-                    if ( ExtraSensorList[ i ].Type == ExtraSensorType.External ) thisKeyword = ExtraSensorList[ i ].Name;
-                    else thisKeyword = ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ];
+                    Sup.LogTraceInfoMessage( $"GenerateExtraSensorsCharts: Adding Sensor: {ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ]}" );
 
-                    Sup.LogTraceInfoMessage( $"GenerateExtraSensorsCharts: Adding Sensor: {thisKeyword}" );
+                    CutilsChartsMods.Add( $"  Plot Extra {ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ]}" );
+                    _ = Sup.GetCUstringValue( "Compiler", ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ], ExtraSensorList[ i ].Name, false );
+                    CutilsChartsMods.Add( $"  Plot Extra {ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i + 1 ].PlotvarIndex ]}" );
+                    _ = Sup.GetCUstringValue( "Compiler", ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i + 1 ].PlotvarIndex ], ExtraSensorList[ i ].Name, false );
+                    CutilsChartsMods.Add( $"  Plot Extra {ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i + 2 ].PlotvarIndex ]}" );
+                    _ = Sup.GetCUstringValue( "Compiler", ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i + 2 ].PlotvarIndex ], ExtraSensorList[ i ].Name, false );
+                    CutilsChartsMods.Add( $"  Plot Extra {ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i + 3 ].PlotvarIndex ]}" );
+                    _ = Sup.GetCUstringValue( "Compiler", ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i + 3 ].PlotvarIndex ], ExtraSensorList[ i ].Name, false );
+                    CutilsChartsMods.Add( $"  Plot Extra {ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i + 4 ].PlotvarIndex ]}" );
+                    _ = Sup.GetCUstringValue( "Compiler", ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i + 4 ].PlotvarIndex ], ExtraSensorList[ i ].Name, false );
+                    CutilsChartsMods.Add( $"  Plot Extra {ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i + 5 ].PlotvarIndex ]}" );
+                    _ = Sup.GetCUstringValue( "Compiler", ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i + 5 ].PlotvarIndex ], ExtraSensorList[ i ].Name, false );
+                    CutilsChartsMods.Add( $"  Plot Extra {ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i + 6 ].PlotvarIndex ]}" );
+                    _ = Sup.GetCUstringValue( "Compiler", ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i + 6 ].PlotvarIndex ], ExtraSensorList[ i ].Name, false );
+                    CutilsChartsMods.Add( $"  Plot Extra {ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i + 7 ].PlotvarIndex ]}" );
+                    _ = Sup.GetCUstringValue( "Compiler", ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i + 7 ].PlotvarIndex ], ExtraSensorList[ i ].Name, false );
 
-                    CutilsChartsMods.Add( $"  Plot Extra {thisKeyword}" );
-                    _ = Sup.GetCUstringValue( "Compiler", thisKeyword, ExtraSensorList[ i ].Name, false );
-
-                    i++;
-
-                    if ( currentType == ExtraSensorType.AirQuality ) // Then the next item must be AirQualityAvg (that's how it's constructed
-                    {
-                        CutilsChartsMods.Add( $"  Plot Extra {ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ]}" );
-                        Sup.GetCUstringValue( "Compiler", ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ], ExtraSensorList[ i ].Name, false );
-
-                        i++;
-                    }
+                    i += 7;
+                    //if ( ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i + 1 ].PlotvarIndex ].Substring( 0, 3 ).Equals( "CO2", CUtils.Cmp ) ) i++;
+                    //else break;
                 }
+                else if ( ExtraSensorList[ i ].Type == ExtraSensorType.External )
+                {
+                    Sup.LogTraceInfoMessage( $"GenerateExtraSensorsCharts: Adding Sensor: {ExtraSensorList[ i ].Name}" );
+
+                    CutilsChartsMods.Add( $"  Plot Extra {ExtraSensorList[ i ].Name}" );
+                    _ = Sup.GetCUstringValue( "Compiler", ExtraSensorList[ i ].Name, ExtraSensorList[ i ].Name, false );
+                }
+                else
+                {
+                    ExtraSensorType currentType = ExtraSensorList[ i ].Type;
+
+                    do
+                    {
+                        Sup.LogTraceInfoMessage( $"GenerateExtraSensorsCharts: Adding Sensor: {ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ]}" );
+
+                        CutilsChartsMods.Add( $"  Plot Extra {ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ]}" );
+                        _ = Sup.GetCUstringValue( "Compiler", ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ], ExtraSensorList[ i ].Name, false );
+
+                        if ( ExtraSensorList[ i ].Type == ExtraSensorType.AirQuality ) // Then the next item must be AirQualityAvg (anomaly but that's how it's constructed)
+                        {
+                            // Required here because  of AirQualityAvg: 
+                            i++;
+
+                            CutilsChartsMods.Add( $"  Plot Extra {ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ]}" );
+                            Sup.GetCUstringValue( "Compiler", ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ], ExtraSensorList[ i ].Name, false );
+                        }
+
+                        if ( i + 1 < ExtraSensorList.Count && currentType == ExtraSensorList[ i + 1 ].Type ) i++;
+                        else break;
+                    } while ( true );
+                }
+
+                i++; // So now we continue with the next ExtraSensorType
 
                 if ( !OutputWritten )
                 {
