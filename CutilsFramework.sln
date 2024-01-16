@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CUtils-v6", "CUtils-v6\CUti
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{81D326BC-7A8C-4E3A-8FE7-303AF1213FFC}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CUtilsNET8", "CUtilsNET8\CUtilsNET8.csproj", "{72DE6BCB-7BA2-4EBD-A5B5-50EB9BF21015}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,10 @@ Global
 		{81D326BC-7A8C-4E3A-8FE7-303AF1213FFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81D326BC-7A8C-4E3A-8FE7-303AF1213FFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81D326BC-7A8C-4E3A-8FE7-303AF1213FFC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72DE6BCB-7BA2-4EBD-A5B5-50EB9BF21015}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72DE6BCB-7BA2-4EBD-A5B5-50EB9BF21015}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72DE6BCB-7BA2-4EBD-A5B5-50EB9BF21015}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72DE6BCB-7BA2-4EBD-A5B5-50EB9BF21015}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
