@@ -1,0 +1,4 @@
+Here comes the USer About text
+
+This site is made with CumulusUtils, a generator tool for HTML presentation of weather data, retrieved from a weather station powered by<a href='https://cumulus.hosiene.co.uk/index.php'> Cumulus(MX)</a> (all versions)</a>. CumulusUtils is built and &copy; by Hans Rottier. It can be freely used an distributed under the Creative Commons 4.0 Licence (see licences)<br /> <br />
+

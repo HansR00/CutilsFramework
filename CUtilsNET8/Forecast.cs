@@ -42,18 +42,12 @@ namespace CumulusUtils
         public string Day { get; set; }
     }
 
-    public class WeatherForecasts
+    public class WeatherForecasts( CuSupport s, InetSupport i )
     {
-        private readonly CuSupport Sup;
-        private readonly InetSupport Isup;
+        private readonly CuSupport Sup = s;
+        private readonly InetSupport Isup = i;
 
         readonly StructPrediction[] PredictionList = new StructPrediction[ 7 ];
-
-        public WeatherForecasts( CuSupport s, InetSupport i )
-        {
-            Sup = s;
-            Isup = i;
-        }
 
         public async Task GenerateForecasts()
         {

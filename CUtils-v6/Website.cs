@@ -58,7 +58,7 @@ namespace CumulusUtils
                                      "CUgauges-ss.css"};
 
         private readonly string[] PanelsConfiguration;
-        private string StatisticsType;
+        private readonly string StatisticsType;
 
         private readonly CuSupport Sup;
         private readonly InetSupport Isup;

@@ -277,7 +277,7 @@ namespace CumulusUtils
             StationArray = root.Elements( "Station" ).ToArray();
             fileCount = 0;
 
-            for ( int i = StationArray.Count() - 1; i >= 0; i-- )
+            for ( int i = StationArray.Length - 1; i >= 0; i-- )
             {
                 // foreach (XElement station in root.Elements() )
                 string[] dateFormats = { CuMapTimeformat, CuMapTimeformat_old1 };

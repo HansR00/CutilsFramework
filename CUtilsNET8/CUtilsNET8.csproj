@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>12.0</LangVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -16,7 +16,7 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
   </PropertyGroup>
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -25,12 +25,13 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DefineConstants>TRACE;DEBUG;TIMING;</DefineConstants>
     <NoWarn>IDE0090</NoWarn>
+    <DefineConstants>$(DefineConstants);TIMING</DefineConstants>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
-    <DefineConstants>DEBUG;TRACE;RELEASE;</DefineConstants>
+    <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <NoWarn>IDE0090</NoWarn>
   </PropertyGroup>
@@ -43,10 +44,10 @@
     <AssemblyTitle>CumulusUtils</AssemblyTitle>
     <Company>HansR</Company>
     <Product>CumulusUtils</Product>
-    <Copyright>Copyright © Hans Rottier 2019-2020</Copyright>
-    <AssemblyVersion>6.23.4.0</AssemblyVersion>
-    <FileVersion>6.23.4.0</FileVersion>
+    <Copyright>Copyright © Hans Rottier 2019-2024</Copyright>
     <NeutralLanguage>en-US</NeutralLanguage>
+    <AssemblyVersion>7.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Update="System.Drawing">

@@ -41,49 +41,27 @@ namespace CumulusUtils
     };
     public enum PlotvarRangeType { Recent, Extra, Daily, All };
 
-    public struct OutputDef
+    public struct OutputDef( string filename )
     {
-        public OutputDef( string filename )
-        {
-            Filename = filename;
-            TheseCharts = new List<ChartDef>();
-        }
-
-        public string Filename { get; set; }
-        public List<ChartDef> TheseCharts;
+        public string Filename { get; set; } = filename;
+        public List<ChartDef> TheseCharts = new List<ChartDef>();
     }
 
-    public struct ChartDef
+    public struct ChartDef( string thisId, string thisTitle )
     {
-        public ChartDef( string thisId, string thisTitle )
-        {
-            Range = PlotvarRangeType.Recent;
-            PlotVars = new List<Plotvar>();
-            Id = thisId;
-            Title = thisTitle;
-            Axis = AxisType.None;
-            HasScatter = false;
-            HasWindBarbs = false;
-            WindBarbsBelow = true;
-            WindBarbColor = "black";
-            ConnectsToDashboardPanel = new List<int>();
-            HasInfo = false;
-            InfoText = "";
-            Zoom = -1;
-        }
-        public PlotvarRangeType Range { get; set; }
-        public AxisType Axis;
-        public List<Plotvar> PlotVars { get; set; }
-        public string Id { get; set; }
-        public string Title { get; set; }
-        public bool HasScatter { get; set; }
-        public bool HasWindBarbs { get; set; }
-        public bool WindBarbsBelow { get; set; }
-        public string WindBarbColor { get; set; }
-        public List<int> ConnectsToDashboardPanel { get; set; }
-        public bool HasInfo { get; set; }
-        public string InfoText { get; set; }
-        public int Zoom { get; set; }
+        public PlotvarRangeType Range { get; set; } = PlotvarRangeType.Recent;
+        public AxisType Axis = AxisType.None;
+        public List<Plotvar> PlotVars { get; set; } = new List<Plotvar>();
+        public string Id { get; set; } = thisId;
+        public string Title { get; set; } = thisTitle;
+        public bool HasScatter { get; set; } = false;
+        public bool HasWindBarbs { get; set; } = false;
+        public bool WindBarbsBelow { get; set; } = true;
+        public string WindBarbColor { get; set; } = "black";
+        public List<int> ConnectsToDashboardPanel { get; set; } = new List<int>();
+        public bool HasInfo { get; set; } = false;
+        public string InfoText { get; set; } = "";
+        public int Zoom { get; set; } = -1;
     }
 
     public struct EqDef

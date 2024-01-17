@@ -277,7 +277,7 @@ namespace CumulusUtils
                 }
 
                 sb.Remove( sb.Length - 1, 1 ); //remove last comma
-                sb.Append( $"]" );
+                sb.Append( ']' );
 
                 counter++;
             }

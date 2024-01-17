@@ -58,7 +58,7 @@ namespace CumulusUtils
                                      "CUgauges-ss.css"};
 
         private readonly string[] PanelsConfiguration;
-        private string StatisticsType;
+        private readonly string StatisticsType;
 
         private readonly CuSupport Sup;
         private readonly InetSupport Isup;
@@ -505,7 +505,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "</div>" +
                   "</div>" );
 
-                indexFile.Append( Sup.GenHighchartsIncludes().ToString() );
+                indexFile.Append( Sup.GenHighchartsIncludes());
 
                 indexFile.Append(
                     "<script defer src='https://cdnjs.cloudflare.com/ajax/libs/d3/5.15.1/d3.min.js'></script>" +

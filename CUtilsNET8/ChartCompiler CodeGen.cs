@@ -298,7 +298,7 @@ namespace CumulusUtils
                     TheCharts.AppendLine( "}," );
 
                     TheCharts.Append( "      xAxis:" );
-                    if ( thisChart.HasWindBarbs ) TheCharts.Append( "[" );
+                    if ( thisChart.HasWindBarbs ) TheCharts.Append( '[' );
 
                     TheCharts.AppendLine( "      {type: 'datetime', crosshair: true, ordinal: false,dateTimeLabelFormats:{day: '%e %b',week: '%e %b %y',month: '%b %y',year: '%Y'}}," );
                     if ( thisChart.HasWindBarbs )
@@ -429,7 +429,7 @@ namespace CumulusUtils
                                 string tmp;
 
                                 startSum = tmpEquation.IndexOf( "sum(" );
-                                endSum = tmpEquation.IndexOf( ")", startSum );
+                                endSum = tmpEquation.IndexOf( ')', startSum );
                                 sumExpr = tmpEquation.Substring( startSum + 4, endSum - startSum - 4 );
                                 tmp = tmpEquation.Remove( startSum, endSum + 1 - startSum );
                                 tmpEquation = tmp.Insert( startSum, "sumResult[i][1]" );
@@ -995,21 +995,21 @@ namespace CumulusUtils
             if ( Recent.Length > 1 )
             {
                 Recent.Remove( Recent.Length - 1, 1 );
-                Recent.Append( "}" );
+                Recent.Append( '}' );
                 using ( StreamWriter sw = new StreamWriter( $"{Sup.PathUtils}{Sup.CUserdataRECENT}", false, Encoding.UTF8 ) ) { sw.Write( Recent.ToString() ); }
             }
 
             if ( Daily.Length > 1 )
             {
                 Daily.Remove( Daily.Length - 1, 1 );
-                Daily.Append( "}" );
+                Daily.Append( '}' );
                 using ( StreamWriter sw = new StreamWriter( $"{Sup.PathUtils}{Sup.CUserdataDAILY}", false, Encoding.UTF8 ) ) { sw.Write( Daily.ToString() ); }
             }
 
             if ( All.Length > 1 )
             {
                 All.Remove( All.Length - 1, 1 );
-                All.Append( "}" );
+                All.Append( '}' );
                 using ( StreamWriter sw = new StreamWriter( $"{Sup.PathUtils}{Sup.CUserdataALL}", false, Encoding.UTF8 ) ) { sw.Write( All.ToString() ); }
             }
 

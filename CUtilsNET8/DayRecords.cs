@@ -28,15 +28,10 @@ using System.Linq;
 
 namespace CumulusUtils
 {
-    class DayRecords
+    class DayRecords( CuSupport s )
     {
         readonly string[] m = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };  //Culture independent, just strings to compare
-        readonly CuSupport Sup;
-
-        public DayRecords( CuSupport s )
-        {
-            Sup = s;
-        }
+        readonly CuSupport Sup = s;
 
         public void GenerateDayRecords( List<DayfileValue> Thislist )
         {

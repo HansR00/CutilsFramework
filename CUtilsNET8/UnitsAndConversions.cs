@@ -42,12 +42,10 @@ namespace CumulusUtils
 
     //public enum
 
-    public class Temp
+    public class Temp( TempDim t )
     {
         static string[] UnitTempText { get; } = { "°C", "°F" };
-        public readonly TempDim Dim;
-
-        public Temp( TempDim t ) { Dim = t; } // Constructor
+        public readonly TempDim Dim = t;
 
         public string Text() { return UnitTempText[ (int) Dim ]; }
         public string Text( TempDim t ) { return UnitTempText[ (int) t ]; }
@@ -96,7 +94,7 @@ namespace CumulusUtils
         public static string Format( float value ) => $"{value:F1}";
     }
 
-    public class Distance
+    public class Distance( DistanceDim d )
     {
         // Note: when speed is m/s,  distance is expressed in km
         string[] UnitDistanceText { get; } = { "m", "mi", "km", "nm" };
@@ -109,9 +107,7 @@ namespace CumulusUtils
           { 1852,    1.15078,     1.852,   1.0}             // nm to m, km, mi
         };
 
-        public readonly DistanceDim Dim;
-
-        public Distance( DistanceDim d ) { Dim = d; }
+        public readonly DistanceDim Dim = d;
 
         public string Text() { return UnitDistanceText[ (int) Dim ]; }
         public string Text( WindDim d ) { return UnitDistanceText[ (int) d ]; }
@@ -124,7 +120,7 @@ namespace CumulusUtils
         public static string Format( float value ) => $"{value:F1}";
     }
 
-    public class Rain
+    public class Rain( RainDim w )
     {
         string[] UnitRainText { get; } = { "mm", "in" };
 
@@ -134,8 +130,7 @@ namespace CumulusUtils
       { 25.4, 1.0 }          // in to mm
     };
 
-        public readonly RainDim Dim;
-        public Rain( RainDim w ) { Dim = w; }
+        public readonly RainDim Dim = w;
 
         public string Text() { return UnitRainText[ (int) Dim ]; }
         public string Text( RainDim r ) { return UnitRainText[ (int) r ]; }
@@ -152,7 +147,7 @@ namespace CumulusUtils
         }
     }
 
-    public class Pressure
+    public class Pressure( PressureDim p )
     {
         string[] UnitPressureText { get; } = { "mb", "hPa", "inHg" };
 
@@ -163,8 +158,7 @@ namespace CumulusUtils
       { 33.8639, 33.8639, 1.0 }         // inHg to mb, hPa
     };
 
-        public readonly PressureDim Dim;
-        public Pressure( PressureDim p ) { Dim = p; }
+        public readonly PressureDim Dim = p;
 
         public string Text() { return UnitPressureText[ (int) Dim ]; }
         public string Text( PressureDim p ) { return UnitPressureText[ (int) p ]; }
@@ -181,7 +175,7 @@ namespace CumulusUtils
         }
     }
 
-    public class Height
+    public class Height( HeightDim d )
     {
         // Note: Height is either in feet or in meters
         string[] UnitHeightText { get; } = { "m", "ft" };
@@ -192,9 +186,7 @@ namespace CumulusUtils
             { 0.3048,  1.0     }    // feet to m
         };
 
-        public readonly HeightDim Dim;
-
-        public Height( HeightDim d ) { Dim = d; }
+        public readonly HeightDim Dim = d;
 
         public string Text() { return UnitHeightText[ (int) Dim ]; }
         public string Text( HeightDim d ) { return UnitHeightText[ (int) d ]; }

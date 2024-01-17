@@ -1,0 +1,19 @@
+@"<a rel='license' href='http://creativecommons.org/licenses/by-nc-nd/4.0/'><img alt='Creative Commons Licence' style='border-width:0' src='https://i.creativecommons.org/l/by-nc-nd/4.0/80x15.png' /></a><br/>This work is licensed under a <a rel='license' href='http://creativecommons.org/licenses/by-nc-nd/4.0/'>Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>.
+The tool is constructed in C# and javascript by &copy; Hans Rottier, on the basis of the Bootstrap toolkit. Licence may change in future. 
+<br/><br/>CumulusUtils is built in C# with the use of <a href='https://visualstudio.microsoft.com/vs/'>Microsoft Visual Studio</a> under the community Licence. The runtime system makes use of HTML and javascript (tools by MicroSoft, Mozilla and Google). The resulting HTML should pass <a href='https://validator.w3.org/'>the W3.org Markup Validation</a>. Please notify if any issue.
+<br/><br/>Use is made of the following software libraries: <br/><br/>
+<ul>
+<li><a href='https://github.com/cumulusmx/CumulusMX'>Cumulus</a> - License: GNU GPL V 3.0;</li>
+<li><a href='https://github.com/mcrossley/SteelSeries-Weather-Gauges'>Gauges by Mark Crossley (modified)</a> - License: GNU GPL V 2.0;<br/>
+<li><a href='https://github.com/mcrossley/SteelSeries-Weather-Gauges'>Steelseries by Gerrit Grunwald & Mark Crossley</a> - License: GNU GPL V 2.0;<br/>
+<li><a href='https://www.rgraph.net/'>RGraph</a> - License: MIT;<br/>
+<li><a href='https://www.highcharts.com/'>HighCharts</a> - License: <a href='https://creativecommons.org/licenses/by-nc/3.0/'>Creative Commons Attribution-NonCommercial 3.0</a> <a href='https://shop.highsoft.com/noncomform'>license</a>; </li>
+<li><a href='https://github.com/jquery/jquery'>jQuery</a> - License: MIT;</li>
+<li><a href='https://github.com/d3/d3'>d3</a> - License: BSD 3-Clause 'New' or 'Revised' License;</li>
+<li><a href='https://github.com/mourner'>suncalc</a> - License: BSD 2-Clause 'Simplified' License.</li>
+<li><a href='https://github.com/Leaflet/Leaflet'>Leaflet</a> - License: BSD 2-Clause 'Simplified' License;</li>
+<li><a href='https://www.yourweather.co.uk'>Yourweather.co.uk</a> - License: <a href='https://creativecommons.org/licenses/by-sa/4.0/deed.en'>Attribution-ShareAlike 4.0 International</a> License (used for predictions);</li>
+<li><a href='https://getbootstrap.com/'>Bootstrap</a> - License: <a href='https://github.com/twbs/bootstrap/blob/v4.4.1/LICENSE'>MIT</a>;</li>
+</ul>
+
+If I forgot anybody or anything or made the wrong interpretation or reference, please let me know and I will correct. You can contact me at the <a href='https://cumulus.hosiene.co.uk/viewforum.php?f=44'>Cumulus Support Forum</a>, user: HansR" +

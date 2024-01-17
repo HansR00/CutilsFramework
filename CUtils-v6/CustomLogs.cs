@@ -752,7 +752,7 @@ namespace CumulusUtils
     #region WebtagInfo
     public class WebtagInfo
     {
-        CuSupport Sup;
+        readonly CuSupport Sup;
 
         public WebtagInfo( CuSupport s )          // Constructor
         {
@@ -1686,8 +1686,6 @@ namespace CumulusUtils
             if ( a == -1 ) return s.Substring( 2, s.Length - 3 );
             else return s.Substring( 2, a - 2 );
         }
-
-        static readonly bool[] changeIndicator = new bool[] { };
 
         private readonly string[] TagUnit;
 

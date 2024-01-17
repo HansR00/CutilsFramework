@@ -1316,7 +1316,7 @@ namespace CumulusUtils
 
         #region Logarithmic Axis
 
-        private void GenerateLogarithmicHandlerScript( StringBuilder thisBuffer )
+        static private void GenerateLogarithmicHandlerScript( StringBuilder thisBuffer )
         {
             // Take care of possible negative values on the logarithmixc scale!!
             // https://www.highcharts.com/blog/snippets/alternative-maths-plotting-negative-values-logarithmic-axis/

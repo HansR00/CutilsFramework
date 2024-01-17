@@ -92,7 +92,7 @@ namespace CumulusUtils
                         Sup.LogTraceInfoMessage( $"Parsing User Charts: Evaluating Expression '{rawExpression}'." );
 
                         bool EquationSubstitution = false;
-                        tmp = Expression( rawExp.ToArray(), ref EquationSubstitution, false );
+                        tmp = Expression( Exp: rawExp.ToArray(), EquationSubstitution: ref EquationSubstitution, CommaPermitted: false );
 
                         // Repeated substitution is possible so loop while all nested substitutions are done
                         //

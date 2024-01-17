@@ -300,13 +300,13 @@ namespace CumulusUtils
 
                     FWIlist.Add( localFWI );
 
-                    Sup.LogTraceInfoMessage( $"   {localFWI.Date.ToString( "d" )}; {localFWI.T:F1}; {localFWI.Wind:F1}; {localFWI.Rain:F1}; " +
+                    Sup.LogTraceInfoMessage( $"   {localFWI.Date:d}; {localFWI.T:F1}; {localFWI.Wind:F1}; {localFWI.Rain:F1}; " +
                                         $"{localFWI.RH:F2}; {localFWI.Psat:F2}; {localFWI.VPD:F2}; " +
                                         $"{localFWI.dayFWI:F2}; {localFWI.DryPeriod:F0}; {localFWI.SmoothedFWI:F2}" );
 
                     if ( Analyse > DaysRequiredForHTML )
                     {
-                        af.WriteLine( $"{localFWI.Date.ToString( "d" )}{separator}{localFWI.T:F1}{separator}{localFWI.Wind:F1}{separator}{localFWI.Rain:F1}" +
+                        af.WriteLine( $"{localFWI.Date:d}{separator}{localFWI.T:F1}{separator}{localFWI.Wind:F1}{separator}{localFWI.Rain:F1}" +
                           $"{separator}{localFWI.RH:F2}{separator}{localFWI.Psat:F2}{separator}{localFWI.VPD:F2}{separator}{localFWI.dayFWI:F2}" +
                           $"{separator}{localFWI.DryPeriod:D}{separator}{localFWI.SmoothedFWI:F1}" );
                     }

@@ -616,7 +616,7 @@ namespace CumulusUtils
 
             StringBuilder sb = new StringBuilder();
 
-            sb.Append( "{" );
+            sb.Append( '{' );
 
             List<ExtraSensorslogValue> thisList;
             string VariableName;
@@ -670,7 +670,7 @@ namespace CumulusUtils
             } // Loop over ExtraSensors
 
             sb.Remove( sb.Length - 1, 1 );
-            sb.Append( "}" );
+            sb.Append( '}' );
 
             Esl.Dispose();
 

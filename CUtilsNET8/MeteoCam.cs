@@ -25,14 +25,9 @@ using System.Text;
 
 namespace CumulusUtils
 {
-    class MeteoCam
+    class MeteoCam( CuSupport s )
     {
-        readonly CuSupport Sup;
-
-        public MeteoCam( CuSupport s )
-        {
-            Sup = s;
-        }
+        readonly CuSupport Sup = s;
 
         public void GenerateMeteoCam()
         {

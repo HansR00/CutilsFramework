@@ -1,0 +1,91 @@
+/* CSS for SteelSeries Gauges
+ * Mark Crossley
+ * v2.5.0 - 03 Dec 2014
+ *
+ * 2.0.0CU - 8 September 2022: Addition of class odo
+ *
+ */
+
+.gauge {
+  padding: 5px;
+  text-align: center;
+  display: inline-block;
+  position: relative;
+}
+.gaugeSizeSml {
+  width: 181px;
+  height: 181px;
+}
+.gaugeSizeStd {
+  width: 221px;
+  height: 221px;
+}
+.gaugeSizeLrg {
+  width: 261px;
+  height: 261px;
+}
+.odo {
+  position: absolute;
+  top: 67%;
+  left: 50%;
+  transform: translateX(-50%);
+  -webkit-transform: translateX(-50%);
+}
+input[type='radio'] {
+  width: 15px;
+  height: auto;
+  position:relative;
+  vertical-align: -5%;
+}
+label {
+  height: 15px;
+  text-align: left;
+  font-size: 9px;
+  vertical-align: 15%;
+}
+.unitsTable {
+  display: table;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #CCF;
+  box-shadow: rgba(0,0,0,0.3) 2px 2px 2px;
+  border-radius: 4px;
+  text-align: left;
+  min-width: 260px;
+}
+.cellRight {
+  display: table-cell;
+  text-align: right;
+  font-size: 9px;
+  vertical-align: middle;
+}
+.credits {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 70%;
+  font-style: italic;
+  letter-spacing: 0.3em;
+}
+
+.ddimgtooltip{
+  z-index: 2000;
+  box-shadow: 3px 3px 5px #818181; /*shadow for CSS3 capable browsers.*/
+  border-radius: 10px;
+  display: none;
+  position: absolute;
+  border: 1px solid black;
+  background: white;
+  color: black;
+  padding: 0 7px 3px 7px;
+  font-family: sans-serif;
+  font-size: 10px;
+}
+.tipinfo{
+  text-align: left;
+  padding: 3px 0 3px 2px;
+}
+.tipimg{
+  width: 438px;   /* suggest 380 for wxgraphs */
+  height: 175px;  /* suggest 260 for wxgraphs */
+}

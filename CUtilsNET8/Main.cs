@@ -15,9 +15,10 @@
  *                               ChartsCompiler         (version 5.0)
  *                               Maintenance releases   (version 6.x) including CustomLogs
  *              Startdate : 16 november 2021 start of conversion to .NET 5, 6 and 7
+ *              Startdate : 15 january 2024 start of conversion to .NET 8
  *              
- * Environment: Raspberry Pi 3B+ and up
- *              Raspberry Pi OS  for testruns
+ * Environment: Raspberry Pi 4B and up
+ *              Raspberry Pi OS
  *              C# / Visual Studio / Windows for development
  * 
  * Files:       Main.cs

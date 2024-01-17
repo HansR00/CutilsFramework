@@ -87,12 +87,12 @@ namespace CumulusUtils
         readonly string[] MonthfileList;
         readonly string[] DaysOfMiracleAndWonder;
 
-        readonly DateTime AncientCumulus = new DateTime( 2004, 01, 27 );
+        //readonly DateTime AncientCumulus = new DateTime( 2004, 01, 27 );
 
         bool disposed;
         string filenameCopy;
 
-        int MaxErrors;
+        readonly int MaxErrors;
         int ErrorCount;
 
         bool MonthlyLogsRead;

@@ -37,6 +37,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Authentication;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using FluentFTP;
@@ -209,7 +210,7 @@ namespace CumulusUtils
                     try
                     {
 #pragma warning disable CS0642 // Possible mistaken empty statement
-                        using ( var ecdsa = new System.Security.Cryptography.ECDsaCng() ) ;
+                        using ( ECDsaCng ecdsa = new ECDsaCng() ) ;
 #pragma warning restore CS0642 // Possible mistaken empty statement
                     }
                     catch ( NotImplementedException )

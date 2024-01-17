@@ -1107,7 +1107,7 @@ namespace CumulusUtils
                 foreach ( string thisConc in Concentrations )  // Loop over PM2p5 and PM10  - bothe in their own JSON file
                 {
                     sb.Clear();
-                    sb.Append( $"{{" );
+                    sb.Append( '{' );
 
                     if ( thisList.Count != 0 )
                     {

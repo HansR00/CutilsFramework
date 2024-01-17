@@ -48,6 +48,7 @@ namespace CumulusUtils
         private readonly int TotalNrOfWebtags = 0;
 
         readonly CuSupport Sup;
+        private static readonly char[] separator = new char[] { ' ' };
 
         #region Constructor
         public CustomLogs( CuSupport s )
@@ -550,7 +551,7 @@ namespace CumulusUtils
             }
 
             sbRecent.Remove( sbRecent.Length - 1, 1 );
-            sbRecent.Append( "}" );
+            sbRecent.Append( '}' );
 
             using ( StreamWriter thisJSON = new StreamWriter( $"{Sup.PathUtils}{Sup.CustomLogsRecentJSON}", false, Encoding.UTF8 ) )
             {
@@ -560,7 +561,7 @@ namespace CumulusUtils
             if ( DoDailyAsWell )
             {
                 sbDaily.Remove( sbDaily.Length - 1, 1 );
-                sbDaily.Append( "}" );
+                sbDaily.Append( '}' );
 
                 using ( StreamWriter thisJSON = new StreamWriter( $"{Sup.PathUtils}{Sup.CustomLogsDailyJSON}", false, Encoding.UTF8 ) )
                 {
@@ -614,10 +615,10 @@ namespace CumulusUtils
                     if ( tmp.Date < Start ) continue;
 
                     ValuesAsText = thisLine.Substring( 15 );
-                    ValuesAsTextArray = ValuesAsText.Split( new char[] { ' ' } );
+                    ValuesAsTextArray = ValuesAsText.Split( separator );
                     tmp.Value = new List<double>();
 
-                    if ( thisLog.TagNames.Count() != ValuesAsTextArray.Count() )
+                    if ( thisLog.TagNames.Count != ValuesAsTextArray.Length )
                     {
                         if ( !WarningWritten )
                         {
@@ -710,10 +711,10 @@ namespace CumulusUtils
                 tmp.Date = DateTime.ParseExact( DateTimeText, "dd/MM/yy", CUtils.Inv );
 
                 ValuesAsText = thisLine.Substring( 9 );
-                ValuesAsTextArray = ValuesAsText.Split( new char[] { ' ' } );
+                ValuesAsTextArray = ValuesAsText.Split( separator );
                 tmp.Value = new List<double>();
 
-                if ( thisLog.TagNames.Count() != ValuesAsTextArray.Count() )
+                if ( thisLog.TagNames.Count != ValuesAsTextArray.Length )
                 {
                     if ( !WarningWritten )
                     {
@@ -752,7 +753,7 @@ namespace CumulusUtils
     #region WebtagInfo
     public class WebtagInfo
     {
-        CuSupport Sup;
+        readonly CuSupport Sup;
 
         public WebtagInfo( CuSupport s )          // Constructor
         {
@@ -1670,7 +1671,7 @@ namespace CumulusUtils
 
             if ( Start >= 0 )
             {
-                int b = s.IndexOf( ">", Start );
+                int b = s.IndexOf( '>', Start );
                 if ( b > Start ) { tmp = s.Substring( Start, b - Start + 1 ); Start = b + 1; }// startindex and length
                 else tmp = null;
             }
@@ -1687,7 +1688,7 @@ namespace CumulusUtils
             else return s.Substring( 2, a - 2 );
         }
 
-        static readonly bool[] changeIndicator = new bool[] { };
+        //static readonly bool[] changeIndicator = new bool[] { };
 
         private readonly string[] TagUnit;
 
