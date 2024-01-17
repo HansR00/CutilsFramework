@@ -1,7 +1,7 @@
 ﻿/*
  * CumulusUtils/Main
  *
- * © Copyright 2019-2023 Hans Rottier <hans.rottier@gmail.com>
+ * © Copyright 2019-2024 Hans Rottier <hans.rottier@gmail.com>
  *
  * The code of CumulusUtils is public domain and distributed under the  
  * Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
