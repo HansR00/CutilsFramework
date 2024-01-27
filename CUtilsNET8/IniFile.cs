@@ -248,6 +248,7 @@ namespace CumulusUtils
         }
 
         // *** Insert or modify a value in local cache ***
+        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Performance", "CA1853:Unnecessary call to 'Dictionary.ContainsKey(key)'", Justification = "<Pending>" )]
         public void SetValue( string SectionName, string Key, string Value )
         {
             // *** Lazy loading ***
@@ -291,7 +292,7 @@ namespace CumulusUtils
                 int l = hex.Length;
                 if ( l > 2 )
                 {
-                    sb.Append( hex.Substring( l - 2, 2 ) );
+                    sb.Append( hex.AsSpan( l - 2, 2 ) );
                 }
                 else
                 {

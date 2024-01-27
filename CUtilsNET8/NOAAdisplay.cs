@@ -33,19 +33,14 @@ namespace CumulusUtils
 {
     // As the NOAA reports are written by Cumulus, the only thing I need to do is display
     // and as such be able to get rid the PHP procedures
-    class NOAAdisplay
+    class NOAAdisplay( CuSupport s )
     {
-        readonly CuSupport Sup;
+        readonly CuSupport Sup = s;
 
         private int[] MonthsNotPresentYearMin;
         private int[] MonthsNotPresentYearMax;
         private int[] MonthsNotPresentAllYears;
         private readonly int[] tmpIntArray = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
-
-        public NOAAdisplay( CuSupport s )
-        {
-            Sup = s;
-        }
 
         public void GenerateNOAATxtfile( List<DayfileValue> Thislist )
         {
@@ -63,7 +58,9 @@ namespace CumulusUtils
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.NOAAOutputFilename}", false, Encoding.UTF8 ) )
             {
-                of.WriteLine( $"{Sup.GenjQueryIncludestring()}" );
+                of.WriteLine( CuSupport.CopyrightForGeneratedFiles() );
+
+                of.WriteLine( $"{CuSupport.GenjQueryIncludestring()}" );
 
                 of.WriteLine( "<script>" );
                 of.WriteLine( "console.log('Module NOAA...');" );
@@ -151,21 +148,6 @@ namespace CumulusUtils
                 of.WriteLine( "      $( '#NOAAplaceholder' ).html( response );" );
                 of.WriteLine( "  });" );
                 of.WriteLine( "};" );
-
-                //of.WriteLine( "function DisplayNOAAreport(filename)" );
-                //of.WriteLine( "{" );
-                //of.WriteLine( "  var NOAAToRead = new XMLHttpRequest();" );
-                //of.WriteLine( "  NOAAToRead.open('GET', filename, false);" );
-                //of.WriteLine( "  NOAAToRead.onreadystatechange = function()" );
-                //of.WriteLine( "  {" );
-                //of.WriteLine( "    if (NOAAToRead.readyState === 4 && NOAAToRead.status === 200)" );
-                //of.WriteLine( "    {" );
-                //of.WriteLine( "      // console.log('NOAA Get response: ' + this.responseText);" );
-                //of.WriteLine( "      $('#NOAAplaceholder').html(this.responseText);" );
-                //of.WriteLine( "    }" );
-                //of.WriteLine( "  }" );
-                //of.WriteLine( "  NOAAToRead.send(null);" );
-                //of.WriteLine( "}" );
 
                 of.WriteLine( "function SetMonthsDisabled()" );
                 of.WriteLine( "{" );

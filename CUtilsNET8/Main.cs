@@ -155,7 +155,6 @@ namespace CumulusUtils
         private bool DoRecords;
         private bool DoDayRecords;
         private bool DoNOAA;
-        private bool DoCheckOnly;
         private bool DoForecast;
         private bool DoUserReports;
         private bool DoStationMap;
@@ -167,11 +166,16 @@ namespace CumulusUtils
         private bool DoCustomLogs;
 
         public static StringComparison Cmp = StringComparison.OrdinalIgnoreCase;
+
         public static CultureInfo Inv = CultureInfo.InvariantCulture;
         public static CultureInfo ThisCulture;
 
         public static CuSupport Sup { get; set; }
         public static InetSupport Isup { get; set; }
+
+        //public static CultureInfo Inv { get => inv; set => inv = value; }
+        //public static CultureInfo ThisCulture { get => thisCulture; set => thisCulture = value; }
+        //public static StringComparison Cmp { get => cmp; set => cmp = value; }
 
         public static bool Thrifty { get; private set; }
         public static bool ThriftyRecordsDirty { get; set; }
@@ -202,7 +206,6 @@ namespace CumulusUtils
         public static bool HasMiscGraphMenu { get; set; }
         public static bool HasStationMapMenu { get; set; }
         public static bool HasMeteoCamMenu { get; set; }
-        public static bool CheckOnlyAsked { get; set; }
 
         // Check for presence of optional sensors 
         public static bool HasSolar { get; set; }
@@ -266,19 +269,6 @@ namespace CumulusUtils
                 }
 
                 Sup = new CuSupport();
-
-                // So, here we go... for FluentFTP
-                // The only time CuSupport is instantiated; Can't be in the different classes
-                //if ( Sup.GetUtilsIniValue( "FTP site", "FtpLog", "Off" ).Equals( "On", Cmp ) )
-                //{
-                //    FtpTrace.LogPassword = false;
-                //    FtpTrace.LogUserName = false;
-                //    FtpTrace.LogIP = false;
-
-                //    FtpListener = new TextWriterTraceListener( $"utils/utilslog/{DateTime.Now.ToString( "yyMMddHHmm", CUtils.Inv )}FTPlog.txt" );
-                //    FtpTrace.AddListener( FtpListener );
-                //}
-
                 Isup = new InetSupport( Sup );
 
                 Sup.LogDebugMessage( "CumulusUtils : ----------------------------" );
@@ -304,16 +294,6 @@ namespace CumulusUtils
                 ThriftyWindGraphsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "WindGraphsPeriod", "1" ), CUtils.Inv );
                 ThriftySolarGraphsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "SolarGraphsPeriod", "1" ), CUtils.Inv );
                 ThriftyMiscGraphsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "MiscGraphsPeriod", "1" ), CUtils.Inv );
-
-                if ( Environment.OSVersion.Platform.Equals( PlatformID.Unix ) )
-                {
-                    Sup.LogDebugMessage( "Checking Mono Version on Linux/Unix" );
-                    SysInfo tmp = new SysInfo( Sup, Isup );
-
-                    CanDoMap = tmp.CheckMonoVersion();
-                }
-                else
-                    CanDoMap = true;
 
                 DoModular = Sup.GetUtilsIniValue( "General", "DoModular", "false" ).Equals( "true", Cmp );
                 ModulePath = Sup.GetUtilsIniValue( "General", "ModulePath", "" );
@@ -404,7 +384,7 @@ namespace CumulusUtils
                 Environment.Exit( 0 );
             }
             if ( !DoPwsFWI && !DoTop10 && !DoSystemChk && !DoGraphs && !DoCreateMap && !DoYadr && !DoRecords && !DoCompileOnly && !DoUserAskedData && !DoCustomLogs &&
-                !DoNOAA && !DoDayRecords && !DoCheckOnly && !DoWebsite && !DoForecast && !DoUserReports && !DoStationMap && !DoMeteoCam && !DoAirLink && !DoExtraSensors )
+                !DoNOAA && !DoDayRecords && !DoWebsite && !DoForecast && !DoUserReports && !DoStationMap && !DoMeteoCam && !DoAirLink && !DoExtraSensors )
             {
                 Sup.LogTraceErrorMessage( "CumulusUtils : No Arguments, nothing to do. Exiting." );
                 Sup.LogTraceErrorMessage( "CumulusUtils : Exiting Main" );
@@ -414,8 +394,8 @@ namespace CumulusUtils
                 Console.WriteLine( "  utils/bin/cumulusutils.exe \n" +
                                   "      [SysInfo][Forecast][StationMap][UserReports][MeteoCam]\n" +
                                   "      [pwsFWI][Top10][Graphs][Yadr][Records][UserAskedData]\n" +
-                                  "      [NOAA][DayRecords][AirLink][CompileOnly][ExtraSensors]\n" +
-                                  "      | CheckOnly" );
+                                  "      [NOAA][DayRecords][AirLink][CompileOnly][ExtraSensors]\n" );
+                
                 Console.WriteLine( "" );
                 Console.WriteLine( "OR (in case you use the website generator):\n" );
                 Console.WriteLine( "  utils/bin/cumulusutils.exe [Thrifty] Website\n" );
@@ -595,7 +575,7 @@ namespace CumulusUtils
             // These were the tasks without [weather]data.
             // Now do the datadriven tasks
             //
-            if ( DoPwsFWI || DoTop10 || DoGraphs || DoYadr || DoRecords || DoNOAA || DoDayRecords || DoCheckOnly || DoWebsite || DoCreateMap || DoUserAskedData )
+            if ( DoPwsFWI || DoTop10 || DoGraphs || DoYadr || DoRecords || DoNOAA || DoDayRecords || DoWebsite || DoCreateMap || DoUserAskedData )
             {
                 //StartOfObservations = MainList.Select( x => x.ThisDate ).Min();
                 if ( DoPwsFWI )
@@ -740,7 +720,7 @@ namespace CumulusUtils
                 // Maps is done here to prevent it being done every sysinfo or other dataindependent module!!
                 //
 
-                if ( CanDoMap && MapParticipant || DoWebsite )
+                if ( MapParticipant || DoWebsite )
                 {
                     string retval;
 
@@ -770,7 +750,7 @@ namespace CumulusUtils
 
                             //The Map is always downloaded without the jQuery include. If required add it here
                             const string tmpMap = "tmpMaps.txt";
-                            string jQueryString = Sup.GenjQueryIncludestring();
+                            string jQueryString = CuSupport.GenjQueryIncludestring();
 
                             if ( !string.IsNullOrEmpty( jQueryString ) )
                             {
@@ -853,7 +833,6 @@ namespace CumulusUtils
                         else
                         {
                             Sup.LogDebugMessage( $"Errors in Charts definition. See logfile, please correct and run again." );
-                            Sup.LogTraceErrorMessage( $"Errors in Charts definition. See logfile, please correct and run again." );
                         }
                     }
 
@@ -947,7 +926,6 @@ namespace CumulusUtils
                 else
                 {
                     Sup.LogDebugMessage( $"Errors in Charts definition. See logfile, please correct and run again." );
-                    Sup.LogTraceErrorMessage( $"Errors in Charts definition. See logfile, please correct and run again." );
                 }
 
 #if TIMING
@@ -1123,7 +1101,7 @@ namespace CumulusUtils
             {
                 Sup.LogDebugMessage( $" CommandLineArgs : handling arg: {s}" );
 
-                if ( s.Equals( "Website", CUtils.Cmp ) )
+                if ( s.Equals( "Website", Cmp ) )
                 {
                     DoSystemChk = true;
                     DoTop10 = true;
@@ -1146,35 +1124,34 @@ namespace CumulusUtils
                 }
                 else
                 {
-                    if ( s.Equals( "Thrifty", CUtils.Cmp ) )
+                    if ( s.Equals( "Thrifty", Cmp ) )
                     {
                         Thrifty = true;
                     }
                     else
                     {
-                        if ( s.Equals( "Top10", CUtils.Cmp ) ) DoTop10 = true;
-                        if ( s.Equals( "pwsFWI", CUtils.Cmp ) ) DoPwsFWI = true;
-                        if ( s.Equals( "Sysinfo", CUtils.Cmp ) ) DoSystemChk = true;
-                        if ( s.Equals( "Graphs", CUtils.Cmp ) ) DoGraphs = true;
-                        if ( s.Equals( "CreateMap", CUtils.Cmp ) ) DoCreateMap = true;    // Undocumented feature only for the keeper of the map
-                        if ( s.Equals( "Yadr", CUtils.Cmp ) ) DoYadr = true;
-                        if ( s.Equals( "Records", CUtils.Cmp ) ) DoRecords = true;
-                        if ( s.Equals( "NOAA", CUtils.Cmp ) ) DoNOAA = true;
-                        if ( s.Equals( "DayRecords", CUtils.Cmp ) ) DoDayRecords = true;
-                        if ( s.Equals( "CheckOnly", CUtils.Cmp ) ) DoCheckOnly = true;
-                        if ( s.Equals( "Forecast", CUtils.Cmp ) ) DoForecast = true;
-                        if ( s.Equals( "UserReports", CUtils.Cmp ) ) DoUserReports = true;
-                        if ( s.Equals( "StationMap", CUtils.Cmp ) ) DoStationMap = true;
-                        if ( s.Equals( "MeteoCam", CUtils.Cmp ) ) DoMeteoCam = true;
-                        if ( s.Equals( "AirLink", CUtils.Cmp ) ) DoAirLink = true;
-                        if ( s.Equals( "CompileOnly", CUtils.Cmp ) ) DoCompileOnly = true;
-                        if ( s.Equals( "ExtraSensors", CUtils.Cmp ) )
+                        if ( s.Equals( "Top10", Cmp ) ) DoTop10 = true;
+                        if ( s.Equals( "pwsFWI", Cmp ) ) DoPwsFWI = true;
+                        if ( s.Equals( "Sysinfo", Cmp ) ) DoSystemChk = true;
+                        if ( s.Equals( "Graphs", Cmp ) ) DoGraphs = true;
+                        if ( s.Equals( "CreateMap", Cmp ) ) DoCreateMap = true;    // Undocumented feature only for the keeper of the map
+                        if ( s.Equals( "Yadr", Cmp ) ) DoYadr = true;
+                        if ( s.Equals( "Records", Cmp ) ) DoRecords = true;
+                        if ( s.Equals( "NOAA", Cmp ) ) DoNOAA = true;
+                        if ( s.Equals( "DayRecords", Cmp ) ) DoDayRecords = true;
+                        if ( s.Equals( "Forecast", Cmp ) ) DoForecast = true;
+                        if ( s.Equals( "UserReports", Cmp ) ) DoUserReports = true;
+                        if ( s.Equals( "StationMap", Cmp ) ) DoStationMap = true;
+                        if ( s.Equals( "MeteoCam", Cmp ) ) DoMeteoCam = true;
+                        if ( s.Equals( "AirLink", Cmp ) ) DoAirLink = true;
+                        if ( s.Equals( "CompileOnly", Cmp ) ) DoCompileOnly = true;
+                        if ( s.Equals( "ExtraSensors", Cmp ) )
                         {
                             DoExtraSensors = true;
                             DoCompileOnly = true;  // Implicit for Extra Sensors
                         }
-                        if ( s.Equals( "UserAskedData", CUtils.Cmp ) ) DoUserAskedData = true;
-                        if ( s.Equals( "CustomLogs", CUtils.Cmp ) )
+                        if ( s.Equals( "UserAskedData", Cmp ) ) DoUserAskedData = true;
+                        if ( s.Equals( "CustomLogs", Cmp ) )
                         {
                             DoCustomLogs = true;
                             DoCompileOnly = true;  // Implicit for Custom Logs

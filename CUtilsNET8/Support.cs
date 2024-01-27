@@ -39,7 +39,7 @@ namespace CumulusUtils
     public class CuSupport : IDisposable
     {
         // Is it a version number beta shown at users?
-        const string beta = "beta 1";
+        const string beta = "alpha 2";
 
         #region declarations
         public Wind StationWind { get; set; }
@@ -300,7 +300,7 @@ namespace CumulusUtils
             if ( string.IsNullOrEmpty( tmp ) )
                 return ( tmp );
 
-            if ( javaScript && tmp.IndexOf( '\'' ) >= 0 )
+            if ( javaScript && tmp.Contains( '\'' ) )
             {
                 char[] separators = new char[] { '\'' };
                 string[] temp = tmp.Split( separators, StringSplitOptions.None );
@@ -431,11 +431,26 @@ namespace CumulusUtils
 
         public static string Copyright() => "&copy; Hans Rottier";
 
+        public static StringBuilder CopyrightForGeneratedFiles()
+        {
+            StringBuilder result = new StringBuilder();
+
+            result.AppendLine( "<!--" );
+            result.AppendLine( $" This file is generated as part of CumulusUtils - {DateTime.Now}" );
+            result.AppendLine( " This header must not be removed and the user must comply to the Creative Commons 4.0 license" );
+            result.AppendLine( " The license conditions imply the non-commercial use of HighCharts for which the user is held responsible" );
+            result.AppendLine( $" © Copyright 2019 - {DateTime.Now:yyyy} Hans Rottier <hans.rottier@gmail.com>" );
+            result.AppendLine( " See also License conditions of CumulusUtils: https://meteo-wagenborgen.nl/" );
+            result.AppendLine( "-->" );
+
+            return result;
+        }
+
         #endregion
 
         #region Methods Includes
 
-        public string GenjQueryIncludestring() => ( CUtils.DojQueryInclude && !CUtils.DoWebsite ) ?
+        public static string GenjQueryIncludestring() => ( CUtils.DojQueryInclude && !CUtils.DoWebsite ) ?
                 "<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js\" type=\"text/javascript\"></script>" : "";
 
         public StringBuilder GenHighchartsIncludes()
@@ -478,7 +493,7 @@ namespace CumulusUtils
             return sb;
         }
 
-        public StringBuilder GenLeafletIncludes()
+        public static StringBuilder GenLeafletIncludes()
         {
             StringBuilder sb = new StringBuilder();
 
@@ -563,6 +578,7 @@ namespace CumulusUtils
             {
                 // Shut up the default listener
                 LogDebugMessage( "CumulusUtils Initial: Shutting down the default listener" );
+                LogTraceInfoMessage( "CumulusUtils Initial: Shutting down the default listener" );
                 Trace.Listeners.RemoveAt( 0 );
             }
         }

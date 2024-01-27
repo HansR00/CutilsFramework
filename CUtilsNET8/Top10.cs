@@ -482,6 +482,8 @@ namespace CumulusUtils
 
             using ( StreamWriter of = new( $"{Sup.PathUtils}{Sup.Top10OutputFilename}", false, Encoding.UTF8 ) )
             {
+                of.WriteLine( CuSupport.CopyrightForGeneratedFiles() );
+
                 of.WriteLine( "<style>" );
                 of.WriteLine( "#report{" );
                 of.WriteLine( "  font-family: arial;" );

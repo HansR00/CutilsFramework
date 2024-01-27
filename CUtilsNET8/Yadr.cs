@@ -164,7 +164,9 @@ namespace CumulusUtils
         {
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}Yadr.txt", false, Encoding.UTF8 ) )
             {
-                of.WriteLine( $"{Sup.GenjQueryIncludestring()}" );
+                of.WriteLine( CuSupport.CopyrightForGeneratedFiles() );
+
+                of.WriteLine( $"{CuSupport.GenjQueryIncludestring()}" );
                 of.WriteLine( "<script>" );
                 of.WriteLine( "console.log( 'Module YADR...' );" );
 
@@ -331,6 +333,8 @@ namespace CumulusUtils
 
                 using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}YadrTemp{thisYear}.txt", false, Encoding.UTF8 ) )
                 {
+                    of.WriteLine( CuSupport.CopyrightForGeneratedFiles() );
+
                     of.WriteLine( $"<h3 style='text-align:center;'>{Sup.GetCUstringValue( "Yadr", "TempTitle", "Daily Values Temperature", false )} " +
                       $"({Sup.StationTemp.Text()})</h3><br/>" );
                     of.WriteLine( "<table class=\"CUtable\"><tbody>" );
@@ -505,6 +509,8 @@ namespace CumulusUtils
 
                 using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}YadrRain{thisYear}.txt", false, Encoding.UTF8 ) )
                 {
+                    of.WriteLine( CuSupport.CopyrightForGeneratedFiles() );
+
                     of.WriteLine( $"<h3 style='text-align:center;'>{Sup.GetCUstringValue( "Yadr", "RainTitle", "Daily Values Rain", false )} ({Sup.StationRain.Text()})</h3><br/>" );
 
                     of.WriteLine( "<table class='CUtable'><tbody>" );
@@ -669,6 +675,8 @@ namespace CumulusUtils
 
                 using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}YadrWind{thisYear}.txt", false, Encoding.UTF8 ) )
                 {
+                    of.WriteLine( CuSupport.CopyrightForGeneratedFiles() );
+
                     of.WriteLine( $"<h3 style='text-align:center;'>{Sup.GetCUstringValue( "Yadr", "WindTitle", "Daily Values Wind Speed", false )} ({Sup.StationWind.Text()})</h3><br/>" );
 
                     of.WriteLine( "<table class=\"CUtable\"><tbody>" );
@@ -832,6 +840,8 @@ namespace CumulusUtils
 
                 using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}YadrWindrun{thisYear}.txt", false, Encoding.UTF8 ) )
                 {
+                    of.WriteLine( CuSupport.CopyrightForGeneratedFiles() );
+
                     of.WriteLine( $"<h3 style='text-align:center;'>{Sup.GetCUstringValue( "Yadr", "WindrunTitle", "Daily Windrun values", false )} ({Sup.StationDistance.Text()})</h3><br/>" );
 
                     of.WriteLine( "<table class=\"CUtable\"><tbody>" );
@@ -990,6 +1000,8 @@ namespace CumulusUtils
 
                 using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}YadrPress{thisYear}.txt", false, Encoding.UTF8 ) )
                 {
+                    of.WriteLine( CuSupport.CopyrightForGeneratedFiles() );
+
                     of.WriteLine( $"<h3 style='text-align:center;'>{Sup.GetCUstringValue( "Yadr", "PressionTitle", "Daily Values Pressure", false )} ({Sup.StationPressure.Text()})</h3><br/>" );
 
                     of.WriteLine( "<table class=\"CUtable\"><tbody>" );
@@ -1171,6 +1183,8 @@ namespace CumulusUtils
 
                 using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}YadrHum{thisYear}.txt", false, Encoding.UTF8 ) )
                 {
+                    of.WriteLine( CuSupport.CopyrightForGeneratedFiles() );
+
                     of.WriteLine( $"<h3 style='text-align:center;'>{Sup.GetCUstringValue( "Yadr", "HumTitle", "Daily Values Relative Humidity", false )} (%)</h3><br/>" );
 
                     of.WriteLine( "<table class=\"CUtable\"><tbody>" );

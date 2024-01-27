@@ -124,11 +124,13 @@ namespace CumulusUtils
 
     public class Airlinklog : IDisposable
     {
-        private readonly AirlinklogType type;
+        //private readonly AirlinklogType type;
         private readonly CuSupport Sup;
         private readonly bool IgnoreDataErrors;
         private readonly string[] enumFieldTypeNames;
         private readonly string[] AirlinklogList;
+
+        string[] lines;
 
         private bool disposed;
         private string filenameCopy;
@@ -138,8 +140,6 @@ namespace CumulusUtils
 
         public Airlinklog( CuSupport s )
         {
-            string line;
-
             Sup = s;
             Sup.LogDebugMessage( $"Airlinklog constructor: Using fixed path: | data/ |; file: | *log.txt" );
 
@@ -154,38 +154,43 @@ namespace CumulusUtils
             else
                 return;
 
-            if ( File.Exists( filenameCopy ) )
-                File.Delete( filenameCopy );
+            if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
             File.Copy( AirlinklogList[ 0 ], filenameCopy );
 
-            // Not sure about encoding of this file, let it be handled by the system. No presumtions.
-            //
-            using ( StreamReader mf = new StreamReader( filenameCopy ) )
-            {
-                Sup.LogTraceVerboseMessage( $"Airlinklog constructor: Working on: {filenameCopy}" );
+            lines = File.ReadAllLines( filenameCopy );
 
-                line = mf.ReadLine();
+            Sup.LogDebugMessage( "Airlinklog constructor: Detecting Separators..." );
+            Sup.DetectSeparators( lines[ 0 ] );
 
-                if ( line[ 2 ] == '-' && line[ 8 ] == ';' )
-                    type = AirlinklogType.DashSemicolonComma;
-                else if ( line[ 2 ] == '/' && line[ 8 ] == ';' )
-                    type = AirlinklogType.SlashSemicolonComma;
-                else if ( line[ 2 ] == '.' && line[ 8 ] == ';' )
-                    type = AirlinklogType.PointSemicolonComma;
-                else if ( line[ 2 ] == '-' && line[ 8 ] == ',' )
-                    type = AirlinklogType.DashCommaPoint;
-                else if ( line[ 2 ] == '/' && line[ 8 ] == ',' )
-                    type = AirlinklogType.SlashCommaPoint;
-                else
-                {
-                    Sup.LogTraceErrorMessage( "Airlinklog constructor: Internal Error - Unkown format of inputfile. Please notify programmer." );
-                    Environment.Exit( 0 );
-                }
-            }
+
+            //// Not sure about encoding of this file, let it be handled by the system. No presumtions.
+            ////
+            //using ( StreamReader mf = new StreamReader( filenameCopy ) )
+            //{
+            //    Sup.LogTraceVerboseMessage( $"Airlinklog constructor: Working on: {filenameCopy}" );
+
+            //    line = mf.ReadLine();
+
+            //    if ( line[ 2 ] == '-' && line[ 8 ] == ';' )
+            //        type = AirlinklogType.DashSemicolonComma;
+            //    else if ( line[ 2 ] == '/' && line[ 8 ] == ';' )
+            //        type = AirlinklogType.SlashSemicolonComma;
+            //    else if ( line[ 2 ] == '.' && line[ 8 ] == ';' )
+            //        type = AirlinklogType.PointSemicolonComma;
+            //    else if ( line[ 2 ] == '-' && line[ 8 ] == ',' )
+            //        type = AirlinklogType.DashCommaPoint;
+            //    else if ( line[ 2 ] == '/' && line[ 8 ] == ',' )
+            //        type = AirlinklogType.SlashCommaPoint;
+            //    else
+            //    {
+            //        Sup.LogTraceErrorMessage( "Airlinklog constructor: Internal Error - Unkown format of inputfile. Please notify programmer." );
+            //        Environment.Exit( 0 );
+            //    }
+            //}
+            //Sup.LogTraceInfoMessage( $"Airlinklog constructor: AirlinklogType is {type}" );
 
             File.Delete( filenameCopy );
 
-            Sup.LogTraceInfoMessage( $"Airlinklog constructor: AirlinklogType is {type}" );
             enumFieldTypeNames = Enum.GetNames( typeof( AirlinklogFieldName ) );
             IgnoreDataErrors = Sup.GetUtilsIniValue( "General", "IgnoreDataErrors", "true" ).Equals( "true", CUtils.Cmp );
 
@@ -213,7 +218,6 @@ namespace CumulusUtils
             //
             Sup.LogDebugMessage( $"ReadAirlinklog: start." );
 
-            string line;
             bool NextFileTried = false;
             bool PeriodComplete = false;
 
@@ -222,7 +226,7 @@ namespace CumulusUtils
             Sup.SetStartAndEndForData( out DateTime timeStart, out DateTime timeEnd );
             Sup.LogDebugMessage( $"AirLinklog: timeStart = {timeStart}; timeEnd = {timeEnd}" );
 
-            AirlinklogValue tmp;
+            AirlinklogValue tmp = new AirlinklogValue();
             MainAirLinkList = new List<AirlinklogValue>();
 
             Filename = $"data/AirLink{timeStart:yyyy}{timeStart:MM}log.txt";
@@ -240,22 +244,32 @@ namespace CumulusUtils
                 if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
                 File.Copy( Filename, filenameCopy );
 
-                using ( StreamReader af = new StreamReader( filenameCopy ) )
-                {
-                    line = ReadLine( af, SanityCheck: true );
+                lines = File.ReadAllLines( filenameCopy );
 
-                    // Loop over all lines in file
-                    do
-                    {
-                        // OK, continue here : check date and create only the list  we need (actually only read the files we need
-                        tmp = SetValues( line, timeStart );
-                        if ( tmp.Valid )
-                            MainAirLinkList.Add( tmp );
-                        if ( tmp.ThisDate >= timeEnd )
-                            break; // we have our set of data required
-                        line = ReadLine( af, false );
-                    } while ( !string.IsNullOrEmpty( line ) );
-                } // End Using the AirLink Log to Read
+                foreach ( string line in lines )
+                {
+                    tmp = SetValues( Sup.ChangeSeparators( line ), timeStart );
+
+                    // valid is a consequence of errors in the datafile while the user expressed the wish to continue
+                    // through the ini parameter 'IgnoreDataErrors=true'
+                    if ( tmp.Valid ) MainAirLinkList.Add( tmp );
+                }
+
+                //using ( StreamReader af = new StreamReader( filenameCopy ) )
+                //{
+                //    line = ReadLine( af, SanityCheck: true );
+
+                //    // Loop over all lines in file
+                //    do
+                //    {
+                //        // OK, continue here : check date and create only the list  we need (actually only read the files we need
+                //        tmp = SetValues( line, timeStart );
+
+                //        if ( tmp.Valid ) MainAirLinkList.Add( tmp );
+                //        if ( tmp.ThisDate >= timeEnd ) break;           // we have our set of data required
+                //        line = ReadLine( af, false );
+                //    } while ( !string.IsNullOrEmpty( line ) );
+                //} // End Using the AirLink Log to Read
 
                 if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
 
@@ -284,98 +298,98 @@ namespace CumulusUtils
             return MainAirLinkList;
         } // End ReadAirlinklog
 
-        private string ReadLine( StreamReader af, bool SanityCheck )
-        {
-            StringBuilder tmpLine = new StringBuilder();
+        //private string ReadLine( StreamReader af, bool SanityCheck )
+        //{
+        //    StringBuilder tmpLine = new StringBuilder();
 
-            if ( af.EndOfStream )
-            {
-                Sup.LogTraceInfoMessage( "Airlinklog : EOF detected" ); // nothing to do;
-            }
-            else
-            {
-                bool SeparatorInconsistencyFound = false;
+        //    if ( af.EndOfStream )
+        //    {
+        //        Sup.LogTraceInfoMessage( "Airlinklog : EOF detected" ); // nothing to do;
+        //    }
+        //    else
+        //    {
+        //        bool SeparatorInconsistencyFound = false;
 
-                tmpLine.Append( af.ReadLine() );
+        //        tmpLine.Append( af.ReadLine() );
 
-                if ( SanityCheck )
-                {
-                    // Do a sanity check on the presence of the correct separators which we determined when starting the reading process
-                    //
-                    switch ( type )
-                    {
-                        case AirlinklogType.DashSemicolonComma:
-                            if ( !( ( tmpLine[ 2 ] == '-' ) && ( tmpLine[ 8 ] == ';' ) ) )
-                                SeparatorInconsistencyFound = true;
-                            break;
+        //        if ( SanityCheck )
+        //        {
+        //            // Do a sanity check on the presence of the correct separators which we determined when starting the reading process
+        //            //
+        //            switch ( type )
+        //            {
+        //                case AirlinklogType.DashSemicolonComma:
+        //                    if ( !( ( tmpLine[ 2 ] == '-' ) && ( tmpLine[ 8 ] == ';' ) ) )
+        //                        SeparatorInconsistencyFound = true;
+        //                    break;
 
-                        case AirlinklogType.PointSemicolonComma:
-                            if ( !( ( tmpLine[ 2 ] == '.' ) && ( tmpLine[ 8 ] == ';' ) ) )
-                                SeparatorInconsistencyFound = true;
-                            break;
+        //                case AirlinklogType.PointSemicolonComma:
+        //                    if ( !( ( tmpLine[ 2 ] == '.' ) && ( tmpLine[ 8 ] == ';' ) ) )
+        //                        SeparatorInconsistencyFound = true;
+        //                    break;
 
-                        case AirlinklogType.SlashSemicolonComma:
-                            if ( !( ( tmpLine[ 2 ] == '/' ) && ( tmpLine[ 8 ] == ';' ) ) )
-                                SeparatorInconsistencyFound = true;
-                            break;
+        //                case AirlinklogType.SlashSemicolonComma:
+        //                    if ( !( ( tmpLine[ 2 ] == '/' ) && ( tmpLine[ 8 ] == ';' ) ) )
+        //                        SeparatorInconsistencyFound = true;
+        //                    break;
 
-                        case AirlinklogType.DashCommaPoint:
-                            if ( !( ( tmpLine[ 2 ] == '-' ) && ( tmpLine[ 8 ] == ',' ) ) )
-                                SeparatorInconsistencyFound = true;
-                            break;
+        //                case AirlinklogType.DashCommaPoint:
+        //                    if ( !( ( tmpLine[ 2 ] == '-' ) && ( tmpLine[ 8 ] == ',' ) ) )
+        //                        SeparatorInconsistencyFound = true;
+        //                    break;
 
-                        case AirlinklogType.SlashCommaPoint:
-                            if ( !( ( tmpLine[ 2 ] == '/' ) && ( tmpLine[ 8 ] == ',' ) ) )
-                                SeparatorInconsistencyFound = true;
-                            break;
+        //                case AirlinklogType.SlashCommaPoint:
+        //                    if ( !( ( tmpLine[ 2 ] == '/' ) && ( tmpLine[ 8 ] == ',' ) ) )
+        //                        SeparatorInconsistencyFound = true;
+        //                    break;
 
-                        default:
-                            // Should never be here
-                            SeparatorInconsistencyFound = true;
-                            break;
-                    }
-                }
+        //                default:
+        //                    // Should never be here
+        //                    SeparatorInconsistencyFound = true;
+        //                    break;
+        //            }
+        //        }
 
-                if ( SeparatorInconsistencyFound )
-                {
-                    Sup.LogTraceErrorMessage( $"Airlinklog: Illegal part of the code, should never be here, FATAL ERROR!" );
-                    Sup.LogTraceErrorMessage( $"Airlinklog: Separator Inconsistency in {filenameCopy.Remove( 0, 5 )} found, FATAL ERROR!" );
-                    Sup.LogTraceErrorMessage( $"Airlinklog: Please check {filenameCopy.Remove( 0, 5 )} and the data directory." );
-                }
-                else
-                {
-                    /*
-                     * make a uniform line to read: convert all to SlashCommaPoint
-                     */
-                    if ( type == AirlinklogType.DashSemicolonComma )
-                    {
-                        tmpLine[ 2 ] = '/';
-                        tmpLine[ 5 ] = '/';
-                        tmpLine.Replace( ',', '.' );
-                        tmpLine.Replace( ';', ',' );
-                    }
-                    else if ( type == AirlinklogType.PointSemicolonComma )
-                    {
-                        tmpLine[ 2 ] = '/';
-                        tmpLine[ 5 ] = '/';
-                        tmpLine.Replace( ',', '.' );
-                        tmpLine.Replace( ';', ',' );
-                    }
-                    else if ( type == AirlinklogType.SlashSemicolonComma )
-                    {
-                        tmpLine.Replace( ',', '.' );
-                        tmpLine.Replace( ';', ',' );
-                    }
-                    else if ( type == AirlinklogType.DashCommaPoint )
-                    {
-                        tmpLine[ 2 ] = '/';
-                        tmpLine[ 5 ] = '/';
-                    }
-                }// NO Separator Inconsistency
-            } // Not EOF
+        //        if ( SeparatorInconsistencyFound )
+        //        {
+        //            Sup.LogTraceErrorMessage( $"Airlinklog: Illegal part of the code, should never be here, FATAL ERROR!" );
+        //            Sup.LogTraceErrorMessage( $"Airlinklog: Separator Inconsistency in {filenameCopy.Remove( 0, 5 )} found, FATAL ERROR!" );
+        //            Sup.LogTraceErrorMessage( $"Airlinklog: Please check {filenameCopy.Remove( 0, 5 )} and the data directory." );
+        //        }
+        //        else
+        //        {
+        //            /*
+        //             * make a uniform line to read: convert all to SlashCommaPoint
+        //             */
+        //            if ( type == AirlinklogType.DashSemicolonComma )
+        //            {
+        //                tmpLine[ 2 ] = '/';
+        //                tmpLine[ 5 ] = '/';
+        //                tmpLine.Replace( ',', '.' );
+        //                tmpLine.Replace( ';', ',' );
+        //            }
+        //            else if ( type == AirlinklogType.PointSemicolonComma )
+        //            {
+        //                tmpLine[ 2 ] = '/';
+        //                tmpLine[ 5 ] = '/';
+        //                tmpLine.Replace( ',', '.' );
+        //                tmpLine.Replace( ';', ',' );
+        //            }
+        //            else if ( type == AirlinklogType.SlashSemicolonComma )
+        //            {
+        //                tmpLine.Replace( ',', '.' );
+        //                tmpLine.Replace( ';', ',' );
+        //            }
+        //            else if ( type == AirlinklogType.DashCommaPoint )
+        //            {
+        //                tmpLine[ 2 ] = '/';
+        //                tmpLine[ 5 ] = '/';
+        //            }
+        //        }// NO Separator Inconsistency
+        //    } // Not EOF
 
-            return tmpLine.ToString();
-        }
+        //    return tmpLine.ToString();
+        //}
 
         private AirlinklogValue SetValues( string line, DateTime StartTime )
         {

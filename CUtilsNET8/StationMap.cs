@@ -28,14 +28,9 @@ using System.Text;
 
 namespace CumulusUtils
 {
-    class StationMap
+    class StationMap( CuSupport s )
     {
-        readonly CuSupport Sup;
-
-        public StationMap( CuSupport s )
-        {
-            Sup = s;
-        }
+        readonly CuSupport Sup = s;
 
         // Image rotation docu for the WindArrow (image)
         //   https://github.com/Leaflet/Leaflet/issues/4029
@@ -77,9 +72,11 @@ namespace CumulusUtils
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.StationMapOutputFilename}", false, Encoding.UTF8 ) )
             {
+                of.WriteLine( CuSupport.CopyrightForGeneratedFiles() );
+
                 if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes )
                 {
-                    of.WriteLine( Sup.GenLeafletIncludes().ToString() );
+                    of.WriteLine( CuSupport.GenLeafletIncludes().ToString() );
                 }
 
                 of.WriteLine( "<style>" );

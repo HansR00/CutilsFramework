@@ -185,144 +185,146 @@ namespace CumulusUtils
 
         public void GenerateCustomLogsModule()
         {
+            #region Javascript
+
+            StringBuilder sb = new StringBuilder();
+
+            Sup.LogDebugMessage( $"GenerateCustomLogsModule: Generating the Module Javascript code..." );
+
+            // Generate the table on the basis of what is set in the inifile and setup in the constructor. 
+            // We don't support live switching as we don't support that for anything.
+            // Generate the start of the realtime script
+            //
+
+            sb.AppendLine( $"{CuSupport.GenjQueryIncludestring()}" );
+
+            if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes )
+            {
+                sb.AppendLine( Sup.GenHighchartsIncludes().ToString() );
+            }
+
+            sb.AppendLine( "<script>" );
+            sb.AppendLine( "console.log('Module CustomLogsTimer ...');" );
+            sb.AppendLine( "var CustomLogsTimer;" );
+            sb.AppendLine( "$(function () {" );  // Get the whole thing going
+            sb.AppendLine( $"  SetupCustomLogsTable();" );
+            sb.AppendLine( $"  $('#Dashboard').hide();" );
+            sb.AppendLine( $"  $('#Gauges').hide();" );
+            sb.AppendLine( $"  $('#ExtraAndCustom').show();" );
+            sb.AppendLine( "  loadCustomLogsRealtime();" );
+            sb.AppendLine( "  if (CustomLogsTimer == null) CustomLogsTimer = setInterval(loadCustomLogsRealtime, 60 * 1000);" );
+            sb.AppendLine( $"  LoadUtilsReport( '{Sup.CustomLogsCharts}', false );" );
+            sb.AppendLine( "});" );
+            sb.AppendLine( "" );
+            sb.AppendLine( "function loadCustomLogsRealtime() {" );
+            sb.AppendLine( "  $.ajax({" );
+            sb.AppendLine( $"    url: '{Sup.CustomLogsRealtimeFilename}'," );
+            sb.AppendLine( "    timeout: 1000," );
+            sb.AppendLine( "    cache:false," );
+            sb.AppendLine( "    headers: { 'Access-Control-Allow-Origin': '*' }," );
+            sb.AppendLine( "    crossDomain: true," );
+            sb.AppendLine( "  })" +
+                ".done(function (response, responseStatus) {DoCustomLogsRT(response)})" +
+                ".fail(function(jqXHR, responseStatus){ console.log('ajax call: ' + responseStatus) });" );
+            sb.AppendLine( "}" );
+
+            sb.AppendLine( $"var oldobsCustomLogs = [ {TotalNrOfWebtags} ]; " );
+            sb.AppendLine( "function DoCustomLogsRT(input) {" );
+            sb.AppendLine( "  var CustomLogsRT = input.split(' ');" );
+
+            int i = 0;
+
+            foreach ( CustomLog tmp in CustomLogsList )
+            {
+                foreach ( string thisName in tmp.TagNames )
+                {
+                    sb.AppendLine( $"  if ( oldobsCustomLogs[{i}] != CustomLogsRT[{i}]) {{" );
+                    sb.AppendLine( $"    oldobsCustomLogs[{i}] = CustomLogsRT[{i}];" );
+                    sb.AppendLine( $"    $('#ajxCustomLogs{tmp.Name}{thisName}').html(CustomLogsRT[ {i} ] + ' {WebTags.GetTagUnit( thisName )}');" );
+                    sb.AppendLine( $"    $('#ajxCustomLogs{tmp.Name}{thisName}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                    sb.AppendLine( "  }" );
+
+                    i++;
+                }
+            }
+
+            sb.AppendLine( "  setTimeout( 'CustomLogsClearChangeIndicator()', 3000 );" );
+            sb.AppendLine( "}" ); // End DoCustomLogsRT
+
+            sb.AppendLine( "function CustomLogsClearChangeIndicator(){" );
+            sb.AppendLine( "  $( '[id*=\"ajx\"]' ).css( 'color', '' );" );
+            sb.AppendLine( "}" );
+            sb.AppendLine( "" );
+
+            // Setup the HTML ExtraSensors table for the Dashboard area
+
+            sb.AppendLine( "function SetupCustomLogsTable() {" );
+
+            StringBuilder buf = new StringBuilder();
+
+            bool SwitchRowBackground = true;
+
+            string RowColour()
+            {
+                SwitchRowBackground = !SwitchRowBackground;
+                return SwitchRowBackground ?
+                    $" style='background-color: {Sup.GetUtilsIniValue( "Website", "ColorMenuBackground", "Lightgrey" )};" +
+                    $" color:{Sup.GetUtilsIniValue( "Website", "ColorMenuText", "Black" )}'" : "";
+            }
+
+            string thisPadding()
+            {
+                return "style='padding: 5px 5px 5px 5px;'";
+            }
+
+            buf.Append( $"<style>.centerItem {{width: 90%; max-height: 67vh; margin: 6vh auto;overflow-y: auto; }}</style>" );
+
+            //buf.Append( $"<a href='https://www.cumuluswiki.org/a/Full_list_of_Webtags' target='_blank'>Cumulus Webtags -  Full List</a><br/>" );
+            buf.Append( $"<div id='RecentCustomLogs' class='slideOptions centerItem' style='text-align:left;'>" );
+            buf.Append( $"<table style='width:100%'><tr " +
+                $"style='background-color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarBackground", "#C5C55B" )}; " +
+                $"color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarText", "White" )}; width:100%'>" );
+            buf.Append( $"<th {thisPadding()}>{Sup.GetCUstringValue( "CustomLogs", "WebtagName", "Webtag Name", false )}&nbsp&nbsp" +
+                $"<a href='https://www.cumuluswiki.org/a/Full_list_of_Webtags' target='_blank'>(Cumulus Webtags -  Full List)</a></th>" +
+                $"<th>{Sup.GetCUstringValue( "CustomLogs", "RecentValue", "RECENT Value", false )}</th></tr>" );
+
+            bool RecentDone = false;
+
+            foreach ( CustomLog tmp in CustomLogsList )
+            {
+                if ( tmp.Frequency == -1 && !RecentDone )
+                {
+                    // End the table and start a new one
+                    buf.Append( "</table></div>" );
+
+                    buf.Append( $"<div id='DailyCustomLogs' class='slideOptions centerItem' style='text-align:left;'><table style='width:100%'>" );
+                    buf.Append( $"<tr " +
+                        $"style='background-color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarBackground", "#C5C55B" )}; " +
+                        $"color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarText", "White" )}; width:100%'>" );
+                    buf.Append( $"<th {thisPadding()}>{Sup.GetCUstringValue( "CustomLogs", "WebtagName", "Webtag Name", false )}&nbsp&nbsp" +
+                        $"<a href='https://www.cumuluswiki.org/a/Full_list_of_Webtags' target='_blank'>(Cumulus Webtags -  Full List)</a></th>" +
+                        $"<th>{Sup.GetCUstringValue( "CustomLogs", "DailyValue", "DAILY Value", false )}</th></tr>" );
+
+                    RecentDone = true;
+                }
+
+                buf.Append( $"<tr {RowColour()}><td {thisPadding()}><strong>{tmp.Name}:</strong></td><td></td></tr>" );
+
+                for ( int c = 0; c < tmp.TagNames.Count; c++ )
+                {
+                    buf.Append( $"<tr {RowColour()}><td {thisPadding()}>&nbsp;&nbsp;{tmp.TagsRaw[ c ]}</td>" +
+                        $"<td id='ajxCustomLogs{tmp.Name}{tmp.TagNames[ c ]}'></td></tr>" );
+                }
+            }
+
+            buf.Append( "</table></div>" );
+            sb.AppendLine( $"  $('#ExtraAndCustom').html(\"{buf}\");" );
+            sb.AppendLine( "}" );
+            sb.AppendLine( "</script>" );
+
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.CustomLogsOutputFilename}", false, Encoding.UTF8 ) )
             {
-                #region Javascript
-
-                StringBuilder sb = new StringBuilder();
-
-                Sup.LogDebugMessage( $"GenerateCustomLogsModule: Generating the Module Javascript code..." );
-
-                // Generate the table on the basis of what is set in the inifile and setup in the constructor. 
-                // We don't support live switching as we don't support that for anything.
-                // Generate the start of the realtime script
-                //
-
-                sb.AppendLine( $"{Sup.GenjQueryIncludestring()}" );
-
-                if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes )
-                {
-                    sb.AppendLine( Sup.GenHighchartsIncludes().ToString() );
-                }
-
-                sb.AppendLine( "<script>" );
-                sb.AppendLine( "console.log('Module CustomLogsTimer ...');" );
-                sb.AppendLine( "var CustomLogsTimer;" );
-                sb.AppendLine( "$(function () {" );  // Get the whole thing going
-                sb.AppendLine( $"  SetupCustomLogsTable();" );
-                sb.AppendLine( $"  $('#Dashboard').hide();" );
-                sb.AppendLine( $"  $('#Gauges').hide();" );
-                sb.AppendLine( $"  $('#ExtraAndCustom').show();" );
-                sb.AppendLine( "  loadCustomLogsRealtime();" );
-                sb.AppendLine( "  if (CustomLogsTimer == null) CustomLogsTimer = setInterval(loadCustomLogsRealtime, 60 * 1000);" );
-                sb.AppendLine( $"  LoadUtilsReport( '{Sup.CustomLogsCharts}', false );" );
-                sb.AppendLine( "});" );
-                sb.AppendLine( "" );
-                sb.AppendLine( "function loadCustomLogsRealtime() {" );
-                sb.AppendLine( "  $.ajax({" );
-                sb.AppendLine( $"    url: '{Sup.CustomLogsRealtimeFilename}'," );
-                sb.AppendLine( "    timeout: 1000," );
-                sb.AppendLine( "    cache:false," );
-                sb.AppendLine( "    headers: { 'Access-Control-Allow-Origin': '*' }," );
-                sb.AppendLine( "    crossDomain: true," );
-                sb.AppendLine( "  })" +
-                    ".done(function (response, responseStatus) {DoCustomLogsRT(response)})" +
-                    ".fail(function(jqXHR, responseStatus){ console.log('ajax call: ' + responseStatus) });" );
-                sb.AppendLine( "}" );
-
-                sb.AppendLine( $"var oldobsCustomLogs = [ {TotalNrOfWebtags} ]; " );
-                sb.AppendLine( "function DoCustomLogsRT(input) {" );
-                sb.AppendLine( "  var CustomLogsRT = input.split(' ');" );
-
-                int i = 0;
-
-                foreach ( CustomLog tmp in CustomLogsList )
-                {
-                    foreach ( string thisName in tmp.TagNames )
-                    {
-                        sb.AppendLine( $"  if ( oldobsCustomLogs[{i}] != CustomLogsRT[{i}]) {{" );
-                        sb.AppendLine( $"    oldobsCustomLogs[{i}] = CustomLogsRT[{i}];" );
-                        sb.AppendLine( $"    $('#ajxCustomLogs{tmp.Name}{thisName}').html(CustomLogsRT[ {i} ] + ' {WebTags.GetTagUnit( thisName )}');" );
-                        sb.AppendLine( $"    $('#ajxCustomLogs{tmp.Name}{thisName}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
-                        sb.AppendLine( "  }" );
-
-                        i++;
-                    }
-                }
-
-                sb.AppendLine( "  setTimeout( 'CustomLogsClearChangeIndicator()', 3000 );" );
-                sb.AppendLine( "}" ); // End DoCustomLogsRT
-
-                sb.AppendLine( "function CustomLogsClearChangeIndicator(){" );
-                sb.AppendLine( "  $( '[id*=\"ajx\"]' ).css( 'color', '' );" );
-                sb.AppendLine( "}" );
-                sb.AppendLine( "" );
-
-                // Setup the HTML ExtraSensors table for the Dashboard area
-
-                sb.AppendLine( "function SetupCustomLogsTable() {" );
-
-                StringBuilder buf = new StringBuilder();
-
-                bool SwitchRowBackground = true;
-
-                string RowColour()
-                {
-                    SwitchRowBackground = !SwitchRowBackground;
-                    return SwitchRowBackground ?
-                        $" style='background-color: {Sup.GetUtilsIniValue( "Website", "ColorMenuBackground", "Lightgrey" )};" +
-                        $" color:{Sup.GetUtilsIniValue( "Website", "ColorMenuText", "Black" )}'" : "";
-                }
-
-                string thisPadding()
-                {
-                    return "style='padding: 5px 5px 5px 5px;'";
-                }
-
-                buf.Append( $"<style>.centerItem {{width: 90%; max-height: 67vh; margin: 6vh auto;overflow-y: auto; }}</style>" );
-
-                //buf.Append( $"<a href='https://www.cumuluswiki.org/a/Full_list_of_Webtags' target='_blank'>Cumulus Webtags -  Full List</a><br/>" );
-                buf.Append( $"<div id='RecentCustomLogs' class='slideOptions centerItem' style='text-align:left;'>" );
-                buf.Append( $"<table style='width:100%'><tr " +
-                    $"style='background-color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarBackground", "#C5C55B" )}; " +
-                    $"color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarText", "White" )}; width:100%'>" );
-                buf.Append( $"<th {thisPadding()}>{Sup.GetCUstringValue( "CustomLogs", "WebtagName", "Webtag Name", false )}&nbsp&nbsp" +
-                    $"<a href='https://www.cumuluswiki.org/a/Full_list_of_Webtags' target='_blank'>(Cumulus Webtags -  Full List)</a></th>" +
-                    $"<th>{Sup.GetCUstringValue( "CustomLogs", "RecentValue", "RECENT Value", false )}</th></tr>" );
-
-                bool RecentDone = false;
-
-                foreach ( CustomLog tmp in CustomLogsList )
-                {
-                    if ( tmp.Frequency == -1 && !RecentDone )
-                    {
-                        // End the table and start a new one
-                        buf.Append( "</table></div>" );
-
-                        buf.Append( $"<div id='DailyCustomLogs' class='slideOptions centerItem' style='text-align:left;'><table style='width:100%'>" );
-                        buf.Append( $"<tr " +
-                            $"style='background-color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarBackground", "#C5C55B" )}; " +
-                            $"color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarText", "White" )}; width:100%'>" );
-                        buf.Append( $"<th {thisPadding()}>{Sup.GetCUstringValue( "CustomLogs", "WebtagName", "Webtag Name", false )}&nbsp&nbsp" +
-                            $"<a href='https://www.cumuluswiki.org/a/Full_list_of_Webtags' target='_blank'>(Cumulus Webtags -  Full List)</a></th>" +
-                            $"<th>{Sup.GetCUstringValue( "CustomLogs", "DailyValue", "DAILY Value", false )}</th></tr>" );
-
-                        RecentDone = true;
-                    }
-
-                    buf.Append( $"<tr {RowColour()}><td {thisPadding()}><strong>{tmp.Name}:</strong></td><td></td></tr>" );
-
-                    for ( int c = 0; c < tmp.TagNames.Count; c++ )
-                    {
-                        buf.Append( $"<tr {RowColour()}><td {thisPadding()}>&nbsp;&nbsp;{tmp.TagsRaw[ c ]}</td>" +
-                            $"<td id='ajxCustomLogs{tmp.Name}{tmp.TagNames[ c ]}'></td></tr>" );
-                    }
-                }
-
-                buf.Append( "</table></div>" );
-                sb.AppendLine( $"  $('#ExtraAndCustom').html(\"{buf}\");" );
-                sb.AppendLine( "}" );
-                sb.AppendLine( "</script>" );
+                of.WriteLine( CuSupport.CopyrightForGeneratedFiles() );
 
 #if !RELEASE
                 of.WriteLine( sb );
@@ -1661,7 +1663,7 @@ namespace CumulusUtils
 
         public AxisType GetTagAxis( string name ) => TagAxis[ Array.FindIndex( Tagname, word => word.Equals( name, CUtils.Cmp ) ) ];
 
-        public bool IsValidWebtag( string name ) => Array.FindIndex( Tagname, word => word.Equals( name ) ) != -1;
+        public bool IsValidWebtag( string name ) => Array.FindIndex( Tagname, word => word.Equals( name, CUtils.Cmp ) ) != -1;
 
         public string FetchWebtagRaw( string s, ref int Start )
         {

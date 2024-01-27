@@ -37,13 +37,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using FluentFTP;
-using FluentFTP.Helpers;
+using FluentFTP.Exceptions;
 using Renci.SshNet;
 using Renci.SshNet.Common;
 
@@ -99,29 +100,27 @@ namespace CumulusUtils
             // Now do the initialisation thing for the protocol selected.
             //
 
-            FtpTrace.LogPassword = false;
-            FtpTrace.LogUserName = false;
-            FtpTrace.LogIP = false;
-
             if ( ProtocolUsed == FtpProtocols.FTP )
             {
                 try
                 {
-                    clientFluentFTP = new FtpClient( hostname,
-                                                    port,
-                                                    username,
-                                                    password )
+                    clientFluentFTP = new FtpClient
                     {
-                        EncryptionMode = FtpEncryptionMode.None,
-                        SslProtocols = SslProtocols.None,
-                        DataConnectionType = PassiveFTP ? FtpDataConnectionType.AutoPassive : FtpDataConnectionType.PORT,
-                        Encoding = Encoding.UTF8,
-
-                        SocketKeepAlive = true,
-                        UploadDataType = FtpDataType.Binary
+                        Host = hostname,
+                        Port = port,
+                        Credentials = new NetworkCredential( username, password ),
                     };
 
+                    clientFluentFTP.Config.EncryptionMode = FtpEncryptionMode.None;
+                    clientFluentFTP.Config.SslProtocols = SslProtocols.None;
+                    clientFluentFTP.Config.DataConnectionType = PassiveFTP ? FtpDataConnectionType.AutoPassive : FtpDataConnectionType.PORT;
+                    clientFluentFTP.Encoding = Encoding.UTF8;
+
+                    clientFluentFTP.Config.SocketKeepAlive = true;
+                    clientFluentFTP.Config.UploadDataType = FtpDataType.Binary;
+
                     clientFluentFTP.Connect();
+
                     Sup.LogTraceInfoMessage( "InetSupport: FTP Setup (After connect):" );
                     Sup.LogDebugMessage( "InetSupport: Plain Old FTP activated." );
                     Sup.LogTraceInfoMessage( $"InetSupport: FTP Server: {clientFluentFTP.ServerType} on {clientFluentFTP.ServerOS}" );
@@ -143,23 +142,24 @@ namespace CumulusUtils
             {
                 try
                 {
-                    clientFluentFTP = new FtpClient( hostname,
-                                                    port,
-                                                    username,
-                                                    password )
+                    clientFluentFTP = new FtpClient
                     {
-                        EncryptionMode = FtpEncryptionMode.Explicit,
-                        DataConnectionEncryption = true,
-                        SslProtocols = SslProtocols.None, //SslProtocols.Default | SslProtocols.Tls11 | SslProtocols.Tls12,
-                        DataConnectionType = PassiveFTP ? FtpDataConnectionType.AutoPassive : FtpDataConnectionType.PORT,
-                        Encoding = Encoding.UTF8,
-
-                        SocketKeepAlive = true,
-                        ValidateAnyCertificate = true,
-                        UploadDataType = FtpDataType.Binary
+                        Host = hostname,
+                        Port = port,
+                        Credentials = new NetworkCredential( username, password )
                     };
 
+                    clientFluentFTP.Config.EncryptionMode = FtpEncryptionMode.Explicit;
+                    clientFluentFTP.Config.SslProtocols = SslProtocols.None;
+                    clientFluentFTP.Config.DataConnectionType = PassiveFTP ? FtpDataConnectionType.AutoPassive : FtpDataConnectionType.PORT;
+                    clientFluentFTP.Encoding = Encoding.UTF8;
+
+                    clientFluentFTP.Config.SocketKeepAlive = true;
+                    clientFluentFTP.Config.ValidateAnyCertificate = true;
+                    clientFluentFTP.Config.UploadDataType = FtpDataType.Binary;
+
                     clientFluentFTP.Connect();
+
                     Sup.LogTraceInfoMessage( " InetSupport: FTPS Setup (After connect):" );
                     Sup.LogDebugMessage( " InetSupport: FTPS activated." );
                     Sup.LogTraceInfoMessage( $" InetSupport: FTPS Server: {clientFluentFTP.ServerType} on {clientFluentFTP.ServerOS}" );
@@ -294,7 +294,7 @@ namespace CumulusUtils
             // No reason to upload if there is  no file or destination
             if ( string.IsNullOrEmpty( remotefile ) || string.IsNullOrEmpty( localfile ) ) { Sup.LogTraceErrorMessage( $"UploadFile: Nothing uploaded either in or outfile are empty." ); return false; }
 
-            bool Upload = Sup.GetUtilsIniValue( "FTP site", "DoUploadFTP", "false" ).ToLower() == "true";
+            bool Upload = Sup.GetUtilsIniValue( "FTP site", "DoUploadFTP", "false" ).Equals( "true", CUtils.Cmp );
             if ( !Upload ) { Sup.LogTraceInfoMessage( $"UploadFile: DoUploadFTP configured false => No Upload." ); return false; }      // No reason to do the whole procedure if we don't have to upload
 
             string CumulusURL;
@@ -326,7 +326,14 @@ namespace CumulusUtils
 
                     try
                     {
-                        await clientFluentFTP.UploadFileAsync( localfile, requestname, FtpRemoteExists.Overwrite, false, FtpVerify.Throw );
+                        FtpStatus flag;
+
+                        flag = clientFluentFTP.UploadFile( localfile, requestname, FtpRemoteExists.Overwrite, false, FtpVerify.Throw );
+
+                        if ( flag != FtpStatus.Success )
+                        {
+                            Sup.LogTraceErrorMessage( $"UploadFile Failed: status = {flag} (0 = failed)" );
+                        }
                     }
                     catch ( Exception e )
                     {
@@ -405,6 +412,7 @@ namespace CumulusUtils
 
                                 clientRenci.Connect();
                                 clientRenci.OperationTimeout = TimeSpan.FromSeconds( 15 );
+
                                 if ( !clientRenci.IsConnected )
                                 {
                                     Sup.LogTraceInfoMessage( $"Upload SFTP: Connection error." );
@@ -492,27 +500,24 @@ namespace CumulusUtils
             // Now do the initialisation thing for the protocol selected.
             //
 
-            FtpTrace.LogPassword = false;
-            FtpTrace.LogUserName = false;
-            FtpTrace.LogIP = false;
-
             if ( ProtocolUsed == FtpProtocols.FTP )
             {
                 try
                 {
-                    localFluentFTP = new FtpClient( hostname,
-                                                    port,
-                                                    username,
-                                                    password )
+                    localFluentFTP = new FtpClient
                     {
-                        EncryptionMode = FtpEncryptionMode.None,
-                        SslProtocols = SslProtocols.None,
-                        DataConnectionType = PassiveFTP ? FtpDataConnectionType.AutoPassive : FtpDataConnectionType.PORT,
-                        Encoding = Encoding.UTF8,
-
-                        SocketKeepAlive = true,
-                        UploadDataType = FtpDataType.Binary
+                        Host = hostname,
+                        Port = port,
+                        Credentials = new NetworkCredential( username, password ),
                     };
+
+                    localFluentFTP.Config.EncryptionMode = FtpEncryptionMode.None;
+                    localFluentFTP.Config.SslProtocols = SslProtocols.None;
+                    localFluentFTP.Config.DataConnectionType = PassiveFTP ? FtpDataConnectionType.AutoPassive : FtpDataConnectionType.PORT;
+                    localFluentFTP.Encoding = Encoding.UTF8;
+
+                    localFluentFTP.Config.SocketKeepAlive = true;
+                    localFluentFTP.Config.UploadDataType = FtpDataType.Binary;
 
                     localFluentFTP.Connect();
                 }
@@ -527,21 +532,21 @@ namespace CumulusUtils
             {
                 try
                 {
-                    localFluentFTP = new FtpClient( hostname,
-                                                    port,
-                                                    username,
-                                                    password )
+                    localFluentFTP = new FtpClient
                     {
-                        EncryptionMode = FtpEncryptionMode.Explicit,
-                        DataConnectionEncryption = true,
-                        SslProtocols = SslProtocols.None, //SslProtocols.Default | SslProtocols.Tls11 | SslProtocols.Tls12,
-                        DataConnectionType = PassiveFTP ? FtpDataConnectionType.AutoPassive : FtpDataConnectionType.PORT,
-                        Encoding = Encoding.UTF8,
-
-                        SocketKeepAlive = true,
-                        ValidateAnyCertificate = true,
-                        UploadDataType = FtpDataType.Binary
+                        Host = hostname,
+                        Port = port,
+                        Credentials = new NetworkCredential( username, password )
                     };
+
+                    localFluentFTP.Config.EncryptionMode = FtpEncryptionMode.Explicit;
+                    localFluentFTP.Config.SslProtocols = SslProtocols.None;
+                    localFluentFTP.Config.DataConnectionType = PassiveFTP ? FtpDataConnectionType.AutoPassive : FtpDataConnectionType.PORT;
+                    localFluentFTP.Encoding = Encoding.UTF8;
+
+                    localFluentFTP.Config.SocketKeepAlive = true;
+                    localFluentFTP.Config.ValidateAnyCertificate = true;
+                    localFluentFTP.Config.UploadDataType = FtpDataType.Binary;
 
                     localFluentFTP.Connect();
                 }

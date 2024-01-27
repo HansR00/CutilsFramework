@@ -49,7 +49,9 @@ namespace CumulusUtils
                 // Produce the arrays for the months without data. Required for the selection  generation in javascript later on
                 MonthsNotPresentAllYears = tmpIntArray.Except( Thislist.Select( x => x.ThisDate.Month ).Distinct() ).ToArray();
 
-                of.WriteLine( $"{Sup.GenjQueryIncludestring()}" );
+                of.WriteLine( CuSupport.CopyrightForGeneratedFiles() );
+
+                of.WriteLine( $"{CuSupport.GenjQueryIncludestring()}" );
                 of.WriteLine( "<script>" );
                 of.WriteLine( "$(function() {" );
                 of.WriteLine( "  $('.jqueryOptions').hide();" );

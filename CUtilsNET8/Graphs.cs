@@ -230,15 +230,9 @@ namespace CumulusUtils
 
                     int GraphNr = 1, GraphNrForYearMonthRainStats = 0;
 
-                    of.WriteLine( "<!--" );
-                    of.WriteLine( $" This file is generated as part of CumulusUtils - {DateTime.Now}" );
-                    of.WriteLine( " This header must not be removed and the user must comply to the Creative Commons 4.0 license" );
-                    of.WriteLine( " The license conditions imply the non-commercial use of HighCharts for which the user is held responsible" );
-                    of.WriteLine( $" © Copyright 2019 - {DateTime.Now:yyyy} Hans Rottier <hans.rottier@gmail.com>" );
-                    of.WriteLine( " See also License conditions of CumulusUtils: https://meteo-wagenborgen.nl/" );
-                    of.WriteLine( "-->" );
+                    of.WriteLine( CuSupport.CopyrightForGeneratedFiles() );
 
-                    thisBuffer.AppendLine( $"{Sup.GenjQueryIncludestring()}" );
+                    thisBuffer.AppendLine( $"{CuSupport.GenjQueryIncludestring()}" );
 
                     if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes )
                     {
@@ -411,15 +405,9 @@ namespace CumulusUtils
 
                     int GraphNr = 1, GraphNrForYearMonthTempStats = 0;
 
-                    of.WriteLine( "<!--" );
-                    of.WriteLine( $" This file is generated as part of CumulusUtils - {DateTime.Now}" );
-                    of.WriteLine( " This header must not be removed and the user must comply to the Creative Commons 4.0 license" );
-                    of.WriteLine( " The license conditions imply the non-commercial use of HighCharts for which the user is held responsible" );
-                    of.WriteLine( $" © Copyright 2019 - {DateTime.Now:yyyy} Hans Rottier <hans.rottier@gmail.com>" );
-                    of.WriteLine( " See also License conditions of CumulusUtils: https://meteo-wagenborgen.nl/" );
-                    of.WriteLine( "-->" );
+                    of.WriteLine( CuSupport.CopyrightForGeneratedFiles() );
 
-                    of.WriteLine( $"{Sup.GenjQueryIncludestring()}" );
+                    of.WriteLine( $"{CuSupport.GenjQueryIncludestring()}" );
 
                     if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes )
                     {
@@ -640,15 +628,9 @@ namespace CumulusUtils
 
                     int GraphNr = 1;
 
-                    of.WriteLine( "<!--" );
-                    of.WriteLine( $" This file is generated as part of CumulusUtils - {DateTime.Now}" );
-                    of.WriteLine( " This header must not be removed and the user must comply to the Creative Commons 4.0 license" );
-                    of.WriteLine( " The license conditions imply the non-commercial use of HighCharts for which the user is held responsible" );
-                    of.WriteLine( $" © Copyright 2019 - {DateTime.Now:yyyy} Hans Rottier <hans.rottier@gmail.com>" );
-                    of.WriteLine( " See also License conditions of CumulusUtils: https://meteo-wagenborgen.nl/" );
-                    of.WriteLine( "-->" );
+                    of.WriteLine( CuSupport.CopyrightForGeneratedFiles() );
 
-                    thisBuffer.AppendLine( $"{Sup.GenjQueryIncludestring()}" );
+                    thisBuffer.AppendLine( $"{CuSupport.GenjQueryIncludestring()}" );
 
                     if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes )
                     {
@@ -825,15 +807,9 @@ namespace CumulusUtils
                     int GraphNrForYearMonthSolarHoursStats = 0;
                     int GraphNrForYearMonthSolarEnergyStats = 0;
 
-                    of.WriteLine( "<!--" );
-                    of.WriteLine( $" This file is generated as part of CumulusUtils - {DateTime.Now}" );
-                    of.WriteLine( " This header must not be removed and the user must comply to the Creative Commons 4.0 license" );
-                    of.WriteLine( " The license conditions imply the non-commercial use of HighCharts for which the user is held responsible" );
-                    of.WriteLine( $" © Copyright 2019 - {DateTime.Now:yyyy} Hans Rottier <hans.rottier@gmail.com>" );
-                    of.WriteLine( " See also License conditions of CumulusUtils: https://meteo-wagenborgen.nl/" );
-                    of.WriteLine( "-->" );
+                    of.WriteLine( CuSupport.CopyrightForGeneratedFiles() );
 
-                    thisBuffer.AppendLine( $"{Sup.GenjQueryIncludestring()}" );
+                    thisBuffer.AppendLine( $"{CuSupport.GenjQueryIncludestring()}" );
 
                     if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes )
                     {
@@ -996,15 +972,9 @@ namespace CumulusUtils
 
                     int GraphNr = 1;
 
-                    of.WriteLine( "<!--" );
-                    of.WriteLine( $" This file is generated as part of CumulusUtils - {DateTime.Now}" );
-                    of.WriteLine( " This header must not be removed and the user must comply to the Creative Commons 4.0 license" );
-                    of.WriteLine( " The license conditions imply the non-commercial use of HighCharts for which the user is held responsible" );
-                    of.WriteLine( $" © Copyright 2019 - {DateTime.Now:yyyy} Hans Rottier <hans.rottier@gmail.com>" );
-                    of.WriteLine( " See also License conditions of CumulusUtils: https://meteo-wagenborgen.nl/" );
-                    of.WriteLine( "-->" );
+                    of.WriteLine( CuSupport.CopyrightForGeneratedFiles() );
 
-                    thisBuffer.AppendLine( $"{Sup.GenjQueryIncludestring()}" );
+                    thisBuffer.AppendLine( $"{CuSupport.GenjQueryIncludestring()}" );
 
                     if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes )
                     {

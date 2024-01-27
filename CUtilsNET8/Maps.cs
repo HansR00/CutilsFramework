@@ -387,11 +387,13 @@ namespace CumulusUtils
                 //of.WriteLine($"{Sup.GenjQueryIncludestring()}");
                 // Skip this: jQuery is not required for the map module
 
+                of.WriteLine( CuSupport.CopyrightForGeneratedFiles() );
+
                 of.WriteLine( "<style>" );
                 of.WriteLine( ".cuMapCircle {cursor: grab;}" );
                 of.WriteLine( "#CumulusUtils {height: 750px; width: 100%;}" );
                 of.WriteLine( "</style>" );
-                of.WriteLine( Sup.GenLeafletIncludes().ToString() );
+                of.WriteLine( CuSupport.GenLeafletIncludes().ToString() );
 
                 of.WriteLine( "<script>" );
 

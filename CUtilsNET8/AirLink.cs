@@ -444,7 +444,7 @@ namespace CumulusUtils
             }
 
 
-            of.AppendLine( $"{Sup.GenjQueryIncludestring()}" );
+            of.AppendLine( $"{CuSupport.GenjQueryIncludestring()}" );
 
             if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes )
             {

@@ -170,7 +170,7 @@ namespace CumulusUtils
 
                             try
                             {
-                                int.TryParse( Keywords[ CurrPosition++ ], out int tmp );
+                                _ = int.TryParse( Keywords[ CurrPosition++ ], out int tmp );
                                 thisChart.Zoom = tmp;
                             }
                             catch ( Exception e )
@@ -240,7 +240,7 @@ namespace CumulusUtils
                             // Do the STATS specific block
                             thisPlotvar.IsStats = true;
 
-                            if ( Keywords[ CurrPosition ].Equals( "All", CUtils.Cmp ) )
+                            if ( Keywords[ CurrPosition ].Equals( "Daily", CUtils.Cmp ) || Keywords[ CurrPosition ].Equals( "All", CUtils.Cmp ) )
                             {
                                 PlotvarAxis = PlotvarAxisALL;
                                 PlotvarTypes = PlotvarTypesALL;
@@ -284,31 +284,69 @@ namespace CumulusUtils
                                 thisPlotvar.PlotvarRange = PlotvarRangeType.Recent;
                             }
 
-                            if ( Array.Exists( PlotvarKeyword, word => word.Equals( Keywords[ CurrPosition ], CUtils.Cmp ) ) )
+                            // HansR: how to validate and STATS variable for an equation:
+                            // 1) Check if it is present in the Plotvar array if true continue immediately
+                            // 2) Check if the Keyword for the STATS exists already and has an equation (not an empty string)
+                            // 3) NOTE: The STATS line must come AFTER the PLOT line of the equation!!
+
+                            if ( Array.Exists( PlotvarKeyword, word => word.Equals( Keywords[ CurrPosition ], CUtils.Cmp ) ) ||
+                                 ( thisChart.PlotVars.Where( p => p.Keyword.Equals( Keywords[ CurrPosition ]) && !p.Equation.Equals("") ).Count() == 1 ) )
                             {
                                 // The plot var exists, create the entry for the chart and check the other attributes
                                 int index = Array.FindIndex( PlotvarKeyword, word => word.Equals( Keywords[ CurrPosition ], CUtils.Cmp ) );
 
-                                thisPlotvar.Keyword = PlotvarKeyword[ index ];
-                                thisPlotvar.PlotVar = PlotvarTypes[ index ];
-                                thisPlotvar.Unit = PlotvarUnits[ index ];
-                                thisPlotvar.Datafile = Datafiles[ index ];
-                                thisPlotvar.AxisId = $"{PlotvarAxis[ index ]}";
-                                thisPlotvar.Axis = PlotvarAxis[ index ];
-                                thisChart.Axis |= thisPlotvar.Axis;
+                                if ( index == -1 )
+                                {
+                                    // Get the info on the plotvar with EVAL for which we make the STATS
+                                    Plotvar tmp = thisChart.PlotVars.Where( p => p.Keyword.Equals( Keywords[ CurrPosition ] ) && !p.Equation.Equals( "" ) ).FirstOrDefault();
+
+                                    thisPlotvar.Keyword = tmp.Keyword;
+                                    thisPlotvar.PlotVar = tmp.PlotVar;
+                                    thisPlotvar.Unit = tmp.Unit;
+                                    thisPlotvar.Datafile = tmp.Datafile;
+                                    thisPlotvar.AxisId = tmp.AxisId;
+                                    thisPlotvar.Axis = tmp.Axis;
+                                    thisChart.Axis |= thisPlotvar.Axis;
+
+                                }
+                                else
+                                {
+                                    // This is a regular plotvar from the known ones so just set the info as known
+
+                                    thisPlotvar.Keyword = PlotvarKeyword[ index ];
+                                    thisPlotvar.PlotVar = PlotvarTypes[ index ];
+                                    thisPlotvar.Unit = PlotvarUnits[ index ];
+                                    thisPlotvar.Datafile = Datafiles[ index ];
+                                    thisPlotvar.AxisId = $"{PlotvarAxis[ index ]}";
+                                    thisPlotvar.Axis = PlotvarAxis[ index ];
+                                    thisChart.Axis |= thisPlotvar.Axis;
+                                }
 
                                 CurrPosition++;
                             }
                             else
                             {
-                                Sup.LogTraceErrorMessage( $"Parsing User Charts: Invalid variable for statistic '{thisChart.Id}'" );
+                                Sup.LogTraceErrorMessage( $"Parsing User Charts: Invalid variable {Keywords[ CurrPosition ]} for statistic in chart '{thisChart.Id}'" );
                                 return null;
                             }
 
                             if ( Array.Exists( StatsTypeKeywords, word => word.Equals( Keywords[ CurrPosition ], CUtils.Cmp ) ) )
                             {
+                                // atm only SMA is valid. For more statistic functions we need to expand this section
+
                                 thisPlotvar.GraphType = Keywords[ CurrPosition ].ToLowerInvariant();
                                 CurrPosition++;
+
+                                if ( Keywords[ CurrPosition ].Equals( "Period", CUtils.Cmp ) )
+                                {
+                                    thisPlotvar.Period = Convert.ToInt32( Keywords[ ++CurrPosition ], CUtils.Inv );
+                                    CurrPosition++;
+                                }
+                                else
+                                {
+                                    // No period, give use the default
+                                    thisPlotvar.Period = Convert.ToInt32( Sup.GetUtilsIniValue( "Compiler", "SmaPeriod", "5" ) );
+                                }
                             }
                             else
                             {
@@ -316,8 +354,7 @@ namespace CumulusUtils
                                 return null;
                             }
                         }
-
-                        if ( Keywords[ CurrPosition ].Equals( "Plot", CUtils.Cmp ) )
+                        else if ( Keywords[ CurrPosition ].Equals( "Plot", CUtils.Cmp ) )
                         {
                             bool EquationRequired = false;
 
@@ -449,7 +486,7 @@ namespace CumulusUtils
                             }
 
                             // Search for AS keyword
-                            if ( Keywords[ CurrPosition ].Equals( "As", CUtils.Cmp ) )
+                            if ( Keywords[ CurrPosition ].Equals( "As", CUtils.Cmp ) && !thisPlotvar.IsStats )  // Not for STATS variable because that must always be a line
                             {
                                 CurrPosition++;
 
@@ -473,7 +510,15 @@ namespace CumulusUtils
                                     Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' : Invalid AS linetype '{Keywords[ CurrPosition ]}'" );
                                     return null;
                                 }
-                            } // End AS
+                            }
+                            else if ( Keywords[ CurrPosition ].Equals( "As", CUtils.Cmp ) && thisPlotvar.IsStats )
+                            {
+                                Sup.LogTraceWarningMessage( $"Parsing User Charts '{thisChart.Id}' : Invalid AS type '{Keywords[ CurrPosition ]}' for '{thisPlotvar.Keyword}'" );
+                                Sup.LogTraceWarningMessage( $"Parsing User Charts '{thisChart.Id}' : Cannot set a plot type for a STATS Plotvariable" );
+
+                                CurrPosition++;
+                                CurrPosition++; // Skip over ' AS [LinetypeKeyword] '
+                            }// End AS
 
                             // Search for OPACITY keyword
                             if ( Keywords[ CurrPosition ].Equals( "Opacity", CUtils.Cmp ) )
@@ -555,7 +600,7 @@ namespace CumulusUtils
                                         if ( Array.Exists( AxisKeywords, word => word.Equals( Keywords[ CurrPosition ], CUtils.Cmp ) ) )
                                         {
                                             thisPlotvar.AxisId = Keywords[ CurrPosition ];
-                                            Enum.TryParse( Keywords[ CurrPosition ], out thisPlotvar.Axis );
+                                            _ = Enum.TryParse( Keywords[ CurrPosition ], out thisPlotvar.Axis );
                                             thisChart.Axis |= thisPlotvar.Axis;
 
                                             CurrPosition++;
@@ -721,10 +766,10 @@ namespace CumulusUtils
                         {
                             bool found = false;
                             foreach ( Plotvar plotvar2 in chart.PlotVars )
-                                if ( plotvar2.PlotVar == plotvar.PlotVar ) { found = true; break; }  // The STATS plotvar is also plotted for itself in this chart
+                                if ( plotvar2.PlotVar == plotvar.PlotVar && !plotvar2.IsStats ) { found = true; break; }  // The STATS plotvar is also plotted for itself in this chart
                                 else
                                     continue;
-                            if ( !found ) { Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : STATS variable '{plotvar.Keyword}' not plotted in this CHART" ); return null; }
+                            if ( !found ) { Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : STATS variable '{plotvar.Keyword}' not plotted by itself in this CHART" ); return null; }
                         }
 
                 // OK so set the lists and continue

@@ -395,6 +395,8 @@ namespace CumulusUtils
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.PwsFWIOutputFilename}", false, Encoding.UTF8 ) )
             {
+                of.WriteLine( CuSupport.CopyrightForGeneratedFiles() );
+
                 greenPercentage = dngrLevelValue[ (int) DngrLevel.green ] / (double) ExtremeFWIvalue * 100.0;
                 bluePercentage = ( dngrLevelValue[ (int) DngrLevel.blue ] - dngrLevelValue[ (int) DngrLevel.green ] ) / (double) ExtremeFWIvalue * 100.0;
                 yellowPercentage = ( dngrLevelValue[ (int) DngrLevel.yellow ] - dngrLevelValue[ (int) DngrLevel.blue ] ) / (double) ExtremeFWIvalue * 100.0;
@@ -1040,7 +1042,7 @@ namespace CumulusUtils
             return retval;
         }
 
-        private bool RemovePrediction( List<DayfileValue> ThisList )
+        private static bool RemovePrediction( List<DayfileValue> ThisList )
         {
             int i;
             bool retval = true;

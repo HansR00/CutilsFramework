@@ -111,7 +111,8 @@ namespace CumulusUtils
             {
                 // Fill the string in the inifile with the default i.e. the monthnames under the current locale used by CumulusUtils
                 for ( int i = 0; i < 12; i++ )
-                    temp += CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName( i + 1 ).Substring( 0, 3 ) + ",";
+                    //temp += CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName( i + 1 ).Substring( 0, 3 ) + ",";
+                    temp += string.Concat( CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName( i + 1 ).AsSpan( 0, 3 ), "," );
 
                 temp = temp.Substring( 0, temp.Length - 1 );
                 Sup.SetUtilsIniValue( "General", "MonthsOfMiracleAndWonder", temp );
@@ -361,7 +362,7 @@ namespace CumulusUtils
                 }
 
                 return null;
-             }
+            }
             catch ( IndexOutOfRangeException e )
             {
                 const string m = "MonthfileValue.SetValues";

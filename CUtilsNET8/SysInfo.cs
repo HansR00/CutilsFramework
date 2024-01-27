@@ -65,6 +65,8 @@ namespace CumulusUtils
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.SysInfoOutputFilename}", false, Encoding.UTF8 ) )
             {
+                of.WriteLine( CuSupport.CopyrightForGeneratedFiles() );
+
                 StringBuilder DeviceInfo = new StringBuilder();
                 string tmp;
 
@@ -133,14 +135,17 @@ namespace CumulusUtils
                     case 20:
                         DeviceInfo.AppendLine( "The Ecowitt Firmware Version: <#EcowittFirmwareVersion>" );
                         DeviceInfo.AppendLine( "The Ecowitt Reception Stats: <#EcowittReception>" );
+                        DeviceInfo.AppendLine( "The Ecowitt Runtime: <#StationRuntime>" );
+                        DeviceInfo.AppendLine( "The Ecowitt Free Memory: <#StationFreeMemory>" );
                         DeviceInfo.AppendLine( $"Extra Station Info: {Sup.GetUtilsIniValue( "SysInfo", "ExtraStationInfo", "" )}" );
                         DeviceInfo.AppendLine( "" );
 
                         break;
 
                     default:
-                        of.WriteLine( $"Extra Station Info: {Sup.GetUtilsIniValue( "SysInfo", "ExtraStationInfo", "" )}" );
-                        of.WriteLine( "" );
+                        //DeviceInfo.AppendLine( "Device type: <#stationtype>" );
+                        DeviceInfo.AppendLine( $"Extra Station Info: {Sup.GetUtilsIniValue( "SysInfo", "ExtraStationInfo", "" )}" );
+                        DeviceInfo.AppendLine( "" );
                         break;
                 } // End Switch for device stats if any
 
@@ -189,26 +194,37 @@ namespace CumulusUtils
             int[] LinesToSkip = new int[ StringLinesToSkip.Length ];
 
             for ( int i = 0; i < LinesToSkip.Length; i++ )
-                if ( !string.IsNullOrEmpty( StringLinesToSkip[ i ] ) )
+                try
+                {
                     LinesToSkip[ i ] = Convert.ToInt32( StringLinesToSkip[ i ], CUtils.Inv ) - 1;
+                }
+                catch
+                {
+                    // Do Nothing, ignore the line and take the next
+                }
 
             of.WriteLine( "Windows" );
             of.WriteLine( "" );
 
             try
             {
-                int count = 0;
+                int skip = 0;
 
                 StartProcess( "systeminfo", "" );
-                for ( int i = 0; i < returnValues.Count; i++ )
+
+                for ( int i = 0; i < returnValues.Count ; i++ )
                 {
                     string line = returnValues[ i ];
-                    if ( String.IsNullOrEmpty( line ) )
-                        continue;
-                    if ( count < LinesToSkip.Length && i == LinesToSkip[ count ] ) { count++; continue; }
-                    if ( line.Contains( "pagefile.sys" ) )
-                        break;
-                    of.WriteLine( $"{line}" );
+
+                    if ( line.Contains( "pagefile.sys" ) ) break;               // Stop when pagfile.sys is found
+
+                    if ( skip < LinesToSkip.Length && LinesToSkip[skip] == i )  // Skip the lines the user wants to skip
+                    { 
+                        skip++; 
+                        continue; 
+                    }
+
+                    of.WriteLine( $"{line}" );                                  // Write the line to the SysInfo output
                 }
             }
             catch ( Exception e )
@@ -216,7 +232,6 @@ namespace CumulusUtils
                 Sup.LogTraceErrorMessage( $"SystemStatus : DoingWindows Exception {e.Message}" );
 
                 of.WriteLine( "Device: Unknown - stopping here." );
-                of.WriteLine( "Device: Unknown - Please inform programmer." );
             }
 
             return;
@@ -290,13 +305,15 @@ namespace CumulusUtils
 
             try
             {
-                StartProcess( "mono", "-V" );
-                of.WriteLine( $"{returnValues[ 0 ]}" );
+                StartProcess( "dotnet", "--list-runtimes" );
+
+                foreach ( string line in returnValues ) of.WriteLine( $"{line}" );
                 of.WriteLine( "" );
             }
             catch ( Exception e )
             {
-                Sup.LogTraceErrorMessage( $"Mono: Unknown, most likely it is not installed - {e.Message}" );
+                Sup.LogTraceErrorMessage( $"dotnet: Unknown, most likely it is not installed - {e.Message}" );
+                throw;
             }
 
             try
@@ -415,29 +432,6 @@ namespace CumulusUtils
             return;
         }
 
-        // When we are on linux, check if mono >= 6
-        // Return true when version MONO is 6 or higher
-        public bool CheckMonoVersion()
-        {
-            try
-            {
-                int tmp;
-
-                StartProcess( "mono", "-V" );
-                tmp = Convert.ToInt32( returnValues[ 0 ].Substring( 26, 1 ) ); // Skip "Mono JIT compiler version " and get the major version nr
-
-                Sup.LogDebugMessage( $"CheckMonoVersion: detected MONO major version: {tmp} ({returnValues[ 0 ]})" );
-
-                if ( tmp >= 6 ) return true;
-                else return false;
-            }
-            catch ( Exception e )
-            {
-                Sup.LogTraceErrorMessage( $"Can't test MONO major version - {e.Message}" );
-                return false;
-            }
-        } // CheckMonoVersion
-
         private void StartProcess( string command, string parameters )
         {
             Sup.LogTraceInfoMessage( "StartProcess " + command + " " + parameters );
@@ -528,6 +522,7 @@ namespace CumulusUtils
         }
 
         [DllImport( "libc" )]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Interoperability", "SYSLIB1054:Use 'LibraryImportAttribute' instead of 'DllImportAttribute' to generate P/Invoke marshalling code at compile time", Justification = "<Pending>" )]
         static extern int uname( IntPtr buf );
 
         static bool IsRunningOnMac()

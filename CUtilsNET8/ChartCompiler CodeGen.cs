@@ -89,15 +89,7 @@ namespace CumulusUtils
             {
                 bool UseHighchartsBoostModule = Sup.GetUtilsIniValue( "Graphs", "UseHighchartsBoostModule", "true" ).Equals( "true", CUtils.Cmp );
 
-                Html.AppendLine( "<!--" );
-                Html.AppendLine( $" This file is generated as part of CumulusUtils - {DateTime.Now}" );
-                Html.AppendLine( " This header must not be removed and the user must comply to the Creative Commons 4.0 license" );
-                Html.AppendLine( " The license conditions imply the non-commercial use of HighCharts for which the user is held responsible" );
-                Html.AppendLine( $" © Copyright 2019 - {DateTime.Now:yyyy} Hans Rottier <hans.rottier@gmail.com>" );
-                Html.AppendLine( " See also License conditions of CumulusUtils: https://meteo-wagenborgen.nl/" );
-                Html.AppendLine( "-->" );
-
-                Html.AppendLine( Sup.GenjQueryIncludestring() );
+                Html.AppendLine( CuSupport.GenjQueryIncludestring() );
 
                 if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes && TheseChartsUseInfo )
                     Html.AppendLine( "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.2/jquery.modal.min.js\"  crossorigin=\"anonymous\" referrerpolicy=\"no-referrer\"></script>" +
@@ -163,7 +155,7 @@ namespace CumulusUtils
                 foreach ( string df in theseDatafiles )
                 {
                     if ( !string.IsNullOrEmpty( df ) )
-                        GenericJavascript.AppendLine( $", {df.Substring( 0, df.IndexOf( '.' ) )}Ajax()" );
+                        GenericJavascript.AppendLine( $", {df[ ..df.IndexOf( '.' ) ]}Ajax()" );
                 }
 
                 // Add the WindBarbs line
@@ -207,7 +199,7 @@ namespace CumulusUtils
                 {
                     if ( !string.IsNullOrEmpty( df ) )
                     {
-                        AjaxJavascript.AppendLine( $"function {df.Substring( 0, df.IndexOf( '.' ) )}Ajax(){{" );
+                        AjaxJavascript.AppendLine( $"function {df[ ..df.IndexOf( '.' ) ]}Ajax(){{" );
 
                         foreach ( AllVarInfo avi in AllVars )
                             if ( df == avi.Datafile )
@@ -410,7 +402,7 @@ namespace CumulusUtils
 
                     foreach ( Plotvar thisPlotvar in thisChart.PlotVars )
                     {
-                        string pvSuffix = thisPlotvar.PlotVar.Length > 2 ? thisPlotvar.PlotVar.Substring( 3 ) : "";
+                        string pvSuffix = thisPlotvar.PlotVar.Length > 2 ? thisPlotvar.PlotVar[ 3.. ] : "";
 
                         if ( thisPlotvar.GraphType == "columnrange" )
                         {
@@ -494,7 +486,7 @@ namespace CumulusUtils
                             AddSeriesJavascript.AppendLine( $"    id:'{thisPlotvar.GraphType}{thisPlotvar.Keyword}'," );
                             AddSeriesJavascript.AppendLine( $"    linkedTo:'{thisPlotvar.Keyword}'," );
                             AddSeriesJavascript.AppendLine( $"    showInLegend:true," );
-                            AddSeriesJavascript.AppendLine( $"    params: {{period: {Sup.GetUtilsIniValue( "Graphs", "PeriodMovingAverage", "180" )} }}," );
+                            AddSeriesJavascript.AppendLine( $"    params: {{period: {thisPlotvar.Period} }}," );
                         }
                         else
                         {
@@ -611,6 +603,8 @@ namespace CumulusUtils
                         }
                     }
                 }
+
+                of.WriteLine( CuSupport.CopyrightForGeneratedFiles() );
 
 #if !RELEASE
                 of.WriteLine( Html );
@@ -1066,7 +1060,7 @@ namespace CumulusUtils
                         if ( p.GraphType == "columnrange" )
                         {
                             Sup.LogTraceInfoMessage( $"CeckAllVariablesInThisSetOfCharts: ColumnRange var {p.Keyword}" );
-                            string pvSuffix = p.PlotVar.Substring( 3 );
+                            string pvSuffix = p.PlotVar[ 3.. ];
 
                             tmpVarInfo.Datafile = p.Datafile;
                             tmpVarInfo.KeywordName = $"min{pvSuffix}";

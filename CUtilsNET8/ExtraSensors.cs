@@ -136,7 +136,7 @@ namespace CumulusUtils
                 // Generate the start of the realtime script
                 //
 
-                sb.AppendLine( $"{Sup.GenjQueryIncludestring()}" );
+                sb.AppendLine( $"{CuSupport.GenjQueryIncludestring()}" );
 
                 if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes )
                 {
@@ -911,7 +911,7 @@ namespace CumulusUtils
                     File.Copy( Filename, filenameCopy );
 
                     theseLines = File.ReadAllLines( filenameCopy );
-                    thislineFields = theseLines[ theseLines.Length - 1 ].Split( theseLines[ 0 ][ 8 ] );
+                    thislineFields = theseLines[ ^1 ].Split( theseLines[ 0 ][ 8 ] );
 
                     int FieldInUse = (int) ExtraSensorslogFieldName.CO2;
 

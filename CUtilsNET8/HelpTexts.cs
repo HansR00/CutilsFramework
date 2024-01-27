@@ -133,6 +133,7 @@ namespace CumulusUtils
 
         #region GetHelptext
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Performance", "CA1854:Prefer the 'IDictionary.TryGetValue(TKey, out TValue)' method", Justification = "<Pending>" )]
         public string GetHelpText( string key )
         {
             string retval;

@@ -31,10 +31,10 @@ using System.Text;
 
 namespace CumulusUtils
 {
-    public class Records
+    public class Records( CuSupport s )
     {
         readonly string[] m = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };  //Culture independent, just strings to compare
-        readonly CuSupport Sup;
+        readonly CuSupport Sup = s;
 
         enum MeasurementRecords { Tmax, Tmin, Rrate, Rhour, Rday, Rmonth, Ryear, Wgust, Wrun, Waverage, Plow, Phigh };
 
@@ -50,11 +50,6 @@ namespace CumulusUtils
         readonly int[] tmpIntArray = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
 
         readonly DateTime Yesterday = DateTime.Today.AddDays( -1 );
-
-        public Records( CuSupport s )
-        {
-            Sup = s;
-        }
 
         public void GenerateRecords( List<DayfileValue> Thislist )
         {
@@ -111,7 +106,7 @@ namespace CumulusUtils
                     if ( count == 1 ) yearlist = Thislist.Where( x => x.ThisDate.Year == thisYear );
                 }
 
-                if ( yearlist.Count() == 0 ) continue;
+                if ( !yearlist.Any() ) continue;
 
                 if ( count == 0 ) Sup.LogTraceInfoMessage( $"Generate Records for AllTime" );
                 else Sup.LogTraceInfoMessage( $"Generate Records for {thisYear}" );
@@ -163,7 +158,7 @@ namespace CumulusUtils
                     // See NOTE above for the yearlist!!
                     if ( i == 0 ) monthlist = yearlist.Where( x => x.ThisDate.Month == ( i + 1 ) );
 
-                    if ( monthlist.Count() == 0 ) continue;
+                    if ( !monthlist.Any() ) continue;
 
                     if ( count == 0 ) Sup.LogTraceInfoMessage( $"Generate Records for AllTime/month: {i + 1}" );
                     else Sup.LogTraceInfoMessage( $"Generate Records for {thisYear}/month: {i + 1}" );
@@ -235,7 +230,10 @@ namespace CumulusUtils
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.RecordsOutputFilename}", false, Encoding.UTF8 ) )
             {
-                of.WriteLine( $"{Sup.GenjQueryIncludestring()}" );
+                of.WriteLine( CuSupport.CopyrightForGeneratedFiles() );
+
+                of.WriteLine( $"{CuSupport.GenjQueryIncludestring()}" );
+
                 of.WriteLine( "<script>" );
                 of.WriteLine( "$(function() {" );
                 of.WriteLine( "  $('.jqueryOptions').hide();" );

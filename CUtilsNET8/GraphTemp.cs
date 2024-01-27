@@ -399,11 +399,9 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "});" );
         }
 
-
         private void GenerateHeatMap( List<DayfileValue> Thislist, StringBuilder thisBuffer )
         {
             StringBuilder sb = new StringBuilder();
-            ;
 
             Sup.LogDebugMessage( "Generate Heat Map Start" );
 
@@ -461,8 +459,8 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "  tickInterval: 1," );
             thisBuffer.AppendLine( "  startOnTick: false," );
             thisBuffer.AppendLine( "  endOnTick: false," );
-            thisBuffer.AppendLine( $"  min: {YearMin}," );
-            thisBuffer.AppendLine( $"  max: {( SplitHeatmapPages ? YearMin + HeatmapNrOfYearsPerPage : YearMax )}" );
+            thisBuffer.AppendLine( $"  min: {( SplitHeatmapPages ? YearMax - HeatmapNrOfYearsPerPage : YearMin )}," );
+            thisBuffer.AppendLine( $"  max: {YearMax}" );
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "colorAxis:" );
             thisBuffer.AppendLine( "{" );

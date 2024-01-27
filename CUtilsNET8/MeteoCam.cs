@@ -44,11 +44,7 @@ namespace CumulusUtils
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.MeteoCamOutputFilename}", false, Encoding.UTF8 ) )
             {
-                of.WriteLine( "<!-- This file is generated as part of CumulusUtils - 18-11-2023 04:52:37 " +
-                    "This header must not be removed and the user must comply to the Creative Commons 4.0 license " +
-                    "The license conditions imply the non-commercial use of HighCharts for which the user is held responsible " +
-                    "© Copyright 2019 - 2023 Hans Rottier <hans.rottier@gmail.com> " +
-                    "See also License conditions of CumulusUtils: https://meteo-wagenborgen.nl/ -->" );
+                of.WriteLine( CuSupport.CopyrightForGeneratedFiles() );
 
                 switch ( MeteoCamType )
                 {

@@ -88,6 +88,7 @@ namespace CumulusUtils
         public int LineWidth;             // The LineWidth
         public double Opacity;            // The LineWidth
         public string GraphType;          // like 'line', spline etc...
+        public int Period;                // For the Period for the SMA, if not given then parameter: [Compiler] SmaPeriod 
         public AxisType Axis;             // For fast access to the type needed
         public string AxisId;             // For fast access to the type needed
         public int zIndex;                // the zIndex plane for the plotorder (e.g. to get a  line before an area so it can be seen)
