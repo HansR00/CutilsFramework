@@ -359,7 +359,7 @@ namespace CumulusUtils
                 }
 
                 return null;
-             }
+            }
             catch ( IndexOutOfRangeException e )
             {
                 const string m = "MonthfileValue.SetValues";

@@ -43,10 +43,8 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentFTP;
 using FluentFTP.Exceptions;
-using FluentFTP.Helpers;
 using Renci.SshNet;
 using Renci.SshNet.Common;
-using ServiceStack.Text;
 
 namespace CumulusUtils
 {
