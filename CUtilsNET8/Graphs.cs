@@ -741,13 +741,15 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "</script>" );
 
                     // Wait for the Info text event procedure to be placed correctly.
-                    //thisBuffer.AppendLine( GenerateChartInfoModal( chartId: "WindRose", Title: Sup.GetCUstringValue( "Graphs", "WindRose", "Wind Rose", true ) ) );
+                    // thisBuffer.AppendLine( GenerateChartInfoModal( chartId: "WindRose", Title: Sup.GetCUstringValue( "Graphs", "WindRose", "Wind Rose", true ) ) );
 
                     thisBuffer.AppendLine( "<script>" );
                     thisBuffer.AppendLine( $"function graphAllYears()" );
                     thisBuffer.AppendLine( "{" );
                     if ( GraphWindrun )
                     {
+                        Sup.LogDebugMessage( $"GenerateWindrunStatistics: Start" );         // Write only once
+
                         GenerateWindrunStatistics( ThisList, thisBuffer, 0 );
                         thisBuffer.AppendLine( ActivateChartInfo( chartId: "WindRun" ) );
                     }
@@ -791,7 +793,7 @@ namespace CumulusUtils
                 CUtils.ThriftySolarGraphsDirty = true;
                 List<MonthfileValue> thisMonthList;
 
-                Sup.LogDebugMessage( "Graphs : Start Solar section" );
+                Sup.LogTraceInfoMessage( "Graphs : Start Solar section" );
 
                 // The MonthfileMainlist is created at the start of graphs
                 // Check in the Monthfile Class itself whether the list has already been created because it may have been asked
@@ -866,7 +868,7 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "</p>" );
                     thisBuffer.AppendLine( "</div>" );
 
-                    Sup.LogDebugMessage( "Graphs : Start writing HTML Style and Menu." );
+                    Sup.LogTraceInfoMessage( "Graphs : Start writing HTML Style and Menu." );
 
                     thisBuffer.AppendLine( "<div id='report'>" );
                     thisBuffer.AppendLine( "<br/>" );

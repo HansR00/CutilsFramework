@@ -150,7 +150,7 @@ namespace CumulusUtils
                 of.WriteLine( "</script>" );
             }
 
-            Sup.LogDebugMessage( " GenerateStationMap: End" );
+            Sup.LogTraceInfoMessage( " GenerateStationMap: End" );
 
             return;
         }

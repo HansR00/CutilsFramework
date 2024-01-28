@@ -87,7 +87,7 @@ namespace CumulusUtils
 
             int thisYear = YearMin - 1;
 
-            Sup.LogDebugMessage( "Generate Yearly Records" );
+            Sup.LogTraceInfoMessage( "Generate Yearly Records" );
 
             // Remember the indexcounters always need to be one higher becauze the alltime arrays are before it 
             for ( int count = 0; count <= NrOfYears; count++ )

@@ -112,7 +112,7 @@ namespace CumulusUtils
             GenerateExtraSensorsCharts();
             GenerateExtraSensorsModule();
 
-            Sup.LogDebugMessage( "DoExtraSensors - Stop" );
+            Sup.LogTraceInfoMessage( "DoExtraSensors - Stop" );
 
             return;
         }
@@ -485,7 +485,7 @@ namespace CumulusUtils
 
             List<string> CutilsChartsMods;
 
-            Sup.LogDebugMessage( $"GenerateExtraSensorsCharts: Generating the ExtraSensor Charts CDL code into {Sup.PathUtils}{Sup.CutilsChartsDef}..." );
+            Sup.LogTraceInfoMessage( $"GenerateExtraSensorsCharts: Generating the ExtraSensor Charts CDL code into {Sup.PathUtils}{Sup.CutilsChartsDef}..." );
 
             if ( !File.Exists( $"{Sup.PathUtils}{Sup.CutilsChartsDef}" ) )
             {
@@ -494,7 +494,7 @@ namespace CumulusUtils
                 return;
             }
 
-            Sup.LogDebugMessage( $"GenerateExtraSensorsCharts: Testing UserModificationExtraSensorCharts: {Sup.GetUtilsIniValue( "ExtraSensors", "UserModificationExtraSensorCharts", "false" )}" );
+            Sup.LogTraceInfoMessage( $"GenerateExtraSensorsCharts: Testing UserModificationExtraSensorCharts: {Sup.GetUtilsIniValue( "ExtraSensors", "UserModificationExtraSensorCharts", "false" )}" );
             if ( Sup.GetUtilsIniValue( "ExtraSensors", "UserModificationExtraSensorCharts", "false" ).Equals( "true", CUtils.Cmp ) ) return;
 
             CutilsChartsIn = File.ReadAllLines( $"{Sup.PathUtils}{Sup.CutilsChartsDef}" );
@@ -597,7 +597,7 @@ namespace CumulusUtils
                 CutilsChartsMods.Add( "" );
             }
 
-            Sup.LogDebugMessage( $"GenerateExtraSensorsCharts: Writing the CutilsCharts.def" );
+            Sup.LogTraceInfoMessage( $"GenerateExtraSensorsCharts: Writing the CutilsCharts.def" );
             File.WriteAllLines( $"{Sup.PathUtils}{Sup.CutilsChartsDef}", CutilsChartsMods, Encoding.UTF8 );
 
             return;
@@ -692,7 +692,7 @@ namespace CumulusUtils
             {
                 StringBuilder sb = new StringBuilder();
 
-                Sup.LogDebugMessage( $"GenerateExtraSensorsRealtime: Writing the ExtraSensors realtime file for the actual sensors found" );
+                Sup.LogTraceInfoMessage( $"GenerateExtraSensorsRealtime: Writing the ExtraSensors realtime file for the actual sensors found" );
 
                 foreach ( ExtraSensor tmp in ExtraSensorList )
                 {
@@ -764,7 +764,7 @@ namespace CumulusUtils
                     }
                 }
 
-                Sup.LogDebugMessage( $"GenerateExtraSensorsRealtime: {sb}" );
+                Sup.LogTraceInfoMessage( $"GenerateExtraSensorsRealtime: {sb}" );
 
                 of.Write( sb );
             }

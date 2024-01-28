@@ -666,13 +666,14 @@ namespace CumulusUtils
         private void GenerateYearMonthTempStatistics( List<DayfileValue> Thislist, Months thisMonth, StringBuilder thisBuffer )
         {
             StringBuilder sb = new StringBuilder();
-            ;
 
             List<int> years = new List<int>();
             List<float> average = new List<float>();
             List<float> stddev = new List<float>();
             List<float> mintemp = new List<float>();
             List<float> maxtemp = new List<float>();
+
+            Sup.LogDebugMessage( "Generate GenerateYearMonthTempStatistics Start" );
 
             for ( int i = YearMin; i <= YearMax; i++ )
             {

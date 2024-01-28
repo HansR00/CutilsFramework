@@ -83,7 +83,7 @@ namespace CumulusUtils
             int i;
 
             Sup = s;
-            Sup.LogDebugMessage( $"Main CmulusUtils: Yadr Constructor Start" );
+            Sup.LogTraceInfoMessage( $"Main CmulusUtils: Yadr Constructor Start" );
 
             Windrunbase = Windrunstep = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "WindrunClassWidth", "75" ), CUtils.Inv );
             // Windrunbase = Windrunstep = 75;

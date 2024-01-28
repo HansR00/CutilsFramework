@@ -98,7 +98,7 @@ namespace CumulusUtils
             Sup = s;
             Isup = i;
 
-            Sup.LogDebugMessage( $"PwsFWIfuncs constructor" );
+            Sup.LogTraceInfoMessage( $"PwsFWIfuncs constructor" );
 
             Analyse = Convert.ToInt32( Sup.GetUtilsIniValue( "pwsFWI", "Analyse", "30" ), CUtils.Inv );
             WarningLevel = Convert.ToInt32( Sup.GetUtilsIniValue( "pwsFWI", "WarningLevel", "5" ), CUtils.Inv );
@@ -185,7 +185,7 @@ namespace CumulusUtils
                 if ( Analyse > DaysRequiredForHTML )
                 {
                     Sup.LogDebugMessage( "calculatePwsFWI : ANALYSE is ON" );
-                    Sup.LogDebugMessage( "calculatePwsFWI : Opening ANALYSIS output" );
+                    Sup.LogTraceInfoMessage( "calculatePwsFWI : Opening ANALYSIS output" );
 
                     if ( Analyse > ThisList.Count )
                         startValue = 0;

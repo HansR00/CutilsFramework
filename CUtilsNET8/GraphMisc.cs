@@ -389,8 +389,8 @@ namespace CumulusUtils
                     }
                     catch ( Exception e )
                     {
-                        Sup.LogDebugMessage( $"GenTempSum : Exception {e.Message}" );
-                        Sup.LogDebugMessage( $"GenTempSum : Exception year: {year}, i: {i}, yearList.count: {yearList.Count}" );
+                        Sup.LogTraceInfoMessage( $"GenTempSum : Exception {e.Message}" );
+                        Sup.LogTraceInfoMessage( $"GenTempSum : Exception year: {year}, i: {i}, yearList.count: {yearList.Count}" );
                         Environment.Exit( 0 );
                     }
 
@@ -520,8 +520,8 @@ namespace CumulusUtils
                     }
                     catch ( Exception e )
                     {
-                        Sup.LogDebugMessage( $"GenTempSum : Exception {e.Message}" );
-                        Sup.LogDebugMessage( $"GenTempSum : Exception year: {year}, i: {i}, yearList.count: {yearList.Count}" );
+                        Sup.LogTraceInfoMessage( $"GenTempSum : Exception {e.Message}" );
+                        Sup.LogTraceInfoMessage( $"GenTempSum : Exception year: {year}, i: {i}, yearList.count: {yearList.Count}" );
                         Environment.Exit( 0 );
                     }
 

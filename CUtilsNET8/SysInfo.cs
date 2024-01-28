@@ -58,7 +58,7 @@ namespace CumulusUtils
         {
             int DeviceType;
 
-            Sup.LogDebugMessage( "SystemStatus : starting" );
+            Sup.LogTraceInfoMessage( "SystemStatus : starting" );
 
             thisInfo = await thisIPC.GetCMXInfoAsync();
             Sup.LogDebugMessage( $"CumulusMX Version: {thisInfo.Version} build {thisInfo.Build}" );

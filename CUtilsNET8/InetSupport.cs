@@ -289,7 +289,7 @@ namespace CumulusUtils
             string URL = "";
             string Dir = "";
 
-            //Sup.LogDebugMessage( $"UploadFile: Start {localfile} => {remotefile}" );
+            Sup.LogDebugMessage( $"UploadFile: Start {localfile} => {remotefile}" );
 
             // No reason to upload if there is  no file or destination
             if ( string.IsNullOrEmpty( remotefile ) || string.IsNullOrEmpty( localfile ) ) { Sup.LogTraceErrorMessage( $"UploadFile: Nothing uploaded either in or outfile are empty." ); return false; }

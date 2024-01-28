@@ -92,7 +92,7 @@ namespace CumulusUtils
             List<float> minSolarHours = new List<float>();
             List<float> maxSolarHours = new List<float>();
 
-            Sup.LogDebugMessage( "GenerateSolarHoursYearStatistics: Start" );
+            Sup.LogDebugMessage( "GenerateYearSolarHoursStatistics: Start" );
 
             for ( int i = YearMin; i <= YearMax; i++ )
             {
@@ -418,7 +418,7 @@ namespace CumulusUtils
             List<float> minSolarEnergy = new List<float>();
             List<float> maxSolarEnergy = new List<float>();
 
-            Sup.LogDebugMessage( "Generate GenerateSolarEnergyYearStatistics Start" );
+            Sup.LogDebugMessage( "Generate GenerateYearSolarEnergyStatistics Start" );
 
             for ( int i = YearMin; i <= YearMax; i++ )
             {
@@ -840,7 +840,7 @@ namespace CumulusUtils
                             $"{tmp.SolarHours.ToString( "F1", CUtils.ThisCulture )}" );
                     }
 
-                    Sup.LogDebugMessage( "Writing CSV DailySolarEnergy : Done" );
+                    Sup.LogTraceInfoMessage( "Writing CSV DailySolarEnergy : Done" );
                 }
             }
 

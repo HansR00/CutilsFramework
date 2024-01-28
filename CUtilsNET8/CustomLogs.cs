@@ -175,7 +175,7 @@ namespace CumulusUtils
 
             GenerateCustomLogsDataJson( NonIncremental: true );
 
-            Sup.LogDebugMessage( "DoCustomLogs - Stop" );
+            Sup.LogTraceInfoMessage( "DoCustomLogs - Stop" );
 
             return;
         }
@@ -356,7 +356,7 @@ namespace CumulusUtils
                     }
                 }
 
-                Sup.LogDebugMessage( $"GenerateCustomLogsRealtime: {sb}" );
+                Sup.LogTraceInfoMessage( $"GenerateCustomLogsRealtime: {sb}" );
 
                 of.Write( sb );
             }
@@ -385,7 +385,7 @@ namespace CumulusUtils
                 return;
             }
 
-            Sup.LogDebugMessage( $"GenerateCustomLogsCharts: Testing UserModificationCustomLogsCharts: {Sup.GetUtilsIniValue( "CustomLogs", "UserModificationCustomLogsCharts", "false" )}" );
+            Sup.LogTraceInfoMessage( $"GenerateCustomLogsCharts: Testing UserModificationCustomLogsCharts: {Sup.GetUtilsIniValue( "CustomLogs", "UserModificationCustomLogsCharts", "false" )}" );
 
             if ( Sup.GetUtilsIniValue( "CustomLogs", "UserModificationCustomLogsCharts", "false" ).Equals( "true", CUtils.Cmp ) ) return;
 
@@ -436,7 +436,7 @@ namespace CumulusUtils
                 CutilsChartsMods.Add( "" );
             }
 
-            Sup.LogDebugMessage( "GenerateCustomLogsCharts: Writing the CutilsCharts.def" );
+            Sup.LogTraceInfoMessage( "GenerateCustomLogsCharts: Writing the CutilsCharts.def" );
             File.WriteAllLines( $"{Sup.PathUtils}{Sup.CutilsChartsDef}", CutilsChartsMods, Encoding.UTF8 );
 
             return;

@@ -106,8 +106,8 @@ namespace CumulusUtils
                     // I do this to oblige the user to actually fill in correct data for his website (which he needs for use of CumulusUtils
                     // I do not physically check the site because it may not yet be online, but that could be a next step.
 
-                    Sup.LogDebugMessage( "Maps->MapsOn: Name, Website, Latitude and Longitude are compulsory so exit here!!" );
-                    Sup.LogDebugMessage( "See forum Post 'For New Users' (https://cumulus.hosiene.co.uk/viewtopic.php?f=44&t=18226)." );
+                    Sup.LogTraceInfoMessage( "Maps->MapsOn: Name, Website, Latitude and Longitude are compulsory so exit here!!" );
+                    Sup.LogTraceInfoMessage( "See forum Post 'For New Users' (https://cumulus.hosiene.co.uk/viewtopic.php?f=44&t=18226)." );
                     Environment.Exit( 0 );
                 }
             }
@@ -269,7 +269,7 @@ namespace CumulusUtils
                 }
             }
 
-            Sup.LogDebugMessage( $"CreateMap: {fileCount} MapsOff files handled for Map." );
+            Sup.LogTraceInfoMessage( $"CreateMap: {fileCount} MapsOff files handled for Map." );
 
             // Check if the station in the database is passed its date
 
@@ -309,7 +309,7 @@ namespace CumulusUtils
                 }
             }
 
-            Sup.LogDebugMessage( $"CreateMap: {fileCount} Stations removed of Map on basis  of timeout." );
+            Sup.LogTraceInfoMessage( $"CreateMap: {fileCount} Stations removed of Map on basis  of timeout." );
 
 
             #endregion
@@ -346,13 +346,13 @@ namespace CumulusUtils
                 catch ( Exception e )
                 {
                     Sup.LogTraceErrorMessage( $"GenUtilsMap: Exception: {e.Message}" );
-                    Sup.LogDebugMessage( $"GenUtilsMap: Continuing from error in file {thisFile}." );
+                    Sup.LogTraceInfoMessage( $"GenUtilsMap: Continuing from error in file {thisFile}." );
                 }
 
                 File.Delete( thisFile );
             } // Foreach loop over all signature files
 
-            Sup.LogDebugMessage( $"CreateMap: {localFiles.Length} MapsOn files handled for Map." );
+            Sup.LogTraceInfoMessage( $"CreateMap: {localFiles.Length} MapsOn files handled for Map." );
 
             #endregion
 
@@ -442,7 +442,7 @@ namespace CumulusUtils
                 catch ( Exception e )
                 {
                     Sup.LogTraceErrorMessage( $"GenUtilsMap: Exception: {e.Message}" );
-                    Sup.LogDebugMessage( $"GenUtilsMap: Continuing from error, Map has been generated, none or partial Stations on Map!" );
+                    Sup.LogTraceInfoMessage( $"GenUtilsMap: Continuing from error, Map has been generated, none or partial Stations on Map!" );
                 }
 
                 of.WriteLine( "}" );
@@ -451,7 +451,7 @@ namespace CumulusUtils
                 of.WriteLine( $"<br/><div style ='margin-left:auto; margin-right:auto; text-align:center; font-size: 12px;'>" +
                               $"{CuSupport.FormattedVersion()} - {CuSupport.Copyright()} </div>" );
 
-                Sup.LogDebugMessage( $"CreateMap: {fileCount} Stations on this Map." );
+                Sup.LogTraceInfoMessage( $"CreateMap: {fileCount} Stations on this Map." );
             }
 
             #endregion

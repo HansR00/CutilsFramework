@@ -603,13 +603,14 @@ namespace CumulusUtils
         private void GenerateYearMonthRainStatistics( List<DayfileValue> Thislist, Months thisMonth, StringBuilder thisBuffer )
         {
             StringBuilder sb = new StringBuilder();
-            ;
 
             List<int> years = new List<int>();
             List<float> average = new List<float>();
             List<float> stddev = new List<float>();
             List<float> minrain = new List<float>();
             List<float> maxrain = new List<float>();
+
+            Sup.LogDebugMessage( "GenerateYearMonthRainStatistics : starting" );
 
             for ( int i = YearMin; i <= YearMax; i++ )
             {

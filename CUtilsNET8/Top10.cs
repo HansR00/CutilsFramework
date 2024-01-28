@@ -453,7 +453,7 @@ namespace CumulusUtils
 
                 //Sup.LogTraceInfoMessage( $"Thrifty: !Thrifty || ThriftyTop10RecordsDirty - {!CUtils.Thrifty || CUtils.ThriftyTop10RecordsDirty} => Top10 , NO HTML generated!" );
 
-                Sup.LogDebugMessage( "Top10funcs: Completed, returning from generating the Top10 list" );
+                Sup.LogTraceInfoMessage( "Top10funcs: Completed, returning from generating the Top10 list" );
             }
             catch ( Exception e ) // Not yet 32 days
             {
@@ -478,7 +478,7 @@ namespace CumulusUtils
 
             const int AttentionPeriod = 30;
 
-            Sup.LogDebugMessage( "HTMLexportTop10 : starting Style" );
+            Sup.LogDebugMessage( "HTMLexportTop10" );
 
             using ( StreamWriter of = new( $"{Sup.PathUtils}{Sup.Top10OutputFilename}", false, Encoding.UTF8 ) )
             {
@@ -668,7 +668,7 @@ namespace CumulusUtils
                 of.WriteLine( "</div>" ); // (id=report)
                 of.WriteLine( "</div>" ); // (id=reportBox)
 
-                Sup.LogDebugMessage( $"HTMLexportTop10 : Ready generating HTML" );
+                Sup.LogTraceInfoMessage( $"HTMLexportTop10 : Ready generating HTML" );
 
             } // End using of (output file)
         }

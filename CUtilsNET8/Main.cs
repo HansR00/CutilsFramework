@@ -836,7 +836,7 @@ namespace CumulusUtils
                         }
                     }
 
-                    Sup.LogDebugMessage( $"DoAirLink / AirQualitySensor  = {DoAirLink} / {HasAirLink}" );
+                    Sup.LogTraceInfoMessage( $"DoAirLink / AirQualitySensor  = {DoAirLink} / {HasAirLink}" );
                     if ( HasAirLink )
                     {
                         Sup.LogTraceInfoMessage( $"UserAskedData Doing the AirQuality stuff..." );
@@ -1099,7 +1099,7 @@ namespace CumulusUtils
 
             foreach ( string s in args )
             {
-                Sup.LogDebugMessage( $" CommandLineArgs : handling arg: {s}" );
+                Sup.LogTraceInfoMessage( $" CommandLineArgs : handling arg: {s}" );
 
                 if ( s.Equals( "Website", Cmp ) )
                 {
@@ -1160,7 +1160,7 @@ namespace CumulusUtils
                 }
             }
 
-            Sup.LogDebugMessage( "CommandLineArgs : End" );
+            Sup.LogTraceInfoMessage( "CommandLineArgs : End" );
         } // Commandline handling
 
         #endregion

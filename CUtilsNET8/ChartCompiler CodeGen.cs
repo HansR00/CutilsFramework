@@ -612,7 +612,7 @@ namespace CumulusUtils
                 of.WriteLine( CuSupport.StringRemoveWhiteSpace( Html.ToString(), " " ) );
 #endif
 
-                Sup.LogDebugMessage( $"Compiler - CodeGen: {filename} Finished" );
+                Sup.LogTraceInfoMessage( $"Compiler - CodeGen: {filename} Finished" );
             } // using output file
         } // End Function GenerateUserDefinedCharts
 
@@ -631,7 +631,7 @@ namespace CumulusUtils
 
             //Plotvar thisPlotvar;
 
-            Sup.LogDebugMessage( $"Compiler - Creating Axis for {thisChart.Id} " );
+            Sup.LogTraceInfoMessage( $"Compiler - Creating Axis for {thisChart.Id} " );
 
             if ( AxisSet.Equals( AxisType.None ) ) NoClosingAddAxis = true;
 

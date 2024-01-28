@@ -63,7 +63,7 @@ namespace CumulusUtils
                 }
             }
 
-            Sup.LogDebugMessage( "MeteoCam: End" );
+            Sup.LogTraceInfoMessage( "MeteoCam: End" );
 
             return;
         }

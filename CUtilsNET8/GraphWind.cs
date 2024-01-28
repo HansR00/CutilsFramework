@@ -234,7 +234,7 @@ namespace CumulusUtils
         #region WindRun
         private void GenerateWindrunStatistics( List<DayfileValue> thisList, StringBuilder thisBuffer, int year )
         {
-            Sup.LogDebugMessage( $"GenerateWindrunStatistics: Start {year}" );
+            Sup.LogTraceInfoMessage( $"GenerateWindrunStatistics: Start {year}" );
 
             StringBuilder sb = new StringBuilder();
             List<int> WindrunMonthData;
@@ -372,7 +372,7 @@ namespace CumulusUtils
             MonthsNotPresentYearMax = tmpIntArray.Except( yearlist.Select( x => x.ThisDate.Month ).Distinct() ).ToArray();
             MonthsNotPresentAllYears = tmpIntArray.Except( thisList.Select( x => x.ThisDate.Month ).Distinct() ).ToArray();
 
-            Sup.LogDebugMessage( "Generate WindRose : Start writing the javascript menu." );
+            Sup.LogTraceInfoMessage( "Generate WindRose : Start writing the javascript menu." );
 
             thisBuffer.AppendLine( "<script>" );
             thisBuffer.AppendLine( "$(function() {" );
@@ -569,7 +569,7 @@ namespace CumulusUtils
         #region PrevNextMenu WindRun
         private void GenerateWindRunPrevNextYearMenu( StringBuilder thisBuffer )
         {
-            Sup.LogDebugMessage( "Generate Windrun : Start writing the javascript menu." );
+            Sup.LogTraceInfoMessage( "Generate Windrun : Start writing the javascript menu." );
 
             thisBuffer.AppendLine( "<script>" );
             thisBuffer.AppendLine( "$(function() {" );

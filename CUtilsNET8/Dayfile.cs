@@ -138,7 +138,7 @@ namespace CumulusUtils
             Sup.LogDebugMessage( "Dayfile: Reading the dayfile.txt..." );
             lines = File.ReadAllLines( filename );
 
-            Sup.LogDebugMessage( "Dayfile: Detecting Separators..." );
+            Sup.LogTraceInfoMessage( "Dayfile: Detecting Separators..." );
             Sup.DetectSeparators( lines[ 0 ] );
 
             enumFieldTypeNames = Enum.GetNames( typeof( FieldName ) );
@@ -416,7 +416,7 @@ namespace CumulusUtils
 
         ~Dayfile()
         {
-            Sup.LogDebugMessage( "Dayfile destructor: Closing file and ending program" );
+            Sup.LogTraceInfoMessage( "Dayfile destructor: Closing file and ending program" );
             Dispose( false );
         }
 

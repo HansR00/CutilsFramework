@@ -175,7 +175,7 @@ namespace CumulusUtils
                     if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
                     File.Copy( file, filenameCopy );
 
-                    Sup.LogDebugMessage( $"ReadMonthlyLogs: reading {file}" );
+                    Sup.LogTraceInfoMessage( $"ReadMonthlyLogs: reading {file}" );
 
                     string[] allLines = File.ReadAllLines( filenameCopy );
 

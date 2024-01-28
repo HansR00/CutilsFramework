@@ -103,6 +103,8 @@ namespace CumulusUtils
             string data = null;
             string ext;
 
+            Sup.LogTraceInfoMessage( $"PHP Upload: start {localfile}" );
+
             if ( string.IsNullOrEmpty( localfile ) )
                 Sup.LogTraceWarningMessage( $"InetPhp: The data string is empty, ignoring this upload" );
             else

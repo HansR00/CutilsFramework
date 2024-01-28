@@ -41,7 +41,7 @@ namespace CumulusUtils
         {
             Sup = s;
 
-            Sup.LogDebugMessage( "HelpTexts Contructor: start" );
+            Sup.LogDebugMessage( "HelpTexts: start" );
 
             if ( !File.Exists( $"{Sup.PathUtils}{Sup.CUhelptexts}" ) )
             {

@@ -141,7 +141,7 @@ namespace CumulusUtils
         public Airlinklog( CuSupport s )
         {
             Sup = s;
-            Sup.LogDebugMessage( $"Airlinklog constructor: Using fixed path: | data/ |; file: | *log.txt" );
+            Sup.LogTraceInfoMessage( $"Airlinklog constructor: Using fixed path: | data/ |; file: | *log.txt" );
 
             // Get the list of Airlink logfile in the datadirectory and check what type of delimeters we have
             AirlinklogList = Directory.GetFiles( "data/", "AirLink*.txt" );
@@ -149,7 +149,7 @@ namespace CumulusUtils
             if ( AirlinklogList.Length >= 0 )
             {
                 filenameCopy = "data/" + "copy_" + Path.GetFileName( AirlinklogList[ 0 ] );
-                Sup.LogDebugMessage( $"Airlinklog constructor: Using {filenameCopy}" );
+                Sup.LogTraceInfoMessage( $"Airlinklog constructor: Using {filenameCopy}" );
             }
             else
                 return;
@@ -159,7 +159,7 @@ namespace CumulusUtils
 
             lines = File.ReadAllLines( filenameCopy );
 
-            Sup.LogDebugMessage( "Airlinklog constructor: Detecting Separators..." );
+            Sup.LogTraceInfoMessage( "Airlinklog constructor: Detecting Separators..." );
             Sup.DetectSeparators( lines[ 0 ] );
 
 
@@ -224,7 +224,7 @@ namespace CumulusUtils
             string Filename;
 
             Sup.SetStartAndEndForData( out DateTime timeStart, out DateTime timeEnd );
-            Sup.LogDebugMessage( $"AirLinklog: timeStart = {timeStart}; timeEnd = {timeEnd}" );
+            Sup.LogTraceInfoMessage( $"AirLinklog: timeStart = {timeStart}; timeEnd = {timeEnd}" );
 
             AirlinklogValue tmp = new AirlinklogValue();
             MainAirLinkList = new List<AirlinklogValue>();
@@ -232,11 +232,11 @@ namespace CumulusUtils
             Filename = $"data/AirLink{timeStart:yyyy}{timeStart:MM}log.txt";
             if ( !File.Exists( Filename ) )
             {
-                Sup.LogDebugMessage( $"AirLinklog: Require {Filename} to start but it does not exist, aborting AirLinkLog" );
+                Sup.LogTraceInfoMessage( $"AirLinklog: Require {Filename} to start but it does not exist, aborting AirLinkLog" );
                 return MainAirLinkList;
             }
 
-            Sup.LogDebugMessage( $"AirLinklog: Require {Filename} to start" );
+            Sup.LogTraceInfoMessage( $"AirLinklog: Require {Filename} to start" );
 
             while ( !PeriodComplete )
             {
@@ -282,11 +282,11 @@ namespace CumulusUtils
                 {
                     NextFileTried = true;
                     Filename = $"data/AirLink{timeEnd:yyyy}{timeEnd:MM}log.txt";  // Take care of a period passing month boundary
-                    Sup.LogDebugMessage( $"AirLinklog: Require the  next logfile: {Filename}" );
+                    Sup.LogTraceInfoMessage( $"AirLinklog: Require the  next logfile: {Filename}" );
 
                     if ( !File.Exists( Filename ) )
                     {
-                        Sup.LogDebugMessage( $"AirLinklog: {Filename} Does not exist so we need to stop reading" );
+                        Sup.LogTraceInfoMessage( $"AirLinklog: {Filename} Does not exist so we need to stop reading" );
                         PeriodComplete = true;
                     }
                 }

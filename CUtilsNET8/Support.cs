@@ -398,8 +398,6 @@ namespace CumulusUtils
             if ( thisSpan.TotalDays > 1 ) retval = false;
             else retval = true;
 
-            LogDebugMessage( $"DateIsToday returning {retval}" );
-
             return retval;
         }
 
@@ -648,7 +646,7 @@ namespace CumulusUtils
                 Environment.Exit( 0 );
             }
 
-            LogDebugMessage( $"DetectSeparators: date: {DateSeparator} | Field: {FieldSeparator} | Decimal {DecimalSeparator}" );
+            LogTraceInfoMessage( $"DetectSeparators: date: {DateSeparator} | Field: {FieldSeparator} | Decimal {DecimalSeparator}" );
 
             return;
         }
