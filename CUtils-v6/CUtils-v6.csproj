@@ -131,10 +131,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FluentFTP">
-      <Version>49.0.1</Version>
+      <Version>49.0.2</Version>
     </PackageReference>
     <PackageReference Include="MySqlConnector">
-      <Version>2.3.4</Version>
+      <Version>2.3.5</Version>
     </PackageReference>
     <PackageReference Include="ServiceStack.Text">
       <Version>8.0.0</Version>

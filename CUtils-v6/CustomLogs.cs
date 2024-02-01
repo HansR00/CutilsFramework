@@ -1189,7 +1189,9 @@ namespace CumulusUtils
                 "",
                 Sup.StationTemp.Text(),
                 Sup.StationTemp.Text(),
-                "%"
+                "%",
+
+                Sup.StationPressure.Text(),        // 390
             };
 
             TagAxis = new AxisType[]
@@ -1623,7 +1625,9 @@ namespace CumulusUtils
                 AxisType.Free,
                 AxisType.Temp,
                 AxisType.Temp,
-                AxisType.Humidity
+                AxisType.Humidity,
+
+                AxisType.Pressure           // 390
             };
 
             if ( Tagname.Length != TagUnit.Length )
@@ -2120,7 +2124,9 @@ namespace CumulusUtils
             "Tbeaufortnumber",
             "RecentApparent",
             "RecentIndoorTemp",
-            "RecentIndoorHumidity"
+            "RecentIndoorHumidity",
+
+            "stationpressure"
         };
 
     }

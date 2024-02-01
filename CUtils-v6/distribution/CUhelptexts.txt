@@ -1,0 +1,32 @@
+HT_DailyRain = " "
+HT_MonthlyRain = " "
+HT_YearlyRainStats = " "
+HT_YearlyMonthlyRainStats = " "
+
+HT_RAINvsEVT = " The cumulative rain is plotted versus the cumulative evapotranspiration. The latter coming either from the device (Davis) or calculated by CMX. The plot is implemented as a coloured area plot showing a surplus of rain in green and a rain deficit as red. Best is to show some years from the start of the rain season (use the date selector).<br/>
+<br/>
+This chart is an effort to graphically display droughts. It must be understood that EVT is a very complex meteorological aggregate in that it is highly dependent on the interaction between soil, vegetation and meteorology. CMX uses only one equation for all situations on earth. That equation seems to be fitted to the moderate climate. As such it bypasses plant strategies to battle drought and low humidity situations such as the stomata closure and deep rooting. The chart as such must be used with some caution.<br/>
+<br/>
+It is advised to always use the CMX calculation as that would result in comparable charts. CMX uses the <a href=https://www.fao.org/3/x0490e/x0490e08.htm#penman%20monteith%20equation target='_blank'>FAO Penman-Monteith equation</a> with reference to the implementation of Weewx.<br/>
+<br/>
+The user is advised not to take the EvapoTranspiration figures as absolute but, for a good understanding of the complexity of EvapoTranspiration, to study the relevant chapter <a href=https://www.fao.org/3/x0490e/x0490e00.htm#Contents target='_blank'>FAO Crop evapotranspiration - Guidelines for computing crop water requirements - FAO Irrigation and drainage paper 56</a>. <br/>
+<br/>
+(this is a copy of the <a href=https://www.cumuluswiki.org/a/Charts_-_Rain_charts#Rain_versus_EvapoTranspiration_(EVT)  target='_blank'>Wiki entry</a>)<br/> "
+
+HT_MonthlyTemp = " "
+HT_YearlyTempStats = " "
+HT_YearlyMonthlyTempStats = " "
+HT_WarmerDays = " "
+HT_HeatMap = " "
+HT_WindRose = " "
+HT_WindRun = " "
+HT_YearlySolarHRSstats = " "
+HT_YearlyMonthlySolarHRSstats = " "
+HT_YearlyInsolationStats = " "
+HT_YearlyMonthlyInsolationStats = " "
+HT_TempSum = " "
+HT_GrowingDegreeDays = " "
+HT_ThermalSeasons = " "
+HT_DailyEVT = " "
+HT_MonthlyEVT = " "
+HT_ClashOfAverages = " "
