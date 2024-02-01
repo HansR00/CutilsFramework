@@ -133,12 +133,12 @@ namespace CumulusUtils
 
         #region GetHelptext
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Performance", "CA1854:Prefer the 'IDictionary.TryGetValue(TKey, out TValue)' method", Justification = "<Pending>" )]
+        //[System.Diagnostics.CodeAnalysis.SuppressMessage( "Performance", "CA1854:Prefer the 'IDictionary.TryGetValue(TKey, out TValue)' method", Justification = "<Pending>" )]
         public string GetHelpText( string key )
         {
             string retval;
 
-            if ( Helptexts.ContainsKey( key ) ) retval = Helptexts[ key ];
+            if ( Helptexts.TryGetValue( key, out string value ) ) retval = value;
             else
             {
                 Sup.LogTraceWarningMessage( $"HelpTexts unknown {key}, returning empty string" );

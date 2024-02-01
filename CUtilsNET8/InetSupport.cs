@@ -274,6 +274,9 @@ namespace CumulusUtils
             //     Read the first answer, I understand async FTP does not really have large effects and is only really important with UI interaction.
             //     So I leave this as is (and also all FTPs in the project)
 
+            // With V7 and the upgrade of FluentFtp I doubt it still is Async but I leave the call named 'UploadFileAsync'
+            // Only the actual 'clientFluentFTP.UploadFile' has changed and no longer has async in the name
+
             // Immediately return if something was wrong at contructor time
             if ( !FTPvalid && ProtocolUsed == FtpProtocols.PHP )
             {
@@ -289,7 +292,7 @@ namespace CumulusUtils
             string URL = "";
             string Dir = "";
 
-            Sup.LogDebugMessage( $"UploadFile: Start {localfile} => {remotefile}" );
+            Sup.LogTraceInfoMessage( $"UploadFile: Start {localfile} => {remotefile}" );
 
             // No reason to upload if there is  no file or destination
             if ( string.IsNullOrEmpty( remotefile ) || string.IsNullOrEmpty( localfile ) ) { Sup.LogTraceErrorMessage( $"UploadFile: Nothing uploaded either in or outfile are empty." ); return false; }
@@ -393,6 +396,7 @@ namespace CumulusUtils
                                 }
 
                                 // From CMX / Mark Crossley, take care of ECDSA ciphers not implemented in mono
+                                // Apparently also not in dotnet (chekc further)
                                 try
                                 {
 #pragma warning disable CS0642 // Possible mistaken empty statement

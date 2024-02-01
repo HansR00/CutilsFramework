@@ -39,7 +39,7 @@ namespace CumulusUtils
     public class CuSupport : IDisposable
     {
         // Is it a version number beta shown at users?
-        const string beta = "alpha 2";
+        const string beta = "alpha 4";
 
         #region declarations
         public Wind StationWind { get; set; }

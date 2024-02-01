@@ -136,7 +136,9 @@ namespace CumulusUtils
             filename = "data/dayfile.txt";
 
             Sup.LogDebugMessage( "Dayfile: Reading the dayfile.txt..." );
-            lines = File.ReadAllLines( filename );
+
+            try { lines = File.ReadAllLines( filename ); }
+            catch { Sup.LogDebugMessage( "No Dayfile... Graceful exit." ); Environment.Exit( 0 );  }
 
             Sup.LogTraceInfoMessage( "Dayfile: Detecting Separators..." );
             Sup.DetectSeparators( lines[ 0 ] );
