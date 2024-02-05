@@ -140,6 +140,7 @@ namespace CumulusUtils
     public static class GlobConst
     {
         public const double RainLimit = 0.2; //When more or equal than this amount in mm/day this limit is used when necessary
+        public const char CommaSeparator = ',';
     }
 
     public class CUtils
@@ -170,12 +171,11 @@ namespace CumulusUtils
         public static CultureInfo Inv = CultureInfo.InvariantCulture;
         public static CultureInfo ThisCulture;
 
+        public static byte[] CryptoKey { get => cryptoKey; set => cryptoKey = value; }
+        private static byte[] cryptoKey;
+
         public static CuSupport Sup { get; set; }
         public static InetSupport Isup { get; set; }
-
-        //public static CultureInfo Inv { get => inv; set => inv = value; }
-        //public static CultureInfo ThisCulture { get => thisCulture; set => thisCulture = value; }
-        //public static StringComparison Cmp { get => cmp; set => cmp = value; }
 
         public static bool Thrifty { get; private set; }
         public static bool ThriftyRecordsDirty { get; set; }
@@ -254,6 +254,19 @@ namespace CumulusUtils
                 {
                     Console.WriteLine( $" No Cumulus.ini found. Must run in Cumulus directory!" );
                     Environment.Exit( 0 );
+                }
+                else if ( !File.Exists( "UniqueId.txt" ) )
+                {
+                    // UniqueId.txt must exist
+                    Console.WriteLine( $"CumulusMX version 4 must be installed and must have run." );
+                    Environment.Exit( 0 );
+                }
+                else
+                {
+                    string tmp;
+
+                    using ( StreamReader UniqueKey = new( "UniqueId.txt" ) ) tmp = UniqueKey.ReadToEnd();
+                    CryptoKey = Convert.FromBase64String( tmp );
                 }
 
                 if ( !Directory.Exists( "utils" ) ) Directory.CreateDirectory( "utils" );
@@ -395,7 +408,7 @@ namespace CumulusUtils
                                   "      [SysInfo][Forecast][StationMap][UserReports][MeteoCam]\n" +
                                   "      [pwsFWI][Top10][Graphs][Yadr][Records][UserAskedData]\n" +
                                   "      [NOAA][DayRecords][AirLink][CompileOnly][ExtraSensors]\n" );
-                
+
                 Console.WriteLine( "" );
                 Console.WriteLine( "OR (in case you use the website generator):\n" );
                 Console.WriteLine( "  utils/bin/cumulusutils.exe [Thrifty] Website\n" );
@@ -1099,7 +1112,7 @@ namespace CumulusUtils
 
             foreach ( string s in args )
             {
-                Sup.LogTraceInfoMessage( $" CommandLineArgs : handling arg: {s}" );
+                Sup.LogDebugMessage( $" CommandLineArgs : handling arg: {s}" );
 
                 if ( s.Equals( "Website", Cmp ) )
                 {
@@ -1159,8 +1172,6 @@ namespace CumulusUtils
                     }
                 }
             }
-
-            Sup.LogTraceInfoMessage( "CommandLineArgs : End" );
         } // Commandline handling
 
         #endregion

@@ -52,7 +52,7 @@ namespace CumulusUtils
             Sup = s;
 
             PhpUrl = Sup.GetCumulusIniValue( "FTP site", "PHP-URL", "" );
-            PhpSecret = Sup.GetCumulusIniValue( "FTP site", "PHP-Secret", "" );
+            PhpSecret = Crypto.DecryptString( Sup.GetCumulusIniValue( "FTP site", "PHP-Secret", "" ), CUtils.CryptoKey );
             PhpCompression = "none";
 
             // Constructor

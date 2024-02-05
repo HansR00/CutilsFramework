@@ -116,13 +116,11 @@ namespace CumulusUtils
 
                 string[] allLines = File.ReadAllLines( filenameCopy );
 
-                Sup.DetectSeparators( allLines[ 0 ] );
-
                 tmp = new ExternalExtraSensorslogValue();
 
                 foreach ( string line in allLines )
                 {
-                    string[] splitLine = Sup.ChangeSeparators( line ).Split( ' ' );
+                    string[] splitLine = line.Split( GlobConst.CommaSeparator );
 
                     try
                     {

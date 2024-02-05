@@ -28,6 +28,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -39,7 +40,7 @@ namespace CumulusUtils
     public class CuSupport : IDisposable
     {
         // Is it a version number beta shown at users?
-        const string beta = "alpha 4";
+        const string beta = "alpha 5";
 
         #region declarations
         public Wind StationWind { get; set; }
@@ -602,69 +603,69 @@ namespace CumulusUtils
 
         #endregion
 
-        #region Separator handling
+        //#region Separator handling
 
-        public char DateSeparator { get; set; }
-        public char FieldSeparator { get; set; }
-        public char DecimalSeparator { get; set; }
+        //public char DateSeparator { get; set; }
+        //public char FieldSeparator { get; set; }
+        //public char DecimalSeparator { get; set; }
 
-        public void DetectSeparators( string line )
-        {
-            if ( line[ 2 ] == '-' && line[ 8 ] == ';' )
-            {
-                DateSeparator = '-';
-                FieldSeparator = ';';
-                DecimalSeparator = ',';
-            }
-            else if ( line[ 2 ] == '/' && line[ 8 ] == ';' )
-            {
-                DateSeparator = '/';
-                FieldSeparator = ';';
-                DecimalSeparator = ',';
-            }
-            else if ( line[ 2 ] == '.' && line[ 8 ] == ';' )
-            {
-                DateSeparator = '.';
-                FieldSeparator = ';';
-                DecimalSeparator = ',';
-            }
-            else if ( line[ 2 ] == '-' && line[ 8 ] == ',' )
-            {
-                DateSeparator = '-';
-                FieldSeparator = ',';
-                DecimalSeparator = '.';
-            }
-            else if ( line[ 2 ] == '/' && line[ 8 ] == ',' )
-            {
-                DateSeparator = '/';
-                FieldSeparator = ',';
-                DecimalSeparator = '.';
-            }
-            else
-            {
-                LogTraceErrorMessage( "CustomLogs Logreaders: Internal Error - Unkown format of inputfile. Please get help." );
-                Environment.Exit( 0 );
-            }
+        //public void DetectSeparators( string line )
+        //{
+        //    if ( line[ 2 ] == '-' && line[ 8 ] == ';' )
+        //    {
+        //        DateSeparator = '-';
+        //        FieldSeparator = ';';
+        //        DecimalSeparator = ',';
+        //    }
+        //    else if ( line[ 2 ] == '/' && line[ 8 ] == ';' )
+        //    {
+        //        DateSeparator = '/';
+        //        FieldSeparator = ';';
+        //        DecimalSeparator = ',';
+        //    }
+        //    else if ( line[ 2 ] == '.' && line[ 8 ] == ';' )
+        //    {
+        //        DateSeparator = '.';
+        //        FieldSeparator = ';';
+        //        DecimalSeparator = ',';
+        //    }
+        //    else if ( line[ 2 ] == '-' && line[ 8 ] == ',' )
+        //    {
+        //        DateSeparator = '-';
+        //        FieldSeparator = ',';
+        //        DecimalSeparator = '.';
+        //    }
+        //    else if ( line[ 2 ] == '/' && line[ 8 ] == ',' )
+        //    {
+        //        DateSeparator = '/';
+        //        FieldSeparator = ',';
+        //        DecimalSeparator = '.';
+        //    }
+        //    else
+        //    {
+        //        LogTraceErrorMessage( "CustomLogs Logreaders: Internal Error - Unkown format of inputfile. Please get help." );
+        //        Environment.Exit( 0 );
+        //    }
 
-            LogTraceInfoMessage( $"DetectSeparators: date: {DateSeparator} | Field: {FieldSeparator} | Decimal {DecimalSeparator}" );
+        //    LogTraceInfoMessage( $"DetectSeparators: date: {DateSeparator} | Field: {FieldSeparator} | Decimal {DecimalSeparator}" );
 
-            return;
-        }
+        //    return;
+        //}
 
-        public string ChangeSeparators( string line )
-        {
-            string thisLine;
+        //public string ChangeSeparators( string line )
+        //{
+        //    string thisLine;
 
-            // Make the line always datesep '/' | Fieldsep ' ' and Decimalsep '.'
+        //    // Make the line always datesep '/' | Fieldsep ' ' and Decimalsep '.'
 
-            thisLine = line.Substring( 0, 8 ).Replace( DateSeparator, '/' );
-            thisLine += line.Substring( 8 ).Replace( FieldSeparator, ' ' ).Replace( DecimalSeparator, '.' );
-            //thisLine = StringRemoveWhiteSpace( thisLine, " " );  // PErformance costs too high (de Regex) !!! 
+        //    thisLine = line.Substring( 0, 8 ).Replace( DateSeparator, '/' );
+        //    thisLine += line.Substring( 8 ).Replace( FieldSeparator, ' ' ).Replace( DecimalSeparator, '.' );
+        //    //thisLine = StringRemoveWhiteSpace( thisLine, " " );  // PErformance costs too high (de Regex) !!! 
 
-            return thisLine;
-        }
+        //    return thisLine;
+        //}
 
-        #endregion
+        //#endregion
 
         #region IDisposable CuSupport
 
@@ -857,6 +858,95 @@ namespace CumulusUtils
     #endregion
 
     #region Encryption
+
+    public static class Crypto
+    {
+        public static byte[] GenerateKey()
+        {
+            var key = new byte[ 256 / 8 ]; // use 256 bits
+            var rnd = new Random();
+            rnd.NextBytes( key );
+            return key;
+        }
+
+        public static string EncryptString( string plainText, byte[] key )
+        {
+            try
+            {
+                if ( string.IsNullOrEmpty( plainText ) )
+                    return string.Empty;
+
+                using var aes = Aes.Create();
+                aes.Key = key;
+                var cryptoTransform = aes.CreateEncryptor( aes.Key, aes.IV );
+                var cipherText = Encrypt( plainText, cryptoTransform );
+                var data = new byte[ cipherText.Length + aes.IV.Length + 1 ];
+                data[ 0 ] = (byte) aes.IV.Length;
+                Array.Copy( aes.IV, 0, data, 1, aes.IV.Length );
+                Array.Copy( cipherText, 0, data, aes.IV.Length + 1, cipherText.Length );
+                return Convert.ToBase64String( data );
+            }
+            catch ( Exception )
+            {
+                return null;
+            }
+        }
+
+        public static string DecryptString( string encryptedText, byte[] key )
+        {
+            try
+            {
+                if ( encryptedText.Length == 0 )
+                    return string.Empty;
+
+                var data = Convert.FromBase64String( encryptedText );
+                byte ivSize = data[ 0 ];
+                var iv = new byte[ ivSize ];
+                Array.Copy( data, 1, iv, 0, ivSize );
+                var encrypted = new byte[ data.Length - ivSize - 1 ];
+                Array.Copy( data, ivSize + 1, encrypted, 0, encrypted.Length );
+
+                using var aes = Aes.Create();
+                aes.Key = key;
+                aes.IV = iv;
+
+                var cryptoTransform = aes.CreateDecryptor( aes.Key, aes.IV );
+                return Decrypt( encrypted, cryptoTransform );
+            }
+            catch ( Exception )
+            {
+                return null;
+            }
+        }
+
+        private static byte[] Encrypt( string data, ICryptoTransform cryptoTransform )
+        {
+            if ( data == null || data.Length <= 0 )
+                throw new ArgumentException( "Invalid data", nameof( data ) );
+
+            using var memoryStream = new MemoryStream();
+            using ( var cryptoStream = new CryptoStream( memoryStream, cryptoTransform, CryptoStreamMode.Write ) )
+            {
+                using var writer = new StreamWriter( cryptoStream );
+                writer.Write( data );
+            }
+
+            return memoryStream.ToArray();
+        }
+
+        private static string Decrypt( byte[] data, ICryptoTransform cryptoTransform )
+        {
+            if ( data == null || data.Length <= 0 )
+                throw new ArgumentException( "Invalid data", nameof( data ) );
+
+            using var memoryStream = new MemoryStream( data );
+            using var cryptoStream = new CryptoStream( memoryStream, cryptoTransform, CryptoStreamMode.Read );
+            using var reader = new StreamReader( cryptoStream );
+
+            return reader.ReadToEnd();
+        }
+
+    }
 
     /*
         /// <summary>

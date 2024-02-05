@@ -290,7 +290,7 @@ namespace CumulusUtils
                             // 3) NOTE: The STATS line must come AFTER the PLOT line of the equation!!
 
                             if ( Array.Exists( PlotvarKeyword, word => word.Equals( Keywords[ CurrPosition ], CUtils.Cmp ) ) ||
-                                 ( thisChart.PlotVars.Where( p => p.Keyword.Equals( Keywords[ CurrPosition ]) && !p.Equation.Equals("") ).Count() == 1 ) )
+                                 ( thisChart.PlotVars.Where( p => p.Keyword.Equals( Keywords[ CurrPosition ] ) && !p.Equation.Equals( "" ) ).Count() == 1 ) )
                             {
                                 // The plot var exists, create the entry for the chart and check the other attributes
                                 int index = Array.FindIndex( PlotvarKeyword, word => word.Equals( Keywords[ CurrPosition ], CUtils.Cmp ) );

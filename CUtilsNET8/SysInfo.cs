@@ -25,7 +25,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-// using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -103,7 +102,7 @@ namespace CumulusUtils
 
                         string TxUsed = Sup.GetUtilsIniValue( "SysInfo", "Tx", "" );    // Comma separated string
                         TxUsed = CuSupport.StringRemoveWhiteSpace( TxUsed, "" );        // Replace any space with nothing (empty string)
-                        string[] TxUsedArray = TxUsed.Split( ',' );
+                        string[] TxUsedArray = TxUsed.Split( GlobConst.CommaSeparator );
 
                         if ( TxUsedArray.Length < 1 )
                             DeviceInfo.AppendLine( "A value for the Transmitter used is needed - please set parameter Tx" );
@@ -135,7 +134,7 @@ namespace CumulusUtils
                     case 20:
                         DeviceInfo.AppendLine( "The Ecowitt Firmware Version: <#EcowittFirmwareVersion>" );
                         DeviceInfo.AppendLine( "The Ecowitt Reception Stats: <#EcowittReception>" );
-                        DeviceInfo.AppendLine( "The Ecowitt Runtime: <#StationRuntime>" );
+                        DeviceInfo.AppendLine( "The Ecowitt GW Uptime: <#StationRuntime>" );
                         DeviceInfo.AppendLine( "The Ecowitt Free Memory: <#StationFreeMemory>" );
                         DeviceInfo.AppendLine( $"Extra Station Info: {Sup.GetUtilsIniValue( "SysInfo", "ExtraStationInfo", "" )}" );
                         DeviceInfo.AppendLine( "" );
@@ -190,7 +189,7 @@ namespace CumulusUtils
         {
             Sup.LogTraceInfoMessage( "SystemStatus : DoingWindows Start" );
 
-            string[] StringLinesToSkip = Sup.GetUtilsIniValue( "SysInfo", "SystemInfoLinesToSkip", "" ).Split( ',' );
+            string[] StringLinesToSkip = Sup.GetUtilsIniValue( "SysInfo", "SystemInfoLinesToSkip", "" ).Split( GlobConst.CommaSeparator );
             int[] LinesToSkip = new int[ StringLinesToSkip.Length ];
 
             for ( int i = 0; i < LinesToSkip.Length; i++ )
@@ -212,16 +211,16 @@ namespace CumulusUtils
 
                 StartProcess( "systeminfo", "" );
 
-                for ( int i = 0; i < returnValues.Count ; i++ )
+                for ( int i = 0; i < returnValues.Count; i++ )
                 {
                     string line = returnValues[ i ];
 
                     if ( line.Contains( "pagefile.sys" ) ) break;               // Stop when pagfile.sys is found
 
-                    if ( skip < LinesToSkip.Length && LinesToSkip[skip] == i )  // Skip the lines the user wants to skip
-                    { 
-                        skip++; 
-                        continue; 
+                    if ( skip < LinesToSkip.Length && LinesToSkip[ skip ] == i )  // Skip the lines the user wants to skip
+                    {
+                        skip++;
+                        continue;
                     }
 
                     of.WriteLine( $"{line}" );                                  // Write the line to the SysInfo output

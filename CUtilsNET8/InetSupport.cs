@@ -36,11 +36,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Authentication;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using FluentFTP;
@@ -83,8 +81,8 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "InetSupport: Constructor start" );
 
-            username = Sup.GetCumulusIniValue( "FTP site", "Username", "" );
-            password = Sup.GetCumulusIniValue( "FTP site", "Password", "" );
+            username = Crypto.DecryptString( Sup.GetCumulusIniValue( "FTP site", "Username", "" ), CUtils.CryptoKey );
+            password = Crypto.DecryptString( Sup.GetCumulusIniValue( "FTP site", "Password", "" ), CUtils.CryptoKey );
             hostname = Sup.GetCumulusIniValue( "FTP site", "Host", "" );
             port = Convert.ToInt32( Sup.GetCumulusIniValue( "FTP site", "Port", "21" ) );
 
@@ -206,21 +204,6 @@ namespace CumulusUtils
                         Sup.LogTraceInfoMessage( $"InetSupport SFTP: Invalid SshftpAuthentication specified [{SshftpAuthentication}]" );
                         FTPvalid = false;
                         return;
-                    }
-
-                    // From CMX, take care of ECDSA ciphers not implemented in mono
-                    try
-                    {
-#pragma warning disable CS0642 // Possible mistaken empty statement
-                        using ( ECDsaCng ecdsa = new ECDsaCng() ) ;
-#pragma warning restore CS0642 // Possible mistaken empty statement
-                    }
-                    catch ( NotImplementedException )
-                    {
-                        Sup.LogTraceInfoMessage( $"Upload SFTP: ECDSA Cipher not implemented." );
-                        var algsToRemove = connectionInfo.HostKeyAlgorithms.Keys.Where( algName => algName.StartsWith( "ecdsa" ) ).ToArray();
-                        foreach ( var algName in algsToRemove )
-                            connectionInfo.HostKeyAlgorithms.Remove( algName );
                     }
 
                     clientRenci = new SftpClient( connectionInfo );
@@ -393,22 +376,6 @@ namespace CumulusUtils
                                     Sup.LogTraceInfoMessage( $"InetSupport SFTP: Invalid SshftpAuthentication specified [{SshftpAuthentication}]" );
                                     FTPvalid = false;
                                     return false;
-                                }
-
-                                // From CMX / Mark Crossley, take care of ECDSA ciphers not implemented in mono
-                                // Apparently also not in dotnet (chekc further)
-                                try
-                                {
-#pragma warning disable CS0642 // Possible mistaken empty statement
-                                    using ( var ecdsa = new System.Security.Cryptography.ECDsaCng() ) ;
-#pragma warning restore CS0642 // Possible mistaken empty statement
-                                }
-                                catch ( NotImplementedException )
-                                {
-                                    Sup.LogTraceInfoMessage( $"Upload SFTP: ECDSA Cipher not implemented." );
-                                    var algsToRemove = connectionInfo.HostKeyAlgorithms.Keys.Where( algName => algName.StartsWith( "ecdsa" ) ).ToArray();
-                                    foreach ( var algName in algsToRemove )
-                                        connectionInfo.HostKeyAlgorithms.Remove( algName );
                                 }
 
                                 clientRenci = new SftpClient( connectionInfo );

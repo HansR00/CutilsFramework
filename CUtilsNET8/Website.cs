@@ -31,8 +31,15 @@ using System.Threading.Tasks;
 
 //
 // Remember minification: 
-//    1) c# minify string ggogle search
-//    2) https://nugetmusthaves.com/Tag/minify
+//      1) c# minify string google search
+//      2) https://nugetmusthaves.com/Tag/minify
+//
+// Javascript security / privacy :
+//      1) https://web.dev/articles/csp?utm_source=devtools#summary
+//      2) https://developers.google.com/privacy-sandbox/3pcd#report-issues
+//      3) https://csp.withgoogle.com/docs/index.html
+//      4) https://www.iothreat.com/blog/csp-script-src-unsafe-eval
+//      5) https://developers.google.com/privacy-sandbox/3pcd/prepare/prepare-for-phaseout
 //
 
 namespace CumulusUtils
@@ -176,11 +183,11 @@ namespace CumulusUtils
               "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" );
 
 #if !RELEASE
-                ////
-                //// https://stackoverflow.com/questions/25753708/how-to-view-javascript-console-on-android-and-ios
-                ////
-                //indexFile.Append( "<script src=\"https://cdn.jsdelivr.net/npm/eruda\"></script>" +
-                //    "<script>eruda.init();</script>" );
+            ////
+            //// https://stackoverflow.com/questions/25753708/how-to-view-javascript-console-on-android-and-ios
+            ////
+            //indexFile.Append( "<script src=\"https://cdn.jsdelivr.net/npm/eruda\"></script>" +
+            //    "<script>eruda.init();</script>" );
 #endif
 
             indexFile.Append( DoStatistics ? GenerateStatisticsCode( StatisticsType, false ) : "" );
@@ -2377,7 +2384,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
             string thisPanelCode = "";
             DashboardPanels localPanel;
 
-            Sup.LogDebugMessage( $"GeneratePanelCode: generating {thisPanel}" );
+            //Sup.LogDebugMessage( $"GeneratePanelCode: generating {thisPanel}" );
 
             try
             {

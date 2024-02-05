@@ -966,7 +966,7 @@ namespace CumulusUtils
 
             // Do the External Extra Sensors
             {
-                string[] ExternalExtraSensors = Sup.GetUtilsIniValue( "ExtraSensors", "ExternalExtraSensors", "" ).Split( ',' );
+                string[] ExternalExtraSensors = Sup.GetUtilsIniValue( "ExtraSensors", "ExternalExtraSensors", "" ).Split( GlobConst.CommaSeparator );
 
                 if ( !string.IsNullOrEmpty( ExternalExtraSensors[ 0 ] ) )
                     foreach ( string thisExternal in ExternalExtraSensors )
@@ -987,10 +987,10 @@ namespace CumulusUtils
             {
                 Sup.LogTraceInfoMessage( $"GetActiveSensors: Getting Extra Sensors for {Type}" );
 
-                char[] charSeparators = new char[] { ',' };
+                //char[] charSeparators = new char[] { ',' };
 
                 string a = Sup.GetUtilsIniValue( "ExtraSensors", Type, "" );
-                string[] sensorsAsStrings = a.Split( charSeparators, StringSplitOptions.RemoveEmptyEntries );
+                string[] sensorsAsStrings = a.Split( GlobConst.CommaSeparator );
                 int[] theseSensors;
 
                 try

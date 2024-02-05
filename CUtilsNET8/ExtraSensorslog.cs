@@ -161,7 +161,6 @@ namespace CumulusUtils
 
         private readonly bool IgnoreDataErrors;
         private readonly string[] enumFieldTypeNames;
-        private readonly string[] ExtraSensorslogList;
 
         private string[] lines;
 
@@ -177,13 +176,16 @@ namespace CumulusUtils
             Sup.LogTraceInfoMessage( $"ExtraSensorslog constructor: Using fixed path: | data/ |; file: | *log.txt" );
 
             // Get the list of monthly logfile in the datadirectory and check what type of delimeters we have
-            ExtraSensorslogList = Directory.GetFiles( "data/", "ExtraLog*.txt" );
 
             enumFieldTypeNames = Enum.GetNames( typeof( ExtraSensorslogFieldName ) );
             IgnoreDataErrors = Sup.GetUtilsIniValue( "General", "IgnoreDataErrors", "true" ).Equals( "true", CUtils.Cmp );
 
             if ( Sup.GetUtilsIniValue( "ExtraSensors", "CleanupExtraSensorslog", "false" ).Equals( "true", CUtils.Cmp ) )
             {
+                string[] ExtraSensorslogList;
+
+                ExtraSensorslogList = Directory.GetFiles( "data/", "ExtraLog*.txt" );
+
                 // We keep two month of data, the rest can be discarded
                 Sup.LogTraceInfoMessage( $"ExtraSensors constructor: Cleaning up Extra Sensors Logfiles..." );
 
@@ -235,11 +237,11 @@ namespace CumulusUtils
                 File.Copy( Filename, filenameCopy );
 
                 lines = File.ReadAllLines( filenameCopy );
-                Sup.DetectSeparators( lines[ 0 ] );
+                //Sup.DetectSeparators( lines[ 0 ] );
 
                 foreach ( string line in lines )
                 {
-                    tmp = SetValues( Sup.ChangeSeparators( line ), timeStart );
+                    tmp = SetValues( line, timeStart );
 
                     if ( tmp.Valid ) MainExtraSensorsValuesList.Add( tmp );
                     if ( tmp.ThisDate >= timeEnd ) break; // we have our set of data required
@@ -276,7 +278,7 @@ namespace CumulusUtils
         private ExtraSensorslogValue SetValues( string line, DateTime StartTime )
         {
             string tmpDatestring;
-            string[] lineSplit = line.Split( ' ' );
+            string[] lineSplit = line.Split( GlobConst.CommaSeparator );
 
             ExtraSensorslogValue ThisValue = new ExtraSensorslogValue();
 

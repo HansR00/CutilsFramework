@@ -25,7 +25,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 
 namespace CumulusUtils
@@ -87,7 +86,6 @@ namespace CumulusUtils
         readonly bool IgnoreDataErrors;
         readonly string[] enumFieldTypeNames;
         readonly string[] MonthfileList;
-        readonly string[] DaysOfMiracleAndWonder;
 
         //readonly DateTime AncientCumulus = new DateTime( 2004, 01, 27 );
 
@@ -105,23 +103,6 @@ namespace CumulusUtils
             Sup = s;
             Sup.LogDebugMessage( $"Monthfile constructor: Using fixed path: | data/ |; file: | *log.txt" );
 
-            string temp = Sup.GetUtilsIniValue( "General", "MonthsOfMiracleAndWonder", "" );
-
-            if ( string.IsNullOrEmpty( temp ) )
-            {
-                // Fill the string in the inifile with the default i.e. the monthnames under the current locale used by CumulusUtils
-                for ( int i = 0; i < 12; i++ )
-                    //temp += CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName( i + 1 ).Substring( 0, 3 ) + ",";
-                    temp += string.Concat( CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName( i + 1 ).AsSpan( 0, 3 ), "," );
-
-                temp = temp.Substring( 0, temp.Length - 1 );
-                Sup.SetUtilsIniValue( "General", "MonthsOfMiracleAndWonder", temp );
-            }
-
-            // The string has already been made and maybe been edited by the user so use these monthnames
-            CuSupport.StringRemoveWhiteSpace( temp, " " );
-            DaysOfMiracleAndWonder = temp.Split( ',' );
-
             // Get the list of monthly logfile in the datadirectory and check what type of delimeters we have
             // Unfortunately we cannot use the list when only doing one file read because we do not know the name of the month if 
             // the locale used for CumulusUtils is different from the Locale used for CMX. In that case we use the string[] DaysOfMiracleAndWonder
@@ -136,16 +117,6 @@ namespace CumulusUtils
                     MonthfileList = foos.ToArray();
                 }
             }
-
-            filenameCopy = "data/" + "copy_" + Path.GetFileName( MonthfileList[ 0 ] );
-
-            if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
-            File.Copy( MonthfileList[ 0 ], filenameCopy );
-
-            string[] lines = File.ReadAllLines( filenameCopy );
-            Sup.DetectSeparators( lines[ 0 ] );
-
-            File.Delete( filenameCopy );
 
             enumFieldTypeNames = Enum.GetNames( typeof( MonthfileFieldName ) );
             IgnoreDataErrors = Sup.GetUtilsIniValue( "General", "IgnoreDataErrors", "true" ).Equals( "true", CUtils.Cmp );
@@ -172,16 +143,18 @@ namespace CumulusUtils
                     ErrorCount = 0; // make sure we only log MaxErrors per file
 
                     filenameCopy = "data/" + "copy_" + Path.GetFileName( file );
-                    if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
+                    if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );  // Possible leftovers
                     File.Copy( file, filenameCopy );
 
                     Sup.LogTraceInfoMessage( $"ReadMonthlyLogs: reading {file}" );
 
                     string[] allLines = File.ReadAllLines( filenameCopy );
+                    File.Delete( filenameCopy );
 
                     foreach ( string line in allLines )
                     {
-                        tmp = SetValues( Sup.ChangeSeparators( line ) );
+                        //tmp = SetValues( Sup.ChangeSeparators( line ) );
+                        tmp = SetValues( line );
 
                         try
                         {
@@ -193,9 +166,6 @@ namespace CumulusUtils
                             break;
                         }
                     }
-
-                    if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
-
                 } // Loop over all files in MonthfileList
 
                 MainMonthList = thisList;
@@ -223,10 +193,7 @@ namespace CumulusUtils
 
             // It will be either 1 at most 2 months
             for ( DateTime dt = new DateTime( Start.Year, Start.Month, 1 ); dt <= End; dt = dt.AddMonths( 1 ) )
-            {
-                string temp = DaysOfMiracleAndWonder[ dt.Month - 1 ];
-                FilesToRead.Add( $"{temp}{dt:yy}log.txt" );
-            }
+                FilesToRead.Add( $"{dt:yyyyMM}log.txt" );
 
             foreach ( string file in FilesToRead )
             {
@@ -239,10 +206,11 @@ namespace CumulusUtils
                 Sup.LogTraceInfoMessage( $"ReadPartialMonthlyLogs: reading {file}" );
 
                 string[] allLines = File.ReadAllLines( filenameCopy );
+                File.Delete( filenameCopy );
 
                 foreach ( string line in allLines )
                 {
-                    tmp = SetValues( Sup.ChangeSeparators( line ) );
+                    tmp = SetValues( line );
 
                     try
                     {
@@ -253,8 +221,6 @@ namespace CumulusUtils
                         Sup.LogTraceErrorMessage( $"ReadPartialMonthlyLogs: Error in {file} : {line}" );
                     }
                 } // End Using the Monthly Log to Read
-
-                if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
             } // Loop over all files in FilesToRead
 
             Sup.LogTraceInfoMessage( $"ReadMonthlyLogs: End" );
@@ -276,7 +242,7 @@ namespace CumulusUtils
             int FieldInUse = 0;
 
             string tmpDatestring;
-            string[] lineSplit = line.Split( ' ' );
+            string[] lineSplit = line.Split( GlobConst.CommaSeparator );
 
             // Do check for the recordlength. If record length too short, then  return null
             // Upon return, the value null must trigger the skipping of the file The possibility that halfway the month the 

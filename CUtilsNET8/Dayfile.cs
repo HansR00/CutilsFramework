@@ -138,10 +138,7 @@ namespace CumulusUtils
             Sup.LogDebugMessage( "Dayfile: Reading the dayfile.txt..." );
 
             try { lines = File.ReadAllLines( filename ); }
-            catch { Sup.LogDebugMessage( "No Dayfile... Graceful exit." ); Environment.Exit( 0 );  }
-
-            Sup.LogTraceInfoMessage( "Dayfile: Detecting Separators..." );
-            Sup.DetectSeparators( lines[ 0 ] );
+            catch { Sup.LogDebugMessage( "No Dayfile... Graceful exit." ); Environment.Exit( 0 ); }
 
             enumFieldTypeNames = Enum.GetNames( typeof( FieldName ) );
             IgnoreDataErrors = Sup.GetUtilsIniValue( "General", "IgnoreDataErrors", "true" ).Equals( "true", CUtils.Cmp );
@@ -156,7 +153,7 @@ namespace CumulusUtils
 
             foreach ( string line in lines )
             {
-                tmp = SetValues( Sup.ChangeSeparators( line ), new DayfileValue() );
+                tmp = SetValues( line, new DayfileValue() );
 
                 // valid is a consequence of errors in the datafile while the user expressed the wish to continue
                 // through the ini parameter 'IgnoreDataErrors=true'
@@ -175,7 +172,7 @@ namespace CumulusUtils
         private DayfileValue SetValues( string line, DayfileValue ThisValue )
         {
             string tmpDatestring;
-            string[] lineSplit = line.Split( ' ' );  // Always fields separated by ' '
+            string[] lineSplit = line.Split( GlobConst.CommaSeparator );  // Always fields separated by ','
             int FieldInUse = (int) FieldName.thisDate;
 
             try

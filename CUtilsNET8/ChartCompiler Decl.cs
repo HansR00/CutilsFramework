@@ -496,7 +496,7 @@ namespace CumulusUtils
             }
 
             // Prepare for possible ExternalExtraSensors!
-            string[] ExternalExtraSensors = Sup.GetUtilsIniValue( "ExtraSensors", "ExternalExtraSensors", "" ).Split( ',' );
+            string[] ExternalExtraSensors = Sup.GetUtilsIniValue( "ExtraSensors", "ExternalExtraSensors", "" ).Split( GlobConst.CommaSeparator );
 
             if ( !string.IsNullOrEmpty( ExternalExtraSensors[ 0 ] ) )
             {

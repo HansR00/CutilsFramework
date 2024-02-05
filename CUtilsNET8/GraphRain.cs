@@ -610,7 +610,7 @@ namespace CumulusUtils
             List<float> minrain = new List<float>();
             List<float> maxrain = new List<float>();
 
-            Sup.LogDebugMessage( "GenerateYearMonthRainStatistics : starting" );
+            //Sup.LogDebugMessage( "GenerateYearMonthRainStatistics : starting" );
 
             for ( int i = YearMin; i <= YearMax; i++ )
             {
@@ -840,6 +840,7 @@ namespace CumulusUtils
 
             thisBuffer.AppendLine( $"  title:{{text: '{Sup.GetCUstringValue( "Graphs", "RAINvsEVTitle", "Cumulative Rain versus Cumulative EVT", true )}'}}," );
             thisBuffer.AppendLine( $"  subtitle:{{text: '{Sup.GetCumulusIniValue( "Station", "LocDesc", "Unknown Station" )}'}}," );
+            thisBuffer.AppendLine( "  navigator: { series: { zones: void 0 } }," ); // Workaround for Highcharts 11.3 bug
             thisBuffer.AppendLine( "  xAxis:{type: 'datetime',crosshair: true}," );
             thisBuffer.AppendLine( $"  yAxis: [{{min: 0,title:{{text: '{Sup.GetCUstringValue( "Graphs", "RAINvsEVT-axisTitle", "Rain / EVT", true )} ({Sup.StationRain.Text()})' }}, opposite: false," );
 
