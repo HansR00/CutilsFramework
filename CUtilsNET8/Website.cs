@@ -41,6 +41,9 @@ using System.Threading.Tasks;
 //      4) https://www.iothreat.com/blog/csp-script-src-unsafe-eval
 //      5) https://developers.google.com/privacy-sandbox/3pcd/prepare/prepare-for-phaseout
 //
+// Javascript URL handling :
+//      1) https://developer.mozilla.org/en-US/docs/Web/API/URL/origin
+//      2) 
 
 namespace CumulusUtils
 {
@@ -572,12 +575,10 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     DST = TZ.GetUtcOffset( DateTime.Now ).Hours - TZ.BaseUtcOffset.Hours;
 
                 string DecimalSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
-                string TimeSeparator = ":";    // CultureInfo.CurrentCulture.DateTimeFormat.TimeSeparator;
+                string TimeSeparator = ":";
                 string DateSeparator = CultureInfo.CurrentCulture.DateTimeFormat.DateSeparator;
 
                 bool ReplaceDecimalSeparator = !DecimalSeparator.Equals( "." );
-                //bool ReplaceTimeSeparator = !TimeSeparator.Equals(":");
-                //bool ReplaceDateSeparator = !DateSeparator.Equals("-");
 
                 Sup.LogDebugMessage( $"Generating CUlib start." );
                 Sup.LogDebugMessage( $"Generating CUlib DecSep: |{DecimalSeparator}|, TimeSep: |{TimeSeparator}| and DateSep: |{DateSeparator}| for language {Sup.Language}" );
@@ -595,13 +596,16 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "var CurrentChart0 = 'Temp'; " +  // Used for the automatic relaod of the charts, changed in case of Compiler use
                   "var CurrentChart = 'Temp'; " +  // Used for the automatic relaod of the charts, Just have it here in case of non-compiler use
                   "var ChartsType = 'default'; " +  // Used to distiguish between different chartsystems: default and compiler at the moment
-                  "var ChartsLoaded = false;" +  // Used for the automatic relaod of the charts
+                  "var ChartsLoaded = false;" + // Used for the automatic relaod of the charts
+                  "" +
+                  "const urlParams = new URLSearchParams(window.location.search);" +
+                  "" +  
 
                   "$(function () {" +
-                  "  $('#Dashboard').show();" +
-                  "  $('#Gauges').hide();" +
-                  "  $('#ExtraAndCustom').hide();" +
-                  "  Promise.allSettled([ $.getScript('lib/CUgauges.js'), LoadCUsermenu('CUsermenu.txt'), LoadCUserAbout('CUserAbout.txt'), LoadUtilsReport('cumuluscharts.txt', true)])" +
+                  "  if ( urlParams.has('report') ) Report2Load = urlParams.get('report');" +
+                  "  else Report2Load = 'cumuluscharts.txt';" +
+                  "" +
+                  "  Promise.allSettled([ $.getScript('lib/CUgauges.js'), LoadCUsermenu('CUsermenu.txt'), LoadCUserAbout('CUserAbout.txt'), LoadUtilsReport( Report2Load, true )])" +
                   "    .then(() => { " +
                   "      loadRealtimeTxt();" +
                  $"      RT_timer = setInterval(loadRealtimeTxt, {CUtils.UtilsRealTimeInterval} * 1000);" +
@@ -738,12 +742,21 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                  $"       ReportName != '{Sup.CustomLogsOutputFilename}' && ReportName != '{Sup.CustomLogsCharts}' ) {{ " +
                   "    if ($('#ExtraAndCustom').is (':visible') ) {" +
                   "      $('#ExtraAndCustom').hide();" +
+                  "      $('#Gauges').hide();" +
                   "      $('#Dashboard').show();" +
                   "    }" +
                   "  } else {" +
                   "    $('#Dashboard').hide();" +
                   "    $('#Gauges').hide();" +
                   "    $('#ExtraAndCustom').show();" +
+                  "  }" +
+                  "" +
+                  "  if ( !urlParams.has('report', ReportName) ) {" +
+                  "    if (ReportName != 'extrasensorscharts.txt' && ReportName != 'customlogscharts.txt') {" +
+                  "      urlParams.delete('report');" +
+                  "      urlParams.set('report', ReportName);" +
+                  "      window.location.replace(window.location.origin + window.location.pathname + '?' + urlParams);" +
+                  "    }" +
                   "  }" +
                   "" +
                   "  ajaxLoadReportObject = $.ajax({" +

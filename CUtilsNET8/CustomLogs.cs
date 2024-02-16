@@ -189,9 +189,6 @@ namespace CumulusUtils
             sb.AppendLine( "var CustomLogsTimer;" );
             sb.AppendLine( "$(function () {" );  // Get the whole thing going
             sb.AppendLine( $"  SetupCustomLogsTable();" );
-            sb.AppendLine( $"  $('#Dashboard').hide();" );
-            sb.AppendLine( $"  $('#Gauges').hide();" );
-            sb.AppendLine( $"  $('#ExtraAndCustom').show();" );
             sb.AppendLine( "  loadCustomLogsRealtime();" );
             sb.AppendLine( "  if (CustomLogsTimer == null) CustomLogsTimer = setInterval(loadCustomLogsRealtime, 60 * 1000);" );
             sb.AppendLine( $"  LoadUtilsReport( '{Sup.CustomLogsCharts}', false );" );

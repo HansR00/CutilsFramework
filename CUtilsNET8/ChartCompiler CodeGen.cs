@@ -264,7 +264,7 @@ namespace CumulusUtils
                 {
                     AxisType AxisSet = AxisType.None;
 
-                    Html.AppendLine( $"  <option value='{thisChart.Id}'{( first ? " selected" : "" )}>{thisChart.Id}</option>" );
+                    Html.AppendLine( $"  <option value='{thisChart.Id}'{( first ? " selected" : "" )}>{thisChart.Id.Replace( '_', ' ' )}</option>" );
                     MenuJavascript.AppendLine( $"  if (w1=='{thisChart.Id}') {{ " );
 
                     // Meaning we are dealing with CustomLogs in the website (with realtime values table);

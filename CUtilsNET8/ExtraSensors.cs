@@ -148,9 +148,6 @@ namespace CumulusUtils
                 sb.AppendLine( "var ExtraSensorTimer;" );
                 sb.AppendLine( "$(function () {" );  // Get the whole thing going
                 sb.AppendLine( $"  SetupExtraSensorsTable();" );
-                sb.AppendLine( $"  $('#Dashboard').hide();" );
-                sb.AppendLine( $"  $('#Gauges').hide();" );
-                sb.AppendLine( $"  $('#ExtraAndCustom').show();" );
                 sb.AppendLine( "  loadExtraSensorsRealtime();" );
                 sb.AppendLine( "  if (ExtraSensorTimer == null) ExtraSensorTimer = setInterval(loadExtraSensorsRealtime, 60 * 1000);" );
                 sb.AppendLine( $"  LoadUtilsReport( '{Sup.ExtraSensorsCharts}', false );" );
@@ -990,7 +987,7 @@ namespace CumulusUtils
                 //char[] charSeparators = new char[] { ',' };
 
                 string a = Sup.GetUtilsIniValue( "ExtraSensors", Type, "" );
-                string[] sensorsAsStrings = a.Split( GlobConst.CommaSeparator );
+                string[] sensorsAsStrings = a.Split( GlobConst.CommaSeparator, StringSplitOptions.RemoveEmptyEntries );
                 int[] theseSensors;
 
                 try
