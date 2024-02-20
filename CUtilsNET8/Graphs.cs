@@ -245,19 +245,27 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "  $('#graph').change(function() {" );
                     thisBuffer.AppendLine( "    handleChange();" );
                     thisBuffer.AppendLine( "  });" );
+#if !RELEASE
+                    thisBuffer.AppendLine( "  console.log('graphsRain: catch me for debug');" );
+#endif
+                    thisBuffer.AppendLine( "  document.getElementById('graph').value = urlParams.get('dropdown');" );
                     thisBuffer.AppendLine( "  handleChange();" );
                     thisBuffer.AppendLine( "});" );
 
                     thisBuffer.AppendLine( "function handleChange()" );
                     thisBuffer.AppendLine( "{" );
                     thisBuffer.AppendLine( "  $('[id*=\"YMR\"]').hide();" );
-                    thisBuffer.AppendLine( "  var w1 = document.getElementById(\"graph\").value;" );
+                    thisBuffer.AppendLine( "  let w1 = document.getElementById('graph').value;" );
                     thisBuffer.AppendLine( $"  if (w1 == 'DailyRain') {{ graph{GraphNr++}(); }}" );
-                    thisBuffer.AppendLine( $"  if (w1 == 'MonthlyRain') {{ graph{GraphNr++}(); }}" );
-                    thisBuffer.AppendLine( $"  if (w1 == 'YearRainstatistics') {{ graph{GraphNr++}(); }}" );
+                    thisBuffer.AppendLine( $"  else if (w1 == 'MonthlyRain') {{ graph{GraphNr++}(); }}" );
+                    thisBuffer.AppendLine( $"  else if (w1 == 'YearRainstatistics') {{ graph{GraphNr++}(); }}" );
                     GraphNrForYearMonthRainStats = GraphNr;
-                    thisBuffer.AppendLine( $"  if (w1 == 'YearMonthRainstatistics') {{ $('[id*=\"YMR\"]').show(); graph{GraphNr++}{CUtils.RunStarted.Month}(); }}" );
-                    thisBuffer.AppendLine( $"  if (w1 == 'RAINvsEVT') {{ graph{GraphNr++}(); }}" );
+                    thisBuffer.AppendLine( $"  else if (w1 == 'YearMonthRainstatistics') {{ $('[id*=\"YMR\"]').show(); graph{GraphNr++}{CUtils.RunStarted.Month}(); }}" );
+                    thisBuffer.AppendLine( $"  else if (w1 == 'RAINvsEVT') {{ graph{GraphNr++}(); }}" );
+                    thisBuffer.AppendLine( "  else { document.getElementById('graph').value = 'DailyRain'; graph1(); }" );
+                    thisBuffer.AppendLine( "urlParams.delete( 'dropdown' );" );
+                    thisBuffer.AppendLine( "urlParams.set( 'dropdown', document.getElementById('graph').value );" );
+                    thisBuffer.AppendLine( "history.pushState( null, null, window.location.origin + window.location.pathname + '?' + urlParams );" );
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
                     thisBuffer.AppendLine( "<style>" );
@@ -434,19 +442,27 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "  $('#graph').change(function() {" );
                     thisBuffer.AppendLine( "    handleChange();" );
                     thisBuffer.AppendLine( "  });" );
+#if !RELEASE
+                    thisBuffer.AppendLine( "  console.log('graphsTemp: catch me for debug');" );
+#endif
+                    thisBuffer.AppendLine( "  document.getElementById('graph').value = urlParams.get('dropdown');" );
                     thisBuffer.AppendLine( "  handleChange();" );
                     thisBuffer.AppendLine( "});" );
 
                     thisBuffer.AppendLine( "function handleChange()" );
                     thisBuffer.AppendLine( "{" );
                     thisBuffer.AppendLine( "  $('[id*=\"YMT\"]').hide(); $('[id^=\"Heatmap\"]').hide();" );
-                    thisBuffer.AppendLine( "  var w1 = document.getElementById(\"graph\").value;" );
+                    thisBuffer.AppendLine( "  let w1 = document.getElementById('graph').value;" );
                     thisBuffer.AppendLine( $"  if (w1 == 'MonthlyTemp') {{ graph{GraphNr++}(); }}" );
-                    thisBuffer.AppendLine( $"  if (w1 == 'YearTempstatistics') {{ graph{GraphNr++}(); }}" );
+                    thisBuffer.AppendLine( $"  else if (w1 == 'YearTempstatistics') {{ graph{GraphNr++}(); }}" );
                     GraphNrForYearMonthTempStats = GraphNr;
-                    thisBuffer.AppendLine( $"  if (w1 == 'YearMonthTempstatistics') {{ $('[id*=\"YMT\"]').show(); graph{GraphNr++}{CUtils.RunStarted.Month}(); }}" );
-                    thisBuffer.AppendLine( $"  if (w1 == 'WarmerDays') {{ graph{GraphNr++}(); }}" );
-                    thisBuffer.AppendLine( $"  if (w1 == 'Heatmap') {{ $('[id*=\"Heatmap\"]').show(); graph{GraphNr++}(); }}" );
+                    thisBuffer.AppendLine( $"  else if (w1 == 'YearMonthTempstatistics') {{ $('[id*=\"YMT\"]').show(); graph{GraphNr++}{CUtils.RunStarted.Month}(); }}" );
+                    thisBuffer.AppendLine( $"  else if (w1 == 'WarmerDays') {{ graph{GraphNr++}(); }}" );
+                    thisBuffer.AppendLine( $"  else if (w1 == 'Heatmap') {{ $('[id*=\"Heatmap\"]').show(); graph{GraphNr++}(); }}" );
+                    thisBuffer.AppendLine( "  else { document.getElementById('graph').value = 'MonthlyTemp'; graph1(); }" );
+                    thisBuffer.AppendLine( "urlParams.delete( 'dropdown' );" );
+                    thisBuffer.AppendLine( "urlParams.set( 'dropdown', document.getElementById('graph').value );" );
+                    thisBuffer.AppendLine( "history.pushState( null, null, window.location.origin + window.location.pathname + '?' + urlParams );" );
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
                     thisBuffer.AppendLine( "<style>" );
@@ -643,15 +659,22 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "  $('#graph').change(function() {" );
                     thisBuffer.AppendLine( "    handleChange();" );
                     thisBuffer.AppendLine( "  });" );
-                    thisBuffer.AppendLine( $"  {( GraphWindRose ? "$('#WindRun').hide(); $('#WindRose').show();" : "$('#WindRun').show(); $('#WindRose').hide();" )}" );
+#if !RELEASE
+                    thisBuffer.AppendLine( "  console.log('graphsWind: catch me for debug');" );
+#endif
+                    thisBuffer.AppendLine( "  document.getElementById('graph').value = 'WindRose'" );  // Always use WindRose as choice does not seem to work
                     thisBuffer.AppendLine( "  handleChange();" );
                     thisBuffer.AppendLine( "});" );
 
                     thisBuffer.AppendLine( "function handleChange()" );
                     thisBuffer.AppendLine( "{" );
-                    thisBuffer.AppendLine( "  var w1 = $('#graph option:selected').val();" );
+                    thisBuffer.AppendLine( "  let w1 = document.getElementById('graph').value;" );
                     thisBuffer.AppendLine( "  if (w1 == 'WindRose') { $('#WindRun').hide(); $('#WindRose').show(); $('#yearRose').trigger('change');}" );
-                    thisBuffer.AppendLine( "  if (w1 == 'Windrun') { $('#WindRose').hide(); $('#WindRun').show(); $('#yearRun').trigger('change');}" );
+                    thisBuffer.AppendLine( "  else if (w1 == 'Windrun') { $('#WindRose').hide(); $('#WindRun').show(); $('#yearRun').trigger('change');}" );
+                    thisBuffer.AppendLine( "  else { document.getElementById('graph').value = 'WindRose'; $('#WindRun').hide(); $('#WindRose').show(); $('#yearRose').trigger('change'); }" );
+                    thisBuffer.AppendLine( "urlParams.delete( 'dropdown' );" );
+                    thisBuffer.AppendLine( "urlParams.set( 'dropdown', document.getElementById('graph').value );" );
+                    thisBuffer.AppendLine( "history.pushState( null, null, window.location.origin + window.location.pathname + '?' + urlParams );" );
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
                     thisBuffer.AppendLine( "<style>" );
@@ -721,7 +744,6 @@ namespace CumulusUtils
                         // Don't dispose of the Monthlist, it may be usefull somewhere else
                         thisList = thisMonthfile.ReadMonthlyLogs();
                         GenerateWindRose( thisList, thisBuffer );
-                        //thisBuffer.AppendLine( ActivateChartInfo( chartId: "WindRose" ) );  // This has to be done somewhere else.... Later
 
 #if TIMING
                         watch.Stop();
@@ -824,6 +846,10 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "  $('#graph').change(function() {" );
                     thisBuffer.AppendLine( "    handleChange();" );
                     thisBuffer.AppendLine( "  });" );
+#if !RELEASE
+                    thisBuffer.AppendLine( "  console.log('graphsSolar: catch me for debug');" );
+#endif
+                    thisBuffer.AppendLine( "  document.getElementById('graph').value = urlParams.get('dropdown');" );
                     thisBuffer.AppendLine( "  handleChange();" );
                     thisBuffer.AppendLine( "});" );
 
@@ -831,13 +857,17 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "{" );
                     thisBuffer.AppendLine( "  $('[id*=\"YMSH\"]').hide();" );
                     thisBuffer.AppendLine( "  $('[id*=\"YMSE\"]').hide();" );
-                    thisBuffer.AppendLine( "  var w1 = $('#graph option:selected').val();" );
+                    thisBuffer.AppendLine( "  let w1 = $('#graph option:selected').val();" );
                     thisBuffer.AppendLine( $"  if (w1 == 'SolarHoursStats') {{ graph{GraphNr++}(); }}" );
                     GraphNrForYearMonthSolarHoursStats = GraphNr;
-                    thisBuffer.AppendLine( $"  if (w1 == 'YearMonthSolarHoursStats') {{ $('[id*=\"YMSH\"]').show(); graph{GraphNr++}{CUtils.RunStarted.Month}(); }}" );
-                    thisBuffer.AppendLine( $"  if (w1 == 'InsolationStats') {{ graph{GraphNr++}(); }}" );
+                    thisBuffer.AppendLine( $"  else if (w1 == 'YearMonthSolarHoursStats') {{ $('[id*=\"YMSH\"]').show(); graph{GraphNr++}{CUtils.RunStarted.Month}(); }}" );
+                    thisBuffer.AppendLine( $"  else if (w1 == 'InsolationStats') {{ graph{GraphNr++}(); }}" );
                     GraphNrForYearMonthSolarEnergyStats = GraphNr;
-                    thisBuffer.AppendLine( $"  if (w1 == 'YearMonthInsolationStats') {{ $('[id*=\"YMSE\"]').show(); graph{GraphNr++}{CUtils.RunStarted.Month}(); }}" );
+                    thisBuffer.AppendLine( $"  else if (w1 == 'YearMonthInsolationStats') {{ $('[id*=\"YMSE\"]').show(); graph{GraphNr++}{CUtils.RunStarted.Month}(); }}" );
+                    thisBuffer.AppendLine( "  else { document.getElementById('graph').value = 'SolarHoursStats'; graph1(); }" );
+                    thisBuffer.AppendLine( "urlParams.delete( 'dropdown' );" );
+                    thisBuffer.AppendLine( "urlParams.set( 'dropdown', document.getElementById('graph').value );" );
+                    thisBuffer.AppendLine( "history.pushState( null, null, window.location.origin + window.location.pathname + '?' + urlParams );" );
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
                     thisBuffer.AppendLine( "<style>" );
@@ -999,18 +1029,26 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "  $('#graph').change(function() {" );
                     thisBuffer.AppendLine( "    handleChange();" );
                     thisBuffer.AppendLine( "  });" );
+#if !RELEASE
+                    thisBuffer.AppendLine( "  console.log('graphsSolar: catch me for debug');" );
+#endif
+                    thisBuffer.AppendLine( "  document.getElementById('graph').value = urlParams.get('dropdown');" );
                     thisBuffer.AppendLine( "  handleChange();" );
                     thisBuffer.AppendLine( "});" );
 
                     thisBuffer.AppendLine( "function handleChange()" );
                     thisBuffer.AppendLine( "{" );
-                    thisBuffer.AppendLine( "  var w1 = document.getElementById(\"graph\").value;" );
+                    thisBuffer.AppendLine( "  let w1 = document.getElementById(\"graph\").value;" );
                     thisBuffer.AppendLine( $"  if (w1 == 'TempSum') {{ graph{GraphNr++}(); }}" );
-                    thisBuffer.AppendLine( $"  if (w1 == 'GrowingDegreeDays') {{ graph{GraphNr++}(); }}" );
-                    thisBuffer.AppendLine( $"  if (w1 == 'Seasons') {{ graph{GraphNr++}(); }}" );
-                    thisBuffer.AppendLine( $"  if (w1 == 'DailyEVT') {{ graph{GraphNr++}(); }}" );
-                    thisBuffer.AppendLine( $"  if (w1 == 'MonthlyEVT') {{ graph{GraphNr++}(); }}" );
-                    thisBuffer.AppendLine( $"  if (w1 == 'AverageClash') {{ graph{GraphNr++}(); }}" );
+                    thisBuffer.AppendLine( $"  else if (w1 == 'GrowingDegreeDays') {{ graph{GraphNr++}(); }}" );
+                    thisBuffer.AppendLine( $"  else if (w1 == 'Seasons') {{ graph{GraphNr++}(); }}" );
+                    thisBuffer.AppendLine( $"  else if (w1 == 'DailyEVT') {{ graph{GraphNr++}(); }}" );
+                    thisBuffer.AppendLine( $"  else if (w1 == 'MonthlyEVT') {{ graph{GraphNr++}(); }}" );
+                    thisBuffer.AppendLine( $"  else if (w1 == 'AverageClash') {{ graph{GraphNr++}(); }}" );
+                    thisBuffer.AppendLine( "  else { document.getElementById('graph').value = 'TempSum'; graph1(); }" );
+                    thisBuffer.AppendLine( "urlParams.delete( 'dropdown' );" );
+                    thisBuffer.AppendLine( "urlParams.set( 'dropdown', document.getElementById('graph').value );" );
+                    thisBuffer.AppendLine( "history.pushState( null, null, window.location.origin + window.location.pathname + '?' + urlParams );" );
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
                     thisBuffer.AppendLine( "<style>" );

@@ -43,7 +43,13 @@ using System.Threading.Tasks;
 //
 // Javascript URL handling :
 //      1) https://developer.mozilla.org/en-US/docs/Web/API/URL/origin
-//      2) 
+//      2) https://www.geeksforgeeks.org/how-to-modify-url-without-reloading-the-page-using-javascript/
+//      3) https://stackoverflow.com/questions/3338642/updating-address-bar-with-new-url-without-hash-or-reloading-the-page
+//      4) https://www.30secondsofcode.org/js/s/modify-url-without-reload/
+//      5) https://html.spec.whatwg.org/multipage/nav-history-apis.html#the-history-interface
+//      6) https://developer.mozilla.org/en-US/docs/Web/API/History
+//      7) https://developer.mozilla.org/en-US/docs/Web/API/Window/pageshow_event
+//
 
 namespace CumulusUtils
 {
@@ -599,13 +605,15 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "var ChartsLoaded = false;" + // Used for the automatic relaod of the charts
                   "" +
                   "const urlParams = new URLSearchParams(window.location.search);" +
-                  "" +  
+                  "" +
 
                   "$(function () {" +
                   "  if ( urlParams.has('report') ) Report2Load = urlParams.get('report');" +
                   "  else Report2Load = 'cumuluscharts.txt';" +
                   "" +
-                  "  Promise.allSettled([ $.getScript('lib/CUgauges.js'), LoadCUsermenu('CUsermenu.txt'), LoadCUserAbout('CUserAbout.txt'), LoadUtilsReport( Report2Load, true )])" +
+                  "  Promise.allSettled([ $.getScript('lib/CUgauges.js'), " +
+                  "                       LoadCUsermenu('CUsermenu.txt'), " +
+                  "                       LoadCUserAbout('CUserAbout.txt') ])" +
                   "    .then(() => { " +
                   "      loadRealtimeTxt();" +
                  $"      RT_timer = setInterval(loadRealtimeTxt, {CUtils.UtilsRealTimeInterval} * 1000);" +
@@ -615,6 +623,10 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "      CreateMoon();" +
                   "      MinuteFunctions();" +
                   "      HourFunctions();" +
+                  "" +
+                  "      if (Report2Load != 'cumuluscharts.txt' ) LoadUtilsReport(Report2Load);" +
+                  "      else LoadUtilsReport('cumuluscharts.txt', true); " +
+                  "" +
                   "      console.log('Promise.AllSettled fullfilled...');" +
                   "      console.log('Document Ready function done');" + // Show we're alive
                   "    });" +
@@ -751,13 +763,11 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "    $('#ExtraAndCustom').show();" +
                   "  }" +
                   "" +
-                  "  if ( !urlParams.has('report', ReportName) ) {" +
                   "    if (ReportName != 'extrasensorscharts.txt' && ReportName != 'customlogscharts.txt') {" +
                   "      urlParams.delete('report');" +
                   "      urlParams.set('report', ReportName);" +
-                  "      window.location.replace(window.location.origin + window.location.pathname + '?' + urlParams);" +
+                  "      history.pushState( null, null, window.location.origin + window.location.pathname + '?' + urlParams);" +
                   "    }" +
-                  "  }" +
                   "" +
                   "  ajaxLoadReportObject = $.ajax({" +
                   "    url: ReportName," +
@@ -772,7 +782,6 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 CUlibFile.Append( "" +
                   "    $('#CUReportView').html(response);" +
                   "    if (ChartLoading) { " +
-                  "      InitCumulusCharts(); " +
                   "      ChartsLoaded = true;" +
                  $"      GRAPHS_timer = {Sup.GetCumulusIniValue( "FTP site", "UpdateInterval", "10" )};" + // Set the update interval
                   "    }" +
@@ -1328,18 +1337,16 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                           //"var ClickEventChart = ['','','','','','','','','','','','','','','','','','','','','','','',''];" +
                           "function ClickGauge(PaneNr) {" +
                           "  if ($.trim(ClickEventChart[PaneNr-1]).length !== 0) {" +
-                          "    CurrentChart0 = ClickEventChart[PaneNr-1];" +
-                          "    CurrentChart = ClickEventChart[PaneNr-1];" +
-                          "    if (!ChartsLoaded) { " +
+                          "    if (!urlParams.has('report', 'cumuluscharts.txt') ) {" +
                           "      LoadUtilsReport('cumuluscharts.txt', true);" +
-                          "    } " +
-                          "    else {" +
-                          "      if (ChartsType == 'compiler') {" +  // Always handlechange0 because clickevents are only handled from Home page
-                          "        handleChange0();" +  // Always handlechange0 because clickevents are only handled from Home page
-                          "      } else {" +
-                          "        handleChange();" +  // Always handlechange because clickevents are only handled from Home page
-                          "      }" +
                           "    }" +
+                          "    if (!urlParams.has('dropdown', ClickEventChart[PaneNr-1])) {" +
+                          "      urlParams.delete('dropdown');" +
+                          "      urlParams.set('dropdown', ClickEventChart[PaneNr-1]);" +
+                          "      history.pushState(null, null, window.location.origin + window.location.pathname + '?' + urlParams);" +
+                          "    }" +
+                          "    document.getElementById('graph0').value = ClickEventChart[PaneNr-1];" +
+                          "    InitCumulusCharts();" +  
                           "  }" +
                           "}" +
                           "" );

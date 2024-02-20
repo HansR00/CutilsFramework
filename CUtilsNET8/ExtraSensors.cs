@@ -123,342 +123,344 @@ namespace CumulusUtils
 
         public void GenerateExtraSensorsModule()
         {
+            #region Javascript
+
+            StringBuilder sb = new StringBuilder();
+
+            Sup.LogDebugMessage( $"GenerateExtraSensorsModule: Generating the Module Javascript code..." );
+
+            // Generate the table on the basis of what is set in the inifile and setup in the constructor. 
+            // We don't support live switching as we don't support that for anything.
+            // Generate the start of the realtime script
+            //
+
+            sb.AppendLine( $"{CuSupport.GenjQueryIncludestring()}" );
+
+            if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes )
+            {
+                sb.AppendLine( Sup.GenHighchartsIncludes().ToString() );
+            }
+
+            sb.AppendLine( "<script>" );
+            sb.AppendLine( "console.log('Module ExtraSensors ...');" );
+            sb.AppendLine( "var ExtraSensorTimer;" );
+            sb.AppendLine( "$(function () {" );  // Get the whole thing going
+            sb.AppendLine( $"  SetupExtraSensorsTable();" );
+            sb.AppendLine( "  loadExtraSensorsRealtime();" );
+            sb.AppendLine( "  if (ExtraSensorTimer == null) ExtraSensorTimer = setInterval(loadExtraSensorsRealtime, 60 * 1000);" );
+            sb.AppendLine( $"  LoadUtilsReport( '{Sup.ExtraSensorsCharts}', true );" );
+            sb.AppendLine( "});" );
+            sb.AppendLine( "" );
+            sb.AppendLine( "function loadExtraSensorsRealtime() {" );
+            sb.AppendLine( "  $.ajax({" );
+            sb.AppendLine( $"    url: '{Sup.ExtraSensorsRealtimeFilename}'," );
+            sb.AppendLine( "    timeout: 1000," );
+            sb.AppendLine( "    cache:false," );
+            sb.AppendLine( "    headers: { 'Access-Control-Allow-Origin': '*' }," );
+            sb.AppendLine( "    crossDomain: true," );
+            sb.AppendLine( "  })" +
+                ".done(function (response, responseStatus) {DoExtraSensorRT(response)})" +
+                ".fail(function(jqXHR, responseStatus){ console.log('ajax call: ' + responseStatus) });" );
+            sb.AppendLine( "}" );
+
+            sb.AppendLine( $"var oldobsExtra = [ {ExtraSensorList.Count} ]; " );
+            sb.AppendLine( "function DoExtraSensorRT(input) {" );
+            sb.AppendLine( "  var ExtraSensorRT = input.split(' ');" );
+
+            int i = 0;
+
+            foreach ( ExtraSensor tmp in ExtraSensorList )
+            {
+                switch ( (int) tmp.Type )
+                {
+                    case (int) ExtraSensorType.Temperature:
+                        sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
+                        sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
+                        sb.AppendLine( $"    $('#ajxExtraTemp{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {Sup.StationTemp.Text()}');" );
+                        sb.AppendLine( $"    $('#ajxExtraTemp{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                        sb.AppendLine( "  }" );
+                        break;
+                    case (int) ExtraSensorType.DewPoint:
+                        sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
+                        sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
+                        sb.AppendLine( $"    $('#ajxExtraDP{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {Sup.StationTemp.Text()}');" );
+                        sb.AppendLine( $"    $('#ajxExtraDP{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                        sb.AppendLine( "  }" );
+                        break;
+                    case (int) ExtraSensorType.Humidity:
+                        sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
+                        sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
+                        sb.AppendLine( $"    $('#ajxExtraHum{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' %');" );
+                        sb.AppendLine( $"    $('#ajxExtraHum{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                        sb.AppendLine( "  }" );
+                        break;
+                    case (int) ExtraSensorType.SoilTemp:
+                        sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
+                        sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
+                        sb.AppendLine( $"    $('#ajxSoilTemp{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {Sup.StationTemp.Text()}');" );
+                        sb.AppendLine( $"    $('#ajxSoilTemp{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                        sb.AppendLine( "  }" );
+                        break;
+                    case (int) ExtraSensorType.SoilMoisture:
+                        sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
+                        sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
+                        sb.AppendLine( $"    $('#ajxSoilMoisture{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ]);" );
+                        sb.AppendLine( $"    $('#ajxSoilMoisture{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                        sb.AppendLine( "  }" );
+                        break;
+                    case (int) ExtraSensorType.AirQuality:
+                        sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
+                        sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
+                        sb.AppendLine( $"    $('#ajxAirQuality{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {PMconc.Text()}');" );
+                        sb.AppendLine( $"    $('#ajxAirQuality{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                        sb.AppendLine( "  }" );
+                        break;
+                    case (int) ExtraSensorType.AirQualityAvg:
+                        sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
+                        sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
+                        sb.AppendLine( $"    $('#ajxAirQualityAvg{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {PMconc.Text()}');" );
+                        sb.AppendLine( $"    $('#ajxAirQualityAvg{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                        sb.AppendLine( "  }" );
+                        break;
+                    case (int) ExtraSensorType.CO2:
+                        sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
+                        sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
+                        sb.AppendLine( $"    $('#ajxCO2').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {CO2conc.Text()}');" );
+                        sb.AppendLine( $"    $('#ajxCO2').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                        sb.AppendLine( "  }" );
+                        break;
+                    case (int) ExtraSensorType.CO2avg:
+                        sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
+                        sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
+                        sb.AppendLine( $"    $('#ajxCO2-24h').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {CO2conc.Text()}');" );
+                        sb.AppendLine( $"    $('#ajxCO2-24h').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                        sb.AppendLine( "  }" );
+                        break;
+                    case (int) ExtraSensorType.CO2pm2p5:
+                        sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
+                        sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
+                        sb.AppendLine( $"    $('#ajxCO2pm2p5').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {PMconc.Text()}');" );
+                        sb.AppendLine( $"    $('#ajxCO2pm2p5').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                        sb.AppendLine( "  }" );
+                        break;
+                    case (int) ExtraSensorType.CO2pm2p5avg:
+                        sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
+                        sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
+                        sb.AppendLine( $"    $('#ajxCO2pm2p5-24h').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {PMconc.Text()}');" );
+                        sb.AppendLine( $"    $('#ajxCO2pm2p5-24h').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                        sb.AppendLine( "  }" );
+                        break;
+                    case (int) ExtraSensorType.CO2pm10:
+                        sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
+                        sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
+                        sb.AppendLine( $"    $('#ajxCO2pm10').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {PMconc.Text()} ');" );
+                        sb.AppendLine( $"    $('#ajxCO2pm10').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                        sb.AppendLine( "  }" );
+                        break;
+                    case (int) ExtraSensorType.CO2pm10avg:
+                        sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
+                        sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
+                        sb.AppendLine( $"    $('#ajxCO2pm10-24h').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {PMconc.Text()} ');" );
+                        sb.AppendLine( $"    $('#ajxCO2pm10-24h').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                        sb.AppendLine( "  }" );
+                        break;
+                    case (int) ExtraSensorType.CO2temp:
+                        sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
+                        sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
+                        sb.AppendLine( $"    $('#ajxCO2temp').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {Sup.StationTemp.Text()}');" );
+                        sb.AppendLine( $"    $('#ajxCO2temp').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                        sb.AppendLine( "  }" );
+                        break;
+                    case (int) ExtraSensorType.CO2hum:
+                        sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
+                        sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
+                        sb.AppendLine( $"    $('#ajxCO2hum').html(ExtraSensorRT[ {tmp.RTposition} ] + ' %');" );
+                        sb.AppendLine( $"    $('#ajxCO2hum').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                        sb.AppendLine( "  }" );
+                        break;
+                    case (int) ExtraSensorType.UserTemp:
+                        sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
+                        sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
+                        sb.AppendLine( $"    $('#ajxUserTemp{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {Sup.StationTemp.Text()}');" );
+                        sb.AppendLine( $"    $('#ajxUserTemp{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                        sb.AppendLine( "  }" );
+                        break;
+                    case (int) ExtraSensorType.LeafTemp:
+                        sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
+                        sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
+                        sb.AppendLine( $"    $('#ajxLeafTemp{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {Sup.StationTemp.Text()}');" );
+                        sb.AppendLine( $"    $('#ajxLeafTemp{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                        sb.AppendLine( "  }" );
+                        break;
+                    case (int) ExtraSensorType.LeafWetness:
+                        sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
+                        sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
+                        sb.AppendLine( $"    $('#ajxLeafWetness{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ]);" );
+                        sb.AppendLine( $"    $('#ajxLeafWetness{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                        sb.AppendLine( "  }" );
+                        break;
+                    case (int) ExtraSensorType.External:
+                        //sb.AppendLine( $" $('#{tmp.Name}').html(ExtraSensorRT[ {i++} ]);" );
+                        break;
+                    case (int) ExtraSensorType.Lightning:
+                        sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
+                        sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
+                        sb.AppendLine( $"    tmp = ExtraSensorRT[ {i} ] == 0 ? '' : ' \u26a1';" );
+                        sb.AppendLine( $"    $('#ajxLightningStrikesToday').html(ExtraSensorRT[ {tmp.RTposition} ] + tmp);" );
+                        sb.AppendLine( $"    $('#ajxLightningStrikesToday').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+
+                        sb.AppendLine( $"    $('#ajxLightningTime').html(ExtraSensorRT[ {tmp.RTposition + 1} ] + ' ' + ExtraSensorRT[ {tmp.RTposition + 2} ]);" );
+                        sb.AppendLine( $"    $('#ajxLightningTime').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+
+                        sb.AppendLine( $"    $('#ajxLightningDistance').html(Math.round(ExtraSensorRT[ {tmp.RTposition + 3} ]) + ' {Sup.StationDistance.Text()}');" );
+                        sb.AppendLine( $"    $('#ajxLightningDistance').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                        sb.AppendLine( "  }" );
+
+                        break;
+                    default:
+                        Sup.LogTraceErrorMessage( $"GenerateExtraSensorsModule: At impossible Switch default assigning realtime values" );
+                        break;
+                }
+
+                i++;
+            }
+
+            sb.AppendLine( "  setTimeout( 'ExtraClearChangeIndicator()', 3000 );" );
+            sb.AppendLine( "}" ); // End DoExtraSensorRT
+
+            sb.AppendLine( "function ExtraClearChangeIndicator(){" );
+            sb.AppendLine( "  $( '[id*=\"ajx\"]' ).css( 'color', '' );" );
+            sb.AppendLine( "}" );
+            sb.AppendLine( "" );
+
+            // Setup the HTML ExtraSensors table for the Dashboard area
+
+            sb.AppendLine( "function SetupExtraSensorsTable() {" );
+
+            StringBuilder buf = new StringBuilder();
+
+            bool SwitchRowBackground = true;
+
+            string RowColour()
+            {
+                SwitchRowBackground = !SwitchRowBackground;
+                return SwitchRowBackground ?
+                    $" style='background-color: {Sup.GetUtilsIniValue( "Website", "ColorMenuBackground", "Lightgrey" )};" +
+                    $" color:{Sup.GetUtilsIniValue( "Website", "ColorMenuText", "Black" )}'" : "";
+            }
+
+            string thisPadding()
+            {
+                return "style='padding: 5px 5px 5px 5px;'";
+            }
+
+            buf.Append( $"<style>.centerItem {{width: 80%; max-height: 70vh; margin: 6vh auto;overflow-y: auto; }}</style>" );
+            buf.Append( $"<div class='centerItem' style='text-align:left;'><table style='width:100%'>" );
+            buf.Append( $"<tr " +
+                $"style='background-color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarBackground", "#C5C55B" )}; " +
+                $"color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarText", "White" )}; width:100%'>" );
+            buf.Append( $"<th {thisPadding()}>{Sup.GetCUstringValue( "ExtraSensors", "SensorName", "Sensor Name", false )}</th>" +
+                $"<th>{Sup.GetCUstringValue( "ExtraSensors", "Value", "Value", false )}</th></tr>" );
+
+            foreach ( ExtraSensor tmp in ExtraSensorList )
+            {
+                switch ( (int) tmp.Type )
+                {
+                    case (int) ExtraSensorType.Temperature:
+                        buf.Append(
+                            $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxExtraTemp{tmp.SensorIndex}'></td></tr>" );
+                        break;
+                    case (int) ExtraSensorType.DewPoint:
+                        buf.Append(
+                            $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxExtraDP{tmp.SensorIndex}'></td></tr>" );
+                        break;
+                    case (int) ExtraSensorType.Humidity:
+                        buf.Append(
+                            $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxExtraHum{tmp.SensorIndex}'></td></tr>" );
+                        break;
+                    case (int) ExtraSensorType.SoilTemp:
+                        buf.Append(
+                            $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxSoilTemp{tmp.SensorIndex}'></td></tr>" );
+                        break;
+                    case (int) ExtraSensorType.SoilMoisture:
+                        buf.Append(
+                            $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxSoilMoisture{tmp.SensorIndex}'></td></tr>" );
+                        break;
+                    case (int) ExtraSensorType.AirQuality:
+                        buf.Append(
+                            $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxAirQuality{tmp.SensorIndex}'></td></tr>" );
+                        break;
+                    case (int) ExtraSensorType.AirQualityAvg:
+                        buf.Append(
+                            $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxAirQualityAvg{tmp.SensorIndex}'></td></tr>" );
+                        break;
+                    case (int) ExtraSensorType.CO2:
+                        buf.Append(
+                            $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2'></td></tr>" );
+                        break;
+                    case (int) ExtraSensorType.CO2avg:
+                        buf.Append(
+                            $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2-24h'></td></tr>" );
+                        break;
+                    case (int) ExtraSensorType.CO2pm2p5:
+                        buf.Append(
+                            $"<tr {RowColour()}><td {thisPadding()} > {Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2pm2p5'></td></tr>" );
+                        break;
+                    case (int) ExtraSensorType.CO2pm2p5avg:
+                        buf.Append(
+                            $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2pm2p5-24h'></td></tr>" );
+                        break;
+                    case (int) ExtraSensorType.CO2pm10:
+                        buf.Append(
+                            $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2pm10'></td></tr>" );
+                        break;
+                    case (int) ExtraSensorType.CO2pm10avg:
+                        buf.Append(
+                            $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2pm10-24h'></td></tr>" );
+                        break;
+                    case (int) ExtraSensorType.CO2temp:
+                        buf.Append(
+                            $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2temp'></td></tr>" );
+                        break;
+                    case (int) ExtraSensorType.CO2hum:
+                        buf.Append(
+                            $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2hum'></td></tr>" );
+                        break;
+                    case (int) ExtraSensorType.UserTemp:
+                        buf.Append(
+                            $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxUserTemp{tmp.SensorIndex}'></td></tr>" );
+                        break;
+                    case (int) ExtraSensorType.LeafTemp:
+                        buf.Append(
+                            $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxLeafTemp{tmp.SensorIndex}'></td></tr>" );
+                        break;
+                    case (int) ExtraSensorType.LeafWetness:
+                        buf.Append(
+                            $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxLeafWetness{tmp.SensorIndex}'></td></tr>" );
+                        break;
+                    case (int) ExtraSensorType.External:
+                        Sup.LogTraceWarningMessage( $"GenerateExtraSensorsModule: External realtime not implemented." );
+                        break;
+                    case (int) ExtraSensorType.Lightning:
+                        buf.Append( $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td></td></tr>" );
+                        buf.Append( $"<tr {RowColour()}><td {thisPadding()}>&nbsp;&nbsp;{Sup.GetCUstringValue( "Compiler", "StrikesToday", "Strikes today", false )}</td><td id='ajxLightningStrikesToday'></td></tr>" );
+                        buf.Append( $"<tr {RowColour()}><td {thisPadding()}>&nbsp;&nbsp;{Sup.GetCUstringValue( "Compiler", "TimeLastStrike", "Time last strike", false )}</td><td id='ajxLightningTime'></td></tr>" );
+                        buf.Append( $"<tr {RowColour()}><td {thisPadding()}>&nbsp;&nbsp;{Sup.GetCUstringValue( "Compiler", "DistanceLastStrike", "Distance last strike", false )}</td><td id='ajxLightningDistance'></td></tr>" );
+                        break;
+                    default:
+                        Sup.LogTraceErrorMessage( $"GenerateExtraSensorsModule: At impossible Switch default generating the table" );
+                        break;
+                }
+            }
+
+            buf.Append( "</table></div>" );
+            sb.AppendLine( $"  $('#ExtraAndCustom').html(\"{buf}\");" );
+            sb.AppendLine( "}" );
+            sb.AppendLine( "</script>" );
+
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.ExtraSensorsOutputFilename}", false, Encoding.UTF8 ) )
             {
-                #region Javascript
-
-                StringBuilder sb = new StringBuilder();
-
-                Sup.LogDebugMessage( $"GenerateExtraSensorsModule: Generating the Module Javascript code..." );
-
-                // Generate the table on the basis of what is set in the inifile and setup in the constructor. 
-                // We don't support live switching as we don't support that for anything.
-                // Generate the start of the realtime script
-                //
-
-                sb.AppendLine( $"{CuSupport.GenjQueryIncludestring()}" );
-
-                if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes )
-                {
-                    sb.AppendLine( Sup.GenHighchartsIncludes().ToString() );
-                }
-
-                sb.AppendLine( "<script>" );
-                sb.AppendLine( "console.log('Module ExtraSensors ...');" );
-                sb.AppendLine( "var ExtraSensorTimer;" );
-                sb.AppendLine( "$(function () {" );  // Get the whole thing going
-                sb.AppendLine( $"  SetupExtraSensorsTable();" );
-                sb.AppendLine( "  loadExtraSensorsRealtime();" );
-                sb.AppendLine( "  if (ExtraSensorTimer == null) ExtraSensorTimer = setInterval(loadExtraSensorsRealtime, 60 * 1000);" );
-                sb.AppendLine( $"  LoadUtilsReport( '{Sup.ExtraSensorsCharts}', false );" );
-                sb.AppendLine( "});" );
-                sb.AppendLine( "" );
-                sb.AppendLine( "function loadExtraSensorsRealtime() {" );
-                sb.AppendLine( "  $.ajax({" );
-                sb.AppendLine( $"    url: '{Sup.ExtraSensorsRealtimeFilename}'," );
-                sb.AppendLine( "    timeout: 1000," );
-                sb.AppendLine( "    cache:false," );
-                sb.AppendLine( "    headers: { 'Access-Control-Allow-Origin': '*' }," );
-                sb.AppendLine( "    crossDomain: true," );
-                sb.AppendLine( "  })" +
-                    ".done(function (response, responseStatus) {DoExtraSensorRT(response)})" +
-                    ".fail(function(jqXHR, responseStatus){ console.log('ajax call: ' + responseStatus) });" );
-                sb.AppendLine( "}" );
-
-                sb.AppendLine( $"var oldobsExtra = [ {ExtraSensorList.Count} ]; " );
-                sb.AppendLine( "function DoExtraSensorRT(input) {" );
-                sb.AppendLine( "  var ExtraSensorRT = input.split(' ');" );
-
-                int i = 0;
-
-                foreach ( ExtraSensor tmp in ExtraSensorList )
-                {
-                    switch ( (int) tmp.Type )
-                    {
-                        case (int) ExtraSensorType.Temperature:
-                            sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
-                            sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    $('#ajxExtraTemp{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {Sup.StationTemp.Text()}');" );
-                            sb.AppendLine( $"    $('#ajxExtraTemp{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
-                            sb.AppendLine( "  }" );
-                            break;
-                        case (int) ExtraSensorType.DewPoint:
-                            sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
-                            sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    $('#ajxExtraDP{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {Sup.StationTemp.Text()}');" );
-                            sb.AppendLine( $"    $('#ajxExtraDP{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
-                            sb.AppendLine( "  }" );
-                            break;
-                        case (int) ExtraSensorType.Humidity:
-                            sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
-                            sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    $('#ajxExtraHum{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' %');" );
-                            sb.AppendLine( $"    $('#ajxExtraHum{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
-                            sb.AppendLine( "  }" );
-                            break;
-                        case (int) ExtraSensorType.SoilTemp:
-                            sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
-                            sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    $('#ajxSoilTemp{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {Sup.StationTemp.Text()}');" );
-                            sb.AppendLine( $"    $('#ajxSoilTemp{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
-                            sb.AppendLine( "  }" );
-                            break;
-                        case (int) ExtraSensorType.SoilMoisture:
-                            sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
-                            sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    $('#ajxSoilMoisture{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ]);" );
-                            sb.AppendLine( $"    $('#ajxSoilMoisture{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
-                            sb.AppendLine( "  }" );
-                            break;
-                        case (int) ExtraSensorType.AirQuality:
-                            sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
-                            sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    $('#ajxAirQuality{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {PMconc.Text()}');" );
-                            sb.AppendLine( $"    $('#ajxAirQuality{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
-                            sb.AppendLine( "  }" );
-                            break;
-                        case (int) ExtraSensorType.AirQualityAvg:
-                            sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
-                            sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    $('#ajxAirQualityAvg{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {PMconc.Text()}');" );
-                            sb.AppendLine( $"    $('#ajxAirQualityAvg{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
-                            sb.AppendLine( "  }" );
-                            break;
-                        case (int) ExtraSensorType.CO2:
-                            sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
-                            sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    $('#ajxCO2').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {CO2conc.Text()}');" );
-                            sb.AppendLine( $"    $('#ajxCO2').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
-                            sb.AppendLine( "  }" );
-                            break;
-                        case (int) ExtraSensorType.CO2avg:
-                            sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
-                            sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    $('#ajxCO2-24h').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {CO2conc.Text()}');" );
-                            sb.AppendLine( $"    $('#ajxCO2-24h').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
-                            sb.AppendLine( "  }" );
-                            break;
-                        case (int) ExtraSensorType.CO2pm2p5:
-                            sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
-                            sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    $('#ajxCO2pm2p5').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {PMconc.Text()}');" );
-                            sb.AppendLine( $"    $('#ajxCO2pm2p5').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
-                            sb.AppendLine( "  }" );
-                            break;
-                        case (int) ExtraSensorType.CO2pm2p5avg:
-                            sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
-                            sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    $('#ajxCO2pm2p5-24h').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {PMconc.Text()}');" );
-                            sb.AppendLine( $"    $('#ajxCO2pm2p5-24h').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
-                            sb.AppendLine( "  }" );
-                            break;
-                        case (int) ExtraSensorType.CO2pm10:
-                            sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
-                            sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    $('#ajxCO2pm10').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {PMconc.Text()} ');" );
-                            sb.AppendLine( $"    $('#ajxCO2pm10').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
-                            sb.AppendLine( "  }" );
-                            break;
-                        case (int) ExtraSensorType.CO2pm10avg:
-                            sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
-                            sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    $('#ajxCO2pm10-24h').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {PMconc.Text()} ');" );
-                            sb.AppendLine( $"    $('#ajxCO2pm10-24h').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
-                            sb.AppendLine( "  }" );
-                            break;
-                        case (int) ExtraSensorType.CO2temp:
-                            sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
-                            sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    $('#ajxCO2temp').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {Sup.StationTemp.Text()}');" );
-                            sb.AppendLine( $"    $('#ajxCO2temp').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
-                            sb.AppendLine( "  }" );
-                            break;
-                        case (int) ExtraSensorType.CO2hum:
-                            sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
-                            sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    $('#ajxCO2hum').html(ExtraSensorRT[ {tmp.RTposition} ] + ' %');" );
-                            sb.AppendLine( $"    $('#ajxCO2hum').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
-                            sb.AppendLine( "  }" );
-                            break;
-                        case (int) ExtraSensorType.UserTemp:
-                            sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
-                            sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    $('#ajxUserTemp{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {Sup.StationTemp.Text()}');" );
-                            sb.AppendLine( $"    $('#ajxUserTemp{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
-                            sb.AppendLine( "  }" );
-                            break;
-                        case (int) ExtraSensorType.LeafTemp:
-                            sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
-                            sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    $('#ajxLeafTemp{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {Sup.StationTemp.Text()}');" );
-                            sb.AppendLine( $"    $('#ajxLeafTemp{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
-                            sb.AppendLine( "  }" );
-                            break;
-                        case (int) ExtraSensorType.LeafWetness:
-                            sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
-                            sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    $('#ajxLeafWetness{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ]);" );
-                            sb.AppendLine( $"    $('#ajxLeafWetness{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
-                            sb.AppendLine( "  }" );
-                            break;
-                        case (int) ExtraSensorType.External:
-                            //sb.AppendLine( $" $('#{tmp.Name}').html(ExtraSensorRT[ {i++} ]);" );
-                            break;
-                        case (int) ExtraSensorType.Lightning:
-                            sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
-                            sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                            sb.AppendLine( $"    tmp = ExtraSensorRT[ {i} ] == 0 ? '' : ' \u26a1';" );
-                            sb.AppendLine( $"    $('#ajxLightningStrikesToday').html(ExtraSensorRT[ {tmp.RTposition} ] + tmp);" );
-                            sb.AppendLine( $"    $('#ajxLightningStrikesToday').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
-
-                            sb.AppendLine( $"    $('#ajxLightningTime').html(ExtraSensorRT[ {tmp.RTposition + 1} ] + ' ' + ExtraSensorRT[ {tmp.RTposition + 2} ]);" );
-                            sb.AppendLine( $"    $('#ajxLightningTime').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
-
-                            sb.AppendLine( $"    $('#ajxLightningDistance').html(Math.round(ExtraSensorRT[ {tmp.RTposition + 3} ]) + ' {Sup.StationDistance.Text()}');" );
-                            sb.AppendLine( $"    $('#ajxLightningDistance').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
-                            sb.AppendLine( "  }" );
-
-                            break;
-                        default:
-                            Sup.LogTraceErrorMessage( $"GenerateExtraSensorsModule: At impossible Switch default assigning realtime values" );
-                            break;
-                    }
-
-                    i++;
-                }
-
-                sb.AppendLine( "  setTimeout( 'ExtraClearChangeIndicator()', 3000 );" );
-                sb.AppendLine( "}" ); // End DoExtraSensorRT
-
-                sb.AppendLine( "function ExtraClearChangeIndicator(){" );
-                sb.AppendLine( "  $( '[id*=\"ajx\"]' ).css( 'color', '' );" );
-                sb.AppendLine( "}" );
-                sb.AppendLine( "" );
-
-                // Setup the HTML ExtraSensors table for the Dashboard area
-
-                sb.AppendLine( "function SetupExtraSensorsTable() {" );
-
-                StringBuilder buf = new StringBuilder();
-
-                bool SwitchRowBackground = true;
-
-                string RowColour()
-                {
-                    SwitchRowBackground = !SwitchRowBackground;
-                    return SwitchRowBackground ?
-                        $" style='background-color: {Sup.GetUtilsIniValue( "Website", "ColorMenuBackground", "Lightgrey" )};" +
-                        $" color:{Sup.GetUtilsIniValue( "Website", "ColorMenuText", "Black" )}'" : "";
-                }
-
-                string thisPadding()
-                {
-                    return "style='padding: 5px 5px 5px 5px;'";
-                }
-
-                buf.Append( $"<style>.centerItem {{width: 80%; max-height: 70vh; margin: 6vh auto;overflow-y: auto; }}</style>" );
-                buf.Append( $"<div class='centerItem' style='text-align:left;'><table style='width:100%'>" );
-                buf.Append( $"<tr " +
-                    $"style='background-color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarBackground", "#C5C55B" )}; " +
-                    $"color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarText", "White" )}; width:100%'>" );
-                buf.Append( $"<th {thisPadding()}>{Sup.GetCUstringValue( "ExtraSensors", "SensorName", "Sensor Name", false )}</th>" +
-                    $"<th>{Sup.GetCUstringValue( "ExtraSensors", "Value", "Value", false )}</th></tr>" );
-
-                foreach ( ExtraSensor tmp in ExtraSensorList )
-                {
-                    switch ( (int) tmp.Type )
-                    {
-                        case (int) ExtraSensorType.Temperature:
-                            buf.Append(
-                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxExtraTemp{tmp.SensorIndex}'></td></tr>" );
-                            break;
-                        case (int) ExtraSensorType.DewPoint:
-                            buf.Append(
-                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxExtraDP{tmp.SensorIndex}'></td></tr>" );
-                            break;
-                        case (int) ExtraSensorType.Humidity:
-                            buf.Append(
-                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxExtraHum{tmp.SensorIndex}'></td></tr>" );
-                            break;
-                        case (int) ExtraSensorType.SoilTemp:
-                            buf.Append(
-                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxSoilTemp{tmp.SensorIndex}'></td></tr>" );
-                            break;
-                        case (int) ExtraSensorType.SoilMoisture:
-                            buf.Append(
-                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxSoilMoisture{tmp.SensorIndex}'></td></tr>" );
-                            break;
-                        case (int) ExtraSensorType.AirQuality:
-                            buf.Append(
-                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxAirQuality{tmp.SensorIndex}'></td></tr>" );
-                            break;
-                        case (int) ExtraSensorType.AirQualityAvg:
-                            buf.Append(
-                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxAirQualityAvg{tmp.SensorIndex}'></td></tr>" );
-                            break;
-                        case (int) ExtraSensorType.CO2:
-                            buf.Append(
-                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2'></td></tr>" );
-                            break;
-                        case (int) ExtraSensorType.CO2avg:
-                            buf.Append(
-                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2-24h'></td></tr>" );
-                            break;
-                        case (int) ExtraSensorType.CO2pm2p5:
-                            buf.Append(
-                                $"<tr {RowColour()}><td {thisPadding()} > {Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2pm2p5'></td></tr>" );
-                            break;
-                        case (int) ExtraSensorType.CO2pm2p5avg:
-                            buf.Append(
-                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2pm2p5-24h'></td></tr>" );
-                            break;
-                        case (int) ExtraSensorType.CO2pm10:
-                            buf.Append(
-                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2pm10'></td></tr>" );
-                            break;
-                        case (int) ExtraSensorType.CO2pm10avg:
-                            buf.Append(
-                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2pm10-24h'></td></tr>" );
-                            break;
-                        case (int) ExtraSensorType.CO2temp:
-                            buf.Append(
-                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2temp'></td></tr>" );
-                            break;
-                        case (int) ExtraSensorType.CO2hum:
-                            buf.Append(
-                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2hum'></td></tr>" );
-                            break;
-                        case (int) ExtraSensorType.UserTemp:
-                            buf.Append(
-                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxUserTemp{tmp.SensorIndex}'></td></tr>" );
-                            break;
-                        case (int) ExtraSensorType.LeafTemp:
-                            buf.Append(
-                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxLeafTemp{tmp.SensorIndex}'></td></tr>" );
-                            break;
-                        case (int) ExtraSensorType.LeafWetness:
-                            buf.Append(
-                                $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxLeafWetness{tmp.SensorIndex}'></td></tr>" );
-                            break;
-                        case (int) ExtraSensorType.External:
-                            Sup.LogTraceWarningMessage( $"GenerateExtraSensorsModule: External realtime not implemented." );
-                            break;
-                        case (int) ExtraSensorType.Lightning:
-                            buf.Append( $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td></td></tr>" );
-                            buf.Append( $"<tr {RowColour()}><td {thisPadding()}>&nbsp;&nbsp;{Sup.GetCUstringValue( "Compiler", "StrikesToday", "Strikes today", false )}</td><td id='ajxLightningStrikesToday'></td></tr>" );
-                            buf.Append( $"<tr {RowColour()}><td {thisPadding()}>&nbsp;&nbsp;{Sup.GetCUstringValue( "Compiler", "TimeLastStrike", "Time last strike", false )}</td><td id='ajxLightningTime'></td></tr>" );
-                            buf.Append( $"<tr {RowColour()}><td {thisPadding()}>&nbsp;&nbsp;{Sup.GetCUstringValue( "Compiler", "DistanceLastStrike", "Distance last strike", false )}</td><td id='ajxLightningDistance'></td></tr>" );
-                            break;
-                        default:
-                            Sup.LogTraceErrorMessage( $"GenerateExtraSensorsModule: At impossible Switch default generating the table" );
-                            break;
-                    }
-                }
-
-                buf.Append( "</table></div>" );
-                sb.AppendLine( $"  $('#ExtraAndCustom').html(\"{buf}\");" );
-                sb.AppendLine( "}" );
-                sb.AppendLine( "</script>" );
+                of.WriteLine( CuSupport.CopyrightForGeneratedFiles() );
 
 #if !RELEASE
                 of.WriteLine( sb );

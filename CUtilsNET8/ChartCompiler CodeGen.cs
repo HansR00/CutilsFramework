@@ -110,14 +110,20 @@ namespace CumulusUtils
                 Html.AppendLine( "<div><p style='text-align:center;'>" );
                 Html.AppendLine( $"<select id='graph{UniqueOutputId}'>" );
 
-                MenuJavascript.AppendLine( $"$('#graph{UniqueOutputId}').change(function(){{CurrentChart{UniqueOutputId}=document.getElementById('graph{UniqueOutputId}').value; handleChange{UniqueOutputId}();}});" );
+                MenuJavascript.AppendLine( $"console.log( 'Debug... {filename}' );" );
+                MenuJavascript.AppendLine( $"$('#graph{UniqueOutputId}').change(function(){{" );
+
+
+                MenuJavascript.AppendLine( $"handleChange{UniqueOutputId}();}});" );
                 MenuJavascript.AppendLine( "var prevChartRange;" );
                 MenuJavascript.AppendLine( $"function handleChange{UniqueOutputId}() {{" );
-                MenuJavascript.AppendLine( $"  var w1 = document.getElementById('graph{UniqueOutputId}').value = CurrentChart{UniqueOutputId};" );
+                MenuJavascript.AppendLine( $"  var w1 = document.getElementById('graph{UniqueOutputId}').value;" );
 
                 GenericJavascript.AppendLine( "var chart, config, freezing;" );
 
-                // Change defaults of the Charts Page / Home button in the Document Init function but only if NOT website
+                var InitCumulusCharts = () => {};
+
+                // The Document Ready function
                 GenericJavascript.Append( "$( function(){  " );
 
                 // This complex conditional must make sure the initialisation of the chart is done and is done only once.
@@ -127,29 +133,27 @@ namespace CumulusUtils
                 //   4) If the condition is true, the chart needs the initialisation on itself
                 //      --- this must be a rewrite: initialisation should always be done from the runtime such that we know what the last chart is and that the timer can 
                 //      refresh whatever chart is loaded
-                if ( ( !CUtils.DoWebsite && ( CUtils.DojQueryInclude || CUtils.DoLibraryIncludes ) ) || UniqueOutputId > 0 )
-                    GenericJavascript.Append( "InitCumulusCharts();" );
+
+                GenericJavascript.Append( $"InitCumulusCharts = InitCumulusCharts{UniqueOutputId};" );
+                GenericJavascript.Append( "InitCumulusCharts();" );
+
+                GenericJavascript.AppendLine( $"     if ( urlParams.get( 'dropdown' ) != '' ) document.getElementById('graph{UniqueOutputId}').value = urlParams.get( 'dropdown' ); " );
+                GenericJavascript.AppendLine( $"     else document.getElementById('graph{UniqueOutputId}').value = '{theseCharts[ 0 ].Id}';" );
 
                 GenericJavascript.AppendLine( " } );" );
 
                 // Generate InitCumulusCharts
-                GenericJavascript.Append( "function InitCumulusCharts() {" );
+                GenericJavascript.Append( $"function InitCumulusCharts{UniqueOutputId}() {{" );
                 GenericJavascript.Append( "  ChartsType = 'compiler';" );
-
-                if ( CUtils.DoWebsite && UniqueOutputId == 0 )
-                    GenericJavascript.AppendLine( $"  if (CurrentChart{UniqueOutputId} === 'Temp') {{" );   // Temp is the default when no compiler is used
 
                 GenericJavascript.Append( "    ClickEventChart = [" );
                 for ( int i = 0; i < 24; i++ )
                     GenericJavascript.Append( $"'{ClickEvents[ i ]}'," );
                 GenericJavascript.Remove( GenericJavascript.Length - 1, 1 );
                 GenericJavascript.AppendLine( "];" );
-                GenericJavascript.AppendLine( "     console.log('Cumuluscharts Compiler version has been initialised');" );
-                GenericJavascript.AppendLine( $"    CurrentChart{UniqueOutputId} = '{theseCharts[ 0 ].Id}';" );
 
-                if ( CUtils.DoWebsite && UniqueOutputId == 0 )
-                    GenericJavascript.AppendLine( "  }" );
-
+                // This part reinitialises the charts (either Home, Extern, Custom and others
+                //
                 GenericJavascript.AppendLine( $"  $.when( Promise.all([GraphconfigAjax()" );
 
                 foreach ( string df in theseDatafiles )
@@ -161,8 +165,13 @@ namespace CumulusUtils
                 // Add the WindBarbs line
                 if ( TheseChartsUseWindBarbs ) GenericJavascript.AppendLine( $", WindBarbsAjax()" );
 
-                GenericJavascript.AppendLine( $"])).then( () => $( '#graph{UniqueOutputId}' ).trigger( 'change' ) ) " );
-                GenericJavascript.AppendLine( "}" );
+                GenericJavascript.AppendLine( $"])).then( () => $( '#graph{UniqueOutputId}' ).trigger( 'change' ) ); " );
+                //
+                // End of reinitialisation of the charts (inital and through timer)
+
+                GenericJavascript.AppendLine( $"     console.log('Cumuluscharts{UniqueOutputId} Compiler version has been initialised');" );
+
+                GenericJavascript.AppendLine( "  }" );
 
                 if ( TheseChartsUseWindBarbs )
                     GenericJavascript.Append( "function convertToMs(data) {" +
@@ -184,7 +193,6 @@ namespace CumulusUtils
                     "      config = resp;" +
                     "      freezing = config.temp.units === 'C' ? 0 : 32;" +
                     "      console.log('Succes in Ajax Graphconfig');" +
-                   $"      document.getElementById( 'graph{UniqueOutputId}' ).value = CurrentChart{UniqueOutputId};" +
                     "})" ); // End .done()
                 GenericJavascript.AppendLine( "    .fail(function ( xhr, textStatus, errorThrown) {" +
                     "      console.log('graphconfig.json ' + textStatus + ' : ' + errorThrown);" +
@@ -265,7 +273,7 @@ namespace CumulusUtils
                     AxisType AxisSet = AxisType.None;
 
                     Html.AppendLine( $"  <option value='{thisChart.Id}'{( first ? " selected" : "" )}>{thisChart.Id.Replace( '_', ' ' )}</option>" );
-                    MenuJavascript.AppendLine( $"  if (w1=='{thisChart.Id}') {{ " );
+                    MenuJavascript.AppendLine( $" if (w1=='{thisChart.Id}') {{ " );
 
                     // Meaning we are dealing with CustomLogs in the website (with realtime values table);
                     // A bit awkward method, may change that sometime haha...
@@ -281,6 +289,7 @@ namespace CumulusUtils
                         MenuJavascript.AppendLine( "}" );
                     }
                     MenuJavascript.AppendLine( $"    do{thisChart.Id}()}}" );
+                    MenuJavascript.AppendLine( " else " );
 
                     // AlignTicks must be true!! (is the default of HighCharts) this also makes softMax superfluous
                     TheCharts.AppendLine( $"function do{thisChart.Id}() {{" );
@@ -538,7 +547,21 @@ namespace CumulusUtils
 
                 Sup.LogTraceInfoMessage( $"Compiler - CodeGen: {filename} Written the AddSeries Calls" );
 
-                MenuJavascript.AppendLine( "}\n" );   // Close the script
+                MenuJavascript.AppendLine( "{" );
+                if ( filename.Equals( Sup.CustomLogsCharts ) )
+                {
+                    MenuJavascript.AppendLine( "  $( '.slideOptions' ).slideUp('slow');" );
+                    MenuJavascript.Append( "  $( '#RecentCustomLogs' ).slideDown('slow'); " );
+                    MenuJavascript.AppendLine( $" prevChartRange = 1;" );
+                }
+                MenuJavascript.AppendLine( $" document.getElementById('graph{UniqueOutputId}').value = '{theseCharts[ 0 ].Id}';" );
+                MenuJavascript.AppendLine( $" do{theseCharts[ 0 ].Id}();" );   // Close the script
+                MenuJavascript.AppendLine( "}" );
+
+                MenuJavascript.AppendLine( "urlParams.delete('dropdown');" );
+                MenuJavascript.AppendLine( $"urlParams.set('dropdown', document.getElementById('graph{UniqueOutputId}').value);" );
+                MenuJavascript.AppendLine( "history.pushState(null, null, window.location.origin + window.location.pathname + '?' + urlParams);" );
+                MenuJavascript.AppendLine( "}" );
 
                 Html.AppendLine( "</select>" );
                 Html.AppendLine( "</p>" );

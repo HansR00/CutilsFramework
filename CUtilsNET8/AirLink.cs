@@ -457,7 +457,23 @@ namespace CumulusUtils
             of.AppendLine( "$(function () {" );  // Get the whole thing going
             of.AppendLine( "  loadAirLinkTxt();" );
             of.AppendLine( "  if (AirLinkTimer == null) AirLinkTimer = setInterval(loadAirLinkTxt, 60 * 1000);" );
-            of.AppendLine( "  SetTableView();" );
+            of.AppendLine( "  if (urlParams.has('dropdown')) {" +
+                "AirLink2Load = urlParams.get('dropdown');" +
+                "switch (AirLink2Load) {" +
+                "  case 'TableView':" +
+                "    SetTableView();" +
+                "    break;" +
+                "  case 'GraphView0':" +
+                "    SetGraphView0();" +
+                "    break;" +
+                "  case 'GraphView1':" +
+                "    SetGraphView1();" +
+                "    break;" +
+                "  default:" +
+                "    SetTableView();" +
+                "    break;" +
+                "  }" +
+                "} else SetTableView();" );
             of.AppendLine( "});" );
             of.AppendLine( "" );
             of.AppendLine( "function loadAirLinkTxt() {" );
@@ -626,6 +642,11 @@ namespace CumulusUtils
             sb.Append( "function SetTableView() {" );
             sb.Append( "  $('[id*=\"AIRQ\"]').hide();" );
             sb.Append( "  $('#AIRQTableView').show();" );
+            sb.Append( "  " +
+                "urlParams.delete('dropdown');" +
+                "urlParams.set('dropdown', 'TableView');" +
+                "history.pushState(null, null, window.location.origin + window.location.pathname + '?' + urlParams);" +
+                "" );
             sb.Append( "};" );
 
             // Generate the graphing functions
@@ -782,6 +803,12 @@ namespace CumulusUtils
                     of.AppendLine( "  });" ); // End of .done / $.ajax handling
                     of.AppendLine( "};" ); // End of DoSensorXXYY function
                 } // loop over concentrations
+
+                sb.AppendLine( $"  " +
+                    "urlParams.delete('dropdown');" +
+                    $"urlParams.set('dropdown', 'GraphView{j}');" +
+                    "history.pushState(null, null, window.location.origin + window.location.pathname + '?' + urlParams);" +
+                    "" );
 
                 sb.AppendLine( "};" );
             }

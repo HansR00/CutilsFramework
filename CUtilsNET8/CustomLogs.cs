@@ -191,7 +191,7 @@ namespace CumulusUtils
             sb.AppendLine( $"  SetupCustomLogsTable();" );
             sb.AppendLine( "  loadCustomLogsRealtime();" );
             sb.AppendLine( "  if (CustomLogsTimer == null) CustomLogsTimer = setInterval(loadCustomLogsRealtime, 60 * 1000);" );
-            sb.AppendLine( $"  LoadUtilsReport( '{Sup.CustomLogsCharts}', false );" );
+            sb.AppendLine( $"  LoadUtilsReport( '{Sup.CustomLogsCharts}', true );" );
             sb.AppendLine( "});" );
             sb.AppendLine( "" );
             sb.AppendLine( "function loadCustomLogsRealtime() {" );
@@ -257,7 +257,6 @@ namespace CumulusUtils
 
             buf.Append( $"<style>.centerItem {{width: 90%; max-height: 67vh; margin: 6vh auto;overflow-y: auto; }}</style>" );
 
-            //buf.Append( $"<a href='https://www.cumuluswiki.org/a/Full_list_of_Webtags' target='_blank'>Cumulus Webtags -  Full List</a><br/>" );
             buf.Append( $"<div id='RecentCustomLogs' class='slideOptions centerItem' style='text-align:left;'>" );
             buf.Append( $"<table style='width:100%'><tr " +
                 $"style='background-color: {Sup.GetUtilsIniValue( "Website", "ColorDashboardCellTitleBarBackground", "#C5C55B" )}; " +

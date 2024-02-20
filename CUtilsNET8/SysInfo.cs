@@ -130,16 +130,24 @@ namespace CumulusUtils
                         break;
 
                     case 12:
-                    case 14:
-                    case 20:
                         DeviceInfo.AppendLine( "The Ecowitt Firmware Version: <#EcowittFirmwareVersion>" );
                         DeviceInfo.AppendLine( "The Ecowitt Reception Stats: <#EcowittReception>" );
-                        DeviceInfo.AppendLine( "The Ecowitt GW Uptime: <#StationRuntime>" );
                         DeviceInfo.AppendLine( "The Ecowitt Free Memory: <#StationFreeMemory>" );
                         DeviceInfo.AppendLine( $"Extra Station Info: {Sup.GetUtilsIniValue( "SysInfo", "ExtraStationInfo", "" )}" );
                         DeviceInfo.AppendLine( "" );
-
                         break;
+
+                    case 14:
+                        DeviceInfo.AppendLine( "The Ecowitt Firmware Version: <#EcowittFirmwareVersion>" );
+                        DeviceInfo.AppendLine( "The Ecowitt Reception Stats: <#EcowittReception>" );
+                        DeviceInfo.AppendLine( "The Ecowitt Free Memory: <#StationFreeMemory>" );
+                        DeviceInfo.AppendLine( "The Ecowitt GW Uptime: <#StationRuntime>" );
+                        DeviceInfo.AppendLine( $"Extra Station Info: {Sup.GetUtilsIniValue( "SysInfo", "ExtraStationInfo", "" )}" );
+                        DeviceInfo.AppendLine( "" );
+                        break;
+
+                    //case 20:
+                    //break;
 
                     default:
                         //DeviceInfo.AppendLine( "Device type: <#stationtype>" );
