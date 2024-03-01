@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace CumulusUtils
 {
@@ -87,8 +88,6 @@ namespace CumulusUtils
         readonly string[] enumFieldTypeNames;
         readonly string[] MonthfileList;
 
-        //readonly DateTime AncientCumulus = new DateTime( 2004, 01, 27 );
-
         bool disposed;
         string filenameCopy;
 
@@ -138,8 +137,11 @@ namespace CumulusUtils
                 List<MonthfileValue> thisList = new List<MonthfileValue>();
                 MonthfileValue? tmp;
 
+                bool CheckDateOrder = Sup.GetUtilsIniValue( "General", "CheckDateOrder", "true" ).Equals( "true", CUtils.Cmp );
+
                 foreach ( string file in MonthfileList )
                 {
+                    DateTime prevDate = new DateTime( 1900, 1, 1 );
                     ErrorCount = 0; // make sure we only log MaxErrors per file
 
                     filenameCopy = "data/" + "copy_" + Path.GetFileName( file );
@@ -153,12 +155,21 @@ namespace CumulusUtils
 
                     foreach ( string line in allLines )
                     {
-                        //tmp = SetValues( Sup.ChangeSeparators( line ) );
-                        tmp = SetValues( line );
+                        tmp = SetValues( line, file );
 
                         try
                         {
                             thisList.Add( (MonthfileValue) tmp );
+
+                            if ( CheckDateOrder )
+                            {
+                                if ( ( (MonthfileValue) tmp ).ThisDate < prevDate )
+                                {
+                                    Sup.LogTraceInfoMessage( $"ReadMonthlyLogs reading {file}: DateTime is less than prev Date: {prevDate}" );
+                                }
+
+                                prevDate = ( (MonthfileValue) tmp ).ThisDate;
+                            }
                         }
                         catch
                         {
@@ -210,7 +221,7 @@ namespace CumulusUtils
 
                 foreach ( string line in allLines )
                 {
-                    tmp = SetValues( line );
+                    tmp = SetValues( line, file );
 
                     try
                     {
@@ -237,7 +248,7 @@ namespace CumulusUtils
             return thisList;
         } // End ReadMonthlyLogs
 
-        private MonthfileValue? SetValues( string line )
+        private MonthfileValue? SetValues( string line, string file )
         {
             int FieldInUse = 0;
 
@@ -309,10 +320,11 @@ namespace CumulusUtils
                 {
                     Sup.LogTraceErrorMessage( $"{m} fail: {e.Message}" );
                     Sup.LogTraceErrorMessage( $"{m}: in field nr {FieldInUse} ({enumFieldTypeNames[ FieldInUse ]})" );
-                    Sup.LogTraceErrorMessage( $"{m}: line is: {line}" );
+                    Sup.LogTraceErrorMessage( $"{m}: line is: {line} in File: {file}" );
 
                     Console.WriteLine( $"{m} fail: {e.Message}" );
                     Console.WriteLine( $"{m}: in field nr {FieldInUse} ({enumFieldTypeNames[ FieldInUse ]})" );
+                    Console.WriteLine( $"{m}: line is: {line} in File: {file}" );
 
                     if ( String.IsNullOrEmpty( lineSplit[ FieldInUse ] ) )
                     {
@@ -339,7 +351,7 @@ namespace CumulusUtils
                 {
                     Sup.LogTraceErrorMessage( $"{m} fail: {e.Message}" );
                     Sup.LogTraceErrorMessage( $"{m}: in field nr {FieldInUse} does  not exist in this file" );
-                    Sup.LogTraceErrorMessage( $"{m}: line is: {line}" );
+                    Sup.LogTraceErrorMessage( $"{m}: line is: {line} in File: {file}" );
                 }
 
                 if ( IgnoreDataErrors )

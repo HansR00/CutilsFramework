@@ -457,8 +457,8 @@ namespace CumulusUtils
             Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: URL: {CumulusURL}" );
             Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: Dir: {CumulusDir}" );
 
-            string username = Sup.GetCumulusIniValue( "FTP site", "Username", "" );
-            string password = Sup.GetCumulusIniValue( "FTP site", "Password", "" );
+            string username = Crypto.DecryptString( Sup.GetCumulusIniValue( "FTP site", "Username", "" ), CUtils.CryptoKey );
+            string password = Crypto.DecryptString( Sup.GetCumulusIniValue( "FTP site", "Password", "" ), CUtils.CryptoKey );
             string hostname = Sup.GetCumulusIniValue( "FTP site", "Host", "" );
             int port = Convert.ToInt32( Sup.GetCumulusIniValue( "FTP site", "Port", "21" ) );
             bool PassiveFTP = Sup.GetCumulusIniValue( "FTP site", "ActiveFTP", "" ).Equals( "0" );

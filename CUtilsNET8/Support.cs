@@ -40,7 +40,7 @@ namespace CumulusUtils
     public class CuSupport : IDisposable
     {
         // Is it a version number beta shown at users?
-        const string beta = "beta 5";
+        const string beta = "beta 6";
 
         #region declarations
         public Wind StationWind { get; set; }
@@ -602,70 +602,6 @@ namespace CumulusUtils
         public static long DateTimeToUnixUTC( DateTime timestamp ) => (long) ( timestamp.ToUniversalTime() - new DateTime( 1970, 1, 1, 0, 0, 0 ) ).TotalSeconds;
 
         #endregion
-
-        //#region Separator handling
-
-        //public char DateSeparator { get; set; }
-        //public char FieldSeparator { get; set; }
-        //public char DecimalSeparator { get; set; }
-
-        //public void DetectSeparators( string line )
-        //{
-        //    if ( line[ 2 ] == '-' && line[ 8 ] == ';' )
-        //    {
-        //        DateSeparator = '-';
-        //        FieldSeparator = ';';
-        //        DecimalSeparator = ',';
-        //    }
-        //    else if ( line[ 2 ] == '/' && line[ 8 ] == ';' )
-        //    {
-        //        DateSeparator = '/';
-        //        FieldSeparator = ';';
-        //        DecimalSeparator = ',';
-        //    }
-        //    else if ( line[ 2 ] == '.' && line[ 8 ] == ';' )
-        //    {
-        //        DateSeparator = '.';
-        //        FieldSeparator = ';';
-        //        DecimalSeparator = ',';
-        //    }
-        //    else if ( line[ 2 ] == '-' && line[ 8 ] == ',' )
-        //    {
-        //        DateSeparator = '-';
-        //        FieldSeparator = ',';
-        //        DecimalSeparator = '.';
-        //    }
-        //    else if ( line[ 2 ] == '/' && line[ 8 ] == ',' )
-        //    {
-        //        DateSeparator = '/';
-        //        FieldSeparator = ',';
-        //        DecimalSeparator = '.';
-        //    }
-        //    else
-        //    {
-        //        LogTraceErrorMessage( "CustomLogs Logreaders: Internal Error - Unkown format of inputfile. Please get help." );
-        //        Environment.Exit( 0 );
-        //    }
-
-        //    LogTraceInfoMessage( $"DetectSeparators: date: {DateSeparator} | Field: {FieldSeparator} | Decimal {DecimalSeparator}" );
-
-        //    return;
-        //}
-
-        //public string ChangeSeparators( string line )
-        //{
-        //    string thisLine;
-
-        //    // Make the line always datesep '/' | Fieldsep ' ' and Decimalsep '.'
-
-        //    thisLine = line.Substring( 0, 8 ).Replace( DateSeparator, '/' );
-        //    thisLine += line.Substring( 8 ).Replace( FieldSeparator, ' ' ).Replace( DecimalSeparator, '.' );
-        //    //thisLine = StringRemoveWhiteSpace( thisLine, " " );  // PErformance costs too high (de Regex) !!! 
-
-        //    return thisLine;
-        //}
-
-        //#endregion
 
         #region IDisposable CuSupport
 

@@ -605,16 +605,16 @@ namespace CumulusUtils
                         try
                         {
                             tmp.Value.Add( Convert.ToDouble( thisValue, CUtils.Inv ) );
+                            thisList.Add( tmp );
                         }
-                        catch ( Exception e )
+                        catch
                         {
-                            Sup.LogTraceErrorMessage( $"CustomLogs ReadRecentCustomLog: Cannot parse value in CustomLog {fullFilename}" );
-                            Sup.LogTraceErrorMessage( $"CustomLogs ReadRecentCustomLog: {e.Message}" );
-                            break;
+                            // All errors will be written to the logfile and YES: that may lead to a lot of text but it is easier to find the problem
+                            //
+                            Sup.LogTraceWarningMessage( $"CustomLogs ReadRecentCustomLog for {thisLog.Name}: Field is not a value {thisValue}, continuing" );
+                            continue;
                         }
                     }
-
-                    thisList.Add( tmp );
                 }
 
                 Sup.LogTraceInfoMessage( $"CustomLogs ReadRecentCustomLog: Deciding: tmp.Date: {tmp.Date} ; End: {End} ; thisList.Last: {thisList.Last().Date}" );
@@ -699,20 +699,21 @@ namespace CumulusUtils
                     try
                     {
                         tmp.Value.Add( Convert.ToDouble( thisValue, CUtils.Inv ) );
+                        thisList.Add( tmp );
                     }
                     catch
                     {
                         if ( !LineWarningWritten )
                         {
-                            Sup.LogTraceWarningMessage( $"CustomLogs GenerateCustomLogsDataJson: Field is not a value, continuing" );
-                            LineWarningWritten = true;
+                            // All errors will be written to the logfile and YES: that may lead to a lot of text but it is easier to find the problem
+                            //
+                            Sup.LogTraceWarningMessage( $"CustomLogs ReadDailyCustomLog for {thisLog.Name}: Field is not a value {thisValue}, continuing" );
+                            continue;
                         }
 
                         continue;  // It can't all be only text: what's the use?
                     }
                 }
-
-                thisList.Add( tmp );
             }
 
             return thisList;

@@ -129,7 +129,7 @@ namespace CumulusUtils
 
                         break;
 
-                    case 12:
+                    case 12: //Ecowitt API
                         DeviceInfo.AppendLine( "The Ecowitt Firmware Version: <#EcowittFirmwareVersion>" );
                         DeviceInfo.AppendLine( "The Ecowitt Reception Stats: <#EcowittReception>" );
                         DeviceInfo.AppendLine( "The Ecowitt Free Memory: <#StationFreeMemory>" );
@@ -137,7 +137,7 @@ namespace CumulusUtils
                         DeviceInfo.AppendLine( "" );
                         break;
 
-                    case 14:
+                    case 14: //Ecowitt HTTP
                         DeviceInfo.AppendLine( "The Ecowitt Firmware Version: <#EcowittFirmwareVersion>" );
                         DeviceInfo.AppendLine( "The Ecowitt Reception Stats: <#EcowittReception>" );
                         DeviceInfo.AppendLine( "The Ecowitt Free Memory: <#StationFreeMemory>" );
