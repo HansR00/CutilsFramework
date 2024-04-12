@@ -181,7 +181,7 @@ namespace CumulusUtils
 
                     foreach ( string line in allLines )
                     {
-                        tmp = SetValues( Sup.ChangeSeparators( line) , file );
+                        tmp = SetValues( Sup.ChangeSeparators( line ), file );
 
                         try
                         {

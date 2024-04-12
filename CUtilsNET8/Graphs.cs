@@ -655,6 +655,7 @@ namespace CumulusUtils
 
                     thisBuffer.AppendLine( "<script>" );
 
+                    thisBuffer.AppendLine( "console.log('graphsWind...');" );
                     thisBuffer.AppendLine( "$(function() {" );
                     thisBuffer.AppendLine( "  $('#graph').change(function() {" );
                     thisBuffer.AppendLine( "    handleChange();" );
@@ -662,7 +663,7 @@ namespace CumulusUtils
 #if !RELEASE
                     thisBuffer.AppendLine( "  console.log('graphsWind: catch me for debug');" );
 #endif
-                    thisBuffer.AppendLine( "  document.getElementById('graph').value = 'WindRose'" );  // Always use WindRose as choice does not seem to work
+                    thisBuffer.AppendLine( "  document.getElementById('graph').value = 'WindRose';" );  // Always use WindRose as choice does not seem to work
                     thisBuffer.AppendLine( "  handleChange();" );
                     thisBuffer.AppendLine( "});" );
 

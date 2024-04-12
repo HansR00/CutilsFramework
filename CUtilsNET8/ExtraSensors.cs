@@ -722,25 +722,25 @@ namespace CumulusUtils
                             sb.Append( $"<#CO2 rc=y> " );
                             break;
                         case (int) ExtraSensorType.CO2avg:
-                            sb.Append( $"<#CO2-24h rc=y> " );
+                            sb.Append( $"<#CO2_24h rc=y> " );
                             break;
                         case (int) ExtraSensorType.CO2pm2p5:
-                            sb.Append( $"<#CO2-pm2p5 rc=y> " );
+                            sb.Append( $"<#CO2_pm2p5 rc=y> " );
                             break;
                         case (int) ExtraSensorType.CO2pm2p5avg:
-                            sb.Append( $"<#CO2-pm2p5-24h rc=y> " );
+                            sb.Append( $"<#CO2_pm2p5-24h rc=y> " );
                             break;
                         case (int) ExtraSensorType.CO2pm10:
-                            sb.Append( $"<#CO2-pm10 rc=y> " );
+                            sb.Append( $"<#CO2_pm10 rc=y> " );
                             break;
                         case (int) ExtraSensorType.CO2pm10avg:
-                            sb.Append( $"<#CO2-pm10-24h rc=y> " );
+                            sb.Append( $"<#CO2_pm10-24h rc=y> " );
                             break;
                         case (int) ExtraSensorType.CO2temp:
-                            sb.Append( $"<#CO2-temp rc=y> " );
+                            sb.Append( $"<#CO2_temp rc=y> " );
                             break;
                         case (int) ExtraSensorType.CO2hum:
-                            sb.Append( $"<#CO2-hum rc=y> " );
+                            sb.Append( $"<#CO2_hum rc=y> " );
                             break;
                         case (int) ExtraSensorType.UserTemp:
                             sb.Append( $"<#UserTemp{tmp.SensorIndex} rc=y> " );

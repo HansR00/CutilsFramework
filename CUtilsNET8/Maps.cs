@@ -49,7 +49,7 @@ namespace CumulusUtils
 
         public async Task<string> MapsOn()
         {
-            Sup.LogDebugMessage( "MapsOn: Start" );
+            Sup.LogTraceInfoMessage( "MapsOn: Start" );
 
             string FileToSend = $"MapsOn-{RandomGenerator.RandomString( 10, true )}.xml";
 

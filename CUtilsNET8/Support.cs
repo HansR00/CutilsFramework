@@ -40,7 +40,7 @@ namespace CumulusUtils
     public class CuSupport : IDisposable
     {
         // Is it a version number beta shown at users?
-        const string beta = "beta 6";
+        const string beta = "";
 
         #region declarations
         public Wind StationWind { get; set; }
@@ -394,7 +394,7 @@ namespace CumulusUtils
             TimeSpan thisSpan = DateTime.Now - thisDate;
 
             LogTraceInfoMessage( $"DateIsToday for thisDate: {thisDate} | thisDate.DayOfYear: {thisDate.DayOfYear} versus Now.DayOfYear: {DateTime.Now.DayOfYear})" );
-            LogDebugMessage( $"DateIsToday: thisSpan: {thisSpan} | thisSpan.TotalDays = {thisSpan.TotalDays}" );
+            LogTraceInfoMessage( $"DateIsToday: thisSpan: {thisSpan} | thisSpan.TotalDays = {thisSpan.TotalDays}" );
 
             if ( thisSpan.TotalDays > 1 ) retval = false;
             else retval = true;

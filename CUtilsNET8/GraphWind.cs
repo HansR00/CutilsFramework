@@ -375,6 +375,7 @@ namespace CumulusUtils
             Sup.LogTraceInfoMessage( "Generate WindRose : Start writing the javascript menu." );
 
             thisBuffer.AppendLine( "<script>" );
+            thisBuffer.AppendLine( "console.log('graphsWindRose Menu...');" );
             thisBuffer.AppendLine( "$(function() {" );
             thisBuffer.AppendLine( "  SetMonthsDisabled();" );
             thisBuffer.AppendLine( "  SetData('AllYears','AllMonths');" );
@@ -572,6 +573,7 @@ namespace CumulusUtils
             Sup.LogTraceInfoMessage( "Generate Windrun : Start writing the javascript menu." );
 
             thisBuffer.AppendLine( "<script>" );
+            thisBuffer.AppendLine( "console.log('graphsWindRun Menu...');" );
             thisBuffer.AppendLine( "$(function() {" );
 
 #if !RELEASE

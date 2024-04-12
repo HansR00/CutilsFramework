@@ -1346,7 +1346,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                           "      history.pushState(null, null, window.location.origin + window.location.pathname + '?' + urlParams);" +
                           "    }" +
                           "    document.getElementById('graph0').value = ClickEventChart[PaneNr-1];" +
-                          "    InitCumulusCharts();" +  
+                          "    InitCumulusCharts();" +
                           "  }" +
                           "}" +
                           "" );

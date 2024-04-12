@@ -203,7 +203,7 @@ namespace CumulusUtils
             for ( int i = 0; i < LinesToSkip.Length; i++ )
                 try
                 {
-                    LinesToSkip[ i ] = Convert.ToInt32( StringLinesToSkip[ i ], CUtils.Inv ) - 1;
+                    LinesToSkip[ i ] = Convert.ToInt32( StringLinesToSkip[ i ], CUtils.Inv );
                 }
                 catch
                 {

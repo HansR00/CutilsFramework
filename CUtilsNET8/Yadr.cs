@@ -129,7 +129,7 @@ namespace CumulusUtils
         #region Driver procedure GenerateYadr
         public void GenerateYadr( List<DayfileValue> Thislist )
         {
-            Sup.LogDebugMessage( $" Generate Yadr Start" );
+            Sup.LogDebugMessage( $"Generate Yadr Start" );
 
             // Loop over years
             // First create the datafiles per year per parameter. So e.g. for every year available create a yyyyTemperature.txt, then yyyyHumidity.txt
