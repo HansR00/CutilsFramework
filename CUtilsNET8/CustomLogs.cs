@@ -52,9 +52,15 @@ namespace CumulusUtils
         #region Constructor
         public CustomLogs( CuSupport s )
         {
+            string Excluded;
+            string[] ExcludedCustomLogs = Array.Empty<string>();
+
             Sup = s;
 
             Sup.LogTraceInfoMessage( "CustomLogs constructor: start" );
+
+            Excluded = Sup.GetUtilsIniValue( "CustomLogs", "ExcludedCustomLogs", "" );
+            if ( Excluded.Length > 0 ) ExcludedCustomLogs = Excluded.Split( GlobConst.CommaSeparator );
 
             WebTags = new WebtagInfo( Sup );
 
@@ -77,6 +83,8 @@ namespace CumulusUtils
                         TagsRaw = new List<string>(),
                         TagNames = new List<string>(),
                     };
+
+                    if ( Array.Exists( ExcludedCustomLogs, word => word.Equals( tmp.Name, StringComparison.Ordinal ) ) ) continue;
 
                     CustomLogsList.Add( tmp );
                 }
@@ -101,6 +109,8 @@ namespace CumulusUtils
                         TagsRaw = new List<string>(),
                         TagNames = new List<string>(),
                     };
+
+                    if ( Array.Exists( ExcludedCustomLogs, word => word.Equals( tmp.Name, StringComparison.Ordinal ) ) ) continue;
 
                     CustomLogsList.Add( tmp );
                 }
@@ -605,7 +615,6 @@ namespace CumulusUtils
                         try
                         {
                             tmp.Value.Add( Convert.ToDouble( thisValue, CUtils.Inv ) );
-                            thisList.Add( tmp );
                         }
                         catch
                         {
@@ -615,6 +624,8 @@ namespace CumulusUtils
                             continue;
                         }
                     }
+
+                    thisList.Add( tmp );
                 }
 
                 Sup.LogTraceInfoMessage( $"CustomLogs ReadRecentCustomLog: Deciding: tmp.Date: {tmp.Date} ; End: {End} ; thisList.Last: {thisList.Last().Date}" );
@@ -699,7 +710,6 @@ namespace CumulusUtils
                     try
                     {
                         tmp.Value.Add( Convert.ToDouble( thisValue, CUtils.Inv ) );
-                        thisList.Add( tmp );
                     }
                     catch
                     {
@@ -714,6 +724,8 @@ namespace CumulusUtils
                         continue;  // It can't all be only text: what's the use?
                     }
                 }
+
+                thisList.Add( tmp );
             }
 
             return thisList;

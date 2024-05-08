@@ -137,8 +137,15 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "Dayfile: Reading the dayfile.txt..." );
 
-            try { lines = File.ReadAllLines( filename ); }
-            catch { Sup.LogDebugMessage( "No Dayfile... Graceful exit." ); Environment.Exit( 0 ); }
+            try
+            {
+                lines = File.ReadAllLines( filename );
+            }
+            catch
+            {
+                Sup.LogDebugMessage( "No Dayfile... Graceful exit." );
+                Environment.Exit( 0 );
+            }
 
             enumFieldTypeNames = Enum.GetNames( typeof( FieldName ) );
             IgnoreDataErrors = Sup.GetUtilsIniValue( "General", "IgnoreDataErrors", "true" ).Equals( "true", CUtils.Cmp );
