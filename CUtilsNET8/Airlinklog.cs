@@ -179,7 +179,7 @@ namespace CumulusUtils
         {
             // Get the list of values starting datetim NOW to Now - period by user definition GraphHours in section Graphs in Cumulus.ini
             //
-            Sup.LogDebugMessage( $"ReadAirlinklog: start." );
+            Sup.LogDebugMessage( $"ReadAirlinklog: starting." );
 
             bool NextFileTried = false;
             bool PeriodComplete = false;

@@ -206,7 +206,7 @@ namespace CumulusUtils
         {
             // Get the list of values starting datetime to Now - period by user definition GraphHours in section Graphs in Cumulus.ini
             //
-            Sup.LogTraceInfoMessage( $"ExtraSensorslog: start." );
+            Sup.LogTraceInfoMessage( $"ExtraSensorslog: starting" );
 
             bool NextFileTried = false;
             bool PeriodComplete = false;

@@ -79,7 +79,7 @@ namespace CumulusUtils
         {
             Sup = s;
 
-            Sup.LogDebugMessage( "InetSupport: Constructor start" );
+            Sup.LogDebugMessage( "InetSupport: Constructor starting" );
 
             username = Crypto.DecryptString( Sup.GetCumulusIniValue( "FTP site", "Username", "" ), CUtils.CryptoKey );
             password = Crypto.DecryptString( Sup.GetCumulusIniValue( "FTP site", "Password", "" ), CUtils.CryptoKey );
@@ -275,7 +275,7 @@ namespace CumulusUtils
             string URL = "";
             string Dir = "";
 
-            Sup.LogTraceInfoMessage( $"UploadFile: Start {localfile} => {remotefile}" );
+            Sup.LogTraceInfoMessage( $"UploadFile: Starting {localfile} => {remotefile}" );
 
             // No reason to upload if there is  no file or destination
             if ( string.IsNullOrEmpty( remotefile ) || string.IsNullOrEmpty( localfile ) ) { Sup.LogTraceErrorMessage( $"UploadFile: Nothing uploaded either in or outfile are empty." ); return false; }
@@ -446,7 +446,7 @@ namespace CumulusUtils
 
         public void DownloadSignatureFiles()
         {
-            Sup.LogDebugMessage( $"DownloadSignatureFiles: Start" );
+            Sup.LogDebugMessage( $"DownloadSignatureFiles: Starting" );
 
             string localDir = "utils/maps";
 

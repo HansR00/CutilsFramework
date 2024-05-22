@@ -53,7 +53,7 @@ namespace CumulusUtils
 
         public void GenerateRecords( List<DayfileValue> Thislist )
         {
-            Sup.LogDebugMessage( "Generate Records Start" );
+            Sup.LogDebugMessage( "Generate Records Starting" );
 
             // Loop over years
             // First do the all time records, than the yearly records, than the daily records (for another pages)
@@ -219,7 +219,7 @@ namespace CumulusUtils
             string tmp;
             DateTime now = DateTime.Now;
 
-            Sup.LogDebugMessage( "Generate HTML table for Records Start" );
+            Sup.LogDebugMessage( "Generate HTML table for Records Starting" );
 
             // USe the top10 Header and Accent format
             //

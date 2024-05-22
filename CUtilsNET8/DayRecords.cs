@@ -38,7 +38,7 @@ namespace CumulusUtils
         {
             DateTime now = DateTime.Now; //Used to handle javascript current month and later to calculate timediff with record date
 
-            Sup.LogDebugMessage( "Generate DayRecords Start" );
+            Sup.LogDebugMessage( "Generate DayRecords Starting" );
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.DayRecordsOutputFilename}", false, System.Text.Encoding.UTF8 ) )
             {

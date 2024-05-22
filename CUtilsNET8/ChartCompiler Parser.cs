@@ -79,7 +79,7 @@ namespace CumulusUtils
             else
                 return null;
 
-            Sup.LogDebugMessage( $"DefineUsercharts: Parsing User charts definitions - start" );
+            Sup.LogDebugMessage( $"DefineUsercharts: Parsing User charts definitions - starting" );
 
             try  // Any error condition will fail the parsing and return null, falling back to default charts. Elaborate later with error messages
             {

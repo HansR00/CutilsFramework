@@ -128,7 +128,7 @@ namespace CumulusUtils
 
             bool WrongNormativeCountry = false;
 
-            Sup.LogDebugMessage( "AirLink Contructor: start" );
+            Sup.LogDebugMessage( "AirLink Contructor: starting" );
 
             // Check the country. Order is 1) found  in inifile 2) part of locale 3) Use the default if not present or not supported
             string tmp = Sup.GetUtilsIniValue( "AirLink", "CountrySelected", "" );
@@ -351,21 +351,12 @@ namespace CumulusUtils
         #endregion
 
         #region DoAirLink
+
         public void DoAirLink()
         {
-            Sup.LogDebugMessage( "DoAirLink - Start" );
+            Sup.LogDebugMessage( "DoAirLink - Starting" );
 
             Sup.LogTraceInfoMessage( $"DoAirLink - AirLinkIn : {AirLinkIn} / AirLinkOut : {AirLinkOut}" );
-
-            GenAirLinkModule();
-        }
-
-        #endregion
-
-        #region GenAirLinkModule Tables and Graphs
-        private void GenAirLinkModule()
-        {
-            Sup.LogDebugMessage( "DoAirLinkModule - Start" );
 
             StringBuilder of = new StringBuilder( 15000 );
             StringBuilder sb = new StringBuilder();

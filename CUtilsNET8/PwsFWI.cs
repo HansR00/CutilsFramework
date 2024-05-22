@@ -949,7 +949,7 @@ namespace CumulusUtils
             // string from http://api.yourweather.co.uk/
             //
 
-            Sup.LogDebugMessage( "XML AddPrediction - start" );
+            Sup.LogDebugMessage( "PwsFWI XML AddPrediction - starting" );
 
             Uri xmlAPI = new Uri( URL );
             string XMLresult = await Isup.GetUrlDataAsync( xmlAPI );

@@ -807,7 +807,7 @@ namespace CumulusUtils
                 {
                     DateTime tmpTimeEnd = DateTime.Now;
 
-                    Sup.LogTraceInfoMessage( $"UserAskedData Start..." );
+                    Sup.LogTraceInfoMessage( $"UserAskedData Starting..." );
 
 #if TIMING
                     watch = Stopwatch.StartNew();

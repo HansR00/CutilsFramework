@@ -147,7 +147,7 @@ namespace CumulusUtils
 
         public async Task GenerateWebsite()
         {
-            Sup.LogDebugMessage( $"Generating Website: Start" );
+            Sup.LogDebugMessage( $"Generating Website: Starting" );
 
             Sup.LogDebugMessage( $"Generating Website: Generating index.html" );
             await GenerateIndexFileAsync();
@@ -586,7 +586,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
                 bool ReplaceDecimalSeparator = !DecimalSeparator.Equals( "." );
 
-                Sup.LogDebugMessage( $"Generating CUlib start." );
+                Sup.LogDebugMessage( $"Generating CUlib starting" );
                 Sup.LogDebugMessage( $"Generating CUlib DecSep: |{DecimalSeparator}|, TimeSep: |{TimeSeparator}| and DateSep: |{DateSeparator}| for language {Sup.Language}" );
 
                 // Moved DST to index.html.

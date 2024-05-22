@@ -55,7 +55,7 @@ namespace CumulusUtils
             int CompassRoseType, WindArrowType;
             string StationName, StationDesc;
 
-            Sup.LogDebugMessage( " GenerateStationMap: start" );
+            Sup.LogDebugMessage( " GenerateStationMap: Starting" );
 
             if ( !CUtils.HasStationMapMenu ) return; // Don't generate, ignore everything, just get back.
 

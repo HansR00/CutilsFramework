@@ -89,7 +89,7 @@ namespace CumulusUtils
         {
             Sup = s;
 
-            Sup.LogTraceInfoMessage( "Extra Sensors constructor: start" );
+            Sup.LogTraceInfoMessage( "Extra Sensors constructor: starting" );
 
             // After the next call ExtraSensorList contains all active Extra Sensors
             InitialiseExtraSensorList();
@@ -104,7 +104,7 @@ namespace CumulusUtils
         #region DoExtraSensors
         public void DoExtraSensors()
         {
-            Sup.LogDebugMessage( "DoExtraSensors - Start" );
+            Sup.LogDebugMessage( "DoExtraSensors - Starting" );
 
             // I: create the extrasensorsrealtime.txt which has to be processed by CMX and transferred to the webroot.
             // 

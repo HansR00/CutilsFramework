@@ -57,7 +57,7 @@ namespace CumulusUtils
 
             Sup = s;
 
-            Sup.LogTraceInfoMessage( "CustomLogs constructor: start" );
+            Sup.LogTraceInfoMessage( "CustomLogs constructor: starting" );
 
             Excluded = Sup.GetUtilsIniValue( "CustomLogs", "ExcludedCustomLogs", "" );
             if ( Excluded.Length > 0 ) ExcludedCustomLogs = Excluded.Split( GlobConst.CommaSeparator );
@@ -167,7 +167,7 @@ namespace CumulusUtils
         #region DoCustomLogs
         public void DoCustomLogs()
         {
-            Sup.LogDebugMessage( "DoCustomLogs - Start" );
+            Sup.LogDebugMessage( "DoCustomLogs - Starting" );
 
             GenerateCustomLogsRealtime();
             GenerateCustomLogsCharts();
@@ -1177,7 +1177,15 @@ namespace CumulusUtils
                 Sup.StationTemp.Text(),
                 "%",
 
-                Sup.StationPressure.Text()          // 390
+                Sup.StationPressure.Text(),         // 390
+                Sup.StationTemp.Text(),
+                PMconc.Text(),
+                PMconc.Text(),
+                PMconc.Text(),
+                PMconc.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text()
             };
 
             TagAxis = new AxisType[]
@@ -1613,7 +1621,15 @@ namespace CumulusUtils
                 AxisType.Temp,
                 AxisType.Humidity,
 
-                AxisType.Pressure           // 390
+                AxisType.Pressure,          // 390
+                AxisType.Temp,
+                AxisType.AQ,
+                AxisType.AQ,
+                AxisType.AQ,
+                AxisType.AQ,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp
             };
 
             if ( Tagname.Length != TagUnit.Length )
@@ -2113,7 +2129,15 @@ namespace CumulusUtils
             "RecentIndoorTemp",
             "RecentIndoorHumidity",
 
-            "stationpressure"               //390
+            "stationpressure",              //390
+            "TempAvg24Hrs",
+            "CO2_pm1",
+            "CO2_pm1_24h",
+            "CO2_pm4",
+            "CO2_pm4_24h",
+            "ByMonthTempAvg",
+            "MonthTempAvg",
+            "YearTempAvg"
         };
 
     }

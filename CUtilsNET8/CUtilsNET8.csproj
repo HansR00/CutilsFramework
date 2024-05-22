@@ -28,12 +28,15 @@
     <NoWarn>IDE0090</NoWarn>
     <DefineConstants>$(DefineConstants);TIMING</DefineConstants>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <WarningLevel>9999</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <NoWarn>IDE0090</NoWarn>
     <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
+    <WarningLevel>9999</WarningLevel>
+    <Optimize>False</Optimize>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>
@@ -46,7 +49,7 @@
     <Product>CumulusUtils</Product>
     <Copyright>Copyright © Hans Rottier 2019-2024</Copyright>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <AssemblyVersion>7.0.1</AssemblyVersion>
+    <AssemblyVersion>7.0.3</AssemblyVersion>
     <FileVersion>1.0.0</FileVersion>
     <PackAsTool>True</PackAsTool>
   </PropertyGroup>

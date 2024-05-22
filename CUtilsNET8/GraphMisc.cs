@@ -39,7 +39,7 @@ namespace CumulusUtils
             float sum = 0, movingAverage = 0;
             int period = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "PeriodMovingAverage", "180" ), CUtils.Inv );
 
-            Sup.LogDebugMessage( "GenDailyEVTGraphData : starting" );
+            Sup.LogDebugMessage( "GenDailyEVTGraphData: starting" );
 
             thisBuffer.AppendLine( "console.log('Daily EVT Chart starting.');" );
             thisBuffer.AppendLine( "chart = Highcharts.stockChart('chartcontainer', {" );
@@ -607,10 +607,11 @@ namespace CumulusUtils
 
                 do
                 {
+                    //Sup.LogTraceInfoMessage( $"YearlySeasons : {year}: i = {i} AvgTemp = {yearList[i].AverageTempThisDay} ({yearList[ i ].ThisDate})" );
+
                     if ( WinterSOY )
                     {
-                        if ( yearList[ i ].AverageTempThisDay >= WinterToSpringTemperatureLimit )
-                            possibleChange = true;
+                        if ( yearList[ i ].AverageTempThisDay >= WinterToSpringTemperatureLimit ) possibleChange = true;
                         else { possibleChange = false; changeCounter = 0; }
 
                         if ( possibleChange )
@@ -621,7 +622,7 @@ namespace CumulusUtils
                                 // We reached spring with 10 consecutive days above the Set Temperature limit.
                                 WinterSOY = false;
                                 Spring = true;
-                                changeCounter = 0;
+                                changeCounter = 0; 
                                 thisYearSeasonList.Winter1 = i;
                                 Sup.LogTraceInfoMessage( $"YearlySeasons : {year} Spring starting on day {i}" );
                             }
@@ -629,8 +630,7 @@ namespace CumulusUtils
                     }
                     else if ( Spring )
                     {
-                        if ( yearList[ i ].AverageTempThisDay >= SpringToSummerTemperatureLimit )
-                            possibleChange = true;
+                        if ( yearList[ i ].AverageTempThisDay >= SpringToSummerTemperatureLimit ) possibleChange = true;
                         else { possibleChange = false; changeCounter = 0; }
 
                         if ( possibleChange )
@@ -649,8 +649,7 @@ namespace CumulusUtils
                     }
                     else if ( Summer )
                     {
-                        if ( yearList[ i ].AverageTempThisDay <= SpringToSummerTemperatureLimit )
-                            possibleChange = true;
+                        if ( yearList[ i ].AverageTempThisDay <= SpringToSummerTemperatureLimit ) possibleChange = true;
                         else { possibleChange = false; changeCounter = 0; }
 
                         if ( possibleChange )
@@ -669,8 +668,7 @@ namespace CumulusUtils
                     }
                     else if ( Autumn )
                     {
-                        if ( yearList[ i ].AverageTempThisDay <= WinterToSpringTemperatureLimit )
-                            possibleChange = true;
+                        if ( yearList[ i ].AverageTempThisDay <= WinterToSpringTemperatureLimit ) possibleChange = true;
                         else { possibleChange = false; changeCounter = 0; }
 
                         if ( possibleChange )
@@ -726,10 +724,8 @@ namespace CumulusUtils
 
             StringBuilder ma = new StringBuilder( "" );
             ma.Append( "categories:[" );
-            foreach ( YearSeasons seasonEntry in SeasonList )
-                ma.Append( $"'{seasonEntry.year}'," );
-            if ( SeasonList.Any() )
-                ma.Remove( ma.Length - 1, 1 );
+            foreach ( YearSeasons seasonEntry in SeasonList ) ma.Append( $"'{seasonEntry.year}'," );
+            if ( SeasonList.Any() ) ma.Remove( ma.Length - 1, 1 );
             ma.Append( "]," );
 
             thisBuffer.AppendLine( ma.ToString() );

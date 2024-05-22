@@ -125,7 +125,7 @@ namespace CumulusUtils
 
         public List<MonthfileValue> ReadMonthlyLogs()
         {
-            Sup.LogDebugMessage( $"ReadMonthlyLogs: start." );
+            Sup.LogDebugMessage( $"ReadMonthlyLogs: Starting." );
 
             if ( MonthlyLogsRead )
             {
@@ -195,7 +195,7 @@ namespace CumulusUtils
 
         public List<MonthfileValue> ReadPartialMonthlyLogs( DateTime Start, DateTime End )
         {
-            Sup.LogDebugMessage( $"ReadPartialMonthlyLogs: start." );
+            Sup.LogDebugMessage( $"ReadPartialMonthlyLogs: Starting." );
 
             List<string> FilesToRead = new List<string>();
             List<MonthfileValue> thisList = new List<MonthfileValue>();

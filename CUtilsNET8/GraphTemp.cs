@@ -91,7 +91,7 @@ namespace CumulusUtils
             else
                 StationAverage = false;
 
-            Sup.LogTraceInfoMessage( "GenMonthlyTempvsNOAAGraphData : start loop over DayfileValues" );
+            Sup.LogTraceInfoMessage( "GenMonthlyTempvsNOAAGraphData : starting loop over DayfileValues" );
 
             for ( int i = YearMin; i <= YearMax; i++ )
             {
@@ -109,7 +109,7 @@ namespace CumulusUtils
                 }
             }
 
-            Sup.LogTraceInfoMessage( "GenMonthlyTempvsNOAAGraphData : start Generation" );
+            Sup.LogTraceInfoMessage( "GenMonthlyTempvsNOAAGraphData : starting Generation" );
 
             // Now generate the script
             thisBuffer.AppendLine( "console.log('Monthly Temp vs NOAA Chart starting.');" );
@@ -403,7 +403,7 @@ namespace CumulusUtils
         {
             StringBuilder sb = new StringBuilder();
 
-            Sup.LogDebugMessage( "Generate Heat Map Start" );
+            Sup.LogDebugMessage( "Generate Heat Map Starting" );
 
             thisBuffer.AppendLine( "console.log('Heatmap Chart starting.');" );
             thisBuffer.AppendLine( "chart = thisHeatmap = Highcharts.chart('chartcontainer', {" );
@@ -529,7 +529,7 @@ namespace CumulusUtils
             List<float> mintemp = new List<float>();
             List<float> maxtemp = new List<float>();
 
-            Sup.LogDebugMessage( "Generate GenerateYearTempStatistics Start" );
+            Sup.LogDebugMessage( "Generate GenerateYearTempStatistics Starting" );
 
             for ( int i = YearMin; i <= YearMax; i++ )
             {

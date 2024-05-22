@@ -212,7 +212,7 @@ namespace CumulusUtils
 
         public void GenerateGraphx( List<DayfileValue> ThisList )
         {
-            Sup.LogDebugMessage( "CumulusUtils : starting Graphx" );
+            Sup.LogDebugMessage( "CumulusUtils: starting Graphx" );
 
             StringBuilder thisBuffer = new StringBuilder();
 
@@ -222,7 +222,7 @@ namespace CumulusUtils
                 // Rain has been detected so it is worth to update the Rain graphs
                 CUtils.ThriftyRainGraphsDirty = true;
 
-                Sup.LogTraceInfoMessage( "Graphs : Start Rain section" );
+                Sup.LogTraceInfoMessage( "Graphs: Starting Rain section" );
 
                 using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.GraphsRainOutputFilename}", false, Encoding.UTF8 ) )
                 {
@@ -405,7 +405,7 @@ namespace CumulusUtils
                 // Temp graphs are written
                 CUtils.ThriftyTempGraphsDirty = true;
 
-                Sup.LogTraceInfoMessage( "Graphs : Start Temp section" );
+                Sup.LogTraceInfoMessage( "Graphs: Starting Temp section" );
 
                 using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.GraphsTempOutputFilename}", false, Encoding.UTF8 ) )
                 {
@@ -636,7 +636,7 @@ namespace CumulusUtils
                 // Temp graphs are written
                 CUtils.ThriftyWindGraphsDirty = true;
 
-                Sup.LogTraceInfoMessage( "Graphs : Start Wind section" );
+                Sup.LogTraceInfoMessage( "Graphs : Starting Wind section" );
 
                 using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.GraphsWindOutputFilename}", false, Encoding.UTF8 ) )
                 {
@@ -700,7 +700,7 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "  </select>" );
                     thisBuffer.AppendLine( "</div>" );
 
-                    Sup.LogTraceInfoMessage( "Graphs : Start writing HTML Style and Menu." );
+                    Sup.LogTraceInfoMessage( "Graphs : Starting writing HTML Style and Menu." );
 
                     thisBuffer.AppendLine( "<div id='report'>" );
                     thisBuffer.AppendLine( "<br/>" );
@@ -771,7 +771,7 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "{" );
                     if ( GraphWindrun )
                     {
-                        Sup.LogDebugMessage( $"GenerateWindrunStatistics: Start" );         // Write only once
+                        Sup.LogDebugMessage( $"GenerateWindrunStatistics: Starting" );         // Write only once
 
                         GenerateWindrunStatistics( ThisList, thisBuffer, 0 );
                         thisBuffer.AppendLine( ActivateChartInfo( chartId: "WindRun" ) );
@@ -816,7 +816,7 @@ namespace CumulusUtils
                 CUtils.ThriftySolarGraphsDirty = true;
                 List<MonthfileValue> thisMonthList;
 
-                Sup.LogTraceInfoMessage( "Graphs : Start Solar section" );
+                Sup.LogTraceInfoMessage( "Graphs : Starting Solar section" );
 
                 // The MonthfileMainlist is created at the start of graphs
                 // Check in the Monthfile Class itself whether the list has already been created because it may have been asked
@@ -899,7 +899,7 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "</p>" );
                     thisBuffer.AppendLine( "</div>" );
 
-                    Sup.LogTraceInfoMessage( "Graphs : Start writing HTML Style and Menu." );
+                    Sup.LogTraceInfoMessage( "Graphs : Starting writing HTML Style and Menu." );
 
                     thisBuffer.AppendLine( "<div id='report'>" );
                     thisBuffer.AppendLine( "<br/>" );

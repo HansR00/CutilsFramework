@@ -49,7 +49,7 @@ namespace CumulusUtils
         {
             const string ReportPrefix = "CURPT";
 
-            Sup.LogDebugMessage( "USerReports: Start" );
+            Sup.LogDebugMessage( "USerReports: Starting" );
 
             string[] files = Directory.GetFiles( $"{Sup.PathUtils}", $"{ReportPrefix}*.txt" );
             string FileContents, ContentsWithWebtagReplacements;

@@ -891,7 +891,7 @@ namespace CumulusUtils
         #region Datagenerator
         public DateTime GenerateUserAskedData( List<ChartDef> thisList )
         {
-            Sup.LogDebugMessage( $"Generating Compiler UserAskedData: Start" );
+            Sup.LogDebugMessage( $"Generating Compiler UserAskedData: Starting" );
 
             if ( thisList?.Any() != true )
             {

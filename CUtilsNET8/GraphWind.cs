@@ -52,7 +52,7 @@ namespace CumulusUtils
             StringBuilder DataBuilder;
             List<MonthfileValue> PeriodList;
 
-            Sup.LogDebugMessage( "GenerateWindRose: Start" );
+            Sup.LogDebugMessage( "GenerateWindRose: Starting" );
 
             // Hier komen alle gegenereerde arrays met de data. Voor lange perioden kan dat bnehoorlijk wat zijn!
             // Naamgeving: {value van #year}{value van #month}{nr vh Array van 1 t/m 7} (b.v. AllTimeAllMonths2)
@@ -116,7 +116,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "       });" );
             thisBuffer.AppendLine( "}" );
 
-            Sup.LogTraceInfoMessage( "WindRose : Start writing the javascript data arrays." );
+            Sup.LogTraceInfoMessage( "WindRose : Starting writing the javascript data arrays." );
 
             // The lookup hashing makes it 35% faster!!
             // ILookup<int, MonthfileValue> YearLookup = thisList.ToLookup( x => x.ThisDate.Year, x => x );
@@ -125,7 +125,7 @@ namespace CumulusUtils
 
             for ( int year = YearMin; year <= YearMax; year++ )
             {
-                Sup.LogTraceInfoMessage( $"WindRose : Start writing year: {year}" );
+                Sup.LogTraceInfoMessage( $"WindRose : Starting writing year: {year}" );
 
                 List<MonthfileValue> YearList = YearLookup[ year ].ToList();
 
@@ -167,7 +167,7 @@ namespace CumulusUtils
             }
 
             ArrayCode = "AllYearsAllMonths";
-            Sup.LogTraceInfoMessage( $"WindRose : Start writing : {ArrayCode}" );
+            Sup.LogTraceInfoMessage( $"WindRose : Starting writing : {ArrayCode}" );
 
             DataBuilder = GenerateDataArray( ArrayCode, thisList );
             thisBuffer.AppendLine( DataBuilder.ToString() );
@@ -234,7 +234,7 @@ namespace CumulusUtils
         #region WindRun
         private void GenerateWindrunStatistics( List<DayfileValue> thisList, StringBuilder thisBuffer, int year )
         {
-            Sup.LogTraceInfoMessage( $"GenerateWindrunStatistics: Start {year}" );
+            Sup.LogTraceInfoMessage( $"GenerateWindrunStatistics: Starting {year}" );
 
             StringBuilder sb = new StringBuilder();
             List<int> WindrunMonthData;
@@ -372,7 +372,7 @@ namespace CumulusUtils
             MonthsNotPresentYearMax = tmpIntArray.Except( yearlist.Select( x => x.ThisDate.Month ).Distinct() ).ToArray();
             MonthsNotPresentAllYears = tmpIntArray.Except( thisList.Select( x => x.ThisDate.Month ).Distinct() ).ToArray();
 
-            Sup.LogTraceInfoMessage( "Generate WindRose : Start writing the javascript menu." );
+            Sup.LogTraceInfoMessage( "Generate WindRose : Starting writing the javascript menu." );
 
             thisBuffer.AppendLine( "<script>" );
             thisBuffer.AppendLine( "console.log('graphsWindRose Menu...');" );
@@ -570,7 +570,7 @@ namespace CumulusUtils
         #region PrevNextMenu WindRun
         private void GenerateWindRunPrevNextYearMenu( StringBuilder thisBuffer )
         {
-            Sup.LogTraceInfoMessage( "Generate Windrun : Start writing the javascript menu." );
+            Sup.LogTraceInfoMessage( "Generate Windrun : Starting writing the javascript menu." );
 
             thisBuffer.AppendLine( "<script>" );
             thisBuffer.AppendLine( "console.log('graphsWindRun Menu...');" );

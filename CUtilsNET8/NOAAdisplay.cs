@@ -54,7 +54,7 @@ namespace CumulusUtils
             MonthsNotPresentYearMax = tmpIntArray.Except( yearlist.Select( x => x.ThisDate.Month ).Distinct() ).ToArray();
             MonthsNotPresentAllYears = tmpIntArray.Except( Thislist.Select( x => x.ThisDate.Month ).Distinct() ).ToArray();
 
-            Sup.LogDebugMessage( $" Start writing NOAA procedure" );
+            Sup.LogDebugMessage( $"NOAA write starting" );
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.NOAAOutputFilename}", false, Encoding.UTF8 ) )
             {

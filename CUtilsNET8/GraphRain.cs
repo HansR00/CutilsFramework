@@ -224,7 +224,7 @@ namespace CumulusUtils
 
             StringBuilder sb;
 
-            Sup.LogDebugMessage( "GenMonthlyRainvsNOAAGraphData : starting" );
+            Sup.LogDebugMessage( "GenMonthlyRainvsNOAAGraphData: starting" );
 
             NormalUsage = Sup.GetUtilsIniValue( "Graphs", "UseNormalRainReference", "Normal" );
 
@@ -277,7 +277,7 @@ namespace CumulusUtils
                 }
             }
 
-            Sup.LogTraceInfoMessage( "GenMonthlyRainvsNOAAGraphData : start loop over DayfileValues" );
+            //Sup.LogTraceInfoMessage( "GenMonthlyRainvsNOAAGraphData: starting loop over DayfileValues" );
 
             for ( int i = YearMin; i <= YearMax; i++ )
             {
@@ -295,7 +295,7 @@ namespace CumulusUtils
                 }
             }
 
-            Sup.LogTraceInfoMessage( "GenMonthlyRainvsNOAAGraphData : start Generation" );
+            //Sup.LogTraceInfoMessage( "GenMonthlyRainvsNOAAGraphData : starting Generation" );
 
             // Now generate the script
             thisBuffer.AppendLine( "  console.log('Monthly Rain Chart starting.');" );
@@ -769,7 +769,7 @@ namespace CumulusUtils
             // For the range colouring see: https://stackoverflow.com/questions/46473151/color-area-between-two-lines-based-on-difference
             // https://jsfiddle.net/BlackLabel/q4jyb9ch/
             //
-            Sup.LogDebugMessage( "GenDailyRAINvsEVT : starting" );
+            Sup.LogDebugMessage( "GenDailyRAINvsEVT: starting" );
 
             thisBuffer.AppendLine( "console.log( 'RAIN vs EVT Chart starting.' ); " );
 

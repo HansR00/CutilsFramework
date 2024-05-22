@@ -38,7 +38,7 @@ namespace CumulusUtils
                 return; // Don't generate, ignore everything, just get back.
             }
 
-            Sup.LogDebugMessage( "MeteoCam: start" );
+            Sup.LogDebugMessage( "MeteoCam: Starting" );
 
             string MeteoCamType = Sup.GetUtilsIniValue( "MeteoCam", "CamType", "Manual" ).ToLower();
 

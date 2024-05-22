@@ -49,7 +49,7 @@ namespace CumulusUtils
 
         public async Task<string> MapsOn()
         {
-            Sup.LogTraceInfoMessage( "MapsOn: Start" );
+            Sup.LogTraceInfoMessage( "MapsOn: Starting" );
 
             string FileToSend = $"MapsOn-{RandomGenerator.RandomString( 10, true )}.xml";
 
@@ -160,7 +160,7 @@ namespace CumulusUtils
                 public void MapsOff()
                 {
                     // Note MapsOff is actually no longer being used. If everything works fine, let's remove it and  only rely on the timeout
-                    Sup.LogDebugMessage( "MapsOff: Start" );
+                    Sup.LogDebugMessage( "MapsOff: Starting" );
 
                     string FileToSend = $"MapsOff-{RandomGenerator.RandomString( 10, true )}.txt";
 
@@ -193,7 +193,7 @@ namespace CumulusUtils
             // Double precaution so nobody accidently will start creating a map because that can't work. So all conditions are for the 
             // Map owner (me in first instance) himself
 
-            Sup.LogDebugMessage( $"CreateMap: Start" );
+            Sup.LogDebugMessage( $"CreateMap: Starting" );
 
             int fileCount;
             string[] localFiles;
@@ -204,7 +204,7 @@ namespace CumulusUtils
             //    and download the contents of the remote maps directory to the utils maps directory
             //
             #region No 1
-            Sup.LogTraceInfoMessage( $"CreateMap: Start Phase 1" );
+            Sup.LogTraceInfoMessage( $"CreateMap: Starting Phase 1" );
 
             root = XElement.Load( dbName );
             Sup.LogTraceInfoMessage( $"CreateMap: {dbName} loaded" );
@@ -218,7 +218,7 @@ namespace CumulusUtils
             //    Also remove all entries with a refresh date older than 7 days
             //
             #region No 2
-            Sup.LogTraceInfoMessage( $"CreateMap: Start Phase 2" );
+            Sup.LogTraceInfoMessage( $"CreateMap: Starting Phase 2" );
 
             localFiles = Directory.GetFiles( "utils/maps", "MapsOff*.txt" );
             fileCount = 0;
@@ -319,7 +319,7 @@ namespace CumulusUtils
             //    If the entry (name) does not exist, add the entry
             //
             #region No 3
-            Sup.LogTraceInfoMessage( $"CreateMap: Start Phase 3" );
+            Sup.LogTraceInfoMessage( $"CreateMap: Starting Phase 3" );
 
             localFiles = Directory.GetFiles( "utils/maps", "MapsOn*.xml" );
 
@@ -360,7 +360,7 @@ namespace CumulusUtils
             // 4* Write away the database locally in stationswithutils.xml
             //
             #region No 4
-            Sup.LogTraceInfoMessage( $"CreateMap: Start Phase 4" );
+            Sup.LogTraceInfoMessage( $"CreateMap: Starting Phase 4" );
 
             root.Save( dbName );
 
@@ -370,7 +370,7 @@ namespace CumulusUtils
             // 5* Create the map from the updated database (still in memory)
             //
             #region No 5
-            Sup.LogTraceInfoMessage( $"CreateMap: Start Phase 5" );
+            Sup.LogTraceInfoMessage( $"CreateMap: Starting Phase 5" );
 
             // Finally, all data updated and saved, we can create the map. The Map.txt file is written to the utils directory and simply uploaded to 
             // the website where all everybopdy can download it and incorporate it in their own website.
