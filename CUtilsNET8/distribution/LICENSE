@@ -7,7 +7,7 @@ The tool is constructed in C# and javascript by &copy; Hans Rottier, on the basi
 <li><a href='https://github.com/mcrossley/SteelSeries-Weather-Gauges'>Gauges by Mark Crossley (modified)</a> - License: GNU GPL V 2.0;<br/>
 <li><a href='https://github.com/mcrossley/SteelSeries-Weather-Gauges'>Steelseries by Gerrit Grunwald & Mark Crossley</a> - License: GNU GPL V 2.0;<br/>
 <li><a href='https://www.rgraph.net/'>RGraph</a> - License: MIT;<br/>
-<li><a href='https://www.highcharts.com/'>HighCharts</a> - License: <a href='https://creativecommons.org/licenses/by-nc/3.0/'>Creative Commons Attribution-NonCommercial 3.0</a> <a href='https://shop.highsoft.com/noncomform'>license</a>; </li>
+<li><a href='https://www.highcharts.com/'>HighCharts</a> - License: The personal non-commercial Highcharts <a href='https://shop.highcharts.com/contact/personal'>License</a>; </li>
 <li><a href='https://github.com/jquery/jquery'>jQuery</a> - License: MIT;</li>
 <li><a href='https://github.com/d3/d3'>d3</a> - License: BSD 3-Clause 'New' or 'Revised' License;</li>
 <li><a href='https://github.com/mourner'>suncalc</a> - License: BSD 2-Clause 'Simplified' License.</li>
@@ -16,4 +16,6 @@ The tool is constructed in C# and javascript by &copy; Hans Rottier, on the basi
 <li><a href='https://getbootstrap.com/'>Bootstrap</a> - License: <a href='https://github.com/twbs/bootstrap/blob/v4.4.1/LICENSE'>MIT</a>;</li>
 </ul>
 
-If I forgot anybody or anything or made the wrong interpretation or reference, please let me know and I will correct. You can contact me at the <a href='https://cumulus.hosiene.co.uk/viewforum.php?f=44'>Cumulus Support Forum</a>, user: HansR" +
+Please don't forget to get your own Personal <a href='https://shop.highcharts.com/contact/personal'>License</a> with Highcharts. <br>
+Charting may change in future because of licensing issues.<br><br>
+If I forgot anybody or anything or made the wrong interpretation or reference, please let me know and I will correct. You can contact me at the <a href='https://cumulus.hosiene.co.uk/viewforum.php?f=44'>Cumulus Support Forum</a>, user: HansR"

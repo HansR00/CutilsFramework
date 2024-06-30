@@ -1272,7 +1272,7 @@ namespace CumulusUtils
             // Now we have to determine the reference values for the total rainfall. A lot of work for two value :)
             //
 
-            List<float> YearlyValues = new List<float>();
+            //List<float> YearlyValues = new List<float>();
 
             NormalUsage = Sup.GetUtilsIniValue( "Graphs", "UseNormalRainReference", "Normal" );
 
@@ -1304,13 +1304,18 @@ namespace CumulusUtils
 
                 for ( int i = YearMin; i <= YearMax; i++ )
                 {
-                    if ( ThisList.Where( x => x.ThisDate.Year == i ).Count() < 364 /* Cal.GetDaysInYear(i) */ ) continue; // Incomplete year - have to reset to nr of days per year 
+                    if ( ThisList.Where( x => x.ThisDate.Year == i ).Count() < 350 /* Cal.GetDaysInYear(i) */ )
+                    {
+                        Sup.LogTraceInfoMessage( $" GenerateNOAAparameters : StationRainYearAv; year {i} has only {ThisList.Where( x => x.ThisDate.Year == i ).Count()} valid days i.s.o. 350" );
+                        Sup.LogTraceInfoMessage( $" GenerateNOAAparameters : Skipping year {i}" );
+                        continue; // Incomplete year - have to reset to nr of days per year 
+                    }
+
                     tmp.Add( ThisList.Where( x => x.ThisDate.Year == i ).Select( x => x.TotalRainThisDay ).Sum() );
                 }
 
                 // Second pass to determine the average and StdDev
-                if ( tmp.Any() )
-                    StationRainYearAv = tmp.Average();
+                if ( tmp.Any() ) StationRainYearAv = tmp.Average();
 
                 Sup.LogTraceInfoMessage( $" GenerateNOAAparameters : StationRainYearAv {StationRainYearAv}" );
             }

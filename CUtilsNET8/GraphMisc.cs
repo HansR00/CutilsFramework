@@ -622,7 +622,7 @@ namespace CumulusUtils
                                 // We reached spring with 10 consecutive days above the Set Temperature limit.
                                 WinterSOY = false;
                                 Spring = true;
-                                changeCounter = 0; 
+                                changeCounter = 0;
                                 thisYearSeasonList.Winter1 = i;
                                 Sup.LogTraceInfoMessage( $"YearlySeasons : {year} Spring starting on day {i}" );
                             }

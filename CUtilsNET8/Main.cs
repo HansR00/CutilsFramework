@@ -165,6 +165,7 @@ namespace CumulusUtils
         private bool DoUserAskedData;
         private bool DoExtraSensors;
         private bool DoCustomLogs;
+        private bool DoCUlib;
 
         public static StringComparison Cmp = StringComparison.OrdinalIgnoreCase;
 
@@ -397,21 +398,25 @@ namespace CumulusUtils
                 Environment.Exit( 0 );
             }
             if ( !DoPwsFWI && !DoTop10 && !DoSystemChk && !DoGraphs && !DoCreateMap && !DoYadr && !DoRecords && !DoCompileOnly && !DoUserAskedData && !DoCustomLogs &&
-                !DoNOAA && !DoDayRecords && !DoWebsite && !DoForecast && !DoUserReports && !DoStationMap && !DoMeteoCam && !DoAirLink && !DoExtraSensors )
+                !DoNOAA && !DoDayRecords && !DoWebsite && !DoForecast && !DoUserReports && !DoStationMap && !DoMeteoCam && !DoAirLink && !DoExtraSensors && !DoCUlib )
             {
                 Sup.LogTraceErrorMessage( "CumulusUtils : No Arguments, nothing to do. Exiting." );
                 Sup.LogTraceErrorMessage( "CumulusUtils : Exiting Main" );
 
-                Console.WriteLine( "\nCumulusUtils : No Arguments nothing to do. Exiting. See Manual.\n" );
-                Console.WriteLine( "CumulusUtils Usage : utils/bin/cumulusutils.exe [args] (args case independent):\n" );
-                Console.WriteLine( "  utils/bin/cumulusutils.exe \n" +
-                                  "      [SysInfo][Forecast][StationMap][UserReports][MeteoCam]\n" +
-                                  "      [pwsFWI][Top10][Graphs][Yadr][Records][UserAskedData]\n" +
-                                  "      [NOAA][DayRecords][AirLink][CompileOnly][ExtraSensors]\n" );
-
+                Console.WriteLine( "\nCumulusUtils : No Arguments nothing to do. Exiting. See Manual." );
                 Console.WriteLine( "" );
-                Console.WriteLine( "OR (in case you use the website generator):\n" );
-                Console.WriteLine( "  utils/bin/cumulusutils.exe [Thrifty] Website\n" );
+                Console.WriteLine( "CumulusUtils Usage : utils/bin/cumulusutils.exe [args] (args case independent):" );
+                Console.WriteLine( "" );
+                Console.WriteLine( "  utils/bin/cumulusutils.exe" );
+                Console.WriteLine( "      [SysInfo][Forecast][StationMap][UserReports][MeteoCam]" );
+                Console.WriteLine( "      [pwsFWI][Top10][Graphs][Yadr][Records][UserAskedData]" );
+                Console.WriteLine( "      [NOAA][DayRecords][AirLink][CompileOnly][ExtraSensors]" );
+                Console.WriteLine( "      [CustomLogs][CUlib]" );
+                Console.WriteLine( "" );
+                Console.WriteLine( "" );
+                Console.WriteLine( "OR (in case you use the website generator):" );
+                Console.WriteLine( "" );
+                Console.WriteLine( "  utils/bin/cumulusutils.exe [Thrifty] Website" );
 
                 Environment.Exit( 0 );
             }
@@ -583,6 +588,12 @@ namespace CumulusUtils
                 watch.Stop();
                 Sup.LogTraceInfoMessage( $"Timing of CustomLogs generation = {watch.ElapsedMilliseconds} ms" );
 #endif
+            }
+
+            if (DoCUlib)
+            {
+                CUlib fncs = new CUlib( Sup );
+                fncs.Generate();
             }
 
             // These were the tasks without [weather]data.
@@ -1040,6 +1051,9 @@ namespace CumulusUtils
             if ( DoCustomLogs && HasCustomLogs && !Thrifty )
                 await Isup.UploadFileAsync( $"{Sup.CustomLogsOutputFilename}", $"{Sup.PathUtils}{Sup.CustomLogsOutputFilename}" );
 
+            if ( DoCUlib )
+                await Isup.UploadFileAsync( $"lib/{Sup.CUlibOutputFilename}", $"{Sup.PathUtils}{Sup.CUlibOutputFilename}" );
+
             if ( DoYadr )
             {
                 if ( !Thrifty )
@@ -1132,6 +1146,7 @@ namespace CumulusUtils
                     DoAirLink = true;
                     DoExtraSensors = true;
                     DoCustomLogs = true;
+                    DoCUlib = false;            // this is implicit for website so if user sets it undo that
 
                     break;
                 }
@@ -1169,6 +1184,7 @@ namespace CumulusUtils
                             DoCustomLogs = true;
                             DoCompileOnly = true;  // Implicit for Custom Logs
                         }
+                        if ( s.Equals( "CUlib", Cmp ) ) DoCUlib = true;
                     }
                 }
             }

@@ -54,6 +54,7 @@ namespace CumulusUtils
         public string PathUtils { get; } = "utils/";
         public string PathUtilsLog { get; } = "utils/utilslog/";
 
+        public string CUlibOutputFilename { get; } = "cumulusutils.js";
         public string PwsFWIOutputFilename { get; } = "pwsFWI.txt";
         public string PwsFWICurrentOutputFilename { get; } = "pwsFWIcurrent.txt";
         public string GraphsRainOutputFilename { get; } = "graphsrain.txt";
@@ -461,30 +462,21 @@ namespace CumulusUtils
 
             if ( string.IsNullOrEmpty( SpecificHighchartsVersion ) )
             {
-                sb.AppendLine( "<script src='https://code.highcharts.com/stock/highstock.js'></script>" );
-                sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/highcharts-more.js\"></script>" );
-                sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/indicators/indicators.js\"></script>" );
-                sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/modules/exporting.js\" ></script>" );
-                sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/modules/heatmap.js\"></script>" );
-                sb.AppendLine( "<script src='https://code.highcharts.com/stock/modules/windbarb.js'></script>" );
-                sb.AppendLine( "<script defer src='https://code.highcharts.com/modules/accessibility.js'></script>" );
-
-                if ( UseHighchartsBoostModule )
-                    sb.AppendLine( "<script src=\"https://code.highcharts.com/stock/modules/boost.js\"></script>" );
+                SpecificHighchartsVersion = "11.2";
             }
-            else
-            {
-                sb.AppendLine( $"<script src='https://code.highcharts.com/stock/{SpecificHighchartsVersion}/highstock.js'></script>" );
-                sb.AppendLine( $"<script src=\"https://code.highcharts.com/stock/{SpecificHighchartsVersion}/highcharts-more.js\"></script>" );
-                sb.AppendLine( $"<script src=\"https://code.highcharts.com/stock/{SpecificHighchartsVersion}/indicators/indicators.js\"></script>" );
-                sb.AppendLine( $"<script src=\"https://code.highcharts.com/stock/{SpecificHighchartsVersion}/modules/exporting.js\" ></script>" );
-                sb.AppendLine( $"<script src=\"https://code.highcharts.com/stock/{SpecificHighchartsVersion}/modules/heatmap.js\"></script>" );
-                sb.AppendLine( $"<script src='https://code.highcharts.com/stock/{SpecificHighchartsVersion}/modules/windbarb.js'></script>" );
-                sb.AppendLine( $"<script defer src='https://code.highcharts.com/{SpecificHighchartsVersion}/modules/accessibility.js'></script>" );
 
-                if ( UseHighchartsBoostModule )
-                    sb.AppendLine( $"<script src=\"https://code.highcharts.com/stock/{SpecificHighchartsVersion}/modules/boost.js\"></script>" );
-            }
+            sb.AppendLine( $"<script src='https://code.highcharts.com/stock/{SpecificHighchartsVersion}/highstock.js'></script>" );
+            sb.AppendLine( $"<script src=\"https://code.highcharts.com/stock/{SpecificHighchartsVersion}/highcharts-more.js\"></script>" );
+            sb.AppendLine( $"<script src=\"https://code.highcharts.com/stock/{SpecificHighchartsVersion}/indicators/indicators.js\"></script>" );
+            sb.AppendLine( $"<script src=\"https://code.highcharts.com/stock/{SpecificHighchartsVersion}/modules/exporting.js\" ></script>" );
+            sb.AppendLine( $"<script src=\"https://code.highcharts.com/stock/{SpecificHighchartsVersion}/modules/heatmap.js\"></script>" );
+            sb.AppendLine( $"<script src='https://code.highcharts.com/stock/{SpecificHighchartsVersion}/modules/windbarb.js'></script>" );
+            //sb.AppendLine( $"<script src='https://code.highcharts.com/stock/{SpecificHighchartsVersion}/indicators/indicators.js'></script>" );
+            //sb.AppendLine( $"<script src='https://code.highcharts.com/stock/{SpecificHighchartsVersion}/indicators/trendline.js'></script>" );
+            sb.AppendLine( $"<script defer src='https://code.highcharts.com/{SpecificHighchartsVersion}/modules/accessibility.js'></script>" );
+
+            if ( UseHighchartsBoostModule )
+                sb.AppendLine( $"<script src=\"https://code.highcharts.com/stock/{SpecificHighchartsVersion}/modules/boost.js\"></script>" );
 
             sb.AppendLine( "  <script src='lib/HighchartsLanguage.js'></script>" );
             sb.AppendLine( "  <script src='lib/HighchartsDefaults.js'></script>" );
