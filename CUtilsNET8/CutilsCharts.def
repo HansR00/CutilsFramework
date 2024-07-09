@@ -198,8 +198,6 @@ Chart pwsFWInow Title Raw pwsFWI intraday as a chart
   Plot RECENT pwsFWI Eval [ Psat2008 * (1.0 - Humidity/100.0)*WindSpeed ] As spline Axis Free Colour Red
 EndChart
 
-; DO NOT CHANGE ANYTHING BELOW THIS INDICATOR LINE
-
 ; ExtraSensorCharts
 
 Chart SoilTemperatures Title Trend Chart of Extra Outside Temperature Sensors

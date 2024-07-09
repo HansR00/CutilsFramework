@@ -80,7 +80,8 @@ namespace CumulusUtils
                                           new XElement( "Website", Website ),
                                           new XElement( "Latitude", Latitude ),
                                           new XElement( "Longitude", Longitude ),
-                                          new XElement( "Date", DateTime.UtcNow.ToString( "dd-MM-yyyy HH:mm", CUtils.Inv ) )
+                                          new XElement( "Date", DateTime.UtcNow.ToString( "dd-MM-yyyy HH:mm", CUtils.Inv ) ),
+                                          new XElement( "CUversion", CuSupport.UnformattedVersion() )
                                         );
 
                         // And save the file and write back to the central storage
@@ -101,6 +102,7 @@ namespace CumulusUtils
                     Sup.LogTraceInfoMessage( $"Maps->MapsOn: Latitude: {Latitude}" );
                     Sup.LogTraceInfoMessage( $"Maps->MapsOn: Longitude: {Longitude}" );
                     Sup.LogTraceInfoMessage( $"Maps->MapsOn: Date (UTC): {DateTime.UtcNow.ToString( "dd-MM-yyyy HH:mm", CUtils.Inv )}" );
+                    Sup.LogTraceInfoMessage( $"Maps->MapsOn: Version: {CuSupport.UnformattedVersion() }" );
 
                     // An exit is made here. This is especially disturbing when operating with the website generator
                     // I do this to oblige the user to actually fill in correct data for his website (which he needs for use of CumulusUtils
@@ -377,7 +379,7 @@ namespace CumulusUtils
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.MapsOutputFilename}", false, Encoding.UTF8 ) )
             {
-                string Name, Description, Website, Date;
+                string Name, Description, Website, Date, CUversion;
                 float Latitude, Longitude;
 
                 Sup.LogTraceInfoMessage( $"CreateMap: Creating the CumulusUtils Map" );
@@ -419,7 +421,8 @@ namespace CumulusUtils
                         Latitude = Convert.ToSingle( thisStation.Element( "Latitude" ).Value.Replace( ',', '.' ), CUtils.Inv );
                         Longitude = Convert.ToSingle( thisStation.Element( "Longitude" ).Value.Replace( ',', '.' ), CUtils.Inv );
                         Website = thisStation.Element( "Website" )?.Value ?? "";
-                        Date = thisStation.Element( "Date" )?.Value ?? "";
+                        Date = thisStation.Element( "Date" )?.Value ?? "-";
+                        CUversion = thisStation.Element( "CUversion" )?.Value ?? "-";
 
                         Sup.LogTraceInfoMessage( $"CreateMap: Writing Station {Name}" );
 
@@ -429,7 +432,7 @@ namespace CumulusUtils
                                       $"Lat: {Latitude} / Lon: {Longitude}<br/>" +
                                       $"{( Website != "" ? "<a href='" + Website + "' target='_blank'>Website</a><br/>" : "Website: No link supplied<br/>" )}" +
                                       //$"<a href='{Website}' target='_blank'>Website</a><br/>" +
-                                      $"Last alive (UTC): {Date}\");" );
+                                      $"Last alive (UTC): {Date} / CUversion: {CUversion}\");" );
 
                         of.WriteLine( $"  var circle = L.circle([{Latitude.ToString( "F4", CUtils.Inv )}, {Longitude.ToString( "F4", CUtils.Inv )}], {{" );
                         of.WriteLine( "     color: 'lightgrey', weight:2," );
