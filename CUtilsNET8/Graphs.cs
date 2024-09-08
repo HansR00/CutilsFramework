@@ -39,14 +39,15 @@ namespace CumulusUtils
         #region Declarations
 
         private readonly bool GraphDailyRain,
-            GraphMonthlyTemperature,
             GraphMonthlyRain,
-            GraphHeatmap,
-            GraphYearTempStats,
-            GraphYearMonthTempStats,
             GraphYearRainStats,
             GraphYearMonthRainStats,
+            GraphMonthlyTemperature,
+            GraphYearTempStats,
+            GraphYearMonthTempStats,
             GraphWarmerDays,
+            GraphFrostDays,
+            GraphHeatmap,
             GraphWindRose,
             GraphWindrun,
             GraphSolarHours,
@@ -66,8 +67,8 @@ namespace CumulusUtils
         // Is this one really necessary???
         private readonly string[] m = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };  //Culture independent, just strings to compare in the menu
 
-        private enum DayType
-        { Zero, Plus25Day, Plus30Day, Plus35Day, Plus40Day };
+        private enum WarmDayType { Zero, Plus25Day, Plus30Day, Plus35Day, Plus40Day };
+        private enum ColdDayType { Zero, FrostDay, IceDay};
 
         // source : 
         // Version 2 : private const string graphColors = "['#4363d8', '#e6194B', '#f58231', '#ffe119', '#bfef45', '#3cb44b',  '#42d4f4', '#911eb4','#f032e6', '#fabed4', '#469990', '#dcbeff', '#9A6324', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075']";
@@ -128,9 +129,10 @@ namespace CumulusUtils
             GraphYearTempStats = Sup.GetUtilsIniValue( "Graphs", "YearTempstats", "true" ).Equals( "true", CUtils.Cmp );
             GraphYearMonthTempStats = Sup.GetUtilsIniValue( "Graphs", "YearMonthTempstats", "true" ).Equals( "true", CUtils.Cmp );
             GraphWarmerDays = Sup.GetUtilsIniValue( "Graphs", "WarmerDays", "true" ).Equals( "true", CUtils.Cmp );
+            GraphFrostDays = Sup.GetUtilsIniValue( "Graphs", "FrostDays", "true" ).Equals( "true", CUtils.Cmp );
             GraphHeatmap = Sup.GetUtilsIniValue( "Graphs", "HeatMap", "true" ).Equals( "true", CUtils.Cmp );
 
-            CUtils.HasTempGraphMenu = GraphMonthlyTemperature || GraphYearTempStats || GraphYearMonthTempStats || GraphHeatmap || GraphWarmerDays;
+            CUtils.HasTempGraphMenu = GraphMonthlyTemperature || GraphYearTempStats || GraphYearMonthTempStats || GraphHeatmap || GraphFrostDays || GraphWarmerDays;
 
             GraphWindrun = Sup.GetUtilsIniValue( "Graphs", "Windrun", "true" ).Equals( "true", CUtils.Cmp );
             GraphWindRose = Sup.GetUtilsIniValue( "Graphs", "WindRose", "true" ).Equals( "true", CUtils.Cmp );
@@ -208,7 +210,6 @@ namespace CumulusUtils
         }
 
         #endregion
-
 
         public void GenerateGraphx( List<DayfileValue> ThisList )
         {
@@ -458,6 +459,7 @@ namespace CumulusUtils
                     GraphNrForYearMonthTempStats = GraphNr;
                     thisBuffer.AppendLine( $"  else if (w1 == 'YearMonthTempstatistics') {{ $('[id*=\"YMT\"]').show(); graph{GraphNr++}{CUtils.RunStarted.Month}(); }}" );
                     thisBuffer.AppendLine( $"  else if (w1 == 'WarmerDays') {{ graph{GraphNr++}(); }}" );
+                    thisBuffer.AppendLine( $"  else if (w1 == 'FrostDays') {{ graph{GraphNr++}(); }}" );
                     thisBuffer.AppendLine( $"  else if (w1 == 'Heatmap') {{ $('[id*=\"Heatmap\"]').show(); graph{GraphNr++}(); }}" );
                     thisBuffer.AppendLine( "  else { document.getElementById('graph').value = 'MonthlyTemp'; graph1(); }" );
                     thisBuffer.AppendLine( "urlParams.delete( 'dropdown' );" );
@@ -489,6 +491,8 @@ namespace CumulusUtils
                         thisBuffer.AppendLine( $"    <option value='YearMonthTempstatistics'>{Sup.GetCUstringValue( "Graphs", "YMSTMenuText", "Yearly Temperature statistics per Month", false )}</option>" );
                     if ( GraphWarmerDays )
                         thisBuffer.AppendLine( $"    <option value='WarmerDays'>{Sup.GetCUstringValue( "Graphs", "WDMenuText", "Warmer Days", false )}</option>" );
+                    if ( GraphFrostDays )
+                        thisBuffer.AppendLine( $"    <option value='FrostDays'>{Sup.GetCUstringValue( "Graphs", "FrostDaysMenuText", "Frost Days", false )}</option>" );
                     if ( GraphHeatmap )
                         thisBuffer.AppendLine( $"    <option value='Heatmap'>{Sup.GetCUstringValue( "Graphs", "HMMenuText", "Heat Map", false )}</option>" );
 
@@ -575,6 +579,18 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
                     thisBuffer.AppendLine( GenerateChartInfoModal( chartId: "WarmerDays", Title: Sup.GetCUstringValue( "Graphs", "WDTitle", "Warmer Days", true ) ) );
+
+                    thisBuffer.AppendLine( "<script>" );
+                    thisBuffer.AppendLine( $"function graph{GraphNr++}()" );
+                    thisBuffer.AppendLine( "{" );
+                    if ( GraphFrostDays )
+                    {
+                        GenStackedFrostDaysGraphData( ThisList, thisBuffer );
+                        thisBuffer.AppendLine( ActivateChartInfo( chartId: "FrostDays" ) );
+                    }
+                    thisBuffer.AppendLine( "}" );
+                    thisBuffer.AppendLine( "</script>" );
+                    thisBuffer.AppendLine( GenerateChartInfoModal( chartId: "FrostDays", Title: Sup.GetCUstringValue( "Graphs", "FrostDaysTitle", "Frost and Ice Days", true ) ) );
 
                     thisBuffer.AppendLine( "<script>" );
 

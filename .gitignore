@@ -362,3 +362,5 @@ GrauweKiekendief/210217 GrauweKiekendief.zip
 *.zip
 tmp/PerlTrialAndError.txt
 *.url
+CUtilsNET8/Properties/Resources.Designer.cs
+CUtilsNET8/Properties/Resources.resx

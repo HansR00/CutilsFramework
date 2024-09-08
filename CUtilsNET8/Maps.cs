@@ -102,7 +102,7 @@ namespace CumulusUtils
                     Sup.LogTraceInfoMessage( $"Maps->MapsOn: Latitude: {Latitude}" );
                     Sup.LogTraceInfoMessage( $"Maps->MapsOn: Longitude: {Longitude}" );
                     Sup.LogTraceInfoMessage( $"Maps->MapsOn: Date (UTC): {DateTime.UtcNow.ToString( "dd-MM-yyyy HH:mm", CUtils.Inv )}" );
-                    Sup.LogTraceInfoMessage( $"Maps->MapsOn: Version: {CuSupport.UnformattedVersion() }" );
+                    Sup.LogTraceInfoMessage( $"Maps->MapsOn: Version: {CuSupport.UnformattedVersion()}" );
 
                     // An exit is made here. This is especially disturbing when operating with the website generator
                     // I do this to oblige the user to actually fill in correct data for his website (which he needs for use of CumulusUtils

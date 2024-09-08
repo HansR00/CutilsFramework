@@ -33,6 +33,7 @@
  *              CustomLogs.cs
  *              Dayfile.cs
  *              DayRecords.cs
+ *              Diary.cs
  *              ExternalExtraSensorslog.cs
  *              ExtraSensors.cs
  *              ExtraSensorslog.cs
@@ -166,6 +167,7 @@ namespace CumulusUtils
         private bool DoExtraSensors;
         private bool DoCustomLogs;
         private bool DoCUlib;
+        private bool DoDiary;
 
         public static StringComparison Cmp = StringComparison.OrdinalIgnoreCase;
 
@@ -207,6 +209,7 @@ namespace CumulusUtils
         public static bool HasMiscGraphMenu { get; set; }
         public static bool HasStationMapMenu { get; set; }
         public static bool HasMeteoCamMenu { get; set; }
+        public static bool HasDiaryMenu { get; set; }
 
         // Check for presence of optional sensors 
         public static bool HasSolar { get; set; }
@@ -397,8 +400,9 @@ namespace CumulusUtils
 
                 Environment.Exit( 0 );
             }
+
             if ( !DoPwsFWI && !DoTop10 && !DoSystemChk && !DoGraphs && !DoCreateMap && !DoYadr && !DoRecords && !DoCompileOnly && !DoUserAskedData && !DoCustomLogs &&
-                !DoNOAA && !DoDayRecords && !DoWebsite && !DoForecast && !DoUserReports && !DoStationMap && !DoMeteoCam && !DoAirLink && !DoExtraSensors && !DoCUlib )
+                !DoNOAA && !DoDayRecords && !DoWebsite && !DoForecast && !DoUserReports && !DoStationMap && !DoMeteoCam && !DoAirLink && !DoExtraSensors && !DoCUlib && !DoDiary )
             {
                 Sup.LogTraceErrorMessage( "CumulusUtils : No Arguments, nothing to do. Exiting." );
                 Sup.LogTraceErrorMessage( "CumulusUtils : Exiting Main" );
@@ -411,7 +415,7 @@ namespace CumulusUtils
                 Console.WriteLine( "      [SysInfo][Forecast][StationMap][UserReports][MeteoCam]" );
                 Console.WriteLine( "      [pwsFWI][Top10][Graphs][Yadr][Records][UserAskedData]" );
                 Console.WriteLine( "      [NOAA][DayRecords][AirLink][CompileOnly][ExtraSensors]" );
-                Console.WriteLine( "      [CustomLogs][CUlib]" );
+                Console.WriteLine( "      [CustomLogs][CUlib][Diary]" );
                 Console.WriteLine( "" );
                 Console.WriteLine( "" );
                 Console.WriteLine( "OR (in case you use the website generator):" );
@@ -590,10 +594,25 @@ namespace CumulusUtils
 #endif
             }
 
-            if (DoCUlib)
+            if ( DoCUlib )
             {
                 CUlib fncs = new CUlib( Sup );
                 fncs.Generate();
+            }
+
+            if ( DoDiary )
+            {
+#if TIMING
+                watch = Stopwatch.StartNew();
+#endif
+
+                Diary fncs = new Diary( Sup );
+                fncs.GenerateDiary();
+
+#if TIMING
+                watch.Stop();
+                Sup.LogTraceInfoMessage( $"Timing of Diary generation = {watch.ElapsedMilliseconds} ms" );
+#endif
             }
 
             // These were the tasks without [weather]data.
@@ -1054,6 +1073,9 @@ namespace CumulusUtils
             if ( DoCUlib )
                 await Isup.UploadFileAsync( $"lib/{Sup.CUlibOutputFilename}", $"{Sup.PathUtils}{Sup.CUlibOutputFilename}" );
 
+            if (DoDiary && HasDiaryMenu )  /* i.e. there is data in the diary */
+                await Isup.UploadFileAsync( $"{Sup.DiaryOutputFilename}", $"{Sup.PathUtils}{Sup.DiaryOutputFilename}" );
+
             if ( DoYadr )
             {
                 if ( !Thrifty )
@@ -1146,7 +1168,8 @@ namespace CumulusUtils
                     DoAirLink = true;
                     DoExtraSensors = true;
                     DoCustomLogs = true;
-                    DoCUlib = false;            // this is implicit for website so if user sets it undo that
+                    DoCUlib = false;            // this is implicit for website so if user sets it undo tha
+                    DoDiary = true;
 
                     break;
                 }
@@ -1185,6 +1208,7 @@ namespace CumulusUtils
                             DoCompileOnly = true;  // Implicit for Custom Logs
                         }
                         if ( s.Equals( "CUlib", Cmp ) ) DoCUlib = true;
+                        if ( s.Equals( "Diary", Cmp ) ) DoDiary = true;
                     }
                 }
             }

@@ -318,7 +318,7 @@ namespace CumulusUtils
             sb.Clear();
             foreach ( List<int> Year in AllYears )
             {
-                sb.Append( $"'{Year[ (int) DayType.Zero ]}'," );
+                sb.Append( $"'{Year[ (int) WarmDayType.Zero ]}'," );
             }
 
             sb.Remove( sb.Length - 1, 1 );
@@ -366,7 +366,7 @@ namespace CumulusUtils
             sb.Clear();
             foreach ( List<int> Year in AllYears )
             {
-                sb.Append( $"{Year[ (int) DayType.Plus40Day ]}," );
+                sb.Append( $"{Year[ (int) WarmDayType.Plus40Day ]}," );
             }
             sb.Remove( sb.Length - 1, 1 );
             thisBuffer.AppendLine( $"      {{name: '>{Limit40C}', color: 'black', data:[{sb}]}}," );
@@ -374,7 +374,7 @@ namespace CumulusUtils
             sb.Clear();
             foreach ( List<int> Year in AllYears )
             {
-                sb.Append( $"{Year[ (int) DayType.Plus35Day ]}," );
+                sb.Append( $"{Year[ (int) WarmDayType.Plus35Day ]}," );
             }
             sb.Remove( sb.Length - 1, 1 );
             thisBuffer.AppendLine( $"      {{name: '>{Limit35C}', color: 'magenta', data:[{sb}]}}," );
@@ -382,7 +382,7 @@ namespace CumulusUtils
             sb.Clear();
             foreach ( List<int> Year in AllYears )
             {
-                sb.Append( $"{Year[ (int) DayType.Plus30Day ]}," );
+                sb.Append( $"{Year[ (int) WarmDayType.Plus30Day ]}," );
             }
             sb.Remove( sb.Length - 1, 1 );
             thisBuffer.AppendLine( $"      {{name: '>{Limit30C}', color: 'red', data:[{sb}]}}," );
@@ -390,10 +390,130 @@ namespace CumulusUtils
             sb.Clear();
             foreach ( List<int> Year in AllYears )
             {
-                sb.Append( $"{Year[ (int) DayType.Plus25Day ]}," );
+                sb.Append( $"{Year[ (int) WarmDayType.Plus25Day ]}," );
             }
             sb.Remove( sb.Length - 1, 1 );
             thisBuffer.AppendLine( $"      {{name: '>{Limit25C}', color: 'orange', data:[{sb}]}}" );
+
+            thisBuffer.AppendLine( "     ]" );
+            thisBuffer.AppendLine( "});" );
+        }
+
+        private void GenStackedFrostDaysGraphData( List<DayfileValue> ThisList, StringBuilder thisBuffer )
+        {
+            int FrostDays = 0, IceDays = 0;
+            int ZeroValue = 0; // for Celsius, gets value for Faherenheit llater on
+
+            StringBuilder sb = new StringBuilder();
+            List<int> YearValue;
+            List<List<int>> AllYears;
+
+            Sup.LogDebugMessage( "GenStackedFrostDaysGraphData : starting" );
+
+            // Fahrenheit
+            if ( Sup.StationTemp.Dim == TempDim.fahrenheit ) ZeroValue = 32;
+
+            AllYears = new List<List<int>>();
+
+            for ( int i = YearMin; i <= YearMax; i++ )
+            {
+                if ( ThisList.Where( x => x.ThisDate.Year == i ).Any() )
+                {
+                    FrostDays = ThisList.Where( x => x.ThisDate.Year == i ).Where( x => x.MaxTemp >= ZeroValue && x.MinTemp < ZeroValue ).Count();
+                    IceDays = ThisList.Where( x => x.ThisDate.Year == i ).Where( x => x.MaxTemp <= ZeroValue ).Count();
+                }
+
+                // and write the values to the list
+                YearValue = new List<int>
+                {
+                  i,
+                  FrostDays,
+                  IceDays
+                };
+
+                AllYears.Add( YearValue );
+            }
+
+            thisBuffer.AppendLine( "console.log('Frost Days Chart starting.');" );
+            thisBuffer.AppendLine( "chart = Highcharts.chart('chartcontainer', {" );
+            thisBuffer.AppendLine( "  chart:" );
+            thisBuffer.AppendLine( "  {" );
+            thisBuffer.AppendLine( "    type: 'column'" );
+            thisBuffer.AppendLine( "  }," );
+            thisBuffer.AppendLine( "  title:" );
+            thisBuffer.AppendLine( "  {" );
+            thisBuffer.AppendLine( $"    text: '{Sup.GetCUstringValue( "Graphs", "FrostDaysTitle", "Frost and Ice Days", true )} {Sup.StationTemp.Text()}'" );
+            thisBuffer.AppendLine( "  }," );
+            thisBuffer.AppendLine( "  subtitle:" );
+            thisBuffer.AppendLine( "  {" );
+            thisBuffer.AppendLine( $"    text: '{Sup.GetCumulusIniValue( "Station", "LocDesc", "Unknown Station")}'" );
+            thisBuffer.AppendLine( "  }," );
+            thisBuffer.AppendLine( "  xAxis:" );
+            thisBuffer.AppendLine( "  {" );
+
+            sb.Clear();
+            foreach ( List<int> Year in AllYears )
+            {
+                sb.Append( $"'{Year[ (int) ColdDayType.Zero ]}'," );
+            }
+
+            sb.Remove( sb.Length - 1, 1 );
+
+            thisBuffer.AppendLine( $"    categories: [{sb}]" );
+            thisBuffer.AppendLine( "   }," );
+            thisBuffer.AppendLine( "   yAxis:" );
+            thisBuffer.AppendLine( "   {" );
+            thisBuffer.AppendLine( "     min: 0," );
+            thisBuffer.AppendLine( "     title:" );
+            thisBuffer.AppendLine( "     {" );
+            thisBuffer.AppendLine( $"       text: '{Sup.GetCUstringValue( "Graphs", "FrostDaysAxisTitle", "Number of Days", true )}'" );
+            thisBuffer.AppendLine( "     }," );
+            thisBuffer.AppendLine( "     stackLabels:" );
+            thisBuffer.AppendLine( "     {" );
+            thisBuffer.AppendLine( "       enabled: true," );
+            thisBuffer.AppendLine( "       style:" );
+            thisBuffer.AppendLine( "       {" );
+            thisBuffer.AppendLine( "         fontWeight: 'bold'," );
+            thisBuffer.AppendLine( "         color: (" );
+            thisBuffer.AppendLine( "           Highcharts.defaultOptions.title.style &&" );
+            thisBuffer.AppendLine( "           Highcharts.defaultOptions.title.style.color" );
+            thisBuffer.AppendLine( "           ) || 'gray'" );
+            thisBuffer.AppendLine( "        }" );
+            thisBuffer.AppendLine( "      }" );
+            thisBuffer.AppendLine( "    }," );
+            thisBuffer.AppendLine( "    tooltip:" );
+            thisBuffer.AppendLine( "    {" );
+            thisBuffer.AppendLine( "      headerFormat: '<b>{point.x}</b><br/>'," );
+            thisBuffer.AppendLine( "      pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'" );
+            thisBuffer.AppendLine( "    }," );
+            thisBuffer.AppendLine( "    plotOptions:" );
+            thisBuffer.AppendLine( "    {" );
+            thisBuffer.AppendLine( "      column:" );
+            thisBuffer.AppendLine( "      {" );
+            thisBuffer.AppendLine( "        stacking: 'normal'," );
+            thisBuffer.AppendLine( "        dataLabels:" );
+            thisBuffer.AppendLine( "        {" );
+            thisBuffer.AppendLine( "          enabled: true" );
+            thisBuffer.AppendLine( "        }" );
+            thisBuffer.AppendLine( "      }" );
+            thisBuffer.AppendLine( "    }," );
+            thisBuffer.AppendLine( "    series: [" );
+
+            sb.Clear();
+            foreach ( List<int> Year in AllYears )
+            {
+                sb.Append( $"{Year[ (int) ColdDayType.FrostDay ]}," );
+            }
+            sb.Remove( sb.Length - 1, 1 );
+            thisBuffer.AppendLine( $"      {{name: '{Sup.GetCUstringValue( "Graphs", "Frost Days", "Frost Days", true )}', color: 'LightBlue', data:[{sb}]}}," );
+
+            sb.Clear();
+            foreach ( List<int> Year in AllYears )
+            {
+                sb.Append( $"{Year[ (int) ColdDayType.IceDay ]}," );
+            }
+            sb.Remove( sb.Length - 1, 1 );
+            thisBuffer.AppendLine( $"      {{name: '{Sup.GetCUstringValue( "Graphs", "Ice Days", "Ice Days", true )}', color: 'Blue', data:[{sb}]}}" );
 
             thisBuffer.AppendLine( "     ]" );
             thisBuffer.AppendLine( "});" );

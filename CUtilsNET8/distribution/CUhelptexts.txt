@@ -17,6 +17,12 @@ HT_MonthlyTemp = " "
 HT_YearlyTempStats = " "
 HT_YearlyMonthlyTempStats = " "
 HT_WarmerDays = " "
+HT_FrostDays = " A <i>Frost Day</i> is defined as a day where the minimum temperature is below zero (or 32 Fahrenheit) but the maximum is above zero. 
+                 An <i>Ice Day</i> is defined as a day where the maximum temperature is below zero (or 32 Fahrenheit)<br/><br/>
+                 See also: 
+                 <a href=https://www.plantmaps.com/index.php target='_blank'>Plant Maps</a><br/> "
+                 <a href=https://www.eea.europa.eu/data-and-maps/figures#c0=15&c5=&c15=all&b_start=0&c8=frost target='_blank'>EU Environment Agency Frost maps & charts</a><br/> "
+
 HT_HeatMap = " "
 HT_WindRose = " "
 HT_WindRun = " "

@@ -59,6 +59,7 @@ namespace CumulusUtils
                     ht.WriteLine( "HT_YearlyTempStats = \" \"" );
                     ht.WriteLine( "HT_YearlyMonthlyTempStats = \" \"" );
                     ht.WriteLine( "HT_WarmerDays = \" \"" );
+                    ht.WriteLine( "HT_FrostDays = \" \"" );
                     ht.WriteLine( "HT_HeatMap = \" \"" );
 
                     ht.WriteLine( "HT_WindRose = \" \"" );
