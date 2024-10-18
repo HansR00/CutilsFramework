@@ -54,7 +54,7 @@ namespace CumulusUtils
             string CMXport = Sup.GetUtilsIniValue( "General", "CMXport", "8998" );
 
 #if !RELEASE
-            CmxBaseURL = $"http://192.168.178.143:{CMXport}";
+            CmxBaseURL = $"http://192.168.178.31:{CMXport}";
 #else
             CmxBaseURL = $"http://localhost:{CMXport}";
 #endif
@@ -85,7 +85,7 @@ namespace CumulusUtils
         public async Task<string> GetCMXGraphdataAsync( string thisGraphDef )
         {
             // Base function without a startdate gets full json
-            string GraphDataUrl = $"{CmxBaseURL}/api/graphdata/{thisGraphDef}.json";
+            string GraphDataUrl = $"{CmxBaseURL}/api/graphdata/{thisGraphDef}";
             string JSONstring = await Isup.GetUrlDataAsync( new Uri( GraphDataUrl ) );
 
             return JSONstring;
@@ -104,7 +104,7 @@ namespace CumulusUtils
             // Start ts = real Unix timestamp, no fudging of local time.
             // Graph data sets remain the same with pseudo TS.
             //
-            string GraphDataUrl = $"{CmxBaseURL}/api/graphdata/{thisGraphDef}.json?start={CuSupport.DateTimeToUnixUTC( thisTime )}";
+            string GraphDataUrl = $"{CmxBaseURL}/api/graphdata/{thisGraphDef}?start={CuSupport.DateTimeToUnixUTC( thisTime )}";
             string JSONstring = await Isup.GetUrlDataAsync( new Uri( GraphDataUrl ) );
 
             return JSONstring;

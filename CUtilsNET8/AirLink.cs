@@ -1226,13 +1226,13 @@ namespace CumulusUtils
 
                             if ( CUtils.Isup.IsIncrementalAllowed() )
                             {
-                                JSONstringWind = await thisCmxIPC.GetCMXGraphdataAsync( "winddata", StartDateTime );
-                                JSONstringWindDir = await thisCmxIPC.GetCMXGraphdataAsync( "wdirdata", StartDateTime );
+                                JSONstringWind = await thisCmxIPC.GetCMXGraphdataAsync( "winddata.json", StartDateTime );
+                                JSONstringWindDir = await thisCmxIPC.GetCMXGraphdataAsync( "wdirdata.json", StartDateTime );
                             }
                             else
                             {
-                                JSONstringWind = await thisCmxIPC.GetCMXGraphdataAsync( "winddata" );
-                                JSONstringWindDir = await thisCmxIPC.GetCMXGraphdataAsync( "wdirdata" );
+                                JSONstringWind = await thisCmxIPC.GetCMXGraphdataAsync( "winddata.json" );
+                                JSONstringWindDir = await thisCmxIPC.GetCMXGraphdataAsync( "wdirdata.json" );
                             }
 
                             var ws = JsonObject.Parse( JSONstringWind );

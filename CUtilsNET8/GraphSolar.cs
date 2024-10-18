@@ -481,7 +481,8 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "{" );
             thisBuffer.AppendLine( "  title:" );
             thisBuffer.AppendLine( "  {" );
-            thisBuffer.AppendLine( $"    text: '{Sup.GetCUstringValue( "Graphs", "YSESYaxis", "Daily kilo Watt hour per m2", true )} ({Sup.GetCUstringValue( "General", "kWh", "kWh", true )})'" );
+            thisBuffer.AppendLine( "    useHTML: true," );
+            thisBuffer.AppendLine( $"    text: '{Sup.GetCUstringValue( "Graphs", "YSESYaxis", "Daily kilo Watt hour per m²", true )} ({Sup.GetCUstringValue( "General", "kWh", "kWh", true )})'" );
             thisBuffer.AppendLine( "  }," );
             thisBuffer.AppendLine( $"  min: {minminSE.ToString( "F2", CUtils.Inv )}," );
             thisBuffer.AppendLine( $"  max: {maxmaxSE.ToString( "F2", CUtils.Inv )}" );
@@ -639,7 +640,8 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "{" );
             thisBuffer.AppendLine( "  title:" );
             thisBuffer.AppendLine( "  {" );
-            thisBuffer.AppendLine( $"    text: '{Sup.GetCUstringValue( "Graphs", "YSESYaxis", "Daily kilo Watt hour per m2", true )} ({Sup.GetCUstringValue( "General", "kWh", "kWh", true )})'" );
+            thisBuffer.AppendLine( "    useHTML: true," );
+            thisBuffer.AppendLine( $"    text: '{Sup.GetCUstringValue( "Graphs", "YSESYaxis", "Daily kilo Watt hour per m²", true )} ({Sup.GetCUstringValue( "General", "kWh", "kWh", true )})'" );
             thisBuffer.AppendLine( "  }," );
             thisBuffer.AppendLine( $"  min: {minminSE.ToString( "F2", CUtils.Inv )}," );
             thisBuffer.AppendLine( $"  max: {maxmaxSE.ToString( "F2", CUtils.Inv )}" );

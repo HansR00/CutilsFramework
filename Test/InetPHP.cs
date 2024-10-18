@@ -1,25 +1,17 @@
 ﻿/*
- * InetPHP - Part of CumulusUtils
+ * InetPHP - Part of Test for CumulusUtils
  * 
  * © Copyright 2019-2024 Hans Rottier <hans.rottier@gmail.com>
  *
- * The code of CumulusUtils is public domain and distributed under the  
- * Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
- * (Note: this is different license than for CumulusMX itself, it is basically is usage license)
- * 
  * Author:      Hans Rottier <hans.rottier@gmail.com>
  * Project:     CumulusUtils meteo-wagenborgen.nl
- * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI .NET Framework 4.8
- *              Initial release: pwsFWI                 (version 1.0)
- *                               Website Generator      (version 3.0)
- *                               ChartsCompiler         (version 5.0)
- *                               Maintenance releases   (version 6.x) including CustomLogs
- *              Startdate : 16 november 2021 start of conversion to .NET 5, 6 and 7
- *              Startdate : 15 january 2024 start of conversion to .NET 8
  *              
  * Environment: Raspberry Pi 4B and up
  *              Raspberry Pi OS
  *              C# / Visual Studio / Windows for development
+ * 
+ * Test for PHP upload where the path fails at some point : /httpdocs is accepted, /httpdocs/Reports is not accepted in the main CMX program.
+ * It is currently unknown why this appens as this test and CUtils do not have an upload issue, it is only the Reports upload in CMX!
  * 
  */
 
@@ -33,13 +25,11 @@ using System.Text;
 using System.Threading.Tasks;
 using ServiceStack;
 
-namespace CumulusUtils
+namespace Test
 {
     public class InetPHP
     {
         // Based on the mail by Mark Crossley date: 17/02/2023 13:09
-
-        readonly CuSupport Sup;
 
         public string PhpUrl;
         public string PhpSecret;
@@ -47,58 +37,46 @@ namespace CumulusUtils
 
         public HttpClient phpUploadHttpClient;
 
-        public InetPHP( CuSupport s )
+        public InetPHP( )
         {
-            Sup = s;
-
-            PhpUrl = Sup.GetCumulusIniValue( "FTP site", "PHP-URL", "" );
-            PhpSecret = Crypto.DecryptString( Sup.GetCumulusIniValue( "FTP site", "PHP-Secret", "" ), CUtils.CryptoKey );
+            PhpUrl = "https://meteo-wagenborgen.nl/upload.php";
+            PhpSecret = "1c7ebb2f-77db-4673-89aa-3dae544774d0";
             PhpCompression = "none";
 
-            // Constructor 
-            // Clienthandler commented out, not needed but in just in case tge issue recurs
-            // Prevent issues with OpenSSL so bypass the certificate for the CGI
-            // https://stackoverflow.com/questions/52939211/the-ssl-connection-could-not-be-established
-            /*
-             * HttpClientHandler clientHandler = new HttpClientHandler
-             * {
-             *     ServerCertificateCustomValidationCallback = ( sender, cert, chain, sslPolicyErrors ) => { return true; }
-             * };
-             * 
-             */
+            // Constructor
+            HttpClientHandler clientHandler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = ( sender, cert, chain, sslPolicyErrors ) => { return true; }
+            };
 
-            phpUploadHttpClient = new HttpClient( /* clientHandler, true */ );
+            phpUploadHttpClient = new HttpClient( clientHandler, true );
 
             return;
         }
 
         public async Task<bool> PhpInit()
         {
-            bool PhpUseBrotli = Sup.GetCumulusIniValue( "FTP site", "PHP-UseBrotli", "0" ).Equals( "1", CUtils.Cmp );
-
             using ( var request = new HttpRequestMessage( HttpMethod.Get, PhpUrl ) )
             {
                 try
                 {
-                    Sup.LogDebugMessage( $"Testing PHP upload compression on {PhpUrl}" );
+                    Console.WriteLine( $"Testing PHP upload compression on {PhpUrl}" );
 
                     request.Headers.Add( "Accept", "text/html" );
-                    request.Headers.Add( "Accept-Encoding", "gzip, deflate" + ( PhpUseBrotli ? ", br" : "" ) );
+                    request.Headers.Add( "Accept-Encoding", "gzip, deflate" );
                     var response = await phpUploadHttpClient.SendAsync( request );
-
-                    response.EnsureSuccessStatusCode();
                     var encoding = response.Content.Headers.ContentEncoding;
 
                     PhpCompression = encoding.Count == 0 ? "none" : encoding.First();
 
-                    if ( PhpCompression == "none" ) Sup.LogTraceInfoMessage( "PHP upload does not support compression" );
-                    else Sup.LogTraceInfoMessage( $"PHP upload supports {PhpCompression} compression" );
+                    if ( PhpCompression == "none" ) Console.WriteLine( "PHP upload does not support compression" );
+                    else Console.WriteLine( $"PHP upload supports {PhpCompression} compression" );
 
                     return true;
                 }
                 catch ( Exception ex )
                 {
-                    Sup.LogTraceErrorMessage( $"PhpInit: Error - {ex.Message}" );
+                    Console.WriteLine( $"PhpInit: Error - {ex.Message}" );
 
                     return false;
                 }
@@ -113,10 +91,10 @@ namespace CumulusUtils
             string data = null;
             string ext;
 
-            Sup.LogTraceInfoMessage( $"PHP Upload: starting {localfile}" );
+            Console.WriteLine( $"PHP Upload: starting {localfile}" );
 
             if ( string.IsNullOrEmpty( localfile ) )
-                Sup.LogTraceWarningMessage( $"InetPhp: The data string is empty, ignoring this upload" );
+                Console.WriteLine( $"InetPhp: The data string is empty, ignoring this upload" );
             else
             {
                 data = File.ReadAllText( localfile );
@@ -124,10 +102,9 @@ namespace CumulusUtils
                 FileInfo fi = new FileInfo( localfile );
                 ext = fi.Extension;
 
-                if ( ext == ".json" && !CUtils.DoingUserAskedData ) incremental = false;
-                else incremental = ext == ".json" && !( fi.Name.Contains( "ALL", CUtils.Cmp ) || fi.Name.Contains( "DAILY", CUtils.Cmp ) );
+                incremental = false;
 
-                Sup.LogTraceInfoMessage( $"Incremental = {incremental}; filename = {fi.Name}; ext = {ext}; HoursInGraph = {CUtils.HoursInGraph}" );
+                Console.WriteLine( $"Incremental = {incremental}; filename = {fi.Name}; ext = {ext}; HoursInGraph = -72" );
             }
 
             try
@@ -136,7 +113,7 @@ namespace CumulusUtils
 
                 using ( var request = new HttpRequestMessage( HttpMethod.Post, PhpUrl ) )
                 {
-                    var unixTs = CuSupport.DateTimeToUnixUTC( DateTime.Now ).ToString();
+                    var unixTs = DateTimeToUnixUTC( DateTime.Now ).ToString();
                     var signature = GetSHA256Hash( PhpSecret, unixTs + remotefile + data );
 
                     // disable expect 100 - PHP doesn't support it
@@ -146,7 +123,7 @@ namespace CumulusUtils
 
                     if ( incremental )
                     {
-                        request.Headers.Add( "OLDEST", CuSupport.DateTimeToJS( DateTime.Now.AddHours( -CUtils.HoursInGraph ) ).ToString() );
+                        request.Headers.Add( "OLDEST", DateTimeToJS( DateTime.Now.AddHours( -72 ) ).ToString() );
                     }
 
                     request.Headers.Add( "TS", unixTs );
@@ -179,14 +156,6 @@ namespace CumulusUtils
                                     zipped.Write( byteData, 0, byteData.Length );
                                 }
                             }
-                            else if ( PhpCompression == "br" )
-                            {
-                                using ( var zipped = new System.IO.Compression.BrotliStream( ms, System.IO.Compression.CompressionMode.Compress, true ) )
-                                {
-                                    var byteData = encoding.GetBytes( data );
-                                    zipped.Write( byteData, 0, byteData.Length );
-                                }
-                            }
 
                             ms.Position = 0;
                             byte[] compressed = new byte[ ms.Length ];
@@ -202,10 +171,10 @@ namespace CumulusUtils
                     }
 
                     var response = await phpUploadHttpClient.SendAsync( request );
-                    Sup.LogTraceInfoMessage( $"InetPhp: {remotefile}: Response code = {(int) response.StatusCode}: {response.StatusCode}" );
+                    Console.WriteLine( $"InetPhp: {remotefile}: Response code = {(int) response.StatusCode}: {response.StatusCode}" );
 
                     var responseBodyAsText = await response.Content.ReadAsStringAsync();
-                    Sup.LogTraceInfoMessage( $"InetPhp: {remotefile}: Response text follows:\n{responseBodyAsText}" );
+                    Console.WriteLine( $"InetPhp: {remotefile}: Response text follows:\n{responseBodyAsText}" );
 
                     return response.StatusCode == HttpStatusCode.OK;
                 }
@@ -213,11 +182,11 @@ namespace CumulusUtils
             catch ( Exception ex )
             {
 
-                Sup.LogTraceInfoMessage( $"InetPhp: Error - {ex.Message}" );
+                Console.WriteLine( $"InetPhp: Error - {ex.Message}" );
 
                 if ( ex.InnerException != null )
                 {
-                    Sup.LogTraceInfoMessage( $"InetPhp: Base exception - {ex.InnerException.Message}" );
+                    Console.WriteLine( $"InetPhp: Base exception - {ex.InnerException.Message}" );
                 }
 
                 return false;
@@ -244,5 +213,9 @@ namespace CumulusUtils
                 return BitConverter.ToString( hashValue ).Replace( "-", string.Empty ).ToLower();
             }
         } // GetSHA256Hash
+
+        public static long DateTimeToJS( DateTime timestamp ) => (long) ( timestamp - new DateTime( 1970, 1, 1, 0, 0, 0 ) ).TotalSeconds * 1000;
+        public static long DateTimeToUnix( DateTime timestamp ) => (long) ( timestamp - new DateTime( 1970, 1, 1, 0, 0, 0 ) ).TotalSeconds;
+        public static long DateTimeToUnixUTC( DateTime timestamp ) => (long) ( timestamp.ToUniversalTime() - new DateTime( 1970, 1, 1, 0, 0, 0 ) ).TotalSeconds;
     } // Class InetPhp
 }

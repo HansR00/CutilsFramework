@@ -203,7 +203,7 @@ namespace CumulusUtils
                 {
                     int sequence, FcastType;
 
-                    Sup.LogTraceInfoMessage( $"Prediction The data: {thisvar}" );
+                    Sup.LogTraceVerboseMessage( $"Prediction The data: {thisvar}" );
 
                     // As the names are in the language chosen, we must do the order inn which they appear and trust
                     // that order will never change !!

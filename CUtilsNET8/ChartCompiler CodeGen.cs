@@ -646,10 +646,20 @@ namespace CumulusUtils
             // Each graph uses it's own set of axis, so for each Chart, do generate
 
             bool opposite = true;
+            string LastSoilMoistureUnitUsed = null;
 
             foreach ( Plotvar thisPlotvar in thisChart.PlotVars )
             {
-                if ( AxisSet.HasFlag( thisPlotvar.Axis ) ) { continue; }
+                if ( AxisSet.HasFlag( thisPlotvar.Axis ) && thisPlotvar.Axis != AxisType.SoilMoisture ) { continue; }
+
+                if ( AxisSet.HasFlag( thisPlotvar.Axis ) && thisPlotvar.Axis == AxisType.SoilMoisture )
+                {
+                    // Check fo a possible second soilmoisture axis with the other unit (either cb (Davis) or % (Ecowitt)
+                    // assuming there can't be a second unit switch
+
+                    if ( thisPlotvar.Unit == LastSoilMoistureUnitUsed ) { continue; } // the axis already exists 
+                    else LastSoilMoistureUnitUsed = thisPlotvar.Unit; // remember the unit for which the axis is made
+                }
 
                 Sup.LogTraceInfoMessage( $"Compiler - Creating Axis {thisPlotvar.Axis} on {thisPlotvar.PlotVar} on {thisChart.Id} " );
 
@@ -815,6 +825,15 @@ namespace CumulusUtils
                     buf.Append( $"softMax: 500,softMin: 0,showLastLabel: true," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )} ," );
                     AxisSet |= AxisType.ppm;
+                }
+                else if ( thisPlotvar.Axis.HasFlag( AxisType.SoilMoisture ) )
+                {
+                    //
+                    buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Compiler", "SoilMoisture ", "Soil Moisture", true )} ({thisPlotvar.Unit})'}}," );
+                    buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
+                    buf.Append( $"max: 100,min: 0,showLastLabel: true," );
+                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )} ," );
+                    AxisSet |= AxisType.SoilMoisture;
                 }
 
                 buf.AppendLine( "alignTicks: false, gridLineWidth: 0, minorGridLineWidth:0 }, false, false );" );

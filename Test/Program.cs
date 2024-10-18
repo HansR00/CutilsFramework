@@ -1,42 +1,37 @@
 ﻿using System;
-using System.Drawing;
+using System.Reflection;
+using System.Threading.Tasks;
+
+[assembly: AssemblyVersionAttribute( "1.0.0" )]
 
 namespace Test
 {
     class Test
     {
-        public static void Main()
+        public static async Task Main()
         {
-            //int count = 0;
-            //DateTime epochDate = new DateTime( 1970, 1, 1, 0, 0, 0, 0 );
+            InetPHP clientPhp = new InetPHP( );
 
-            //long firstDate = javascriptValues[ 0 ];
+            Console.WriteLine( DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + "Uploading = UploadTestforCloud86.txt" );
 
-            //foreach ( long thisDate in javascriptValues )
-            //{
+            // Probeer het voor de Reports directory
+            Console.WriteLine( DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + "Upload File values: localfile: UploadTestforCloud86.txt" );
+            Console.WriteLine( DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + "Upload File values: remotefile: Reports/UploadTestforCloud86.txt" );
 
-            //    if ( thisDate < firstDate ) Console.WriteLine( $"Thisdate is not sorted in list: {count}:{epochDate.AddMilliseconds( thisDate )}" );
-            //    count++;
-            //}
+            if ( !await clientPhp.UploadAsync( localfile: "UploadTestforCloud86.txt", remotefile: "Reports/UploadTestforCloud86.txt" ) )
+                Console.WriteLine( DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + "PHP UploadFile: Failed" );
+            else
+                Console.WriteLine( DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + "PHP UploadFile: Success" );
 
-            //Console.WriteLine( $"Done - press any key..." );
-            //Console.ReadKey();
+            // Probeer het voor de /httpdocs directory
+            Console.WriteLine( DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + "Upload File values: localfile: UploadTestforCloud86.txt" );
+            Console.WriteLine( DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + "Upload File values: remotefile: UploadTestforCloud86.txt" );
 
-            //int[] Frequencies = { 1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30, 60 };
+            if ( !await clientPhp.UploadAsync( localfile: "UploadTestforCloud86.txt", remotefile: "UploadTestforCloud86.txt" ) )
+                Console.WriteLine( DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + "PHP UploadFile: Failed" );
+            else
+                Console.WriteLine( DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + "PHP UploadFile: Success" );
 
-            //foreach(int a in Frequencies)
-            //{
-            //    int b = 10;
-            //    Console.WriteLine( $"{b} % {a} = {b % a}" );
-            //}
-
-            using ( System.Drawing.Graphics graphics = System.Drawing.Graphics.FromImage( new Bitmap( 1, 1 ) ) )
-            {
-                SizeF size = graphics.MeasureString( "Hello World", new Font( "Segoe UI", 11, FontStyle.Regular, GraphicsUnit.Pixel ) );
-                Console.WriteLine( $"Hello World measures {size}" );
-            }
-
-            Console.ReadLine();
             return;
         }
     }

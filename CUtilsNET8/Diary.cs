@@ -31,7 +31,6 @@
  */
 
 using System.Collections.Generic;
-using System.Data;
 using System;
 using Microsoft.Data.Sqlite;
 using System.IO;
@@ -49,8 +48,8 @@ namespace CumulusUtils
 
     public class Diary
     {
-        CuSupport Sup;
-        List<DiaryValue> DiaryValues;
+        readonly CuSupport Sup;
+        readonly List<DiaryValue> DiaryValues;
 
         public Diary( CuSupport s )
         {
@@ -94,8 +93,14 @@ namespace CumulusUtils
         {
             List<DiaryValue> tmpList = new();
 
+            //string DataSource = Sup.GetUtilsIniValue( "Diary", "DataSource", "data/diary.db" );
+            //string Mode = Sup.GetUtilsIniValue( "Diary", "Mode", "ReadOnly" );
+
+            //Sup.LogTraceInfoMessage( $"Generating Diary connectionstring - DataSource={DataSource}; Mode={Mode};" );
+
             try
             {
+                //using ( SqliteConnection thisConnection = new( $"DataSource={DataSource}; Mode={Mode};" ) )
                 using ( SqliteConnection thisConnection = new( $"DataSource=data/diary.db; Mode=ReadOnly;" ) )
                 {
                     thisConnection.Open();
@@ -103,7 +108,7 @@ namespace CumulusUtils
                     SqliteCommand command = thisConnection.CreateCommand();
                     command.CommandText = @"SELECT * FROM DiaryData";
 
-                    using ( IDataReader reader = command.ExecuteReader() )
+                    using ( SqliteDataReader reader = command.ExecuteReader() )
                     {
                         int OrdinalTimestamp = reader.GetOrdinal( "Timestamp" );
                         int OrdinalEntry = reader.GetOrdinal( "entry" );

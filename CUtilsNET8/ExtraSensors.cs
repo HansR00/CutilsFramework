@@ -285,13 +285,6 @@ namespace CumulusUtils
                         sb.AppendLine( $"    $('#ajxUserTemp{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
                         sb.AppendLine( "  }" );
                         break;
-                    case (int) ExtraSensorType.LeafTemp:
-                        sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
-                        sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                        sb.AppendLine( $"    $('#ajxLeafTemp{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {Sup.StationTemp.Text()}');" );
-                        sb.AppendLine( $"    $('#ajxLeafTemp{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
-                        sb.AppendLine( "  }" );
-                        break;
                     case (int) ExtraSensorType.LeafWetness:
                         sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
                         sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
@@ -745,9 +738,6 @@ namespace CumulusUtils
                         case (int) ExtraSensorType.UserTemp:
                             sb.Append( $"<#UserTemp{tmp.SensorIndex} rc=y> " );
                             break;
-                        case (int) ExtraSensorType.LeafTemp:
-                            sb.Append( $"<#LeafTemp{tmp.SensorIndex} rc=y> " );
-                            break;
                         case (int) ExtraSensorType.LeafWetness:
                             sb.Append( $"<#LeafWetness{tmp.SensorIndex} rc=y> " );
                             break;
@@ -859,18 +849,8 @@ namespace CumulusUtils
                 registerSensor( thisSensor, i, ExtraSensorType.UserTemp );
             }
 
-            // Extra Leaf Temperature sensors
-            PlotvarStartindex += 8;
-            ActiveSensors = GetActiveSensors( "LeafTemp" );
-
-            foreach ( int i in ActiveSensors )
-            {
-                thisSensor = Sup.GetStringsIniValue( "LeafTempCaptions", $"Sensor{i}", "" );
-                registerSensor( thisSensor, i, ExtraSensorType.LeafTemp );
-            }
-
             // Extra Leaf Wetness sensors
-            PlotvarStartindex += 4;
+            PlotvarStartindex += 8;
             ActiveSensors = GetActiveSensors( "LeafWetness" );
 
             foreach ( int i in ActiveSensors )

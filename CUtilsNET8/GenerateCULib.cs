@@ -429,13 +429,13 @@ namespace CumulusUtils
                           "  }" +
                           $"  if (oldobs[{(int) RealtimeFields.SolarRad}] != realtime[{(int) RealtimeFields.SolarRad}]) {{" +
                           $"    oldobs[{(int) RealtimeFields.SolarRad}] = realtime[{(int) RealtimeFields.SolarRad}];" +
-                          $"    tmp = realtime[{(int) RealtimeFields.SolarRad}] + '&nbsp;W/m2';" +
+                          $"    tmp = realtime[{(int) RealtimeFields.SolarRad}] + '&nbsp;W/m²';" +
                           $"    $('#ajxCurSolar').html(tmp);" +
                           $"    $('#ajxCurSolar').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
                           "  }" +
                           $"  if (oldobs[{(int) RealtimeFields.CurrentSolarMax}] != realtime[{(int) RealtimeFields.CurrentSolarMax}]) {{" +
                           $"    oldobs[{(int) RealtimeFields.CurrentSolarMax}] = realtime[{(int) RealtimeFields.CurrentSolarMax}];" +
-                          $"    tmp = realtime[{(int) RealtimeFields.CurrentSolarMax}] + '&nbsp;W/m2';" +
+                          $"    tmp = realtime[{(int) RealtimeFields.CurrentSolarMax}] + '&nbsp;W/m²';" +
                           $"    $('#ajxCurSolarMax').html(tmp);" +
                           $"    $('#ajxCurSolarMax').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" +
                           "  }" +

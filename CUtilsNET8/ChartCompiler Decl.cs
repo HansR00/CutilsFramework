@@ -30,6 +30,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CumulusUtils
 {
@@ -39,7 +40,7 @@ namespace CumulusUtils
     public enum AxisType
     {
         None = 0, Temp = 1, Pressure = 2, Rain = 4, Rrate = 8, Wind = 16, Direction = 32, Humidity = 64, Solar = 128, UV = 256, Hours = 512,
-        Distance = 1024, Height = 2048, DegreeDays = 4096, EVT = 8192, Free = 16384, AQ = 32768, ppm = 65536
+        Distance = 1024, Height = 2048, DegreeDays = 4096, EVT = 8192, Free = 16384, AQ = 32768, ppm = 65536, SoilMoisture = 131072
     };
     public enum PlotvarRangeType { Recent, Extra, Daily, All };
 
@@ -137,11 +138,10 @@ namespace CumulusUtils
             AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,
             AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,
             AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,
-            AxisType.Free,AxisType.Free,AxisType.Free,AxisType.Free,AxisType.Free,AxisType.Free,AxisType.Free,AxisType.Free,AxisType.Free,AxisType.Free,AxisType.Free,AxisType.Free,AxisType.Free,AxisType.Free,AxisType.Free,AxisType.Free,
+            AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,
             AxisType.AQ,AxisType.AQ,AxisType.AQ,AxisType.AQ,
             AxisType.AQ,AxisType.AQ,AxisType.AQ,AxisType.AQ,
             AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,
-            AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,
             AxisType.Free,AxisType.Free,AxisType.Free,AxisType.Free,AxisType.Free,AxisType.Free,AxisType.Free,AxisType.Free,
             AxisType.ppm,AxisType.ppm,AxisType.AQ,AxisType.AQ,AxisType.AQ,AxisType.AQ,AxisType.Temp,AxisType.Humidity,
             AxisType.Free
@@ -178,7 +178,6 @@ namespace CumulusUtils
             "AirQuality1","AirQuality2","AirQuality3","AirQuality4",
             "AirQualityAvg1","AirQualityAvg2","AirQualityAvg3","AirQualityAvg4",
             "UserTemp1","UserTemp2","UserTemp3","UserTemp4","UserTemp5","UserTemp6","UserTemp7","UserTemp8",
-            "LeafTemp1","LeafTemp2", "LeafTemp3","LeafTemp4",
             "LeafWetness1","LeafWetness2","LeafWetness3","LeafWetness4","LeafWetness5","LeafWetness6","LeafWetness7","LeafWetness8",
             "CO2", "CO2_24h", "CO2_pm2p5", "CO2_pm2p5_24h","CO2_pm10","CO2_pm10_24h","CO2_temp","CO2_hum",
             "Lightning"
@@ -215,7 +214,6 @@ namespace CumulusUtils
             "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
             "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
             "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
-            "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
             "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
             "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
             "extrasensorsdata.json"
@@ -251,7 +249,6 @@ namespace CumulusUtils
             "AirQuality1","AirQuality2","AirQuality3","AirQuality4",
             "AirQualityAvg1","AirQualityAvg2","AirQualityAvg3","AirQualityAvg4",
             "UserTemp1","UserTemp2","UserTemp3","UserTemp4","UserTemp5","UserTemp6","UserTemp7","UserTemp8",
-            "LeafTemp1","LeafTemp2","LeafTemp3","LeafTemp4",
             "LeafWetness1","LeafWetness2","LeafWetness3","LeafWetness4","LeafWetness5","LeafWetness6","LeafWetness7","LeafWetness8",
             "CO2", "CO2_24h", "CO2_pm2p5", "CO2_pm2p5_24h","CO2_pm10","CO2_pm10_24h","CO2_temp","CO2_hum",
             "Lightning"
@@ -271,8 +268,11 @@ namespace CumulusUtils
 
         public readonly string[] PlotvarUnitsRECENT, PlotvarUnitsALL, PlotvarUnitsEXTRA;     // Init in constructor
         public readonly string[] LinetypeKeywords = { "Line", "SpLine", "Area", "Column", "Scatter", "ColumnRange" };
-        public readonly string[] AxisKeywords = { "Temp", "Wind", "Distance", "Height", "Hours", "Solar", "UV", "Rain", "Rrate", "Pressure", "Humidity", "DegreeDays", "EVT", "Free", "AQ", "ppm" };
+        public readonly string[] AxisKeywords = { "Temp", "Wind", "Distance", "Height", "Hours", "Solar", "UV", "Rain", "Rrate", "Pressure", "Humidity", "DegreeDays", "EVT", "Free", "AQ", "ppm", "SoilMoisture" };
         public readonly string[] StatsTypeKeywords = { "SMA" };
+
+        private readonly string[] soilMoistureUnitArray = { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
+        private int soilMoistureUnitArrayIndex;
 
         readonly CuSupport Sup;
         readonly float MaxPressure, MinPressure;
@@ -353,123 +353,50 @@ namespace CumulusUtils
 
             PlotvarUnitsEXTRA = new string[ PlotvarTypesEXTRA.Length ];
             //"Temp1","Temp2","Temp3","Temp4","Temp5","Temp6","Temp7","Temp8","Temp9","Temp10",
-            PlotvarUnitsEXTRA[ 0 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 1 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 2 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 3 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 4 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 5 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 6 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 7 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 8 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 9 ] = Sup.StationTemp.Text();
+            for (int i=0; i<10; i++ )
+                PlotvarUnitsEXTRA[ 0 + i] = Sup.StationTemp.Text();
 
             //"Humidity1","Humidity2","Humidity3","Humidity4","Humidity5","Humidity6","Humidity7","Humidity8","Humidity9","Humidity10",
-            PlotvarUnitsEXTRA[ 10 ] = "%";
-            PlotvarUnitsEXTRA[ 11 ] = "%";
-            PlotvarUnitsEXTRA[ 12 ] = "%";
-            PlotvarUnitsEXTRA[ 13 ] = "%";
-            PlotvarUnitsEXTRA[ 14 ] = "%";
-            PlotvarUnitsEXTRA[ 15 ] = "%";
-            PlotvarUnitsEXTRA[ 16 ] = "%";
-            PlotvarUnitsEXTRA[ 17 ] = "%";
-            PlotvarUnitsEXTRA[ 18 ] = "%";
-            PlotvarUnitsEXTRA[ 19 ] = "%";
+            for ( int i=0; i < 10; i++ )
+                PlotvarUnitsEXTRA[ 10 + i ] = "%";
 
             //"Dewpoint1","Dewpoint2","Dewpoint3","Dewpoint4","Dewpoint5","Dewpoint6","Dewpoint7","Dewpoint8","Dewpoint9","Dewpoint10",
-            PlotvarUnitsEXTRA[ 20 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 21 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 22 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 23 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 24 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 25 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 26 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 27 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 28 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 29 ] = Sup.StationTemp.Text();
+            for ( int i=0; i < 10; i++ )
+                PlotvarUnitsEXTRA[ 20 + i ] = Sup.StationTemp.Text();
 
             //"SoilTemp1","SoilTemp2","SoilTemp3","SoilTemp4","SoilTemp5","SoilTemp6","SoilTemp7","SoilTemp8","SoilTemp9","SoilTemp10","SoilTemp11","SoilTemp12","SoilTemp13","SoilTemp14","SoilTemp15","SoilTemp16",
-            PlotvarUnitsEXTRA[ 30 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 31 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 32 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 33 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 34 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 35 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 36 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 37 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 38 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 39 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 40 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 41 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 42 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 43 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 44 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 45 ] = Sup.StationTemp.Text();
+            for ( int i=0; i < 16; i++ )
+                PlotvarUnitsEXTRA[ 30 + i ] = Sup.StationTemp.Text();
+
+            GetSoilMoistureUnitArray();
 
             //"SoilMoisture1","SoilMoisture2","SoilMoisture3","SoilMoisture4","SoilMoisture5","SoilMoisture6","SoilMoisture7","SoilMoisture8","SoilMoisture9","SoilMoisture10","SoilMoisture11","SoilMoisture12","SoilMoisture13","SoilMoisture14","SoilMoisture15","SoilMoisture16",
-            PlotvarUnitsEXTRA[ 46 ] = "%";
-            PlotvarUnitsEXTRA[ 47 ] = "%";
-            PlotvarUnitsEXTRA[ 48 ] = "%";
-            PlotvarUnitsEXTRA[ 49 ] = "%";
-            PlotvarUnitsEXTRA[ 50 ] = "%";
-            PlotvarUnitsEXTRA[ 51 ] = "%";
-            PlotvarUnitsEXTRA[ 52 ] = "%";
-            PlotvarUnitsEXTRA[ 53 ] = "%";
-            PlotvarUnitsEXTRA[ 54 ] = "%";
-            PlotvarUnitsEXTRA[ 55 ] = "%";
-            PlotvarUnitsEXTRA[ 56 ] = "%";
-            PlotvarUnitsEXTRA[ 57 ] = "%";
-            PlotvarUnitsEXTRA[ 58 ] = "%";
-            PlotvarUnitsEXTRA[ 59 ] = "%";
-            PlotvarUnitsEXTRA[ 60 ] = "%";
-            PlotvarUnitsEXTRA[ 61 ] = "%";
+            for (int i = 0; i<16; i++ )
+                PlotvarUnitsEXTRA[ 46 + i ] = soilMoistureUnitArray[ 0 + i ];
 
             //"AirQuality1","AirQuality2","AirQuality3","AirQuality4",
             //"AirQualityAvg1","AirQualityAvg2","AirQualityAvg3","AirQualityAvg4",
-            PlotvarUnitsEXTRA[ 62 ] = "μg/m3";
-            PlotvarUnitsEXTRA[ 63 ] = "μg/m3";
-            PlotvarUnitsEXTRA[ 64 ] = "μg/m3";
-            PlotvarUnitsEXTRA[ 65 ] = "μg/m3";
-            PlotvarUnitsEXTRA[ 66 ] = "μg/m3";
-            PlotvarUnitsEXTRA[ 67 ] = "μg/m3";
-            PlotvarUnitsEXTRA[ 68 ] = "μg/m3";
-            PlotvarUnitsEXTRA[ 69 ] = "μg/m3";
+            for ( int i = 0; i < 8; i++ )
+                PlotvarUnitsEXTRA[ 62 + i ] = "μg/m3";
 
             //"UserTemp1","UserTemp2","UserTemp3","UserTemp4","UserTemp5","UserTemp6","UserTemp7","UserTemp8",
-            PlotvarUnitsEXTRA[ 70 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 71 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 72 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 73 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 74 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 75 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 76 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 77 ] = Sup.StationTemp.Text();
-
-            //"LeafTemp1","LeafTemp2","LeafTemp3","LeafTemp4",
-            PlotvarUnitsEXTRA[ 78 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 79 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 80 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 81 ] = Sup.StationTemp.Text();
+            for ( int i = 0; i < 8; i++ )
+                PlotvarUnitsEXTRA[ 70 + i ] = Sup.StationTemp.Text();
 
             //"LeafWetness1","LeafWetness2","LeafWetness3","LeafWetness4","LeafWetness5","LeafWetness6","LeafWetness7","LeafWetness8",
-            PlotvarUnitsEXTRA[ 82 ] = "";
-            PlotvarUnitsEXTRA[ 83 ] = "";
-            PlotvarUnitsEXTRA[ 84 ] = "";
-            PlotvarUnitsEXTRA[ 85 ] = "";
-            PlotvarUnitsEXTRA[ 86 ] = "";
-            PlotvarUnitsEXTRA[ 87 ] = "";
-            PlotvarUnitsEXTRA[ 88 ] = "";
-            PlotvarUnitsEXTRA[ 89 ] = "";
+            for ( int i=0; i < 8; i++ )
+                PlotvarUnitsEXTRA[ 78 + i ] = "";
 
             //"CO2", "CO2_24h", "CO2_pm2p5", "CO2_pm2p5_24h","CO2_pm10","CO2_pm10_24h","CO2_temp","CO2_hum",
-            PlotvarUnitsEXTRA[ 90 ] = CO2conc.Text();
-            PlotvarUnitsEXTRA[ 91 ] = CO2conc.Text();
-            PlotvarUnitsEXTRA[ 92 ] = PMconc.Text();
-            PlotvarUnitsEXTRA[ 93 ] = PMconc.Text();
-            PlotvarUnitsEXTRA[ 94 ] = PMconc.Text();
-            PlotvarUnitsEXTRA[ 95 ] = PMconc.Text();
-            PlotvarUnitsEXTRA[ 96 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 97 ] = "%";
+            PlotvarUnitsEXTRA[ 86 ] = CO2conc.Text();
+            PlotvarUnitsEXTRA[ 87 ] = CO2conc.Text();
+            PlotvarUnitsEXTRA[ 88 ] = PMconc.Text();
+            PlotvarUnitsEXTRA[ 89 ] = PMconc.Text();
+            PlotvarUnitsEXTRA[ 90 ] = PMconc.Text();
+            PlotvarUnitsEXTRA[ 91 ] = PMconc.Text();
+            PlotvarUnitsEXTRA[ 92 ] = Sup.StationTemp.Text();
+            PlotvarUnitsEXTRA[ 93 ] = "%";
+            PlotvarUnitsEXTRA[ 94 ] = "count";
 
             //"Lightning"
 
@@ -624,6 +551,33 @@ namespace CumulusUtils
             Estimation = (int) ( SolarConstant * Gamma * EarthSunDist * ExponentialComponent ) + 50;
 
             return Estimation;
+        }
+
+        private void GetSoilMoistureUnitArray()
+        {
+            const string SoilMoisture = "\"soilmoisture\":{\"units\":[";
+            string tmp;
+
+            CmxIPC thisCmxIPC = new CmxIPC( CUtils.Sup, CUtils.Isup );
+
+            Task<string> AsyncTask = thisCmxIPC.GetCMXGraphdataAsync( "graphconfig.json" );
+            AsyncTask.Wait();
+            tmp = AsyncTask.Result;
+
+            if ( tmp.Length < 1 ) return; // No string returned, CMX probably not running
+
+            soilMoistureUnitArrayIndex = tmp.IndexOf( SoilMoisture ) + SoilMoisture.Length;
+
+            int i = 0;
+            int a = soilMoistureUnitArrayIndex;
+
+            for ( ; tmp[ a ] != ']'; a++ )
+            {
+                while ( tmp[ a ] != '"' && tmp[ a ] != ',' )
+                    soilMoistureUnitArray[ i ] += tmp[ a++ ];
+
+                if ( tmp[ a ] == ',' ) { i++; soilMoistureUnitArray[ i ] = ""; }
+            }
         }
 
         #endregion

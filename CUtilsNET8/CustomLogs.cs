@@ -1185,7 +1185,11 @@ namespace CumulusUtils
                 PMconc.Text(),
                 Sup.StationTemp.Text(),
                 Sup.StationTemp.Text(),
-                Sup.StationTemp.Text()
+                Sup.StationTemp.Text(),
+                Sup.StationRain.Text(),
+
+                Sup.StationRain.Text()              // 400
+
             };
 
             TagAxis = new AxisType[]
@@ -1629,7 +1633,10 @@ namespace CumulusUtils
                 AxisType.AQ,
                 AxisType.Temp,
                 AxisType.Temp,
-                AxisType.Temp
+                AxisType.Temp,
+                AxisType.Rain,
+
+                AxisType.Rain               // 400
             };
 
             if ( Tagname.Length != TagUnit.Length )
@@ -1920,10 +1927,10 @@ namespace CumulusUtils
             "LightningDistance",
             "LightningStrikesToday",
 
-            "LeafTemp1",                // 200
-            "LeafTemp2",
-            "LeafTemp3",
-            "LeafTemp4",
+            "none1",                // 200  none was occupied by LeafTemp
+            "none1",
+            "none1",
+            "none1",
             "LeafWetness1",
             "LeafWetness2",
             "LeafWetness3",
@@ -2137,7 +2144,10 @@ namespace CumulusUtils
             "CO2_pm4_24h",
             "ByMonthTempAvg",
             "MonthTempAvg",
-            "YearTempAvg"
+            "YearTempAvg",
+            "MonthRainfall",
+
+            "AnnualRainfall"                //400
         };
 
     }

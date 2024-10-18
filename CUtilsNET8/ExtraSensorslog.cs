@@ -49,107 +49,107 @@ namespace CumulusUtils
     {
         public DateTime ThisDate { get; set; }
 
-        public double Temp1 { get; set; }
-        public double Temp2 { get; set; }
-        public double Temp3 { get; set; }
-        public double Temp4 { get; set; }
-        public double Temp5 { get; set; }
-        public double Temp6 { get; set; }
-        public double Temp7 { get; set; }
-        public double Temp8 { get; set; }
-        public double Temp9 { get; set; }
-        public double Temp10 { get; set; }
+        public double? Temp1 { get; set; }
+        public double? Temp2 { get; set; }
+        public double? Temp3 { get; set; }
+        public double? Temp4 { get; set; }
+        public double? Temp5 { get; set; }
+        public double? Temp6 { get; set; }
+        public double? Temp7 { get; set; }
+        public double? Temp8 { get; set; }
+        public double? Temp9 { get; set; }
+        public double? Temp10 { get; set; }
 
-        public double Humidity1 { get; set; }
-        public double Humidity2 { get; set; }
-        public double Humidity3 { get; set; }
-        public double Humidity4 { get; set; }
-        public double Humidity5 { get; set; }
-        public double Humidity6 { get; set; }
-        public double Humidity7 { get; set; }
-        public double Humidity8 { get; set; }
-        public double Humidity9 { get; set; }
-        public double Humidity10 { get; set; }
+        public double? Humidity1 { get; set; }
+        public double? Humidity2 { get; set; }
+        public double? Humidity3 { get; set; }
+        public double? Humidity4 { get; set; }
+        public double? Humidity5 { get; set; }
+        public double? Humidity6 { get; set; }
+        public double? Humidity7 { get; set; }
+        public double? Humidity8 { get; set; }
+        public double? Humidity9 { get; set; }
+        public double? Humidity10 { get; set; }
+    
+        public double? Dewpoint1 { get; set; }
+        public double? Dewpoint2 { get; set; }
+        public double? Dewpoint3 { get; set; }
+        public double? Dewpoint4 { get; set; }
+        public double? Dewpoint5 { get; set; }
+        public double? Dewpoint6 { get; set; }
+        public double? Dewpoint7 { get; set; }
+        public double? Dewpoint8 { get; set; }
+        public double? Dewpoint9 { get; set; }
+        public double? Dewpoint10 { get; set; }
 
-        public double Dewpoint1 { get; set; }
-        public double Dewpoint2 { get; set; }
-        public double Dewpoint3 { get; set; }
-        public double Dewpoint4 { get; set; }
-        public double Dewpoint5 { get; set; }
-        public double Dewpoint6 { get; set; }
-        public double Dewpoint7 { get; set; }
-        public double Dewpoint8 { get; set; }
-        public double Dewpoint9 { get; set; }
-        public double Dewpoint10 { get; set; }
-
-        public double SoilTemp1 { get; set; }
-        public double SoilTemp2 { get; set; }
-        public double SoilTemp3 { get; set; }
-        public double SoilTemp4 { get; set; }
-        public double SoilTemp5 { get; set; }
-        public double SoilTemp6 { get; set; }
-        public double SoilTemp7 { get; set; }
-        public double SoilTemp8 { get; set; }
-        public double SoilTemp9 { get; set; }
-        public double SoilTemp10 { get; set; }
-        public double SoilTemp11 { get; set; }
-        public double SoilTemp12 { get; set; }
-        public double SoilTemp13 { get; set; }
-        public double SoilTemp14 { get; set; }
-        public double SoilTemp15 { get; set; }
-        public double SoilTemp16 { get; set; }
+        public double? SoilTemp1 { get; set; }
+        public double? SoilTemp2 { get; set; }
+        public double? SoilTemp3 { get; set; }
+        public double? SoilTemp4 { get; set; }
+        public double? SoilTemp5 { get; set; }
+        public double? SoilTemp6 { get; set; }
+        public double? SoilTemp7 { get; set; }
+        public double? SoilTemp8 { get; set; }
+        public double? SoilTemp9 { get; set; }
+        public double? SoilTemp10 { get; set; }
+        public double? SoilTemp11 { get; set; }
+        public double? SoilTemp12 { get; set; }
+        public double? SoilTemp13 { get; set; }
+        public double? SoilTemp14 { get; set; }
+        public double? SoilTemp15 { get; set; }
+        public double? SoilTemp16 { get; set; }
 
 
-        public double SoilMoisture1 { get; set; }
-        public double SoilMoisture2 { get; set; }
-        public double SoilMoisture3 { get; set; }
-        public double SoilMoisture4 { get; set; }
-        public double SoilMoisture5 { get; set; }
-        public double SoilMoisture6 { get; set; }
-        public double SoilMoisture7 { get; set; }
-        public double SoilMoisture8 { get; set; }
-        public double SoilMoisture9 { get; set; }
-        public double SoilMoisture10 { get; set; }
-        public double SoilMoisture11 { get; set; }
-        public double SoilMoisture12 { get; set; }
-        public double SoilMoisture13 { get; set; }
-        public double SoilMoisture14 { get; set; }
-        public double SoilMoisture15 { get; set; }
-        public double SoilMoisture16 { get; set; }
+        public double? SoilMoisture1 { get; set; }
+        public double? SoilMoisture2 { get; set; }
+        public double? SoilMoisture3 { get; set; }
+        public double? SoilMoisture4 { get; set; }
+        public double? SoilMoisture5 { get; set; }
+        public double? SoilMoisture6 { get; set; }
+        public double? SoilMoisture7 { get; set; }
+        public double? SoilMoisture8 { get; set; }
+        public double? SoilMoisture9 { get; set; }
+        public double? SoilMoisture10 { get; set; }
+        public double? SoilMoisture11 { get; set; }
+        public double? SoilMoisture12 { get; set; }
+        public double? SoilMoisture13 { get; set; }
+        public double? SoilMoisture14 { get; set; }
+        public double? SoilMoisture15 { get; set; }
+        public double? SoilMoisture16 { get; set; }
 
-        public double LeafTemp1 { get; set; }
-        public double LeafTemp2 { get; set; }
+        public double? LeafTemp1 { get; set; }
+        public double? LeafTemp2 { get; set; }
 
-        public double LeafWetness1 { get; set; }
-        public double LeafWetness2 { get; set; }
+        public double? LeafWetness1 { get; set; }
+        public double? LeafWetness2 { get; set; }
 
-        public double AirQuality1 { get; set; }
-        public double AirQuality2 { get; set; }
-        public double AirQuality3 { get; set; }
-        public double AirQuality4 { get; set; }
+        public double? AirQuality1 { get; set; }
+        public double? AirQuality2 { get; set; }
+        public double? AirQuality3 { get; set; }
+        public double? AirQuality4 { get; set; }
 
-        public double AirQualityAvg1 { get; set; }
-        public double AirQualityAvg2 { get; set; }
-        public double AirQualityAvg3 { get; set; }
-        public double AirQualityAvg4 { get; set; }
+        public double? AirQualityAvg1 { get; set; }
+        public double? AirQualityAvg2 { get; set; }
+        public double? AirQualityAvg3 { get; set; }
+        public double? AirQualityAvg4 { get; set; }
 
-        public double UserTemp1 { get; set; }
-        public double UserTemp2 { get; set; }
-        public double UserTemp3 { get; set; }
-        public double UserTemp4 { get; set; }
-        public double UserTemp5 { get; set; }
-        public double UserTemp6 { get; set; }
-        public double UserTemp7 { get; set; }
-        public double UserTemp8 { get; set; }
+        public double? UserTemp1 { get; set; }
+        public double? UserTemp2 { get; set; }
+        public double? UserTemp3 { get; set; }
+        public double? UserTemp4 { get; set; }
+        public double? UserTemp5 { get; set; }
+        public double? UserTemp6 { get; set; }
+        public double? UserTemp7 { get; set; }
+        public double? UserTemp8 { get; set; }
 
-        public double CO2 { get; set; }
-        public double CO2_24h { get; set; }
-        public double CO2_pm2p5 { get; set; }
-        public double CO2_pm2p5_24h { get; set; }
-        public double CO2_pm10 { get; set; }
-        public double CO2_pm10_24h { get; set; }
-        public double CO2_temp { get; set; }
-        public double CO2_hum { get; set; }
+        public double? CO2 { get; set; }
+        public double? CO2_24h { get; set; }
+        public double? CO2_pm2p5 { get; set; }
+        public double? CO2_pm2p5_24h { get; set; }
+        public double? CO2_pm10 { get; set; }
+        public double? CO2_pm10_24h { get; set; }
+        public double? CO2_temp { get; set; }
+        public double? CO2_hum { get; set; }
 
         public bool Valid { get; set; }
     }
@@ -237,7 +237,6 @@ namespace CumulusUtils
                 File.Copy( Filename, filenameCopy );
 
                 lines = File.ReadAllLines( filenameCopy );
-                //Sup.DetectSeparators( lines[ 0 ] );
 
                 foreach ( string line in lines )
                 {
@@ -302,274 +301,274 @@ namespace CumulusUtils
 
                     // Inside sensor
                     FieldInUse = (int) ExtraSensorslogFieldName.Temp1;
-                    ThisValue.Temp1 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Temp1 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.Temp2;
-                    ThisValue.Temp2 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Temp2 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.Temp3;
-                    ThisValue.Temp3 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Temp3 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.Temp4;
-                    ThisValue.Temp4 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Temp4 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.Temp5;
-                    ThisValue.Temp5 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Temp5 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.Temp6;
-                    ThisValue.Temp6 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Temp6 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.Temp7;
-                    ThisValue.Temp7 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Temp7 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.Temp8;
-                    ThisValue.Temp8 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Temp8 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.Temp9;
-                    ThisValue.Temp9 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Temp9 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.Temp10;
-                    ThisValue.Temp10 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Temp10 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.Humidity1;
-                    ThisValue.Humidity1 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Humidity1 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.Humidity2;
-                    ThisValue.Humidity2 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Humidity2 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.Humidity3;
-                    ThisValue.Humidity3 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Humidity3 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.Humidity4;
-                    ThisValue.Humidity4 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Humidity4 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.Humidity5;
-                    ThisValue.Humidity5 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Humidity5 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.Humidity6;
-                    ThisValue.Humidity6 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Humidity6 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.Humidity7;
-                    ThisValue.Humidity7 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Humidity7 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.Humidity8;
-                    ThisValue.Humidity8 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Humidity8 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.Humidity9;
-                    ThisValue.Humidity9 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Humidity9 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.Humidity10;
-                    ThisValue.Humidity10 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Humidity10 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.DewPoint1;
-                    ThisValue.Dewpoint1 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Dewpoint1 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.DewPoint2;
-                    ThisValue.Dewpoint2 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Dewpoint2 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.DewPoint3;
-                    ThisValue.Dewpoint3 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Dewpoint3 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.DewPoint4;
-                    ThisValue.Dewpoint4 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Dewpoint4 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.DewPoint5;
-                    ThisValue.Dewpoint5 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Dewpoint5 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.DewPoint6;
-                    ThisValue.Dewpoint6 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Dewpoint6 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.DewPoint7;
-                    ThisValue.Dewpoint7 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Dewpoint7 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.DewPoint8;
-                    ThisValue.Dewpoint8 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Dewpoint8 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.DewPoint9;
-                    ThisValue.Dewpoint9 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Dewpoint9 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.DewPoint10;
-                    ThisValue.Dewpoint10 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.Dewpoint10 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilTemp1;
-                    ThisValue.SoilTemp1 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilTemp1 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilTemp2;
-                    ThisValue.SoilTemp2 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilTemp2 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilTemp3;
-                    ThisValue.SoilTemp3 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilTemp3 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilTemp4;
-                    ThisValue.SoilTemp4 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilTemp4 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilTemp5;
-                    ThisValue.SoilTemp5 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilTemp5 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilTemp6;
-                    ThisValue.SoilTemp6 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilTemp6 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilTemp7;
-                    ThisValue.SoilTemp7 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilTemp7 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilTemp8;
-                    ThisValue.SoilTemp8 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilTemp8 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilTemp9;
-                    ThisValue.SoilTemp9 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilTemp9 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilTemp10;
-                    ThisValue.SoilTemp10 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilTemp10 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilTemp11;
-                    ThisValue.SoilTemp11 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilTemp11 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilTemp12;
-                    ThisValue.SoilTemp12 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilTemp12 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilTemp13;
-                    ThisValue.SoilTemp13 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilTemp13 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilTemp14;
-                    ThisValue.SoilTemp14 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilTemp14 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilTemp15;
-                    ThisValue.SoilTemp15 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilTemp15 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilTemp16;
-                    ThisValue.SoilTemp16 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilTemp16 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilMoisture1;
-                    ThisValue.SoilMoisture1 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilMoisture1 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilMoisture2;
-                    ThisValue.SoilMoisture2 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilMoisture2 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilMoisture3;
-                    ThisValue.SoilMoisture3 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilMoisture3 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilMoisture4;
-                    ThisValue.SoilMoisture4 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilMoisture4 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilMoisture5;
-                    ThisValue.SoilMoisture5 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilMoisture5 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilMoisture6;
-                    ThisValue.SoilMoisture6 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilMoisture6 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilMoisture7;
-                    ThisValue.SoilMoisture7 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilMoisture7 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilMoisture8;
-                    ThisValue.SoilMoisture8 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilMoisture8 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilMoisture9;
-                    ThisValue.SoilMoisture9 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilMoisture9 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilMoisture10;
-                    ThisValue.SoilMoisture10 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilMoisture10 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilMoisture11;
-                    ThisValue.SoilMoisture11 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilMoisture11 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilMoisture12;
-                    ThisValue.SoilMoisture12 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilMoisture12 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilMoisture13;
-                    ThisValue.SoilMoisture13 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilMoisture13 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilMoisture14;
-                    ThisValue.SoilMoisture14 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilMoisture14 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilMoisture15;
-                    ThisValue.SoilMoisture15 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilMoisture15 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilMoisture16;
-                    ThisValue.SoilMoisture16 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.SoilMoisture16 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.LeafTemp1;
-                    ThisValue.LeafTemp1 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.LeafTemp1 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.LeafTemp2;
-                    ThisValue.LeafTemp2 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.LeafTemp2 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.LeafWetness1;
-                    ThisValue.LeafWetness1 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.LeafWetness1 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.LeafWetness2;
-                    ThisValue.LeafWetness2 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.LeafWetness2 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.AirQuality1;
-                    ThisValue.AirQuality1 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.AirQuality1 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.AirQuality2;
-                    ThisValue.AirQuality2 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.AirQuality2 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.AirQuality3;
-                    ThisValue.AirQuality3 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.AirQuality3 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.AirQuality4;
-                    ThisValue.AirQuality4 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.AirQuality4 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.AirQualityAvg1;
-                    ThisValue.AirQualityAvg1 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.AirQualityAvg1 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.AirQualityAvg2;
-                    ThisValue.AirQualityAvg2 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.AirQualityAvg2 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.AirQualityAvg3;
-                    ThisValue.AirQualityAvg3 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.AirQualityAvg3 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.AirQualityAvg4;
-                    ThisValue.AirQualityAvg4 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.AirQualityAvg4 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.UserTemp1;
-                    ThisValue.UserTemp1 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.UserTemp1 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.UserTemp2;
-                    ThisValue.UserTemp2 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.UserTemp2 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.UserTemp3;
-                    ThisValue.UserTemp3 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.UserTemp3 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.UserTemp4;
-                    ThisValue.UserTemp4 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.UserTemp4 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.UserTemp5;
-                    ThisValue.UserTemp5 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.UserTemp5 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.UserTemp6;
-                    ThisValue.UserTemp6 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.UserTemp6 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.UserTemp7;
-                    ThisValue.UserTemp7 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.UserTemp7 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.UserTemp8;
-                    ThisValue.UserTemp8 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.UserTemp8 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.CO2;
-                    ThisValue.CO2 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.CO2 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.CO2Avg;
-                    ThisValue.CO2_24h = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.CO2_24h = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.CO2_pm2_5;
-                    ThisValue.CO2_pm2p5 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.CO2_pm2p5 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.CO2_pm2_5_avg;
-                    ThisValue.CO2_pm2p5_24h = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.CO2_pm2p5_24h = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.CO2_pm10;
-                    ThisValue.CO2_pm10 = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.CO2_pm10 = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.CO2_PM10_avg;
-                    ThisValue.CO2_pm10_24h = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.CO2_pm10_24h = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.CO2_Temp;
-                    ThisValue.CO2_temp = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.CO2_temp = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.CO2_Hum;
-                    ThisValue.CO2_hum = Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv );
+                    ThisValue.CO2_hum = lineSplit[ FieldInUse ] != null ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     Sup.LogTraceVerboseMessage( $"ExtraSensorslog: SetValues after adding the values: Original Line {line}" );
                 }
