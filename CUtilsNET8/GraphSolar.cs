@@ -94,7 +94,7 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "GenerateYearSolarHoursStatistics: Starting" );
 
-            for ( int i = YearMin; i <= YearMax; i++ )
+            for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
                 List<DaySolarValues> yearlist = DailySolarValuesList.Where( x => x.ThisDate.Year == i ).ToList();
 
@@ -257,7 +257,7 @@ namespace CumulusUtils
             List<float> minSolarHours = new List<float>();
             List<float> maxSolarHours = new List<float>();
 
-            for ( int i = YearMin; i <= YearMax; i++ )
+            for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
                 List<DaySolarValues> yearMonthlist = DailySolarValuesList.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == (int) thisMonth ).ToList();
 
@@ -420,7 +420,7 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "Generate GenerateYearSolarEnergyStatistics: Starting" );
 
-            for ( int i = YearMin; i <= YearMax; i++ )
+            for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
                 List<DaySolarValues> yearlist = DailySolarValuesList.Where( x => x.ThisDate.Year == i ).ToList();
 
@@ -583,7 +583,7 @@ namespace CumulusUtils
             List<float> minSolarEnergy = new List<float>();
             List<float> maxSolarEnergy = new List<float>();
 
-            for ( int i = YearMin; i <= YearMax; i++ )
+            for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
                 List<DaySolarValues> yearMonthlist = DailySolarValuesList.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == (int) thisMonth ).ToList();
 
@@ -769,6 +769,8 @@ namespace CumulusUtils
 
                 foreach ( MonthfileValue entry in DayList )
                 {
+                    if ( entry.SolarRad == null ) continue;
+
                     if ( ++nextIndex < DayList.Count - 1 )
                     {
                         OldIntervalInMinutes = IntervalInMinutes;
@@ -791,7 +793,7 @@ namespace CumulusUtils
                     // W(interval)/M2, 60 is nr of seconds in the minute, so Energy in Ws
                     // SolarHours is determined in minutes (the total sum of interval minutes, at the end reworked to hours
                     tmp.SolarHours += ( ( (float) entry.SolarRad / entry.SolarTheoreticalMax ) >= SunThreshold ) ? IntervalInMinutes : 0;
-                    tmp.SolarEnergy += entry.SolarRad * IntervalInMinutes * 60;
+                    tmp.SolarEnergy += (float) entry.SolarRad * IntervalInMinutes * 60;
                     tmp.SunUpTimeInMinutes += IntervalInMinutes;
 
                 }

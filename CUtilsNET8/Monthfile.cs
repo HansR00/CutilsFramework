@@ -56,7 +56,7 @@ namespace CumulusUtils
         /*  WindChill               */
         /*  HeatIndex               */
         /*  UVindex                 */
-        public int SolarRad { get; set; }
+        public int? SolarRad { get; set; }
         //-------------------------------------Up to here was 1.8.5
         /*  EVT                     */
         public float Evt { get; set; }
@@ -296,7 +296,7 @@ namespace CumulusUtils
                 ThisValue.CMXLatestGust = Convert.ToSingle( lineSplit[ FieldInUse ], CUtils.Inv );
 
                 FieldInUse = (int) MonthfileFieldName.SolarRad;
-                ThisValue.SolarRad = Convert.ToInt32( lineSplit[ FieldInUse ], CUtils.Inv );
+                ThisValue.SolarRad = !string.IsNullOrEmpty(lineSplit[ FieldInUse ]) ? Convert.ToInt32( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                 FieldInUse = (int) MonthfileFieldName.EVT;
                 ThisValue.Evt = Convert.ToSingle( lineSplit[ FieldInUse ], CUtils.Inv );

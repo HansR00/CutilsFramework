@@ -258,7 +258,7 @@ namespace CumulusUtils
                     NOAARainStationAv[ i - 1 ] = 0;
 
                     // First pass to detect the rain per month per year. Needed for estimating the StdDev
-                    for ( int j = YearMin; j <= YearMax; j++ )
+                    for ( int j = CUtils.YearMin; j <= CUtils.YearMax; j++ )
                     {
                         if ( ThisList.Where( x => x.ThisDate.Month == i ).Where( x => x.ThisDate.Year == j ).Any() )
                             tmp.Add( ThisList.Where( x => x.ThisDate.Month == i ).Where( x => x.ThisDate.Year == j ).Select( x => x.MonthlyRain ).Max() );
@@ -279,7 +279,7 @@ namespace CumulusUtils
 
             //Sup.LogTraceInfoMessage( "GenMonthlyRainvsNOAAGraphData: starting loop over DayfileValues" );
 
-            for ( int i = YearMin; i <= YearMax; i++ )
+            for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
                 MonthlyRainValues = new float[ Enum.GetNames( typeof( Months ) ).Length ];
                 YearValues.Add( MonthlyRainValues );
@@ -457,7 +457,7 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "Generate GenerateYearRainStatistics Start" );
 
-            for ( int i = YearMin; i <= YearMax; i++ )
+            for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
                 List<DayfileValue> yearlist = Thislist.Where( x => x.ThisDate.Year == i ).ToList();
 
@@ -612,7 +612,7 @@ namespace CumulusUtils
 
             //Sup.LogDebugMessage( "GenerateYearMonthRainStatistics : starting" );
 
-            for ( int i = YearMin; i <= YearMax; i++ )
+            for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
                 List<DayfileValue> yearmonthlist = Thislist.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == (int) thisMonth ).ToList();
 

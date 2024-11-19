@@ -169,7 +169,7 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "GenMonthlyEVTGraphData : starting" );
 
-            for ( int i = YearMin; i <= YearMax; i++ )
+            for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
                 MonthlyEVTValues = new float[ Enum.GetNames( typeof( Months ) ).Length ];
                 YearValues.Add( MonthlyEVTValues );
@@ -342,7 +342,7 @@ namespace CumulusUtils
             StringBuilder ma = new StringBuilder( "" );
             thisBuffer.AppendLine( "series: [" );
 
-            for ( int year = YearMin; year <= YearMax; year++ )
+            for ( int year = CUtils.YearMin; year <= CUtils.YearMax; year++ )
             {
                 // Make sure we have data for the first day of the growing season :
                 // 1 january on Northern Hemisphere, 1 july on southern hemisphere
@@ -370,10 +370,10 @@ namespace CumulusUtils
                 ma.AppendLine( "{    type: 'spline'," );
                 ma.AppendLine( $"    name: '{year}'," );
 
-                if ( YearMax - year + 1 <= maxNrOfSeriesVisibleInGraph ) { ma.AppendLine( "    visible: true," ); }
+                if ( CUtils.YearMax - year + 1 <= maxNrOfSeriesVisibleInGraph ) { ma.AppendLine( "    visible: true," ); }
                 else { ma.AppendLine( "    visible: false," ); }
 
-                ma.AppendLine( $"    zIndex:{year - YearMin + 1}," );
+                ma.AppendLine( $"    zIndex:{year - CUtils.YearMin + 1}," );
                 ma.AppendLine( "    data: [" );
 
                 if ( yearList.Any() )
@@ -473,7 +473,7 @@ namespace CumulusUtils
             StringBuilder ma = new StringBuilder( "" );
             thisBuffer.AppendLine( "series: [" );
 
-            for ( int year = YearMin; year <= YearMax; year++ )
+            for ( int year = CUtils.YearMin; year <= CUtils.YearMax; year++ )
             {
                 // Make sure we have data for the first day of the growing season :
                 // 1 january on Northern Hemisphere, 1 july on southern hemisphere
@@ -501,10 +501,10 @@ namespace CumulusUtils
                 ma.AppendLine( "{    type: 'spline'," );
                 ma.AppendLine( $"    name: '{year}'," );
 
-                if ( YearMax - year + 1 <= maxNrOfSeriesVisibleInGraph ) { ma.AppendLine( "    visible: true," ); }
+                if ( CUtils.YearMax - year + 1 <= maxNrOfSeriesVisibleInGraph ) { ma.AppendLine( "    visible: true," ); }
                 else { ma.AppendLine( "    visible: false," ); }
 
-                ma.AppendLine( $"    zIndex:{year - YearMin + 1}," );
+                ma.AppendLine( $"    zIndex:{year - CUtils.YearMin + 1}," );
                 ma.AppendLine( "    data: [" );
 
                 if ( yearList.Any() )
@@ -574,7 +574,7 @@ namespace CumulusUtils
             Sup.LogTraceInfoMessage( $"YearlySeasons : WinterToSpringTemperatureLimit = {WinterToSpringTemperatureLimit}" );
             Sup.LogTraceInfoMessage( $"YearlySeasons : SpringToSummerTemperatureLimit = {SpringToSummerTemperatureLimit}" );
 
-            for ( int year = YearMin; year <= YearMax; year++ )
+            for ( int year = CUtils.YearMin; year <= CUtils.YearMax; year++ )
             {
                 // Make sure we have data for the first day of the growing season :
                 // 1 january on Northern Hemisphere, 1 july on southern hemisphere

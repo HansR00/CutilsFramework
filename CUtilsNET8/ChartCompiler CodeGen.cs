@@ -418,7 +418,7 @@ namespace CumulusUtils
                             AddSeriesJavascript.AppendLine( $"for(var i=0; i<{thisPlotvar.Keyword}.length; i++) {{" +
                                 $"{pvSuffix}RangeMinMax.push([{thisPlotvar.Keyword}[i][0],min{pvSuffix}[i][1], max{pvSuffix}[i][1]]) }}" );
                         }
-                        else if ( thisPlotvar.Equation != null ) // | Must be done for all variables
+                        else if ( thisPlotvar.Equation is not null ) // | Must be done for all variables
                         {
                             string sumExpr = "";
 
@@ -481,7 +481,7 @@ namespace CumulusUtils
                             AddSeriesJavascript.AppendLine( $"    id:'{pvSuffix}range'," );
                             AddSeriesJavascript.AppendLine( $"    data: {pvSuffix}RangeMinMax," );
                         }
-                        else if ( thisPlotvar.Equation != null )
+                        else if ( thisPlotvar.Equation is not null )
                         {
                             AddSeriesJavascript.AppendLine( $"    name:'{Sup.GetCUstringValue( "Compiler", thisPlotvar.Keyword, thisPlotvar.Keyword, true )}'," );
                             AddSeriesJavascript.AppendLine( $"    id:'{thisPlotvar.Keyword}'," );

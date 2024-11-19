@@ -145,7 +145,7 @@ namespace CumulusUtils
             {
                 tmp = Term( Exp, ref i, ref EquationSubstitution );
 
-                if ( tmp != null )
+                if ( tmp is not null )
                 {
                     while ( i < Exp.Length && Array.Exists( Operators, word => word.Equals( Exp[ i ] ) ) )
                     {
@@ -160,7 +160,7 @@ namespace CumulusUtils
 
                         tmp1 = Term( Exp, ref i, ref EquationSubstitution );
 
-                        if ( tmp1 != null )
+                        if ( tmp1 is not null )
                             tmp += tmp1;
                         else
                         {
@@ -222,7 +222,7 @@ namespace CumulusUtils
 
                         tmpTerm = Expression( subExpArr, ref EquationSubstitution, false );
 
-                        if ( tmpTerm != null )
+                        if ( tmpTerm is not null )
                             tmp += "(" + tmpTerm + ")";
                         else
                         {
@@ -264,7 +264,7 @@ namespace CumulusUtils
                                 bool commaPermitted = "pow".Equals( tmpWord, CUtils.Cmp ) || "max".Equals( tmpWord, CUtils.Cmp ) || "min".Equals( tmpWord, CUtils.Cmp );
                                 tmpTerm = Expression( subExpArr, ref EquationSubstitution, commaPermitted );
 
-                                if ( tmpTerm != null )
+                                if ( tmpTerm is not null )
                                     tmp += "(" + tmpTerm + ")";
                                 else
                                 {

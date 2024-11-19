@@ -62,7 +62,7 @@ namespace CumulusUtils
             GraphRAINvsEVT,
             GraphAverageClash;
 
-        private enum Months : int { Jan = 1, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec };
+        //private enum Months : int { Jan = 1, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec };
 
         // Is this one really necessary???
         private readonly string[] m = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };  //Culture independent, just strings to compare in the menu
@@ -94,8 +94,8 @@ namespace CumulusUtils
         private float NOAARainNormYearAv = 0.0F;
         private float StationRainYearAv = 0.0F;
         private float MaxYearlyRainAlltime = 0.0F;
-        private readonly int YearMax;
-        private readonly int YearMin;
+        //private readonly int YearMax;
+        //private readonly int YearMin;
         private readonly bool SplitHeatmapPages;
         private readonly int HeatmapNrOfYearsPerPage;
 
@@ -166,8 +166,8 @@ namespace CumulusUtils
 
             #region Chart global values init
 
-            YearMax = thisList.Select( x => x.ThisDate.Year ).Max();
-            YearMin = thisList.Select( x => x.ThisDate.Year ).Min();
+            CUtils.YearMax = thisList.Select( x => x.ThisDate.Year ).Max();
+            CUtils.YearMin = thisList.Select( x => x.ThisDate.Year ).Min();
             maxTemp = thisList.Select( x => x.MaxTemp ).Max();
             minTemp = thisList.Select( x => x.MinTemp ).Min();
             maxRain = thisList.Select( x => x.TotalRainThisDay ).Max();
@@ -177,7 +177,7 @@ namespace CumulusUtils
             GenerateNOAAparameters( thisList );
 
             HeatmapNrOfYearsPerPage = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "HeatmapNumberOfYearsPerPage", "10" ), CUtils.Inv );
-            SplitHeatmapPages = ( YearMax - YearMin + 1 ) > HeatmapNrOfYearsPerPage;
+            SplitHeatmapPages = ( CUtils.YearMax - CUtils.YearMin + 1 ) > HeatmapNrOfYearsPerPage;
 
             // For windrose
             NrOfCompassSectors = Convert.ToInt32( Sup.GetCumulusIniValue( "Display", "NumWindRosePoints", "" ), CUtils.Inv );
@@ -600,7 +600,7 @@ namespace CumulusUtils
                         thisBuffer.AppendLine( "function HeatmapPrev() {" );
                         thisBuffer.AppendLine( "  let minValue = thisHeatmap.yAxis[0].min;" );
 
-                        thisBuffer.AppendLine( $"  if (minValue - {HeatmapNrOfYearsPerPage} <= {YearMin}) minValue = {YearMin};" );
+                        thisBuffer.AppendLine( $"  if (minValue - {HeatmapNrOfYearsPerPage} <= {CUtils.YearMin}) minValue = {CUtils.YearMin};" );
                         thisBuffer.AppendLine( $"  else minValue -= {HeatmapNrOfYearsPerPage};" );
                         thisBuffer.AppendLine( $"  let maxValue = minValue + {HeatmapNrOfYearsPerPage};" );
 
@@ -608,13 +608,13 @@ namespace CumulusUtils
                         thisBuffer.AppendLine( "}\n" );
 
                         thisBuffer.AppendLine( "function HeatmapAll() {" );
-                        thisBuffer.AppendLine( $"   thisHeatmap.yAxis[0].update({{min: {YearMin} - 0.5, max: {YearMax} + 0.5}}, true);" );
+                        thisBuffer.AppendLine( $"   thisHeatmap.yAxis[0].update({{min: {CUtils.YearMin} - 0.5, max: {CUtils.YearMax} + 0.5}}, true);" );
                         thisBuffer.AppendLine( "}\n" );
 
                         thisBuffer.AppendLine( "function HeatmapNext() {" );
                         thisBuffer.AppendLine( "  let maxValue = thisHeatmap.yAxis[0].max;" );
 
-                        thisBuffer.AppendLine( $"  if (maxValue + {HeatmapNrOfYearsPerPage} >= {YearMax}) maxValue = {YearMax};" );
+                        thisBuffer.AppendLine( $"  if (maxValue + {HeatmapNrOfYearsPerPage} >= {CUtils.YearMax}) maxValue = {CUtils.YearMax};" );
                         thisBuffer.AppendLine( $"  else maxValue += {HeatmapNrOfYearsPerPage};" );
                         thisBuffer.AppendLine( $"  let minValue = maxValue - {HeatmapNrOfYearsPerPage};" );
 
@@ -796,7 +796,7 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "</script>" );
                     thisBuffer.AppendLine( GenerateChartInfoModal( chartId: "WindRun", Title: Sup.GetCUstringValue( "Graphs", "WindRunTitle", "Wind Run", true ) ) );
 
-                    for ( int i = YearMin; i <= YearMax; i++ )
+                    for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
                     {
                         thisBuffer.AppendLine( "<script>" );
                         thisBuffer.AppendLine( $"function graph{i}()" );
@@ -1318,7 +1318,7 @@ namespace CumulusUtils
 
                 StationAverage = true;
 
-                for ( int i = YearMin; i <= YearMax; i++ )
+                for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
                 {
                     if ( ThisList.Where( x => x.ThisDate.Year == i ).Count() < 350 /* Cal.GetDaysInYear(i) */ )
                     {
@@ -1337,7 +1337,7 @@ namespace CumulusUtils
             }
 
             //  Now get the highest year rainfall ever
-            for ( int i = YearMin; i <= YearMax; i++ )
+            for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
                 MaxYearlyRainAlltime = Math.Max( ThisList.Where( x => x.ThisDate.Year == i ).Select( x => x.TotalRainThisDay ).Sum(), MaxYearlyRainAlltime );
 
 

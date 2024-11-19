@@ -40,7 +40,7 @@ namespace CumulusUtils
     public class CuSupport : IDisposable
     {
         // Is it a version number beta shown at users?
-        const string beta = "beta 2";
+        const string beta = "beta 4";
 
         #region declarations
         public Wind StationWind { get; set; }
@@ -317,7 +317,7 @@ namespace CumulusUtils
 
         public void SetCUstringValue( string section, string key, string def ) => CUstringIni.SetValue( section, key, def );
 
-        private void EndMyIniFile() { if ( MyIni != null ) { MyIni.Flush(); MyIni.Refresh(); } if ( CUstringIni != null ) { CUstringIni.Flush(); CUstringIni.Refresh(); } }
+        private void EndMyIniFile() { if ( MyIni is not null ) { MyIni.Flush(); MyIni.Refresh(); } if ( CUstringIni is not null ) { CUstringIni.Flush(); CUstringIni.Refresh(); } }
 
         #endregion
 

@@ -44,13 +44,13 @@ namespace CumulusUtils
 
         public void GenerateNOAATxtfile( List<DayfileValue> Thislist )
         {
-            int YearMax = Thislist.Select( x => x.ThisDate.Year ).Max();
-            int YearMin = Thislist.Select( x => x.ThisDate.Year ).Min();
+            //int YearMax = Thislist.Select( x => x.ThisDate.Year ).Max();
+            //int YearMin = Thislist.Select( x => x.ThisDate.Year ).Min();
 
             // Produce the arrays for the months without data. Required for the selection  generation in javascript later on
-            List<DayfileValue> yearlist = Thislist.Where( x => x.ThisDate.Year == YearMin ).ToList();
+            List<DayfileValue> yearlist = Thislist.Where( x => x.ThisDate.Year == CUtils.YearMin ).ToList();
             MonthsNotPresentYearMin = tmpIntArray.Except( yearlist.Select( x => x.ThisDate.Month ).Distinct() ).ToArray();
-            yearlist = Thislist.Where( x => x.ThisDate.Year == YearMax ).ToList();
+            yearlist = Thislist.Where( x => x.ThisDate.Year == CUtils.YearMax ).ToList();
             MonthsNotPresentYearMax = tmpIntArray.Except( yearlist.Select( x => x.ThisDate.Month ).Distinct() ).ToArray();
             MonthsNotPresentAllYears = tmpIntArray.Except( Thislist.Select( x => x.ThisDate.Month ).Distinct() ).ToArray();
 
@@ -72,9 +72,9 @@ namespace CumulusUtils
 
                 of.WriteLine( "  $('#month').change(function() {" );
                 of.WriteLine( "    if ( $(this).val() != '' ) { " );
-                of.WriteLine( $"      filename = '{Sup.GetUtilsIniValue( "NOAA", "FTPDirectory", "./reports/" )}' + 'NOAAMO' + $(this).val() + $('#year').val().slice(2,4) + '.txt';" );
+                of.WriteLine( $"      filename = '{Sup.GetUtilsIniValue( "NOAA", "FTPDirectory", "./Reports/" )}' + 'NOAAMO' + $(this).val() + $('#year').val().slice(2,4) + '.txt';" );
                 of.WriteLine( "    } else {" );
-                of.WriteLine( $"       filename = '{Sup.GetUtilsIniValue( "NOAA", "FTPDirectory", "./reports/" )}' + 'NOAAYR' + $('#year').val() + '.txt';" );
+                of.WriteLine( $"       filename = '{Sup.GetUtilsIniValue( "NOAA", "FTPDirectory", "./Reports/" )}' + 'NOAAYR' + $('#year').val() + '.txt';" );
                 of.WriteLine( "    }" );
 #if !RELEASE
                 of.WriteLine( "    console.log('Filename: ' + filename);" );
@@ -167,7 +167,7 @@ namespace CumulusUtils
 
                 // Write the disabled months for YearMin
                 tmp = "";
-                of.WriteLine( $"  }} else if ( tmpValue == {YearMin}) {{" );
+                of.WriteLine( $"  }} else if ( tmpValue == {CUtils.YearMin}) {{" );
                 for ( int i = 0; i < MonthsNotPresentYearMin.Length; i++ )
                     tmp += $"#{MonthsNotPresentYearMin[ i ]:D2}, ";
                 if ( !string.IsNullOrEmpty( tmp ) )
@@ -178,7 +178,7 @@ namespace CumulusUtils
 
                 // Write the disablked months for YearMax
                 tmp = "";
-                of.WriteLine( $"  }} else if ( tmpValue == {YearMax}) {{" );
+                of.WriteLine( $"  }} else if ( tmpValue == {CUtils.YearMax}) {{" );
                 for ( int i = 0; i < MonthsNotPresentYearMax.Length; i++ )
                     tmp += $"#{MonthsNotPresentYearMax[ i ]:D2}, ";
                 if ( !string.IsNullOrEmpty( tmp ) )
@@ -225,9 +225,9 @@ namespace CumulusUtils
                 of.WriteLine( $"<input type='button' class=buttonFat id='MOPrev' value='{Sup.GetCUstringValue( "General", "PrevMonth", "Prev Month", false )}'>" );
                 of.WriteLine( "<select id='year'>" );
 
-                for ( int i = YearMin; i <= YearMax; i++ )
+                for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
                 {
-                    if ( i < YearMax )
+                    if ( i < CUtils.YearMax )
                         of.WriteLine( $"<option value='{i}'>{i}</option>" );
                     else
                         of.WriteLine( $"<option value='{i}' selected>{i}</option>" );

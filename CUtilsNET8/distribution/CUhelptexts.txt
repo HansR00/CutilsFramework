@@ -32,7 +32,18 @@ HT_YearlyInsolationStats = " "
 HT_YearlyMonthlyInsolationStats = " "
 HT_TempSum = " "
 HT_GrowingDegreeDays = " "
-HT_ThermalSeasons = " "
+HT_ThermalSeasons = " This chart is based on what they do in Finland (see <a href=https://cumulus.hosiene.co.uk/viewtopic.php?p=153478#p153478 target='_blank'>this post</a> on the forum) and it all has to do with the duration of the temperature on average being lower or higher than the definition. It shows the relative duration of the seasons over the years.<br/><br/>
+
+I.e. if the temperature in Winter 1 (start of year) is above the lower boundary (default is zero) for more than 10 days we go spring (and it won't go back).<br/>
+
+So a short summer/long autumn has to do with a period in early(?) summer where the average temperature was below 10 (default) degrees for at least 10 days. The algorithm then switches to autumn and did not go back. Meteo Wagenborgen had a similar issue which made me change the limits to 4/14 (it was 5/15).<br/><br/>
+
+A short summer would indicate a season anomaly with an abnormal cold period in summer.<br/><br/>
+
+It is a chart showing an algorithmic calculation of seasons. That may be wrong once in a while. It is not an official statistic. A one year anomaly may be accepted. If that happens regularly, you might have to change the boundary temperatures for your station or you may have to abandon the chart (set <i>Seasons=false</i> in section <i>Graphs</i> in <i>cumulusutils.ini</i>).<br/><br/>
+
+(this info is based on <a href=https://cumulus.hosiene.co.uk/viewtopic.php?t=22674 target='_blank'>this thread</a>)<br/> "
+
 HT_DailyEVT = " "
 HT_MonthlyEVT = " "
 

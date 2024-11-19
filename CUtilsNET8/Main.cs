@@ -138,6 +138,8 @@ namespace CumulusUtils
     // Use GlobConst as a store for constants as you would use C #defines...
     // That's what you get when you act as a hybrid between C and C#
     // 
+    enum Months : int { Jan = 1, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec };
+
     public static class GlobConst
     {
         public const double RainLimit = 0.2; //When more or equal than this amount in mm/day this limit is used when necessary
@@ -228,6 +230,9 @@ namespace CumulusUtils
         public static int FTPIntervalInMinutes { get; set; }
         public static int UtilsRealTimeInterval { get; set; }
         public static bool DoingUserAskedData { get; set; }
+
+        public static int YearMax { get; set; }
+        public static int YearMin { get; set; }
 
         public static int[] PossibleIntervals = { 1, 5, 10, 15, 20, 30 };
 
@@ -361,7 +366,7 @@ namespace CumulusUtils
             {
                 Sup.LogDebugMessage( $"All done, Entering the finally section...; Closing down." );
 
-                if ( FtpListener != null )
+                if ( FtpListener is not null )
                 {
                     Sup.LogDebugMessage( "Disposing FtpListener..." );
                     FtpListener.Dispose();
@@ -467,6 +472,10 @@ namespace CumulusUtils
                     Sup.LogTraceInfoMessage( $"CumulusUtils : RecordsBeganDate used with wrong format; using the first observation date {StartOfObservations}" );
                 }
             }
+
+            YearMax = MainList.Select( x => x.ThisDate.Year ).Max();
+            YearMin = MainList.Select( x => x.ThisDate.Year ).Min();
+            Sup.LogTraceInfoMessage( $"CumulusUtils : YearMin = {YearMin}; YearMax = {YearMax}" );
 
             if ( DoSystemChk )
             {
@@ -607,7 +616,8 @@ namespace CumulusUtils
 #endif
 
                 Diary fncs = new Diary( Sup );
-                fncs.GenerateDiary();
+                if (!Thrifty) fncs.GenerateDiaryDisplay();
+                fncs.GenerateDiaryReport();
 
 #if TIMING
                 watch.Stop();
@@ -853,7 +863,7 @@ namespace CumulusUtils
                         // It's a bit awkward to separate charts in different lists first and then reassemble but I see no other way.
                         List<OutputDef> theseOutputs = fncs.ParseChartDefinitions();
 
-                        if ( theseOutputs != null )
+                        if ( theseOutputs is not null )
                         {
                             foreach ( OutputDef thisOutput in theseOutputs )
                             {
@@ -952,7 +962,7 @@ namespace CumulusUtils
                 ChartsCompiler fncs = new ChartsCompiler( Sup );
                 thisList = fncs.ParseChartDefinitions();
 
-                if ( thisList != null )
+                if ( thisList is not null )
                 {
                     int i = 0;
 
@@ -1073,8 +1083,16 @@ namespace CumulusUtils
             if ( DoCUlib )
                 await Isup.UploadFileAsync( $"lib/{Sup.CUlibOutputFilename}", $"{Sup.PathUtils}{Sup.CUlibOutputFilename}" );
 
-            if (DoDiary && HasDiaryMenu )  /* i.e. there is data in the diary */
+            if ( DoDiary && HasDiaryMenu && !Thrifty )  // i.e. there is data in the diary and do we want to upload the module
+            {
                 await Isup.UploadFileAsync( $"{Sup.DiaryOutputFilename}", $"{Sup.PathUtils}{Sup.DiaryOutputFilename}" );
+
+                for ( int i = YearMin; i < YearMax; i++ )
+                    await Isup.UploadFileAsync( $"Diary{i}.txt", $"{Sup.PathUtils}Diary{i}.txt" );
+            } 
+            
+            if ( DoDiary && HasDiaryMenu ) // Previous Data has already been uploaded above when !Thrifty only do report of this year (YearMax)
+                await Isup.UploadFileAsync( $"Diary{YearMax}.txt", $"{Sup.PathUtils}Diary{YearMax}.txt" );
 
             if ( DoYadr )
             {

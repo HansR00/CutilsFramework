@@ -93,7 +93,7 @@ namespace CumulusUtils
 
             Sup.LogTraceInfoMessage( "GenMonthlyTempvsNOAAGraphData : starting loop over DayfileValues" );
 
-            for ( int i = YearMin; i <= YearMax; i++ )
+            for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
                 MonthlyTempValues = new float[ Enum.GetNames( typeof( Months ) ).Length ];
                 YearValues.Add( MonthlyTempValues );
@@ -275,7 +275,7 @@ namespace CumulusUtils
 
             AllYears = new List<List<int>>();
 
-            for ( int i = YearMin; i <= YearMax; i++ )
+            for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
                 if ( ThisList.Where( x => x.ThisDate.Year == i ).Any() )
                 {
@@ -415,7 +415,7 @@ namespace CumulusUtils
 
             AllYears = new List<List<int>>();
 
-            for ( int i = YearMin; i <= YearMax; i++ )
+            for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
                 if ( ThisList.Where( x => x.ThisDate.Year == i ).Any() )
                 {
@@ -579,8 +579,8 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "  tickInterval: 1," );
             thisBuffer.AppendLine( "  startOnTick: false," );
             thisBuffer.AppendLine( "  endOnTick: false," );
-            thisBuffer.AppendLine( $"  min: {( SplitHeatmapPages ? YearMax - HeatmapNrOfYearsPerPage : YearMin )}," );
-            thisBuffer.AppendLine( $"  max: {YearMax}" );
+            thisBuffer.AppendLine( $"  min: {( SplitHeatmapPages ? CUtils.YearMax - HeatmapNrOfYearsPerPage : CUtils.YearMin )}," );
+            thisBuffer.AppendLine( $"  max: {CUtils.YearMax}" );
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "colorAxis:" );
             thisBuffer.AppendLine( "{" );
@@ -619,7 +619,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "data: [" );
 
             sb.Clear();
-            for ( int i = YearMin; i <= YearMax; i++ )
+            for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
                 Sup.LogTraceInfoMessage( $"Generating Heat Map data, doing year {i}" );
 
@@ -651,7 +651,7 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "Generate GenerateYearTempStatistics Starting" );
 
-            for ( int i = YearMin; i <= YearMax; i++ )
+            for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
                 List<DayfileValue> yearlist = Thislist.Where( x => x.ThisDate.Year == i ).ToList();
 
@@ -795,7 +795,7 @@ namespace CumulusUtils
 
             //Sup.LogDebugMessage( "Generate GenerateYearMonthTempStatistics Start" );
 
-            for ( int i = YearMin; i <= YearMax; i++ )
+            for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
                 List<DayfileValue> yearmonthlist = Thislist.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == (int) thisMonth ).ToList();
 

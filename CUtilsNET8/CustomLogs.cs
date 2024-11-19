@@ -509,7 +509,7 @@ namespace CumulusUtils
                     }
                 }
 
-                if ( thisList != null )
+                if ( thisList is not null )
                 {
                     for ( int i = 0; i < thisLog.TagNames.Count; i++ )
                     {

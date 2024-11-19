@@ -135,27 +135,27 @@ namespace CumulusUtils
             // First create the datafiles per year per parameter. So e.g. for every year available create a yyyyTemperature.txt, then yyyyHumidity.txt
             // etc... in first instance we just create all data, later we may shuffle around to get the display right
 
-            int YearMax = Thislist.Select( x => x.ThisDate.Year ).Max();
-            int YearMin = Thislist.Select( x => x.ThisDate.Year ).Min();
+            //int YearMax = Thislist.Select( x => x.ThisDate.Year ).Max();
+            //int YearMin = Thislist.Select( x => x.ThisDate.Year ).Min();
 
             if ( CUtils.Thrifty )
             {
                 if ( CUtils.RunStarted.DayOfYear == 2 )
-                    GenerateYadrTxtfile( YearMin, YearMax );
+                    GenerateYadrTxtfile( CUtils.YearMin, CUtils.YearMax );
 
                 // So now, do only the current year
-                YearMin = YearMax;
+                CUtils.YearMin = CUtils.YearMax;
             }
             else
-                GenerateYadrTxtfile( YearMin, YearMax );
+                GenerateYadrTxtfile( CUtils.YearMin, CUtils.YearMax );
 
 
-            GenerateYadrTempData( YearMin, YearMax, Thislist );
-            GenerateYadrRainData( YearMin, YearMax, Thislist );
-            GenerateYadrWindData( YearMin, YearMax, Thislist );
-            GenerateYadrWindrunData( YearMin, YearMax, Thislist );
-            GenerateYadrPressionData( YearMin, YearMax, Thislist );
-            GenerateYadrHumidityData( YearMin, YearMax, Thislist );
+            GenerateYadrTempData( CUtils.YearMin, CUtils.YearMax, Thislist );
+            GenerateYadrRainData( CUtils.YearMin, CUtils.YearMax, Thislist );
+            GenerateYadrWindData( CUtils.YearMin, CUtils.YearMax, Thislist );
+            GenerateYadrWindrunData( CUtils.YearMin, CUtils.YearMax, Thislist );
+            GenerateYadrPressionData( CUtils.YearMin, CUtils.YearMax, Thislist );
+            GenerateYadrHumidityData(   CUtils.YearMin, CUtils.YearMax, Thislist );
         }// End Generate Yadr
         #endregion
 

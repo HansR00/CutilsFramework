@@ -58,24 +58,24 @@ namespace CumulusUtils
             // Loop over years
             // First do the all time records, than the yearly records, than the daily records (for another pages)
 
-            int YearMax = Thislist.Select( x => x.ThisDate.Year ).Max();
-            int YearMin = Thislist.Select( x => x.ThisDate.Year ).Min();
+            //int YearMax = Thislist.Select( x => x.ThisDate.Year ).Max();
+            //int YearMin = Thislist.Select( x => x.ThisDate.Year ).Min();
 
-            NrOfYears = YearMax - YearMin + 1;
+            NrOfYears = CUtils.YearMax - CUtils.YearMin + 1;
 
             YearRecords = new DayfileValue[ NrOfYears + 1 ][]; // (first entry being the alltime records)
             MonthlyRecords = new DayfileValue[ ( NrOfYears + 1 ) * 12 ][]; //(first entry being the all time monthly records)
 
             // Produce the arrays for the months without data. Required for the selection  generation in javascript later on
-            List<DayfileValue> yearlist = Thislist.Where( x => x.ThisDate.Year == YearMin ).ToList();
+            List<DayfileValue> yearlist = Thislist.Where( x => x.ThisDate.Year == CUtils.YearMin ).ToList();
             MonthsNotPresentYearMin = tmpIntArray.Except( yearlist.Select( x => x.ThisDate.Month ).Distinct() ).ToArray();
-            yearlist = Thislist.Where( x => x.ThisDate.Year == YearMax ).ToList();
+            yearlist = Thislist.Where( x => x.ThisDate.Year == CUtils.YearMax ).ToList();
             MonthsNotPresentYearMax = tmpIntArray.Except( yearlist.Select( x => x.ThisDate.Month ).Distinct() ).ToArray();
             MonthsNotPresentAllYears = tmpIntArray.Except( Thislist.Select( x => x.ThisDate.Month ).Distinct() ).ToArray();
 
-            GenerateYearlyRecords( YearMin, Thislist );
+            GenerateYearlyRecords( CUtils.YearMin, Thislist );
             if ( !CUtils.Thrifty || CUtils.ThriftyRecordsDirty )
-                GenerateHTMLRecords( YearMin, YearMax );
+                GenerateHTMLRecords( CUtils.YearMin, CUtils.YearMax );
 
             return;
         }
@@ -519,7 +519,7 @@ namespace CumulusUtils
 
                         int i = month + j * 12; // use the month index belonging to the year j (0 being the AllYears)
 
-                        if ( MonthlyRecords[ i ] != null )
+                        if ( MonthlyRecords[ i ] is not null )
                         {
                             if ( j == 0 ) tmp = $"jqueryOptions AllYears{m[ month ]}";
                             else tmp = $"jqueryOptions {YearMin + j - 1}{m[ month ]}";

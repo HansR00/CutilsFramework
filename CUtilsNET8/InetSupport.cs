@@ -279,7 +279,8 @@ namespace CumulusUtils
 
             // No reason to upload if there is  no file or destination
             if ( string.IsNullOrEmpty( remotefile ) || string.IsNullOrEmpty( localfile ) ) { Sup.LogTraceErrorMessage( $"UploadFile: Nothing uploaded either in or outfile are empty." ); return false; }
-
+            if ( !File.Exists( localfile ) ) { Sup.LogTraceErrorMessage( $"UploadFile: Local file {localfile} does not exist" ); return false; }
+            
             bool Upload = Sup.GetUtilsIniValue( "FTP site", "DoUploadFTP", "false" ).Equals( "true", CUtils.Cmp );
             if ( !Upload ) { Sup.LogTraceInfoMessage( $"UploadFile: DoUploadFTP configured false => No Upload." ); return false; }      // No reason to do the whole procedure if we don't have to upload
 
@@ -324,7 +325,7 @@ namespace CumulusUtils
                     catch ( Exception e )
                     {
                         Sup.LogTraceErrorMessage( $"UploadFile ERROR: General Exception: {e.Message}" );
-                        if ( e.InnerException != null ) Sup.LogTraceErrorMessage( $"UploadFile ERROR: Inner Exception: {e.InnerException}" );
+                        if ( e.InnerException is not null ) Sup.LogTraceErrorMessage( $"UploadFile ERROR: Inner Exception: {e.InnerException}" );
                         return false;
                     }
 
@@ -400,7 +401,7 @@ namespace CumulusUtils
                         catch ( Exception e )
                         {
                             Sup.LogTraceErrorMessage( $"Upload SFTP: ERROR General Exception: {e.Message}" );
-                            if ( e.InnerException != null ) Sup.LogTraceErrorMessage( $"UploadFile SFTP ERROR: Inner Exception: {e.InnerException}" );
+                            if ( e.InnerException is not null ) Sup.LogTraceErrorMessage( $"UploadFile SFTP ERROR: Inner Exception: {e.InnerException}" );
                             return false;
                         }
                     }
@@ -543,7 +544,7 @@ namespace CumulusUtils
             catch ( Exception e )
             {
                 Sup.LogTraceErrorMessage( $"DownloadSignatureFiles ERROR: General Exception: {e.Message}" );
-                if ( e.InnerException != null ) Sup.LogTraceErrorMessage( $"DownloadSignatureFiles ERROR: Inner Exception: {e.InnerException}" );
+                if ( e.InnerException is not null ) Sup.LogTraceErrorMessage( $"DownloadSignatureFiles ERROR: Inner Exception: {e.InnerException}" );
                 return;
             }
 
@@ -574,7 +575,7 @@ namespace CumulusUtils
                 catch ( Exception e )
                 {
                     Sup.LogTraceErrorMessage( $"GetUrlData : Exception - {e.Message}" );
-                    if ( e.InnerException != null )
+                    if ( e.InnerException is not null )
                         Sup.LogTraceErrorMessage( $"GetUrlData: Inner Exception: {e.InnerException}" );
                     return "";
                 }
@@ -617,7 +618,7 @@ namespace CumulusUtils
                 catch ( Exception e )
                 {
                     Sup.LogTraceErrorMessage( $"PostUrlData : Exception - {e.Message}" );
-                    if ( e.InnerException != null )
+                    if ( e.InnerException is not null )
                         Sup.LogTraceErrorMessage( $"PostUrlData: Inner Exception: {e.InnerException}" );
                     retval = "";
                 }

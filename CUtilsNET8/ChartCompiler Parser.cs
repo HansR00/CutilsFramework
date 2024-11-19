@@ -732,7 +732,7 @@ namespace CumulusUtils
                         {
                             Sup.LogTraceErrorMessage( "Parsing User Charts Definitions : Unknown exception while reaching EOF. Incomplete Charts definition." );
                             Sup.LogTraceErrorMessage( $"Exception found is: {e.Message}" );
-                            if ( e.InnerException != null ) Sup.LogTraceErrorMessage( $"InnerException found is: {e.InnerException}" );
+                            if ( e.InnerException is not null ) Sup.LogTraceErrorMessage( $"InnerException found is: {e.InnerException}" );
                             return null;
                         }
 

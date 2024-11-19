@@ -215,7 +215,7 @@ namespace CumulusUtils
 
                 Sup.LogTraceInfoMessage( $"InetPhp: Error - {ex.Message}" );
 
-                if ( ex.InnerException != null )
+                if ( ex.InnerException is not null )
                 {
                     Sup.LogTraceInfoMessage( $"InetPhp: Base exception - {ex.InnerException.Message}" );
                 }

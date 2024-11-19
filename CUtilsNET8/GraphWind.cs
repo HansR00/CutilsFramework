@@ -123,7 +123,7 @@ namespace CumulusUtils
             var YearLookup = thisList.ToLookup( x => x.ThisDate.Year );
 
 
-            for ( int year = YearMin; year <= YearMax; year++ )
+            for ( int year = CUtils.YearMin; year <= CUtils.YearMax; year++ )
             {
                 Sup.LogTraceInfoMessage( $"WindRose : Starting writing year: {year}" );
 
@@ -623,7 +623,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( $"<input type='button' class=buttonFat id='YRPrevRun' value='{Sup.GetCUstringValue( "General", "PrevYear", "Prev Year", false )}'>" );
             thisBuffer.AppendLine( "<select id='yearRun'>" );
             thisBuffer.AppendLine( $"<option value='AllYears' selected>{Sup.GetCUstringValue( "General", "AllTime", "All Time", false )}</option>" );
-            for ( int i = YearMin; i <= YearMax; i++ )
+            for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
                 thisBuffer.AppendLine( $"<option value='{i}'>{i}</option>" );
             thisBuffer.AppendLine( "</select>" );
             thisBuffer.AppendLine( $"<input type='button' class=buttonFat id='YRNextRun' value='{Sup.GetCUstringValue( "General", "NextYear", "Next Year", false )}'>" );

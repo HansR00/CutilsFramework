@@ -58,7 +58,7 @@ namespace CumulusUtils
         date, timehhmmss, temp, hum, dew, wspeed, wlatest, bearing, rrate, rfall, press, currentwdir, beaufortnumber, windunit, tempunitnodeg, pressunit, rainunit,
         windrun, presstrendval, rmonth, ryear, rfallY, intemp, inhum, wchill, temptrend, tempTH, TtempTH, tempTL, TtempTL, windTM, TwindTM, wgustTM, TwgustTM, pressTH,
         TpressTH, pressTL, TpressTL, version, build, wgust, heatindex, humidex, UV, ET, SolarRad, avgbearing, rhour, forecastnumber, isdaylight, SensorContactLost,
-        wdir, cloudbasevalue, cloudbaseunit, apptemp, SunshineHours, CurrentSolarMax, IsSunny, feelslike
+        wdir, cloudbasevalue, cloudbaseunit, apptemp, SunshineHours, CurrentSolarMax, IsSunny, feelslike, rweek
     };
 
     // DashboardPanels is used in GenerateWebsite at specific location and the dedicated function GeneratePanelCode(thisPanel)
@@ -585,7 +585,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
                 // In case of error no new file is generated and the old one remains in place
                 // null means no Defs file present or errors in parsing
-                if ( theseCharts != null )
+                if ( theseCharts is not null )
                 {
                     int i = 0;
 
@@ -1419,11 +1419,13 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
                 case DashboardPanels.RainText:
                     thisPanelCode =
-                 $"        <h4 class='CUCellTitle'>{Sup.GetCUstringValue( "Website", "Rain", "Rain", false )}</h4><span style='font-size:200%' id='ajxRainToday'></span>" +
+                 $"        <h4 class='CUCellTitle'>{Sup.GetCUstringValue( "Website", "Rain", "Rain", false )}</h4>" +
+                 $"        <span style='font-size:200%' id='ajxRainToday'></span>" +
                   "        <p>" +
                   "          <span id='ajxRainRateNow'></span><br/><br/>" +
                   "          <!-- span id='ajxTodayRainRateHigh'></span> -->" +
                   "          <span id='ajxRainYesterday'></span><br/>" +
+                  "          <span id='ajxRainWeek'></span><br/>" +
                   "          <span id='ajxRainMonth'></span><br/>" +
                   "          <span id='ajxRainYear'></span >" +
                   "        </p>";
@@ -1499,10 +1501,10 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 case DashboardPanels.HumidityText:
                     thisPanelCode =
                   $"        <h4 class='CUCellTitle'>{Sup.GetCUstringValue( "Website", "Humidity", "Humidity", false )}</h4>" +
-                  $"        <span style='font-size: 140%'>{Sup.GetCUstringValue( "Website", "Humidity", "Humidity", false )}:</span><br/>" +
-                  "        <span style='font-size: 200%' id='ajxCurHumidity'></span><br/>" +
-                  $"        <span style='font-size: 140%'>{Sup.GetCUstringValue( "Website", "Dewpoint", "Dew Point", false )}:</span><br/>" +
-                  "        <span style='font-size: 200%' id='ajxDewpoint'></span><br/>";
+                  //$"        <span style='font-size: 140%'>{Sup.GetCUstringValue( "Website", "Humidity", "Humidity", false )}:</span><br/>" +
+                  "        <span style='font-size: 200%' id='ajxCurHumidity'></span><br/><br/><br/>" +
+                  $"        <span style='font-size: 140%'>{Sup.GetCUstringValue( "Website", "Dewpoint", "Dew Point", false )}:</span>" +
+                  "        <span style='font-size: 140%' id='ajxDewpoint'></span><br/>";
                     break;
 
                 case DashboardPanels.SolarText:
@@ -1511,10 +1513,10 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     if ( ShowSolar )
                     {
                         thisPanelCode +=
-                        $"        <span style='font-size: 140%'>{Sup.GetCUstringValue( "Website", "SolarRadiation", "Solar Radiation", false )}:</span><br/>" +
+                        $"        <span style='font-size: 140%'>{Sup.GetCUstringValue( "Website", "SolarRadiation", "Radiation", false )}:</span><br/>" +
                          "        <span style='font-size: 200%' id='ajxCurSolar'></span><br/>" +
                         $"        <span>{Sup.GetCUstringValue( "Website", "MaxValue", "Max value", false )}: </span><span id='ajxCurSolarMax'></span><br/>" +
-                        $"        <span>{Sup.GetCUstringValue( "Website", "SolarHours", "Sunshine today", false )}: </span><span id='ajxSolarHours'></span><br/>";
+                        $"        <span>{Sup.GetCUstringValue( "Website", "SolarHours", "Sunshine hrs today", false )}: </span><span id='ajxSolarHours'></span><br/><br/>";
                     }
 
                     if ( ShowUV )

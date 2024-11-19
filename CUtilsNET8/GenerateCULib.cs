@@ -374,6 +374,8 @@ namespace CumulusUtils
 
                           $"  tmp = '{Sup.GetCUstringValue( "Website", "Yesterday", "Yesterday", true )}: ' + realtime[{(int) RealtimeFields.rfallY}] + '&nbsp;' + UnitRain;" +
                           "  $('#ajxRainYesterday').html(tmp);" +
+                          $"  tmp = '{Sup.GetCUstringValue( "General", "Week", "Week", true )}: ' + realtime[{(int) RealtimeFields.rweek}] + '&nbsp;' + UnitRain;" +
+                          "  $('#ajxRainWeek').html(tmp);" +
                           $"  tmp = '{Sup.GetCUstringValue( "General", "Month", "Month", true )}: ' + realtime[{(int) RealtimeFields.rmonth}] + '&nbsp;' + UnitRain;" +
                           "  $('#ajxRainMonth').html(tmp);" +
                           $"  tmp = '{Sup.GetCUstringValue( "General", "Year", "Year", true )}: ' + realtime[{(int) RealtimeFields.ryear}] + '&nbsp;' + UnitRain;" +
