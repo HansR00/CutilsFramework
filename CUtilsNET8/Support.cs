@@ -40,7 +40,7 @@ namespace CumulusUtils
     public class CuSupport : IDisposable
     {
         // Is it a version number beta shown at users?
-        const string beta = "beta 4";
+        const string beta = "beta 5";
 
         #region declarations
         public Wind StationWind { get; set; }
@@ -83,6 +83,7 @@ namespace CumulusUtils
         public string CustomLogsRealtimeFilename { get; } = "customlogsrealtime.txt";
         public string CustomLogsCharts { get; } = "customlogscharts.txt";
         public string SensorCommunityOutputFilename { get; } = "sensorcommunity.txt";
+        //public string DiaryOutputFilename { get; } = "diary.txt";
         public string DiaryOutputFilename { get; } = "diary.txt";
         public string CUserdataRECENT { get; } = "CUserdataRECENT.json";
         public string CUserdataDAILY { get; } = "CUserdataDAILY.json";
