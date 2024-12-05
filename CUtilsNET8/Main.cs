@@ -616,8 +616,12 @@ namespace CumulusUtils
 #endif
 
                 Diary fncs = new Diary( Sup );
-                if (!Thrifty) fncs.GenerateDiaryDisplay();
-                fncs.GenerateDiaryReport();
+
+                if (HasDiaryMenu)
+                {
+                    if ( !Thrifty ) fncs.GenerateDiaryDisplay();
+                    fncs.GenerateDiaryReport();
+                }
 
 #if TIMING
                 watch.Stop();

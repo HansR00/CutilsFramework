@@ -149,14 +149,14 @@ namespace CumulusUtils
                 of.WriteLine( "  });" );
                 of.WriteLine( "};" );
 
-                of.WriteLine( "function SetChartView( filename) {" );
+                of.WriteLine( "function SetChartView( ) {" );
                 of.WriteLine( "  $( '[id*=\"Diary\"]' ).hide();" );
                 of.WriteLine( "  urlParams.delete( 'dropdown' );" );
                 of.WriteLine( "  urlParams.set( 'dropdown', 'DiaryChart' );" );
                 of.WriteLine( "  history.pushState( null, null, window.location.origin + window.location.pathname + '?' + urlParams );" );
                 of.WriteLine( "" );
                 of.WriteLine( "  $.ajax({" );
-                of.WriteLine( "    url: 'alldailysnowdata.json'," );
+                of.WriteLine( $"    url: '{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}alldailysnowdata.json'," );
                 of.WriteLine( "    timeout: 2000," );
                 of.WriteLine( "    cache: false," );
                 of.WriteLine( "    headers:{'Access-Control-Allow-Origin': '*'}," );
@@ -393,8 +393,16 @@ namespace CumulusUtils
                 SnowDepth = thisValue.snowDepth;
                 Snow24h = thisValue.snow24h;
 
-                StrSnowDepth = $"{( ( SnowDepth == null || SnowDepth == 0.0 ) ? "---" : SnowDepth ):F2}";
-                StrSnow24h = $"{( Snow24h == null || Snow24h == 0.0 ? "---" : Snow24h):F2}";
+                if ( Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ) // mm
+                {
+                    StrSnowDepth = $"{( ( SnowDepth == null /*|| SnowDepth == 0.0*/ ) ? "---" : SnowDepth ):F1}";
+                    StrSnow24h = $"{( Snow24h == null /*|| Snow24h == 0.0*/ ? "---" : Snow24h ):F1}";
+                }
+                else
+                {
+                    StrSnowDepth = $"{( ( SnowDepth == null /*|| SnowDepth == 0.0*/ ) ? "---" : SnowDepth ):F2}";
+                    StrSnow24h = $"{( Snow24h == null /*|| Snow24h == 0.0*/ ? "---" : Snow24h ):F2}";
+                }
 
                 thisLine += CString( StrSnow24h, FieldWidth / 2 ) + CString( StrSnowDepth, FieldWidth / 2 );
             }
@@ -421,31 +429,34 @@ namespace CumulusUtils
 
                     using ( SqliteDataReader reader = command.ExecuteReader() )
                     {
-                        int OrdinalTimestamp = reader.GetOrdinal( "Date" );
-                        int OrdinalEntry = reader.GetOrdinal( "Entry" );
-                        int OrdinalSnow24h = reader.GetOrdinal( "Snow24h" );
-                        int OrdinalSnowDepth = reader.GetOrdinal( "SnowDepth" );
-
-                        while ( reader.Read() )
+                        if ( reader.HasRows ) 
                         {
-                            if ( reader.IsDBNull( OrdinalSnow24h ) && reader.IsDBNull( OrdinalSnowDepth ) )
-                            {
-                                continue; // Only records with snow height count. The Entry is ignored
-                            }
-                            else
-                            {
-                                DiaryValue tmp = new()
-                                {
-                                    //ThisDate = DateTimeOffset.FromUnixTimeSeconds( reader.GetInt64( OrdinalTimestamp ) ).DateTime.ToLocalTime(),
-                                    ThisDate = reader.GetDateTime( OrdinalTimestamp ),
-                                    snow24h = reader.IsDBNull( OrdinalSnow24h ) ? 0 : reader.GetFloat( OrdinalSnow24h ),
-                                    snowDepth = reader.IsDBNull( OrdinalSnowDepth ) ? 0 : reader.GetFloat( OrdinalSnowDepth )
-                                };
+                            int OrdinalTimestamp = reader.GetOrdinal( "Date" );
+                            int OrdinalEntry = reader.GetOrdinal( "Entry" );
+                            int OrdinalSnow24h = reader.GetOrdinal( "Snow24h" );
+                            int OrdinalSnowDepth = reader.GetOrdinal( "SnowDepth" );
 
-                                tmpList.Add( tmp );
-                                Sup.LogTraceVerboseMessage( $"Value - Date: {tmp.ThisDate} Snow24h: {tmp.snow24h} SnowDepth: {tmp.snowDepth}" );
-                            }
-                        } // Loop over the records
+                            while ( reader.Read() )
+                            {
+                                // HAR: check reader.hasrecords and within records 
+                                if ( reader.IsDBNull( OrdinalSnow24h ) && reader.IsDBNull( OrdinalSnowDepth ) ) break; // end of records reached
+                                else if ( (!reader.IsDBNull( OrdinalSnow24h ) && reader.GetFloat( OrdinalSnow24h ) == 0.0) &&
+                                          (!reader.IsDBNull( OrdinalSnowDepth ) && reader.GetFloat( OrdinalSnowDepth ) == 0.0 ) ) continue;
+                                else
+                                {
+                                    DiaryValue tmp = new()
+                                    {
+                                        //ThisDate = DateTimeOffset.FromUnixTimeSeconds( reader.GetInt64( OrdinalTimestamp ) ).DateTime.ToLocalTime(),
+                                        ThisDate = reader.GetDateTime( OrdinalTimestamp ),
+                                        snow24h = reader.IsDBNull( OrdinalSnow24h ) ? 0 : reader.GetFloat( OrdinalSnow24h ),
+                                        snowDepth = reader.IsDBNull( OrdinalSnowDepth ) ? 0 : reader.GetFloat( OrdinalSnowDepth )
+                                    };
+
+                                    tmpList.Add( tmp );
+                                    Sup.LogTraceVerboseMessage( $"Value - Date: {tmp.ThisDate} Snow24h: {tmp.snow24h} SnowDepth: {tmp.snowDepth}" );
+                                }
+                            } // Loop over the records
+                        }
                     } // using: Execute the command
 
                     thisConnection.Close();
