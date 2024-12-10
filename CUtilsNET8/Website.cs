@@ -638,6 +638,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
                 using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}cumuluscharts.txt", false, Encoding.UTF8 ) )
                 {
+
                     CumulusCharts.Append( "<script>" +
                       "$('#graph0').change(function() {handleChange()});" +
                       "function handleChange(){" +
@@ -680,6 +681,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     "$(function() {InitCumulusCharts()});" +
                       "function InitCumulusCharts()" +
                       "{" +
+                      "    console.log('InitCumulusCharts - basic');" +
                       "  $.ajax({" +
                      $"    url:'{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}graphconfig.json', " +
                       "    dataType: 'json', " +
@@ -1146,6 +1148,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                      "]," +
                      "legend:{enabled:true}," +
                      "tooltip:{xDateFormat:'%A, %b %e'}," +
+                     "rangeSelector:{enabled:true, selected: 4}," +
                      "series:" +
                      "[" +
                      "  {" +
@@ -1158,13 +1161,13 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                      "  }" +
                      "]};" +
                      "" +
-                     "chart=new Highcharts.chart(n);chart.showLoading();" +
+                     "chart=new Highcharts.stockChart(n);chart.showLoading();" +
                      "" +
                      "$.ajax({" +
-                    $"  url:'{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}sunhours.json'," +
+                    $"  url:'{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}alldailysolardata.json'," +
                     $"  dataType:'json'," +
                      "  cache:false," +
-                     "  success:function(n){chart.hideLoading();chart.series[0].setData(n.sunhours)} " +
+                     "  success:function(n){chart.hideLoading();chart.series[0].setData(n.sunHours)} " +
                      "  })" +
                      "}," +
                      "" +
@@ -1198,6 +1201,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                      "]," +
                      "legend:{enabled:true}," +
                      "tooltip:{xDateFormat:'%A, %b %e'}," +
+                     "rangeSelector:{enabled:true, selected: 4}," +
                      "series:" +
                      "[" +
                      "  {" +
@@ -1210,13 +1214,14 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                      "  }" +
                      "]};" +
                      "" +
-                     "chart=new Highcharts.chart(n);chart.showLoading();" +
+                     "chart=new Highcharts.stockChart(n);chart.showLoading();" +
                      "" +
                      "$.ajax({" +
-                    $"  url:'{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}dailyrain.json'," +
+                    $"  url:'{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}alldailyraindata.json'," +
                     $"  dataType:'json'," +
                      "  cache:false," +
-                     "  success:function(n){chart.hideLoading();chart.series[0].setData(n.dailyrain)}" +
+                     //"  success:function(n){chart.hideLoading();chart.series[0].setData(n.dailyrain)}" +
+                     "  success:function(n){chart.hideLoading();chart.series[0].setData(n.rain)}" +
                      "  })" +
                      "}," +
                      "" +
@@ -1248,7 +1253,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                      "]," +
                      "legend:{enabled:true}," +
                      "tooltip:{valueSuffix:'°'+config.temp.units,valueDecimals:config.temp.decimals,xDateFormat:'%A, %b %e'}," +
-                     "rangeSelector:{enabled:false}," +
+                     "rangeSelector:{enabled:true, selected: 4}," +
                      "series:" +
                      "[" +
                      $"  {{name:\"{Sup.GetCUstringValue( "Website", "AvgTemp", "Avg Temp", true )}\",color:'{Sup.GetUtilsIniValue( "Website", "HomeGraphDailyTempAverageColor", "#50B432" )}'}}," +
@@ -1259,10 +1264,10 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                      "chart=new Highcharts.stockChart(t);chart.showLoading();" +
                      "" +
                      "$.ajax({" +
-                    $"  url:'{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}dailytemp.json'," +
+                    $"  url:'{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}alldailytempdata.json'," +
                      "  dataType:'json'," +
                      "  cache:false," +
-                     "  success:function(n){chart.hideLoading();chart.series[0].setData(n.avgtemp);chart.series[1].setData(n.mintemp);chart.series[2].setData(n.maxtemp)}" +
+                     "  success:function(n){chart.hideLoading();chart.series[0].setData(n.avgTemp);chart.series[1].setData(n.minTemp);chart.series[2].setData(n.maxTemp)}" +
                      "  })" +
                      "};" +
                      "</script>" );

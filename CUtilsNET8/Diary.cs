@@ -126,8 +126,6 @@ namespace CumulusUtils
                 of.WriteLine( "  }else SetTableView();" );
                 of.WriteLine( "});" );
 
-                //of.WriteLine( "});" );
-
                 of.WriteLine( "function SetTableView( )" );
                 of.WriteLine( "{" );
                 of.WriteLine( "  $('[id*=\"Diary\"]').hide();" );
@@ -136,7 +134,12 @@ namespace CumulusUtils
                 of.WriteLine( "  history.pushState(null, null, window.location.origin + window.location.pathname + '?' + urlParams);" );
                 of.WriteLine( "" );
                 of.WriteLine( "  $.ajax({" );
-                of.WriteLine( "    url: 'Diary'+$(\'#year\').val() + '.txt'," );
+
+                if ( CUtils.DoModular )
+                    of.WriteLine( $"    url: '{CUtils.ModulePath}' + 'Diary'+$(\'#year\').val() + '.txt'," );
+                else
+                    of.WriteLine( "    url: 'Diary'+$(\'#year\').val() + '.txt'," );
+
                 of.WriteLine( "    timeout: 2000," );
                 of.WriteLine( "    cache: false," );
                 of.WriteLine( "    headers:{'Access-Control-Allow-Origin': '*'}," );
@@ -155,22 +158,11 @@ namespace CumulusUtils
                 of.WriteLine( "  urlParams.set( 'dropdown', 'DiaryChart' );" );
                 of.WriteLine( "  history.pushState( null, null, window.location.origin + window.location.pathname + '?' + urlParams );" );
                 of.WriteLine( "" );
-                of.WriteLine( "  $.ajax({" );
-                of.WriteLine( $"    url: '{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}alldailysnowdata.json'," );
-                of.WriteLine( "    timeout: 2000," );
-                of.WriteLine( "    cache: false," );
-                of.WriteLine( "    headers:{'Access-Control-Allow-Origin': '*'}," );
-                of.WriteLine( "    crossDomain: true" );
-                of.WriteLine( "  }).fail( function (jqXHR, textStatus, errorThrown) {" );
-                of.WriteLine( "    console.log( 'loadDIARYChartdata: ' + textStatus + ' : ' + errorThrown );" );
-                of.WriteLine( "  }).done( function (response, responseStatus) {" );
-                of.WriteLine( "    console.log( 'Module DIARY SetChartView...' );" );
                 of.WriteLine( "    DoSnowChart();" );
                 of.WriteLine( "    $( '#DiaryChart' ).show();" );
-                of.WriteLine( "  });" );
                 of.WriteLine( "};" );
 
-                string snowUnit = Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "mm" : "in";
+                string snowUnit = Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in";
 
                 of.WriteLine( "function DoSnowChart() {" );
                 of.WriteLine( "  var options = {" );
@@ -189,7 +181,7 @@ namespace CumulusUtils
                 of.WriteLine( "chart = new Highcharts.StockChart( options );chart.showLoading();" );
 
                 of.WriteLine( "$.ajax({" );
-                of.WriteLine( "  url: 'alldailysnowdata.json'," );
+                of.WriteLine( $"  url: '{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}alldailysnowdata.json'," );
                 of.WriteLine( "  dataType: 'json'})" );
                 of.WriteLine( ".done( function( resp ) {" );
                 of.WriteLine( "  if ( 'SnowDepth' in resp && resp.SnowDepth.length > 0) {" );
@@ -244,8 +236,8 @@ namespace CumulusUtils
                 of.WriteLine( "</style>" );
 
                 of.WriteLine( "<div style = 'float:right;'>" );
-                of.WriteLine( "<input type = 'button' class=buttonSlim value = 'TableView' onclick='SetTableView()'>" );
-                of.WriteLine( "<input type = 'button' class=buttonSlim value = 'ChartView' onclick='SetChartView()'>" );
+                of.WriteLine( $"<input type = 'button' class=buttonSlim value = '{Sup.GetCUstringValue( "Diary", "TableView", "TableView", false )}' onclick='SetTableView()'>" );
+                of.WriteLine( $"<input type = 'button' class=buttonSlim value = '{Sup.GetCUstringValue( "Diary", "ChartView", "ChartView", false )}' onclick='SetChartView()'>" );
                 of.WriteLine( "</div>" );
     
 
@@ -395,13 +387,13 @@ namespace CumulusUtils
 
                 if ( Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ) // mm
                 {
-                    StrSnowDepth = $"{( ( SnowDepth == null /*|| SnowDepth == 0.0*/ ) ? "---" : SnowDepth ):F1}";
-                    StrSnow24h = $"{( Snow24h == null /*|| Snow24h == 0.0*/ ? "---" : Snow24h ):F1}";
+                    StrSnowDepth = $"{( ( SnowDepth == null  ) ? "---" : SnowDepth ):F1}";
+                    StrSnow24h = $"{( Snow24h == null ? "---" : Snow24h ):F1}";
                 }
                 else
                 {
-                    StrSnowDepth = $"{( ( SnowDepth == null /*|| SnowDepth == 0.0*/ ) ? "---" : SnowDepth ):F2}";
-                    StrSnow24h = $"{( Snow24h == null /*|| Snow24h == 0.0*/ ? "---" : Snow24h ):F2}";
+                    StrSnowDepth = $"{( ( SnowDepth == null ) ? "---" : SnowDepth ):F2}";
+                    StrSnow24h = $"{( Snow24h == null ? "---" : Snow24h ):F2}";
                 }
 
                 thisLine += CString( StrSnow24h, FieldWidth / 2 ) + CString( StrSnowDepth, FieldWidth / 2 );
@@ -440,16 +432,13 @@ namespace CumulusUtils
                             {
                                 // HAR: check reader.hasrecords and within records 
                                 if ( reader.IsDBNull( OrdinalSnow24h ) && reader.IsDBNull( OrdinalSnowDepth ) ) break; // end of records reached
-                                else if ( (!reader.IsDBNull( OrdinalSnow24h ) && reader.GetFloat( OrdinalSnow24h ) == 0.0) &&
-                                          (!reader.IsDBNull( OrdinalSnowDepth ) && reader.GetFloat( OrdinalSnowDepth ) == 0.0 ) ) continue;
                                 else
                                 {
                                     DiaryValue tmp = new()
                                     {
-                                        //ThisDate = DateTimeOffset.FromUnixTimeSeconds( reader.GetInt64( OrdinalTimestamp ) ).DateTime.ToLocalTime(),
                                         ThisDate = reader.GetDateTime( OrdinalTimestamp ),
-                                        snow24h = reader.IsDBNull( OrdinalSnow24h ) ? 0 : reader.GetFloat( OrdinalSnow24h ),
-                                        snowDepth = reader.IsDBNull( OrdinalSnowDepth ) ? 0 : reader.GetFloat( OrdinalSnowDepth )
+                                        snow24h = reader.IsDBNull( OrdinalSnow24h ) ? null : reader.GetFloat( OrdinalSnow24h ),
+                                        snowDepth = reader.IsDBNull( OrdinalSnowDepth ) ? null : reader.GetFloat( OrdinalSnowDepth )
                                     };
 
                                     tmpList.Add( tmp );
