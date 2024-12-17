@@ -360,12 +360,24 @@ namespace CumulusUtils
 
             for ( int thisMonth = 10; thisMonth <= 12; thisMonth++ ) // Loop over months
             {
-                thisLine += CreateMonthPartofLineForDay( thisYear, thisMonth, thisDay);
+                if ( thisDay > DateTime.DaysInMonth( thisYear, thisMonth ) )
+                {
+                    thisLine += CString( "   ", FieldWidth / 2 ) + CString( "   ", FieldWidth / 2 );
+                    continue;
+                }
+                else
+                    thisLine += CreateMonthPartofLineForDay( thisYear, thisMonth, thisDay);
             }  // Loop over months
 
             for ( int thisMonth = 1; thisMonth <= 4; thisMonth++ ) // Loop over months
             {
-                thisLine += CreateMonthPartofLineForDay( thisYear + 1, thisMonth, thisDay);
+                if ( thisDay > DateTime.DaysInMonth( thisYear, thisMonth ) )
+                {
+                    thisLine += CString( "   ", FieldWidth / 2 ) + CString( "   ", FieldWidth / 2 );
+                    continue;
+                }
+                else
+                    thisLine += CreateMonthPartofLineForDay( thisYear + 1, thisMonth, thisDay );
             }  // Loop over months
             return thisLine;
         }
@@ -385,7 +397,7 @@ namespace CumulusUtils
                 SnowDepth = thisValue.snowDepth;
                 Snow24h = thisValue.snow24h;
 
-                if ( Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ) // mm
+                if ( Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ) // cm
                 {
                     StrSnowDepth = $"{( ( SnowDepth == null  ) ? "---" : SnowDepth ):F1}";
                     StrSnow24h = $"{( Snow24h == null ? "---" : Snow24h ):F1}";
@@ -430,20 +442,15 @@ namespace CumulusUtils
 
                             while ( reader.Read() )
                             {
-                                // HAR: check reader.hasrecords and within records 
-                                if ( reader.IsDBNull( OrdinalSnow24h ) && reader.IsDBNull( OrdinalSnowDepth ) ) break; // end of records reached
-                                else
+                                DiaryValue tmp = new()
                                 {
-                                    DiaryValue tmp = new()
-                                    {
-                                        ThisDate = reader.GetDateTime( OrdinalTimestamp ),
-                                        snow24h = reader.IsDBNull( OrdinalSnow24h ) ? null : reader.GetFloat( OrdinalSnow24h ),
-                                        snowDepth = reader.IsDBNull( OrdinalSnowDepth ) ? null : reader.GetFloat( OrdinalSnowDepth )
-                                    };
+                                    ThisDate = reader.GetDateTime( OrdinalTimestamp ),
+                                    snow24h = reader.IsDBNull( OrdinalSnow24h ) ? null : reader.GetFloat( OrdinalSnow24h ),
+                                    snowDepth = reader.IsDBNull( OrdinalSnowDepth ) ? null : reader.GetFloat( OrdinalSnowDepth )
+                                };
 
-                                    tmpList.Add( tmp );
-                                    Sup.LogTraceVerboseMessage( $"Value - Date: {tmp.ThisDate} Snow24h: {tmp.snow24h} SnowDepth: {tmp.snowDepth}" );
-                                }
+                                tmpList.Add( tmp );
+                                Sup.LogTraceVerboseMessage( $"Value - Date: {tmp.ThisDate} Snow24h: {tmp.snow24h} SnowDepth: {tmp.snowDepth}" );
                             } // Loop over the records
                         }
                     } // using: Execute the command
