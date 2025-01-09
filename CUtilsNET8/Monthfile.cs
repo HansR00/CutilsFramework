@@ -296,7 +296,7 @@ namespace CumulusUtils
                 ThisValue.CMXLatestGust = Convert.ToSingle( lineSplit[ FieldInUse ], CUtils.Inv );
 
                 FieldInUse = (int) MonthfileFieldName.SolarRad;
-                ThisValue.SolarRad = !string.IsNullOrEmpty(lineSplit[ FieldInUse ]) ? Convert.ToInt32( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+                ThisValue.SolarRad = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToInt32( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                 FieldInUse = (int) MonthfileFieldName.EVT;
                 ThisValue.Evt = Convert.ToSingle( lineSplit[ FieldInUse ], CUtils.Inv );

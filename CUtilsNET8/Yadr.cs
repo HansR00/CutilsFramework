@@ -155,7 +155,7 @@ namespace CumulusUtils
             GenerateYadrWindData( CUtils.YearMin, CUtils.YearMax, Thislist );
             GenerateYadrWindrunData( CUtils.YearMin, CUtils.YearMax, Thislist );
             GenerateYadrPressionData( CUtils.YearMin, CUtils.YearMax, Thislist );
-            GenerateYadrHumidityData(   CUtils.YearMin, CUtils.YearMax, Thislist );
+            GenerateYadrHumidityData( CUtils.YearMin, CUtils.YearMax, Thislist );
         }// End Generate Yadr
         #endregion
 

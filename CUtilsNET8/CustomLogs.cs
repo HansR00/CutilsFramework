@@ -1169,9 +1169,9 @@ namespace CumulusUtils
                 Sup.StationTemp.Text(),             // 380
                 Sup.StationTemp.Text(),
                 Sup.StationTemp.Text(),
+                Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in",
                 "",
-                "",
-                "",
+                Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in",
                 "",
                 Sup.StationTemp.Text(),
                 Sup.StationTemp.Text(),
@@ -1188,8 +1188,23 @@ namespace CumulusUtils
                 Sup.StationTemp.Text(),
                 Sup.StationRain.Text(),
 
-                Sup.StationRain.Text()              // 400
+                Sup.StationRain.Text(),              // 400
+                Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in",     // Laser sensor will mostly be used for snow
+                Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in",     // if not then use the same units (e.g. for groundwater level)
+                Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in",
+                Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in",
+                Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in",
+                Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in",
+                Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in",
+                Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in",
+                Sup.StationTemp.Text(),
 
+                Sup.StationTemp.Text(),              //410
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationRain.Text()
             };
 
             TagAxis = new AxisType[]
@@ -1636,7 +1651,23 @@ namespace CumulusUtils
                 AxisType.Temp,
                 AxisType.Rain,
 
-                AxisType.Rain               // 400
+                AxisType.Rain,               // 400
+                AxisType.Height,
+                AxisType.Height,
+                AxisType.Height,
+                AxisType.Height,
+                AxisType.Height,
+                AxisType.Height,
+                AxisType.Height,
+                AxisType.Height,
+                AxisType.Temp,
+
+                AxisType.Temp,               //410
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Rain
             };
 
             if ( Tagname.Length != TagUnit.Length )
@@ -2129,8 +2160,8 @@ namespace CumulusUtils
             "RecentFeelsLike",
             "RecentHumidex",
             "snowdepth",
-            "snowlying",
-            "snowfalling",
+            "mone",                         // deprecated snowlying
+            "snow24h",                      // deprecated snowfalling => snow24h
             "Tbeaufortnumber",
             "RecentApparent",
             "RecentIndoorTemp",
@@ -2147,7 +2178,23 @@ namespace CumulusUtils
             "YearTempAvg",
             "MonthRainfall",
 
-            "AnnualRainfall"                //400
+            "AnnualRainfall",               //400
+            "LaserDist1",
+            "LaserDist2",
+            "LaserDist3",
+            "LaserDist4",
+            "LaserDepth1",
+            "LaserDepth2",
+            "LaserDepth3",
+            "LaserDepth4",
+            "temp9amTH",
+
+            "temp9amTL",                    //410
+            "temp9amRangeT",
+            "temp9amYH",
+            "temp9amYL",
+            "temp9amRangeY",
+            "rweek"
         };
 
     }

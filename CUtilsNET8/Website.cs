@@ -1953,7 +1953,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     $"          <li class='nav-link' onclick=\"LoadUtilsReport('Yadr.txt', false);\">{Sup.GetCUstringValue( "Website", "Yadr", "Yadr", false )}</li>" +
                     $"          <li class='nav-link' onclick=\"LoadUtilsReport('noaa.txt', false);\">{Sup.GetCUstringValue( "Website", "NOAA", "NOAA", false )}</li>" );
 
-                if (CUtils.HasDiaryMenu)
+                if ( CUtils.HasDiaryMenu )
                     s.Append( $"          <li class='nav-link' onclick=\"LoadUtilsReport('diary.txt', false);\">{Sup.GetCUstringValue( "Website", "Diary", "Diary", false )}</li>" );
 
                 return;

@@ -263,7 +263,7 @@ namespace CumulusUtils
 
                     // Inside sensor
                     FieldInUse = (int) AirlinklogFieldName.In_temp;
-                    ThisValue.In_temp = !string.IsNullOrEmpty(lineSplit[ FieldInUse ]) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+                    ThisValue.In_temp = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) AirlinklogFieldName.In_hum;
                     ThisValue.In_hum = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToInt32( lineSplit[ FieldInUse ], CUtils.Inv ) : null;

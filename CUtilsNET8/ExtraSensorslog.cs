@@ -42,7 +42,8 @@ namespace CumulusUtils
         SoilMoisture5, SoilMoisture6, SoilMoisture7, SoilMoisture8, SoilMoisture9, SoilMoisture10, SoilMoisture11, SoilMoisture12, SoilMoisture13, SoilMoisture14, SoilMoisture15, SoilMoisture16,
         AirQuality1, AirQuality2, AirQuality3, AirQuality4, AirQualityAvg1, AirQualityAvg2, AirQualityAvg3, AirQualityAvg4,
         UserTemp1, UserTemp2, UserTemp3, UserTemp4, UserTemp5, UserTemp6, UserTemp7, UserTemp8,
-        CO2, CO2Avg, CO2_pm2_5, CO2_pm2_5_avg, CO2_pm10, CO2_PM10_avg, CO2_Temp, CO2_Hum
+        CO2, CO2Avg, CO2_pm2_5, CO2_pm2_5_avg, CO2_pm10, CO2_PM10_avg, CO2_Temp, CO2_Hum,
+        LaserDist1, LaserDist2, LaserDist3, LaserDist4, LaserDepth1, LaserDepth2, LaserDepth3, LaserDepth4
     };
 
     public struct ExtraSensorslogValue
@@ -70,7 +71,7 @@ namespace CumulusUtils
         public double? Humidity8 { get; set; }
         public double? Humidity9 { get; set; }
         public double? Humidity10 { get; set; }
-    
+
         public double? Dewpoint1 { get; set; }
         public double? Dewpoint2 { get; set; }
         public double? Dewpoint3 { get; set; }
@@ -150,6 +151,15 @@ namespace CumulusUtils
         public double? CO2_pm10_24h { get; set; }
         public double? CO2_temp { get; set; }
         public double? CO2_hum { get; set; }
+
+        public double? LaserDist1 { get; set; }
+        public double? LaserDist2 { get; set; }
+        public double? LaserDist3 { get; set; }
+        public double? LaserDist4 { get; set; }
+        public double? LaserDepth1 { get; set; }
+        public double? LaserDepth2 { get; set; }
+        public double? LaserDepth3 { get; set; }
+        public double? LaserDepth4 { get; set; }
 
         public bool Valid { get; set; }
     }
@@ -302,7 +312,7 @@ namespace CumulusUtils
                     // Inside sensor
                     FieldInUse = (int) ExtraSensorslogFieldName.Temp1;
                     ThisValue.Temp1 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
-                        
+
                     FieldInUse = (int) ExtraSensorslogFieldName.Temp2;
                     ThisValue.Temp2 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
@@ -400,7 +410,7 @@ namespace CumulusUtils
                     ThisValue.SoilTemp3 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilTemp4;
-                    ThisValue.SoilTemp4 = !string.IsNullOrEmpty(lineSplit[ FieldInUse ]) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+                    ThisValue.SoilTemp4 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     FieldInUse = (int) ExtraSensorslogFieldName.SoilTemp5;
                     ThisValue.SoilTemp5 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;

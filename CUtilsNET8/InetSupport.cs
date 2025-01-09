@@ -280,7 +280,7 @@ namespace CumulusUtils
             // No reason to upload if there is  no file or destination
             if ( string.IsNullOrEmpty( remotefile ) || string.IsNullOrEmpty( localfile ) ) { Sup.LogTraceErrorMessage( $"UploadFile: Nothing uploaded either in or outfile are empty." ); return false; }
             if ( !File.Exists( localfile ) ) { Sup.LogTraceErrorMessage( $"UploadFile: Local file {localfile} does not exist" ); return false; }
-            
+
             bool Upload = Sup.GetUtilsIniValue( "FTP site", "DoUploadFTP", "false" ).Equals( "true", CUtils.Cmp );
             if ( !Upload ) { Sup.LogTraceInfoMessage( $"UploadFile: DoUploadFTP configured false => No Upload." ); return false; }      // No reason to do the whole procedure if we don't have to upload
 
@@ -566,7 +566,7 @@ namespace CumulusUtils
             // Note: I use 'using' because it is easier and it gets only called for UserReports, MAps and yourweather.co.uk so 
             //       there is no risk - I don't see a risk - of socket exhaustion
             //
-            using ( HttpClient GetClient = new HttpClient( ) )
+            using ( HttpClient GetClient = new HttpClient() )
             {
                 try
                 {
@@ -592,7 +592,7 @@ namespace CumulusUtils
             // Note: I use 'using' because it is easier and it gets only called for UserReports so 
             //       there is no risk - I don't see a risk - of socket exhaustion
 
-            using ( HttpClient PostClient = new HttpClient( ) )
+            using ( HttpClient PostClient = new HttpClient() )
             {
                 Sup.LogTraceInfoMessage( $"PostUrlData Calling PostAsync" );
 

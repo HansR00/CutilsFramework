@@ -66,7 +66,7 @@ namespace CumulusUtils
     {
         public enum ExtraSensorType
         {
-            Temperature, Humidity, DewPoint, SoilTemp, SoilMoisture, AirQuality, AirQualityAvg, UserTemp, LeafTemp, LeafWetness,
+            Temperature, Humidity, DewPoint, SoilTemp, SoilMoisture, AirQuality, AirQualityAvg, UserTemp, LeafTemp, LeafWetness, LaserDist, LaserDepth,
             CO2, CO2avg, CO2pm2p5, CO2pm2p5avg, CO2pm10, CO2pm10avg, CO2temp, CO2hum, External, Lightning
         }
 
@@ -220,6 +220,20 @@ namespace CumulusUtils
                         sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
                         sb.AppendLine( $"    $('#ajxAirQualityAvg{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {PMconc.Text()}');" );
                         sb.AppendLine( $"    $('#ajxAirQualityAvg{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                        sb.AppendLine( "  }" );
+                        break;
+                    case (int) ExtraSensorType.LaserDist:
+                        sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
+                        sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
+                        sb.AppendLine( $"    $('#ajxLaserDist{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' cm');" );
+                        sb.AppendLine( $"    $('#ajxLaserDist{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                        sb.AppendLine( "  }" );
+                        break;
+                    case (int) ExtraSensorType.LaserDepth:
+                        sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
+                        sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
+                        sb.AppendLine( $"    $('#ajxLaserDepth{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' cm');" );
+                        sb.AppendLine( $"    $('#ajxLaserDepth{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
                         sb.AppendLine( "  }" );
                         break;
                     case (int) ExtraSensorType.CO2:
@@ -386,6 +400,14 @@ namespace CumulusUtils
                     case (int) ExtraSensorType.AirQualityAvg:
                         buf.Append(
                             $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxAirQualityAvg{tmp.SensorIndex}'></td></tr>" );
+                        break;
+                    case (int) ExtraSensorType.LaserDist:
+                        buf.Append(
+                            $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxLaserDist{tmp.SensorIndex}'></td></tr>" );
+                        break;
+                    case (int) ExtraSensorType.LaserDepth:
+                        buf.Append(
+                            $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxLaserDepth{tmp.SensorIndex}'></td></tr>" );
                         break;
                     case (int) ExtraSensorType.CO2:
                         buf.Append(
@@ -653,8 +675,17 @@ namespace CumulusUtils
                         Field = thisList[ 0 ].GetType().GetProperty( VariableName );
                         foreach ( ExtraSensorslogValue value in thisList )
                         {
-                            double d = (double) Field.GetValue( value );
-                            sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d.ToString( "F2", CUtils.Inv )}]," );
+                            try
+                            {
+                                double? d = (double) Field.GetValue( value );
+                                sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d?.ToString( "F2", CUtils.Inv )}]," );
+                            }
+                            catch ( Exception e )
+                            {
+                                Sup.LogTraceInfoMessage( $"UserAskedData: Failing in GenerateExtraSensorDataJson {value}" );
+                                Sup.LogTraceInfoMessage( $"UserAskedData: Message - {e.Message})" );
+                                Sup.LogTraceInfoMessage( $"UserAskedData: Continuing" );
+                            }
                         }
 
                         sb.Remove( sb.Length - 1, 1 );
@@ -710,6 +741,12 @@ namespace CumulusUtils
                             break;
                         case (int) ExtraSensorType.AirQualityAvg:
                             sb.Append( $"<#AirQualityAvg{tmp.SensorIndex} rc=y> " );
+                            break;
+                        case (int) ExtraSensorType.LaserDist:
+                            sb.Append( $"<#LaserDist{tmp.SensorIndex} rc=y> " );
+                            break;
+                        case (int) ExtraSensorType.LaserDepth:
+                            sb.Append( $"<#LaserDepth{tmp.SensorIndex} rc=y> " );
                             break;
                         case (int) ExtraSensorType.CO2:
                             sb.Append( $"<#CO2 rc=y> " );
@@ -859,8 +896,28 @@ namespace CumulusUtils
                 registerSensor( thisSensor, i, ExtraSensorType.LeafWetness );
             }
 
-            // Check for the CO2 sensor (WH45). If there is a non-zero value in the CO2 field then the sensor is present.
+            // Extra LaserDist sensors
             PlotvarStartindex += 8;
+            ActiveSensors = GetActiveSensors( "LaserDist" );
+
+            foreach ( int i in ActiveSensors )
+            {
+                thisSensor = Sup.GetStringsIniValue( "LaserDistCaptions", $"Sensor{i}", "" );
+                registerSensor( thisSensor, i, ExtraSensorType.LaserDist );
+            }
+
+            // Extra LaserDepth sensors
+            PlotvarStartindex += 4;
+            ActiveSensors = GetActiveSensors( "LaserDepth" );
+
+            foreach ( int i in ActiveSensors )
+            {
+                thisSensor = Sup.GetStringsIniValue( "LaserDepthCaptions", $"Sensor{i}", "" );
+                registerSensor( thisSensor, i, ExtraSensorType.LaserDepth );
+            }
+
+            // Check for the CO2 sensor (WH45). If there is a non-zero value in the CO2 field then the sensor is present.
+            PlotvarStartindex += 4;
             ActiveSensors = GetActiveSensors( "CO2" );
 
             if ( ActiveSensors.Length > 1 )  // 

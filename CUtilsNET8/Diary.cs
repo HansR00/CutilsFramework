@@ -30,12 +30,12 @@
  *   - https://www.komokaweather.com/weather/snowfall-log.pdf
  */
 
-using System.Collections.Generic;
 using System;
-using Microsoft.Data.Sqlite;
+using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Linq;
+using System.Text;
+using Microsoft.Data.Sqlite;
 
 namespace CumulusUtils
 {
@@ -93,7 +93,7 @@ namespace CumulusUtils
                 of.WriteLine( "console.log('Module DIARY...');" );
                 of.WriteLine( "$(function() {" );
                 of.WriteLine( "  $('#year').change(function() {" );
-                of.WriteLine( "    SetTableView();" );
+                of.WriteLine( "    ReloadOnYearChange();" );
                 of.WriteLine( "  });" );
 
                 of.WriteLine( "  $('#YRNext').click(function() {" );
@@ -110,21 +110,26 @@ namespace CumulusUtils
                 of.WriteLine( "    };" ); // else do nothing
                 of.WriteLine( "  });" );
 
-                of.WriteLine( "  if ( urlParams.has( 'dropdown' ) ) {" );
-                of.WriteLine( "    Diary2Load = urlParams.get( 'dropdown' );" );
-                of.WriteLine( "    switch ( Diary2Load ) {" );
-                of.WriteLine( "      case 'DiaryReport':" );
-                of.WriteLine( "        SetTableView(); " );
-                of.WriteLine( "        break;" );
-                of.WriteLine( "      case 'DiaryChart':" );
-                of.WriteLine( "        SetChartView();" );
-                of.WriteLine( "        break;" );
-                of.WriteLine( "      default:" );
-                of.WriteLine( "        SetTableView();" );
-                of.WriteLine( "        break;" );
-                of.WriteLine( "    } " );
-                of.WriteLine( "  }else SetTableView();" );
+                of.WriteLine( "$('#year').trigger('change');" );
                 of.WriteLine( "});" );
+
+                of.WriteLine( "  function ReloadOnYearChange() {" );
+                of.WriteLine( "    if ( urlParams.has( 'dropdown' ) ) {" );
+                of.WriteLine( "      Diary2Load = urlParams.get( 'dropdown' );" );
+                of.WriteLine( "      console.log('Module DIARY Reloading ... ' + Diary2Load);" );
+                of.WriteLine( "      switch ( Diary2Load ) {" );
+                of.WriteLine( "        case 'DiaryReport':" );
+                of.WriteLine( "          SetTableView(); " );
+                of.WriteLine( "          break;" );
+                of.WriteLine( "        case 'DiaryChart':" );
+                of.WriteLine( "          SetChartView();" );
+                of.WriteLine( "          break;" );
+                of.WriteLine( "        default:" );
+                of.WriteLine( "          SetTableView();" );
+                of.WriteLine( "          break;" );
+                of.WriteLine( "      } " );
+                of.WriteLine( "    }else SetTableView();" );
+                of.WriteLine( "  }; " );
 
                 of.WriteLine( "function SetTableView( )" );
                 of.WriteLine( "{" );
@@ -178,7 +183,9 @@ namespace CumulusUtils
                 of.WriteLine( "    series: [],rangeSelector:{inputEnabled: true,selected: 4}" );
                 of.WriteLine( "};" );
 
+                //of.WriteLine( "startDate = $('#year').val() + '-06-01'; stopDate=(Number($('#year').val()) + 1) + '-06-01';" );
                 of.WriteLine( "chart = new Highcharts.StockChart( options );chart.showLoading();" );
+                //of.WriteLine( "chart.xAxis[0].setExtremes(startDate, stopDate);" );
 
                 of.WriteLine( "$.ajax({" );
                 of.WriteLine( $"  url: '{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}alldailysnowdata.json'," );
@@ -239,16 +246,16 @@ namespace CumulusUtils
                 of.WriteLine( $"<input type = 'button' class=buttonSlim value = '{Sup.GetCUstringValue( "Diary", "TableView", "TableView", false )}' onclick='SetTableView()'>" );
                 of.WriteLine( $"<input type = 'button' class=buttonSlim value = '{Sup.GetCUstringValue( "Diary", "ChartView", "ChartView", false )}' onclick='SetChartView()'>" );
                 of.WriteLine( "</div>" );
-    
 
-//                of.WriteLine( "<div id=report><br/>" );
                 of.WriteLine( "<p style='text-align:center;'>" );
                 of.WriteLine( $"  <input type='button' class=buttonFat id='YRPrev' value='{Sup.GetCUstringValue( "General", "PrevYear", "Prev Year", false )}'>" );
                 of.WriteLine( "  <select id='year'>" );
 
-                for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
+                int StartYear = DateTime.Now.Month > 6 && DateTime.Now.Month <= 12 ? DateTime.Now.Year : DateTime.Now.Year - 1;
+
+                for ( int i = CUtils.YearMin; i <= StartYear; i++ )
                 {
-                    if ( i < CUtils.YearMax )
+                    if ( i < StartYear )
                         of.WriteLine( $"<option value='{i}'>{i}</option>" );
                     else
                         of.WriteLine( $"<option value='{i}' selected>{i}</option>" );
@@ -290,11 +297,11 @@ namespace CumulusUtils
 
             Sup.LogTraceInfoMessage( $"Start Generating Diary data" );
 
-            if (NorthernHemisphere)
+            if ( NorthernHemisphere )
             {
                 for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
                 {
-                    if ( CUtils.Thrifty && i < CUtils.YearMax ) continue; // Under thrifty we only generate the current winterseason
+                    //if ( CUtils.Thrifty && i < CUtils.YearMax ) continue; // Under thrifty we only generate the current winterseason
 
                     Sup.LogTraceInfoMessage( $"Start Generating Diary data for {i}" );
 
@@ -312,16 +319,16 @@ namespace CumulusUtils
             return;
         }
 
-        private void GenerateDiaryForThisYear(int thisYear )
+        private void GenerateDiaryForThisYear( int thisYear )
         {
             string thisLine2 = "";
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}Diary{thisYear}.txt", false, Encoding.UTF8 ) )
             {
-                of.WriteLine( CString( $"{thisYear}/{thisYear + 1} Seasonal snowfall in {Sup.GetCumulusIniValue( "Station", "LocName", "" )}", 15 * FieldWidth/2 ) );
+                of.WriteLine( CString( $"{thisYear}/{thisYear + 1} Seasonal snowfall in {Sup.GetCumulusIniValue( "Station", "LocName", "" )}", 15 * FieldWidth / 2 ) );
                 of.WriteLine( CString( $"Measured each day at about " +
                     $"{Sup.GetCumulusIniValue( "Station", "SnowDepthHour", "" )} hr for the previous 24 hrs " +
-                    $"(in {( Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "" ) == "0" ? "cm" : "in" )})", 15 * FieldWidth/2 ) );
+                    $"(in {( Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "" ) == "0" ? "cm" : "in" )})", 15 * FieldWidth / 2 ) );
                 of.WriteLine();
 
                 of.WriteLine( CString( "Day", FieldWidth / 2 ) +
@@ -329,7 +336,7 @@ namespace CumulusUtils
                     CString( Months.Dec.ToString(), FieldWidth ) + CString( Months.Jan.ToString(), FieldWidth ) +
                     CString( Months.Feb.ToString(), FieldWidth ) + CString( Months.Mar.ToString(), FieldWidth ) + CString( Months.Apr.ToString(), FieldWidth ) );
 
-                of.WriteLine( $"{"",FieldWidth / 2}" + 
+                of.WriteLine( $"{"",FieldWidth / 2}" +
                     CString( "24 hrs", FieldWidth / 2 ) + CString( "Snow", FieldWidth / 2 ) +
                     CString( "24 hrs", FieldWidth / 2 ) + CString( "Snow", FieldWidth / 2 ) +
                     CString( "24 hrs", FieldWidth / 2 ) + CString( "Snow", FieldWidth / 2 ) +
@@ -356,7 +363,7 @@ namespace CumulusUtils
         {
             string thisLine = "";
 
-            thisLine += CString( thisDay.ToString(), FieldWidth/2);
+            thisLine += CString( thisDay.ToString(), FieldWidth / 2 );
 
             for ( int thisMonth = 10; thisMonth <= 12; thisMonth++ ) // Loop over months
             {
@@ -366,7 +373,7 @@ namespace CumulusUtils
                     continue;
                 }
                 else
-                    thisLine += CreateMonthPartofLineForDay( thisYear, thisMonth, thisDay);
+                    thisLine += CreateMonthPartofLineForDay( thisYear, thisMonth, thisDay );
             }  // Loop over months
 
             for ( int thisMonth = 1; thisMonth <= 4; thisMonth++ ) // Loop over months
@@ -382,7 +389,7 @@ namespace CumulusUtils
             return thisLine;
         }
 
-        private string CreateMonthPartofLineForDay( int thisYear, int thisMonth, int thisDay)
+        private string CreateMonthPartofLineForDay( int thisYear, int thisMonth, int thisDay )
         {
             DiaryValue thisValue;
             float? SnowDepth, Snow24h;
@@ -399,7 +406,7 @@ namespace CumulusUtils
 
                 if ( Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ) // cm
                 {
-                    StrSnowDepth = $"{( ( SnowDepth == null  ) ? "---" : SnowDepth ):F1}";
+                    StrSnowDepth = $"{( ( SnowDepth == null ) ? "---" : SnowDepth ):F1}";
                     StrSnow24h = $"{( Snow24h == null ? "---" : Snow24h ):F1}";
                 }
                 else
@@ -433,7 +440,7 @@ namespace CumulusUtils
 
                     using ( SqliteDataReader reader = command.ExecuteReader() )
                     {
-                        if ( reader.HasRows ) 
+                        if ( reader.HasRows )
                         {
                             int OrdinalTimestamp = reader.GetOrdinal( "Date" );
                             int OrdinalEntry = reader.GetOrdinal( "Entry" );

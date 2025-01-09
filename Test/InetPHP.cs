@@ -37,7 +37,7 @@ namespace Test
 
         public HttpClient phpUploadHttpClient;
 
-        public InetPHP( )
+        public InetPHP()
         {
             PhpUrl = "https://meteo-wagenborgen.nl/upload.php";
             PhpSecret = "1c7ebb2f-77db-4673-89aa-3dae544774d0";

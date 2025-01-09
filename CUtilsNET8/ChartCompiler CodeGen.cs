@@ -788,7 +788,7 @@ namespace CumulusUtils
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Compiler", "Height", "Height", true )} " +
                         $"({( string.IsNullOrEmpty( thisPlotvar.Unit ) ? Sup.StationHeight.Text() : thisPlotvar.Unit )})'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
-                    buf.Append( $"softMax: 100,softMin: 0,showLastLabel: true," );
+                    buf.Append( $"softMax: 10,softMin: 0,showLastLabel: true," );
                     buf.Append( "allowDecimals: false," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}," );
                     AxisSet |= AxisType.Height;

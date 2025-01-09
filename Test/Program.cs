@@ -10,7 +10,7 @@ namespace Test
     {
         public static async Task Main()
         {
-            InetPHP clientPhp = new InetPHP( );
+            InetPHP clientPhp = new InetPHP();
 
             Console.WriteLine( DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + "Uploading = UploadTestforCloud86.txt" );
 

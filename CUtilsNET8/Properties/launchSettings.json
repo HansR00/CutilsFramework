@@ -2,7 +2,7 @@
   "profiles": {
     "CUtilsNET8": {
       "commandName": "Project",
-      "commandLineArgs": "diary",
+      "commandLineArgs": "useraskeddata",
       "workingDirectory": "C:\\Users\\hansr\\Documents\\GitHub\\CutilsFramework\\CUtilsNET8\\bin\\Debug\\net8.0",
       "nativeDebugging": false,
       "hotReloadEnabled": true

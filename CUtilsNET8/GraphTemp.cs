@@ -446,7 +446,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "  }," );
             thisBuffer.AppendLine( "  subtitle:" );
             thisBuffer.AppendLine( "  {" );
-            thisBuffer.AppendLine( $"    text: '{Sup.GetCumulusIniValue( "Station", "LocDesc", "Unknown Station")}'" );
+            thisBuffer.AppendLine( $"    text: '{Sup.GetCumulusIniValue( "Station", "LocDesc", "Unknown Station" )}'" );
             thisBuffer.AppendLine( "  }," );
             thisBuffer.AppendLine( "  xAxis:" );
             thisBuffer.AppendLine( "  {" );

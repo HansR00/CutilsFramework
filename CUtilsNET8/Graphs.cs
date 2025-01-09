@@ -68,7 +68,7 @@ namespace CumulusUtils
         private readonly string[] m = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };  //Culture independent, just strings to compare in the menu
 
         private enum WarmDayType { Zero, Plus25Day, Plus30Day, Plus35Day, Plus40Day };
-        private enum ColdDayType { Zero, FrostDay, IceDay};
+        private enum ColdDayType { Zero, FrostDay, IceDay };
 
         // source : 
         // Version 2 : private const string graphColors = "['#4363d8', '#e6194B', '#f58231', '#ffe119', '#bfef45', '#3cb44b',  '#42d4f4', '#911eb4','#f032e6', '#fabed4', '#469990', '#dcbeff', '#9A6324', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075']";

@@ -617,9 +617,9 @@ namespace CumulusUtils
 
                 Diary fncs = new Diary( Sup );
 
-                if (HasDiaryMenu)
+                if ( HasDiaryMenu )
                 {
-                    if ( !Thrifty ) fncs.GenerateDiaryDisplay();
+                    fncs.GenerateDiaryDisplay();
                     fncs.GenerateDiaryReport();
                 }
 
@@ -705,7 +705,7 @@ namespace CumulusUtils
                 //
                 // NOAA has no Async and is independent of InetSupport!!
                 //
-                if ( DoNOAA && ( !Thrifty || RunStarted.Day == 2 ) )
+                if ( DoNOAA )
                 {
 #if TIMING
                     watch = Stopwatch.StartNew();
@@ -1054,9 +1054,8 @@ namespace CumulusUtils
                 await Isup.UploadFileAsync( $"{Sup.RecordsOutputFilename}", $"{Sup.PathUtils}{Sup.RecordsOutputFilename}" );
             }
 
-            if ( DoNOAA && ( !Thrifty || RunStarted.Day == 2 ) ) // Only useful on second day of month
+            if ( DoNOAA ) // Only useful on second day of month
             {
-                Sup.LogTraceInfoMessage( $"Thrifty: DoNOAA && (!Thrifty || RunStarted.Day == 2) - {!Thrifty || RunStarted.Day == 2} => Uploading = {Sup.NOAAOutputFilename}" );
                 await Isup.UploadFileAsync( $"{Sup.NOAAOutputFilename}", $"{Sup.PathUtils}{Sup.NOAAOutputFilename}" );
             }
 
@@ -1087,16 +1086,19 @@ namespace CumulusUtils
             if ( DoCUlib )
                 await Isup.UploadFileAsync( $"lib/{Sup.CUlibOutputFilename}", $"{Sup.PathUtils}{Sup.CUlibOutputFilename}" );
 
-            if ( DoDiary && HasDiaryMenu && !Thrifty )  // i.e. there is data in the diary and do we want to upload the module
+            int StartYear = DateTime.Now.Month > 6 && DateTime.Now.Month <= 12 ? DateTime.Now.Year : DateTime.Now.Year - 1;
+
+            if ( DoDiary && HasDiaryMenu )  // i.e. there is data in the diary and do we want to upload the module
             {
                 await Isup.UploadFileAsync( $"{Sup.DiaryOutputFilename}", $"{Sup.PathUtils}{Sup.DiaryOutputFilename}" );
 
-                for ( int i = YearMin; i < YearMax; i++ )
-                    await Isup.UploadFileAsync( $"Diary{i}.txt", $"{Sup.PathUtils}Diary{i}.txt" );
-            } 
-            
-            if ( DoDiary && HasDiaryMenu ) // Previous Data has already been uploaded above when !Thrifty only do report of this year (YearMax)
-                await Isup.UploadFileAsync( $"Diary{YearMax}.txt", $"{Sup.PathUtils}Diary{YearMax}.txt" );
+                if ( !Thrifty )
+                    for ( int i = YearMin; i <= StartYear; i++ )
+                        await Isup.UploadFileAsync( $"Diary{i}.txt", $"{Sup.PathUtils}Diary{i}.txt" );
+                else
+                    // Previous Data has already been uploaded above when !Thrifty only do report of this year (YearMax)
+                    await Isup.UploadFileAsync( $"Diary{StartYear}.txt", $"{Sup.PathUtils}Diary{StartYear}.txt" );
+            }
 
             if ( DoYadr )
             {
