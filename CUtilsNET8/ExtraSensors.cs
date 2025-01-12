@@ -675,17 +675,10 @@ namespace CumulusUtils
                         Field = thisList[ 0 ].GetType().GetProperty( VariableName );
                         foreach ( ExtraSensorslogValue value in thisList )
                         {
-                            try
-                            {
-                                double? d = (double) Field.GetValue( value );
-                                sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d?.ToString( "F2", CUtils.Inv )}]," );
-                            }
-                            catch ( Exception e )
-                            {
-                                Sup.LogTraceInfoMessage( $"UserAskedData: Failing in GenerateExtraSensorDataJson {value}" );
-                                Sup.LogTraceInfoMessage( $"UserAskedData: Message - {e.Message})" );
-                                Sup.LogTraceInfoMessage( $"UserAskedData: Continuing" );
-                            }
+                            double? d = (double?) Field.GetValue( value );
+
+                            if ( d is not null ) sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d?.ToString( "F2", CUtils.Inv )}]," );
+                            else sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},null]," );
                         }
 
                         sb.Remove( sb.Length - 1, 1 );

@@ -727,7 +727,7 @@ namespace CumulusUtils
 
 
                     of.AppendLine( "  legend: { enabled: true}," );
-                    of.AppendLine( "  plotOptions: {series: {turboThreshold: 0}}," );
+                    of.AppendLine( $"  plotOptions: {{series: {{connectNulls: {Sup.GetUtilsIniValue( "General", "ConnectNulls", "false" )}, turboThreshold: 0}} }}," );
                     of.AppendLine( "  tooltip: { valueSuffix: ' μg/m3',valueDecimals: 1,xDateFormat: '%A, %b %e, %H:%M'}," );
                     of.AppendLine( "  series:[]," );
                     of.AppendLine( "  rangeSelector:" );
@@ -1139,8 +1139,10 @@ namespace CumulusUtils
                             Field = thisList[ 0 ].GetType().GetProperty( VariableName );
                             foreach ( AirlinklogValue value in thisList )
                             {
-                                double d = (double) Field.GetValue( value );
-                                sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d.ToString( "F2", CUtils.Inv )}]," );
+                                double? d = (double?) Field.GetValue( value );
+
+                                if ( d is not null )  sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d?.ToString( "F2", CUtils.Inv )}]," );
+                                else sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},null]," );
                             }
 
                             sb.Remove( sb.Length - 1, 1 );
@@ -1155,8 +1157,10 @@ namespace CumulusUtils
                             Field = thisList[ 0 ].GetType().GetProperty( VariableName );
                             foreach ( AirlinklogValue value in thisList )
                             {
-                                double d = (double) Field.GetValue( value );
-                                sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d.ToString( "F2", CUtils.Inv )}]," );
+                                double? d = (double?) Field.GetValue( value );
+
+                                if ( d is not null ) sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d?.ToString( "F2", CUtils.Inv )}]," );
+                                else sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},null]," );
                             }
 
                             sb.Remove( sb.Length - 1, 1 );
@@ -1171,8 +1175,10 @@ namespace CumulusUtils
                             Field = thisList[ 0 ].GetType().GetProperty( VariableName );
                             foreach ( AirlinklogValue value in thisList )
                             {
-                                double d = (double) Field.GetValue( value );
-                                sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d.ToString( "F2", CUtils.Inv )}]," );
+                                double? d = (double?) Field.GetValue( value );
+
+                                if ( d is not null ) sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d?.ToString( "F2", CUtils.Inv )}]," );
+                                else sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},null]," );
                             }
 
                             sb.Remove( sb.Length - 1, 1 );
@@ -1187,8 +1193,10 @@ namespace CumulusUtils
                             Field = thisList[ 0 ].GetType().GetProperty( VariableName );
                             foreach ( AirlinklogValue value in thisList )
                             {
-                                double d = (double) Field.GetValue( value );
-                                sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d.ToString( "F2", CUtils.Inv )}]," );
+                                double? d = (double?) Field.GetValue( value );
+
+                                if ( d is not null ) sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d?.ToString( "F2", CUtils.Inv )}]," );
+                                else sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},null]," );
                             }
 
                             sb.Remove( sb.Length - 1, 1 );
@@ -1203,8 +1211,10 @@ namespace CumulusUtils
                             Field = thisList[ 0 ].GetType().GetProperty( VariableName );
                             foreach ( AirlinklogValue value in thisList )
                             {
-                                double d = (double) Field.GetValue( value );
-                                sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d.ToString( "F2", CUtils.Inv )}]," );
+                                double? d = (double?) Field.GetValue( value );
+
+                                if ( d is not null ) sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d?.ToString( "F2", CUtils.Inv )}]," );
+                                else sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},null]," );
                             }
 
                             sb.Remove( sb.Length - 1, 1 );

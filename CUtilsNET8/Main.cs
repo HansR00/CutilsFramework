@@ -230,7 +230,7 @@ namespace CumulusUtils
         public static int FTPIntervalInMinutes { get; set; }
         public static int UtilsRealTimeInterval { get; set; }
         public static bool DoingUserAskedData { get; set; }
-
+        public static bool ConnectNulls { get; set; }
         public static int YearMax { get; set; }
         public static int YearMin { get; set; }
 
@@ -342,6 +342,7 @@ namespace CumulusUtils
                 LogIntervalInMinutes = PossibleIntervals[ Convert.ToInt32( Sup.GetCumulusIniValue( "Station", "DataLogInterval", "" ), Inv ) ];
                 FTPIntervalInMinutes = Convert.ToInt32( Sup.GetCumulusIniValue( "FTP site", "UpdateInterval", "" ) );
                 UtilsRealTimeInterval = Convert.ToInt32( Sup.GetUtilsIniValue( "Website", "CumulusRealTimeInterval", "15" ) ); // Sorry for the confused naming
+                ConnectNulls = Sup.GetUtilsIniValue( "General", "ConnectNulls", "false" ).Equals("true");
 
                 // Now start doing things
                 CUtils p = new CUtils();
@@ -595,7 +596,7 @@ namespace CumulusUtils
 #endif
 
                 CustomLogs fncs = new CustomLogs( Sup );
-                fncs.DoCustomLogs();
+                fncs.DoCustomLogs( );
 
 #if TIMING
                 watch.Stop();
