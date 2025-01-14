@@ -40,7 +40,7 @@ namespace CumulusUtils
     public class CuSupport : IDisposable
     {
         // Is it a version number beta shown at users?
-        const string beta = "beta 5";
+        const string beta = "";
 
         #region declarations
         public Wind StationWind { get; set; }
@@ -674,7 +674,7 @@ namespace CumulusUtils
         //Check, not sure this works because of the i-- required to stay on the position of the deleted item.
         public static T[] RemoveAt<T>( this T[] source, int index )
         {
-            if ( source == null )
+            if ( source is null )
                 throw new ArgumentNullException( paramName: nameof( source ), "RemoveAt method used with array argument Null." );
 
             T[] dest = new T[ source.Length - 1 ];
@@ -851,7 +851,7 @@ namespace CumulusUtils
 
         private static byte[] Encrypt( string data, ICryptoTransform cryptoTransform )
         {
-            if ( data == null || data.Length <= 0 )
+            if ( data is null || data.Length <= 0 )
                 throw new ArgumentException( "Invalid data", nameof( data ) );
 
             using var memoryStream = new MemoryStream();
@@ -866,7 +866,7 @@ namespace CumulusUtils
 
         private static string Decrypt( byte[] data, ICryptoTransform cryptoTransform )
         {
-            if ( data == null || data.Length <= 0 )
+            if ( data is null || data.Length <= 0 )
                 throw new ArgumentException( "Invalid data", nameof( data ) );
 
             using var memoryStream = new MemoryStream( data );

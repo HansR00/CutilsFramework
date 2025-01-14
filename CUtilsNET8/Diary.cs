@@ -62,7 +62,7 @@ namespace CumulusUtils
             DiaryValues = LoadDiaryDatabase();
 
             // After the next call DiaryList contains all Diary fields except where only the entry is filled
-            if ( DiaryValues == null )
+            if ( DiaryValues is null )
             {
                 Sup.LogTraceInfoMessage( "Diary database: No Data" );
                 CUtils.HasDiaryMenu = false;
@@ -406,13 +406,13 @@ namespace CumulusUtils
 
                 if ( Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ) // cm
                 {
-                    StrSnowDepth = $"{( ( SnowDepth == null ) ? "---" : SnowDepth ):F1}";
-                    StrSnow24h = $"{( Snow24h == null ? "---" : Snow24h ):F1}";
+                    StrSnowDepth = $"{( ( SnowDepth is null ) ? "---" : SnowDepth ):F1}";
+                    StrSnow24h = $"{( Snow24h is null ? "---" : Snow24h ):F1}";
                 }
                 else
                 {
-                    StrSnowDepth = $"{( ( SnowDepth == null ) ? "---" : SnowDepth ):F2}";
-                    StrSnow24h = $"{( Snow24h == null ? "---" : Snow24h ):F2}";
+                    StrSnowDepth = $"{( ( SnowDepth is null ) ? "---" : SnowDepth ):F2}";
+                    StrSnow24h = $"{( Snow24h is null ? "---" : Snow24h ):F2}";
                 }
 
                 thisLine += CString( StrSnow24h, FieldWidth / 2 ) + CString( StrSnowDepth, FieldWidth / 2 );

@@ -1077,7 +1077,7 @@ namespace CumulusUtils
 
             foreach ( ChartDef c in theseCharts )
                 foreach ( Plotvar p in c.PlotVars )
-                    if ( p.Equation == null )
+                    if ( p.Equation is null )
                     {
                         if ( p.GraphType == "columnrange" )
                         {

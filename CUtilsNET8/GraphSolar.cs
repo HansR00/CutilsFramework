@@ -769,7 +769,7 @@ namespace CumulusUtils
 
                 foreach ( MonthfileValue entry in DayList )
                 {
-                    if ( entry.SolarRad == null ) continue;
+                    if ( entry.SolarRad is null ) continue;
 
                     if ( ++nextIndex < DayList.Count - 1 )
                     {

@@ -50,7 +50,7 @@
     <Product>CumulusUtils</Product>
     <Copyright>Copyright © Hans Rottier 2019-2024</Copyright>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <AssemblyVersion>7.3.3</AssemblyVersion>
+    <AssemblyVersion>7.4.0</AssemblyVersion>
     <FileVersion>1.0.0</FileVersion>
     <PackAsTool>True</PackAsTool>
   </PropertyGroup>

@@ -599,12 +599,12 @@ namespace CumulusUtils
                     Console.WriteLine( $"{m} fail: {e.Message}" );
                     Console.WriteLine( $"{m}: in field nr {FieldInUse} ({enumFieldTypeNames[ FieldInUse ]})" );
 
-                    if ( string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) )
-                    {
-                        // After the introduction of the null values this catch should not be necessary anymore
-                        //
-                        Sup.LogTraceErrorMessage( $"{m}: Field {enumFieldTypeNames[ FieldInUse ]} is Empty" );
-                    }
+                    //if ( string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) )
+                    //{
+                    //    // After the introduction of the null values this catch should not be necessary anymore
+                    //    //
+                    //    Sup.LogTraceErrorMessage( $"{m}: Field {enumFieldTypeNames[ FieldInUse ]} is Empty" );
+                    //}
                 }
 
                 if ( IgnoreDataErrors )

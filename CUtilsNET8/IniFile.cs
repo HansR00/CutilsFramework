@@ -117,7 +117,7 @@ namespace CumulusUtils
                     // *** Read up the file content ***
                     Dictionary<string, string> CurrentSection = null;
                     string s;
-                    while ( ( s = sr.ReadLine() ) != null )
+                    while ( ( s = sr.ReadLine() ) is not null )
                     {
                         s = s.Trim();
 
@@ -140,7 +140,7 @@ namespace CumulusUtils
                                 }
                             }
                         }
-                        else if ( CurrentSection != null )
+                        else if ( CurrentSection is not null )
                         {
                             // *** Check for key+value pair ***
                             int i;
@@ -282,7 +282,7 @@ namespace CumulusUtils
         // *** Encode byte array ***
         private string EncodeByteArray( byte[] Value )
         {
-            if ( Value == null )
+            if ( Value is null )
                 return null;
 
             StringBuilder sb = new StringBuilder();
@@ -308,7 +308,7 @@ namespace CumulusUtils
         // *** Decode byte array ***
         private byte[] DecodeByteArray( string Value )
         {
-            if ( Value == null )
+            if ( Value is null )
                 return null;
 
             int l = Value.Length;
