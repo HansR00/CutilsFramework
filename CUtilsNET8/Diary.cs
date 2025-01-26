@@ -402,7 +402,7 @@ namespace CumulusUtils
                                     .Where( x => x.ThisDate.Day == thisDay ).First();
 
                 SnowDepth = thisValue.snowDepth;
-                Snow24h = thisValue.snow24h;
+                Snow24h = thisValue.snow24h;  // See https://cumulus.hosiene.co.uk/viewtopic.php?p=188423#p188423
 
                 if ( Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ) // cm
                 {

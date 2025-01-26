@@ -1632,9 +1632,9 @@ namespace CumulusUtils
                 AxisType.Temp,              // 380
                 AxisType.Temp,
                 AxisType.Temp,
+                AxisType.Distance,
                 AxisType.Free,
-                AxisType.Free,
-                AxisType.Free,
+                AxisType.Distance,
                 AxisType.Free,
                 AxisType.Temp,
                 AxisType.Temp,
@@ -2161,7 +2161,7 @@ namespace CumulusUtils
             "RecentHumidex",
             "snowdepth",
             "mone",                         // deprecated snowlying
-            "snow24h",                      // deprecated snowfalling => snow24h
+            "snow24hr",                     // deprecated snowfalling => snow24h
             "Tbeaufortnumber",
             "RecentApparent",
             "RecentIndoorTemp",

@@ -60,7 +60,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "  }," );
             thisBuffer.AppendLine( "  subtitle:" );
             thisBuffer.AppendLine( "  {" );
-            thisBuffer.AppendLine( $"    text: \"{Sup.GetCumulusIniValue( "Station", "LocDesc", "Unknown Station" )}\"" );
+            thisBuffer.AppendLine( $"    text: '{Sup.GetCumulusIniValue( "Station", "LocDesc", "Unknown Station" )}'" );
             thisBuffer.AppendLine( "  }," );
             thisBuffer.AppendLine( "  xAxis:" );
             thisBuffer.AppendLine( "  {" );
@@ -320,7 +320,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "  }," );
             thisBuffer.AppendLine( "  subtitle:" );
             thisBuffer.AppendLine( "  {" );
-            thisBuffer.AppendLine( $"    text: \"{Sup.GetCumulusIniValue( "Station", "LocDesc", "Unknown Station" )}\"" );
+            thisBuffer.AppendLine( $"    text: '{Sup.GetCumulusIniValue( "Station", "LocDesc", "Unknown Station" )}'" );
             thisBuffer.AppendLine( "  }," );
             thisBuffer.AppendLine( "  xAxis:" );
             thisBuffer.AppendLine( "  {" );
@@ -334,7 +334,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "  tooltip:" );
             thisBuffer.AppendLine( "  {" ); //xDateFormat: '%Y-%m-%d',
             thisBuffer.AppendLine( $"    headerFormat: '<b>{Sup.GetCUstringValue( "Graphs", "TempSumTitle", "", true )}:</b><br/>'," );
-            thisBuffer.AppendLine( $"    pointFormatter() {{ return '<span style=\"color: ' + this.color + '\">' + DayNumber2Date(this.x, this.series.name) + '</span>: ' + this.y + ' {Sup.StationTemp.Text()}<br/>' }}," );
+            thisBuffer.AppendLine( $"    pointFormatter() {{ return '<span style=\"color: ' + this.color + '\">' + DayNumber2Date(this.x+1, this.series.name) + '</span>: ' + this.y + ' {Sup.StationTemp.Text()}<br/>' }}," );
             thisBuffer.AppendLine( "    shared: true," );
             thisBuffer.AppendLine( "    useHTML: true" );
             thisBuffer.AppendLine( "  }," );
@@ -465,7 +465,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "  tooltip:" );
             thisBuffer.AppendLine( "  {" );
             thisBuffer.AppendLine( $"    headerFormat: '<b>{Sup.GetCUstringValue( "Graphs", "GrowingDegreeDaysTitle", "", true )}:</b><br/>'," );
-            thisBuffer.AppendLine( $"    pointFormatter() {{ return '<span style=\"color: ' + this.color + '\">' + DayNumber2Date(this.x, this.series.name) + '</span>: ' + this.y + ' {Sup.StationTemp.Text()}<br/>' }}," );
+            thisBuffer.AppendLine( $"    pointFormatter() {{ return '<span style=\"color: ' + this.color + '\">' + DayNumber2Date(this.x+1, this.series.name) + '</span>: ' + this.y + ' {Sup.StationTemp.Text()}<br/>' }}," );
             thisBuffer.AppendLine( "    shared: true," );
             thisBuffer.AppendLine( "    useHTML: true" );
             thisBuffer.AppendLine( "  }," );

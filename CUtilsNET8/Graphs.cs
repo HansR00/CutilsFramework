@@ -166,8 +166,6 @@ namespace CumulusUtils
 
             #region Chart global values init
 
-            CUtils.YearMax = thisList.Select( x => x.ThisDate.Year ).Max();
-            CUtils.YearMin = thisList.Select( x => x.ThisDate.Year ).Min();
             maxTemp = thisList.Select( x => x.MaxTemp ).Max();
             minTemp = thisList.Select( x => x.MinTemp ).Min();
             maxRain = thisList.Select( x => x.TotalRainThisDay ).Max();

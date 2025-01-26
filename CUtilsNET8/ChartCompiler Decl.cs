@@ -142,9 +142,9 @@ namespace CumulusUtils
             AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,
             AxisType.AQ,AxisType.AQ,AxisType.AQ,AxisType.AQ,
             AxisType.AQ,AxisType.AQ,AxisType.AQ,AxisType.AQ,
-            AxisType.Distance, AxisType.Distance, AxisType.Distance, AxisType.Distance, AxisType.Distance, AxisType.Distance, AxisType.Distance, AxisType.Distance,
             AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,
             AxisType.Free,AxisType.Free,AxisType.Free,AxisType.Free,AxisType.Free,AxisType.Free,AxisType.Free,AxisType.Free,
+            AxisType.Distance, AxisType.Distance, AxisType.Distance, AxisType.Distance, AxisType.Distance, AxisType.Distance, AxisType.Distance, AxisType.Distance,
             AxisType.ppm,AxisType.ppm,AxisType.AQ,AxisType.AQ,AxisType.AQ,AxisType.AQ,AxisType.Temp,AxisType.Humidity,
             AxisType.Free
         };
@@ -398,7 +398,7 @@ namespace CumulusUtils
             for ( int i = 0; i < 8; i++ )
                 PlotvarUnitsEXTRA[ 78 + i ] = "";
 
-            //"LaserDist1","LaserDist2","LaserDist3","LaserDist4","LaserDepth1","LaserDepth2","LaserDepth3","LaserDepth4",
+            //"LaserDist1","LaserDist2","LaserDist3","LaserDist4","LaserDepth1","LaserDepth2","LaserDepth3","LaserDepth4", 
             for ( int i = 0; i < 8; i++ )
                 PlotvarUnitsEXTRA[ 86 + i ] = "cm";
 
