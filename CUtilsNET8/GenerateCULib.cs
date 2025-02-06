@@ -814,7 +814,7 @@ namespace CumulusUtils
 
                 CUlibFile.Append(
                           "function DayNumber2Date(dayNumber, year){" +
-                          "  const date = new Date( year, 0, dayNumber+1);" +
+                          "  const date = new Date( year, 0, dayNumber);" +
                           $"  return date.toLocaleDateString('{Sup.Locale}');" +
                           "}" );
 

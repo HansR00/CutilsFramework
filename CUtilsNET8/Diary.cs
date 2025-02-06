@@ -195,7 +195,7 @@ namespace CumulusUtils
                 of.WriteLine( "    chart.addSeries({" );
                 of.WriteLine( $"   name: '{Sup.GetCUstringValue( "Diary", "Snow Depth", "Snow Depth", true )}'," );
                 of.WriteLine( "    type: 'column'," );
-                of.WriteLine( "    color: 'yellow'," );
+                of.WriteLine( $"   color: '{Sup.GetUtilsIniValue( "Diary", "ColorDiaryChartSnowDepth", "yellow" )}'," );
                 of.WriteLine( $"   tooltip:{{valueSuffix: ' {snowUnit}'}}," );
                 of.WriteLine( "    data: resp.SnowDepth," );
                 of.WriteLine( "    showInNavigator: true});" );
@@ -205,7 +205,7 @@ namespace CumulusUtils
                 of.WriteLine( "    chart.addSeries({" );
                 of.WriteLine( $"   name: '{Sup.GetCUstringValue( "Diary", "Snow 24h", "Snow 24h", true )}'," );
                 of.WriteLine( "    type: 'column'," );
-                of.WriteLine( "    color: 'blue'," );
+                of.WriteLine( $"   color: '{Sup.GetUtilsIniValue( "Diary", "ColorDiaryChartSnow24h", "blue" )}'," );
                 of.WriteLine( $"   tooltip:{{valueSuffix: ' {snowUnit}'}}," );
                 of.WriteLine( "    data: resp.Snow24h," );
                 of.WriteLine( "    showInNavigator: true});" );

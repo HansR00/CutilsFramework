@@ -481,7 +481,7 @@ namespace CumulusUtils
 
         ~Airlinklog()
         {
-            Sup.LogTraceVerboseMessage( "Airlinklog destructor: Closing file and ending program" );
+            Sup.LogTraceInfoMessage( "Airlinklog destructor: Closing file and ending program" );
             Dispose( false );
         }
 

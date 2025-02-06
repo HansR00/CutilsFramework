@@ -1231,7 +1231,8 @@ namespace CumulusUtils
                             CmxIPC thisCmxIPC = new CmxIPC( CUtils.Sup, CUtils.Isup );
 
                             // Now, the wind JSONs should have the same startingtime as the AirLink data.
-
+                            // Fetch the wind data and winddir data as they must be combined in one json for the windbarbs
+                            //
                             Sup.LogTraceInfoMessage( $"GenAirLinkJson - Doing Wind for {thisConc}." );
 
                             if ( CUtils.Isup.IsIncrementalAllowed() )
@@ -1245,6 +1246,8 @@ namespace CumulusUtils
                                 JSONstringWindDir = await thisCmxIPC.GetCMXGraphdataAsync( "wdirdata.json" );
                             }
 
+                            // Now combine into one json
+                            //
                             var ws = JsonObject.Parse( JSONstringWind );
                             wspeedArray = ws.Get<string>( "wspeed" );
 

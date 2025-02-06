@@ -43,7 +43,7 @@ namespace CumulusUtils
         AirQuality1, AirQuality2, AirQuality3, AirQuality4, AirQualityAvg1, AirQualityAvg2, AirQualityAvg3, AirQualityAvg4,
         UserTemp1, UserTemp2, UserTemp3, UserTemp4, UserTemp5, UserTemp6, UserTemp7, UserTemp8,
         CO2, CO2Avg, CO2_pm2_5, CO2_pm2_5_avg, CO2_pm10, CO2_PM10_avg, CO2_Temp, CO2_Hum,
-        LaserDist1, LaserDist2, LaserDist3, LaserDist4, LaserDepth1, LaserDepth2, LaserDepth3, LaserDepth4
+        LaserDist1, LaserDist2, LaserDist3, LaserDist4, LaserDepth1, LaserDepth2, LaserDepth3, LaserDepth4, Snow24h
     };
 
     public struct ExtraSensorslogValue
@@ -160,6 +160,8 @@ namespace CumulusUtils
         public double? LaserDepth2 { get; set; }
         public double? LaserDepth3 { get; set; }
         public double? LaserDepth4 { get; set; }
+
+        public double? Snow24h { get; set; }
 
         public bool Valid { get; set; }
     }
@@ -580,6 +582,33 @@ namespace CumulusUtils
                     FieldInUse = (int) ExtraSensorslogFieldName.CO2_Hum;
                     ThisValue.CO2_hum = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
+                    FieldInUse = (int) ExtraSensorslogFieldName.LaserDepth1;
+                    ThisValue.LaserDepth1 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+
+                    FieldInUse = (int) ExtraSensorslogFieldName.LaserDepth2;
+                    ThisValue.LaserDepth2 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+
+                    FieldInUse = (int) ExtraSensorslogFieldName.LaserDepth3;
+                    ThisValue.LaserDepth3 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+
+                    FieldInUse = (int) ExtraSensorslogFieldName.LaserDepth4;
+                    ThisValue.LaserDepth4 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+
+                    FieldInUse = (int) ExtraSensorslogFieldName.LaserDist1;
+                    ThisValue.LaserDist1 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+
+                    FieldInUse = (int) ExtraSensorslogFieldName.LaserDist2;
+                    ThisValue.LaserDist2 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+
+                    FieldInUse = (int) ExtraSensorslogFieldName.LaserDist3;
+                    ThisValue.LaserDist3 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+
+                    FieldInUse = (int) ExtraSensorslogFieldName.LaserDist4;
+                    ThisValue.LaserDist3 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+
+                    FieldInUse = (int) ExtraSensorslogFieldName.Snow24h;
+                    ThisValue.Snow24h = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+
                     Sup.LogTraceVerboseMessage( $"ExtraSensorslog: SetValues after adding the values: Original Line {line}" );
                 }
             } // try
@@ -598,13 +627,6 @@ namespace CumulusUtils
 
                     Console.WriteLine( $"{m} fail: {e.Message}" );
                     Console.WriteLine( $"{m}: in field nr {FieldInUse} ({enumFieldTypeNames[ FieldInUse ]})" );
-
-                    //if ( string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) )
-                    //{
-                    //    // After the introduction of the null values this catch should not be necessary anymore
-                    //    //
-                    //    Sup.LogTraceErrorMessage( $"{m}: Field {enumFieldTypeNames[ FieldInUse ]} is Empty" );
-                    //}
                 }
 
                 if ( IgnoreDataErrors )

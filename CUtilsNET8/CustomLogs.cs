@@ -435,7 +435,7 @@ namespace CumulusUtils
         private struct CustomLogValue
         {
             public DateTime Date { get; set; }
-            public List<double> Value { get; set; }
+            public List<double?> Value { get; set; }
         }
 
         public void GenerateCustomLogsDataJson( bool NonIncremental )
@@ -519,12 +519,10 @@ namespace CumulusUtils
                         {
                             try
                             {
-                                sb.Append( $"[{CuSupport.DateTimeToJS( entry.Date )},{entry.Value[ i ].ToString( "F1", CUtils.Inv )}]," );
+                                if ( entry.Value[ i ] is not null ) sb.Append( $"[{CuSupport.DateTimeToJS( entry.Date )},{entry.Value[ i ]?.ToString( "F2", CUtils.Inv )}]," );
+                                else sb.Append( $"[{CuSupport.DateTimeToJS( entry.Date )}, null]," );
                             }
-                            catch
-                            {
-                                continue;
-                            }
+                            catch { continue; }
                         }
 
                         sb.Remove( sb.Length - 1, 1 );
@@ -598,7 +596,7 @@ namespace CumulusUtils
 
                     ValuesAsText = line.Substring( 15 );
                     ValuesAsTextArray = ValuesAsText.Split( GlobConst.CommaSeparator );
-                    tmp.Value = new List<double>();
+                    tmp.Value = new List<double?>();
 
                     if ( thisLog.TagNames.Count != ValuesAsTextArray.Length )
                     {
@@ -610,19 +608,19 @@ namespace CumulusUtils
                         }
                     }
 
-                    foreach ( string thisValue in ValuesAsTextArray )
+                    foreach ( string thisValue in ValuesAsTextArray ) 
                     {
-                        try
+                        if ( !string.IsNullOrEmpty( thisValue ) )
                         {
-                            tmp.Value.Add( Convert.ToDouble( thisValue, CUtils.Inv ) );
+                            try { tmp.Value.Add( Convert.ToDouble( thisValue, CUtils.Inv ) ); }
+                            catch
+                            {
+                                Sup.LogTraceWarningMessage( $"CustomLogs ReadRecentCustomLog for {thisLog.Name}: Field Invalid value: {thisValue}, continuing" );
+                                tmp.Value.Add( null );
+                            }
                         }
-                        catch
-                        {
-                            // All errors will be written to the logfile and YES: that may lead to a lot of text but it is easier to find the problem
-                            //
-                            Sup.LogTraceWarningMessage( $"CustomLogs ReadRecentCustomLog for {thisLog.Name}: Field is not a value {thisValue}, continuing" );
-                            continue;
-                        }
+                        else
+                            tmp.Value.Add( null );
                     }
 
                     thisList.Add( tmp );
@@ -686,20 +684,19 @@ namespace CumulusUtils
 
             foreach ( string line in allLines )
             {
-                bool LineWarningWritten = false;
-
                 DateTimeText = line.Substring( 0, 8 );
                 tmp.Date = DateTime.ParseExact( DateTimeText, "dd/MM/yy", CUtils.Inv );
 
                 ValuesAsText = line.Substring( 9 );
                 ValuesAsTextArray = ValuesAsText.Split( GlobConst.CommaSeparator );
-                tmp.Value = new List<double>();
+                tmp.Value = new List<double?>();
 
                 if ( thisLog.TagNames.Count != ValuesAsTextArray.Length )
                 {
                     if ( !LogWarningWritten )
                     {
-                        Sup.LogTraceWarningMessage( $"CustomLogs : There are more/less webtags than values in the log {thisLog.Name}" );
+                        Sup.LogTraceWarningMessage( $"CustomLogs : There are more/less webtags than values in the log {thisLog.Name} " +
+                            $"=> defined: {thisLog.TagNames.Count} and found {ValuesAsTextArray.Length}" );
                         Sup.LogTraceWarningMessage( $"CustomLogs : The chart may not be what you want, please correct the content of the datafile. Continuing..." );
                         LogWarningWritten = true;
                     }
@@ -707,22 +704,17 @@ namespace CumulusUtils
 
                 foreach ( string thisValue in ValuesAsTextArray )
                 {
-                    try
+                    if ( !string.IsNullOrEmpty( thisValue ) )
                     {
-                        tmp.Value.Add( Convert.ToDouble( thisValue, CUtils.Inv ) );
-                    }
-                    catch
-                    {
-                        if ( !LineWarningWritten )
+                        try { tmp.Value.Add( Convert.ToDouble( thisValue, CUtils.Inv ) ); }
+                        catch 
                         {
-                            // All errors will be written to the logfile and YES: that may lead to a lot of text but it is easier to find the problem
-                            //
-                            Sup.LogTraceWarningMessage( $"CustomLogs ReadDailyCustomLog for {thisLog.Name}: Field is not a value {thisValue}, continuing" );
-                            continue;
+                            Sup.LogTraceWarningMessage( $"CustomLogs ReadDailyCustomLog for {thisLog.Name}: Field Invalid value: {thisValue} , continuing" );
+                            tmp.Value.Add( null ); 
                         }
-
-                        continue;  // It can't all be only text: what's the use?
                     }
+                    else
+                        tmp.Value.Add( null );
                 }
 
                 thisList.Add( tmp );
