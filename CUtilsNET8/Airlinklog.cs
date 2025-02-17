@@ -259,8 +259,6 @@ namespace CumulusUtils
                 }
                 else // Within date range
                 {
-                    ThisValue.Valid = true;
-
                     // Inside sensor
                     FieldInUse = (int) AirlinklogFieldName.In_temp;
                     ThisValue.In_temp = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
@@ -425,6 +423,8 @@ namespace CumulusUtils
                     FieldInUse = (int) AirlinklogFieldName.Out_AQIPm10_nowcast;
                     ThisValue.Out_AQIPm10_nowcast = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
+                    ThisValue.Valid = true;
+
                     Sup.LogTraceVerboseMessage( "SetValues after adding the values:" );
                     Sup.LogTraceVerboseMessage( $"SetValues after adding the values: Original Line {line}" );
                 }
@@ -450,11 +450,12 @@ namespace CumulusUtils
                 }
 
                 if ( IgnoreDataErrors )
+                {
                     if ( ErrorCount < MaxErrors )
                         Sup.LogTraceErrorMessage( "AirlinklogValue.SetValues : Continuing to read data" );
-                    else
-                        // Environment.Exit(0);
-                        throw;
+                }
+                else
+                    throw;
             }
             catch ( IndexOutOfRangeException e )
             {
@@ -470,10 +471,12 @@ namespace CumulusUtils
                 }
 
                 if ( IgnoreDataErrors )
+                {
                     if ( ErrorCount < MaxErrors )
                         Sup.LogTraceErrorMessage( "AirlinklogValue.SetValues : Continuing to read data" );
-                    else
-                        throw;
+                }
+                else
+                    throw;
             }
 
             return ThisValue;

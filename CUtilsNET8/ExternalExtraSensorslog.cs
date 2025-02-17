@@ -153,11 +153,11 @@ namespace CumulusUtils
                         }
 
                         if ( IgnoreDataErrors )
+                        {
                             if ( ErrorCount < MaxErrors )
                                 Sup.LogTraceErrorMessage( $"{m} : Continuing to read data" );
-                            else
-                                // Environment.Exit(0);
-                                throw;
+                        }
+                        else throw;
                     }
                 }
 

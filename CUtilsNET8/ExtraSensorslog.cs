@@ -309,8 +309,6 @@ namespace CumulusUtils
                 }
                 else // Within date range
                 {
-                    ThisValue.Valid = true;
-
                     // Inside sensor
                     FieldInUse = (int) ExtraSensorslogFieldName.Temp1;
                     ThisValue.Temp1 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
@@ -609,6 +607,8 @@ namespace CumulusUtils
                     FieldInUse = (int) ExtraSensorslogFieldName.Snow24h;
                     ThisValue.Snow24h = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
+                    ThisValue.Valid = true;
+
                     Sup.LogTraceVerboseMessage( $"ExtraSensorslog: SetValues after adding the values: Original Line {line}" );
                 }
             } // try
@@ -630,10 +630,11 @@ namespace CumulusUtils
                 }
 
                 if ( IgnoreDataErrors )
+                {
                     if ( ErrorCount < MaxErrors )
                         Sup.LogTraceErrorMessage( "ExtraSensorslogValue.SetValues : Continuing to read data" );
-                    else
-                        throw;
+                }
+                else throw;
             }
             catch ( IndexOutOfRangeException e )
             {
@@ -651,10 +652,11 @@ namespace CumulusUtils
                 }
 
                 if ( IgnoreDataErrors )
+                {
                     if ( ErrorCount < MaxErrors )
                         Sup.LogTraceErrorMessage( "ExtraSensorslogValue.SetValues : Continuing to read data" );
-                    else
-                        throw;
+                }
+                else throw;
             }
 
             return ThisValue;

@@ -337,6 +337,7 @@ namespace CumulusUtils
                     if ( ErrorCount <= MaxErrors )
                         Sup.LogTraceInfoMessage( "Monthfile.SetValues : Continuing to read data" );
                 }
+                else throw;
 
                 return null;
             }
@@ -359,6 +360,7 @@ namespace CumulusUtils
                     if ( ErrorCount <= MaxErrors )
                         Sup.LogTraceInfoMessage( "Monthfile.SetValues : Continuing to read data" );
                 }
+                else throw;
 
                 return null;
             }
