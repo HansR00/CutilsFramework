@@ -654,7 +654,7 @@ namespace CumulusUtils
                     "}" );
 
                 // Do the MOON procedure
-                bool UseCMXMoonImage = Sup.GetUtilsIniValue( "Website", "UseCMXMoonImage", "false" ).ToLowerInvariant().Equals( "true", CUtils.Cmp );
+                bool UseCMXMoonImage = Sup.GetUtilsIniValue( "Website", "UseCMXMoonImage", "false" ).Equals( "true", CUtils.Cmp );
 
                 if ( UseCMXMoonImage )
                 {

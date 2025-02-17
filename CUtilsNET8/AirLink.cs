@@ -727,7 +727,7 @@ namespace CumulusUtils
 
 
                     of.AppendLine( "  legend: { enabled: true}," );
-                    of.AppendLine( $"  plotOptions: {{series: {{connectNulls: {Sup.GetUtilsIniValue( "General", "ConnectNulls", "false" )}, turboThreshold: 0}} }}," );
+                    of.AppendLine( $"  plotOptions: {{series: {{connectNulls: {Sup.GetUtilsIniValue( "General", "ConnectNulls", "false" ).ToLower()}, turboThreshold: 0}} }}," );
                     of.AppendLine( "  tooltip: { valueSuffix: ' μg/m3',valueDecimals: 1,xDateFormat: '%A, %b %e, %H:%M'}," );
                     of.AppendLine( "  series:[]," );
                     of.AppendLine( "  rangeSelector:" );

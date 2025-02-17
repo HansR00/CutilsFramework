@@ -84,7 +84,7 @@ namespace CumulusUtils
                         TagNames = new List<string>(),
                     };
 
-                    if ( Array.Exists( ExcludedCustomLogs, word => word.Equals( tmp.Name, StringComparison.Ordinal ) ) ) continue;
+                    if ( Array.Exists( ExcludedCustomLogs, word => word.Equals( tmp.Name, CUtils.Cmp ) ) ) continue;
 
                     CustomLogsList.Add( tmp );
                 }
@@ -110,7 +110,7 @@ namespace CumulusUtils
                         TagNames = new List<string>(),
                     };
 
-                    if ( Array.Exists( ExcludedCustomLogs, word => word.Equals( tmp.Name, StringComparison.Ordinal ) ) ) continue;
+                    if ( Array.Exists( ExcludedCustomLogs, word => word.Equals( tmp.Name, CUtils.Cmp ) ) ) continue;
 
                     CustomLogsList.Add( tmp );
                 }
@@ -299,7 +299,8 @@ namespace CumulusUtils
 
                 for ( int c = 0; c < tmp.TagNames.Count; c++ )
                 {
-                    buf.Append( $"<tr {RowColour()}><td {thisPadding()}>&nbsp;&nbsp;{tmp.TagsRaw[ c ]}</td>" +
+                    //buf.Append( $"<tr {RowColour()}><td {thisPadding()}>&nbsp;&nbsp;{tmp.TagsRaw[ c ]}</td>" +
+                    buf.Append( $"<tr {RowColour()}><td {thisPadding()}>&nbsp;&nbsp;{tmp.TagNames[ c ]}</td>" +
                         $"<td id='ajxCustomLogs{tmp.Name}{tmp.TagNames[ c ]}'></td></tr>" );
                 }
             }
@@ -1196,7 +1197,17 @@ namespace CumulusUtils
                 Sup.StationTemp.Text(),
                 Sup.StationTemp.Text(),
                 Sup.StationTemp.Text(),
-                Sup.StationRain.Text()
+                Sup.StationRain.Text(),
+                Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in",     // Laser sensor will mostly be used for snow
+                Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in",     // if not then use the same units (e.g. for groundwater level)
+                Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in",
+                Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in",
+
+                Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in",     // 420
+                Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in",     
+                Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in",
+                Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in"
+
             };
 
             TagAxis = new AxisType[]
@@ -1659,7 +1670,18 @@ namespace CumulusUtils
                 AxisType.Temp,
                 AxisType.Temp,
                 AxisType.Temp,
-                AxisType.Rain
+                AxisType.Rain,
+                AxisType.Height,
+                AxisType.Height,
+                AxisType.Height,
+                AxisType.Height,
+
+
+                AxisType.Height,             //420
+                AxisType.Height,
+                AxisType.Height,
+                AxisType.Height
+
             };
 
             if ( Tagname.Length != TagUnit.Length )
@@ -2186,7 +2208,16 @@ namespace CumulusUtils
             "temp9amYH",
             "temp9amYL",
             "temp9amRangeY",
-            "rweek"
+            "rweek",
+            "SnowAccumSeason1",
+            "SnowAccumSeason2",
+            "SnowAccumSeason3",
+            "SnowAccumSeason4",
+
+            "SnowAccum24h1",                //420
+            "SnowAccum24h2",
+            "SnowAccum24h3",
+            "SnowAccum24h4",   
         };
 
     }

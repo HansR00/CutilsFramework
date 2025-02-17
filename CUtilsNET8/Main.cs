@@ -342,7 +342,7 @@ namespace CumulusUtils
                 LogIntervalInMinutes = PossibleIntervals[ Convert.ToInt32( Sup.GetCumulusIniValue( "Station", "DataLogInterval", "" ), Inv ) ];
                 FTPIntervalInMinutes = Convert.ToInt32( Sup.GetCumulusIniValue( "FTP site", "UpdateInterval", "" ) );
                 UtilsRealTimeInterval = Convert.ToInt32( Sup.GetUtilsIniValue( "Website", "CumulusRealTimeInterval", "15" ) ); // Sorry for the confused naming
-                ConnectNulls = Sup.GetUtilsIniValue( "General", "ConnectNulls", "false" ).Equals("true");
+                ConnectNulls = Sup.GetUtilsIniValue( "General", "ConnectNulls", "false" ).Equals("true", Cmp);
 
                 // Now start doing things
                 CUtils p = new CUtils();

@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using FluentFTP;
 using Microsoft.Data.Sqlite;
 
 namespace CumulusUtils
@@ -59,18 +60,25 @@ namespace CumulusUtils
 
             Sup.LogTraceInfoMessage( "Diary constructor: starting" );
 
-            DiaryValues = LoadDiaryDatabase();
-
-            // After the next call DiaryList contains all Diary fields except where only the entry is filled
-            if ( DiaryValues is null )
+            if ( Sup.GetUtilsIniValue( "Diary", "Diary", "true").Equals("true", CUtils.Cmp ) )
             {
-                Sup.LogTraceInfoMessage( "Diary database: No Data" );
-                CUtils.HasDiaryMenu = false;
+                DiaryValues = LoadDiaryDatabase();
+
+                if ( DiaryValues is null )
+                {
+                    Sup.LogTraceInfoMessage( "Diary database: No Data" );
+                    CUtils.HasDiaryMenu = false;
+                }
+                else
+                {
+                    Sup.LogTraceInfoMessage( $"Diary database: {DiaryValues.Count} records" );
+                    CUtils.HasDiaryMenu = true;
+                }
             }
             else
             {
-                Sup.LogTraceInfoMessage( $"Diary database: {DiaryValues.Count} records" );
-                CUtils.HasDiaryMenu = true;
+                // User does not want the Diary which overrules everything
+                CUtils.HasDiaryMenu = false;
             }
 
             Sup.LogTraceInfoMessage( "Diary constructor: stop" );
@@ -456,7 +464,8 @@ namespace CumulusUtils
                                     snowDepth = reader.IsDBNull( OrdinalSnowDepth ) ? null : reader.GetFloat( OrdinalSnowDepth )
                                 };
 
-                                tmpList.Add( tmp );
+                                if (tmp.snow24h is not null || tmp.snowDepth is not null) tmpList.Add( tmp );
+
                                 Sup.LogTraceVerboseMessage( $"Value - Date: {tmp.ThisDate} Snow24h: {tmp.snow24h} SnowDepth: {tmp.snowDepth}" );
                             } // Loop over the records
                         }

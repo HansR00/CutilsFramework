@@ -984,7 +984,7 @@ namespace CumulusUtils
             //PlotvarStartindex += 8;
             // Check for the Lightning sensor (WH51). User has to indicate this in cumulusutils.ini as this sensor has no logging (not a PlotvarType!!).
             {
-                bool DoLightningSensor = Sup.GetUtilsIniValue( "ExtraSensors", "LightningSensor", "false" ).ToLowerInvariant().Equals( "true" );
+                bool DoLightningSensor = Sup.GetUtilsIniValue( "ExtraSensors", "LightningSensor", "false" ).Equals( "true", CUtils.Cmp );
 
                 if ( DoLightningSensor )
                 {
