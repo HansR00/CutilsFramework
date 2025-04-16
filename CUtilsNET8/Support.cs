@@ -361,27 +361,29 @@ namespace CumulusUtils
         {
             string[] StationDesc =
             {
-                "Davis Vantage Pro",			// 0
-			    "Davis Vantage Pro2",			// 1
-			    "Oregon Scientific WMR-928",	// 2
-			    "Oregon Scientific WM-918",		// 3
-			    "EasyWeather",					// 4
-			    "Fine Offset",					// 5
-			    "LaCrosse WS2300",				// 6
-			    "Fine Offset with Solar",		// 7
-			    "Oregon Scientific WMR100",		// 8
-			    "Oregon Scientific WMR200",		// 9
-			    "Instromet",					// 10
-			    "Davis WLL",					// 11
-			    "GW1000/Ecowitt Local API",		// 12 - the only name changed, CMX uses GW1000 and local API in the interface
-			    "HTTP WUnderground",			// 13
-			    "HTTP Ecowitt",					// 14
-			    "HTTP Ambient",					// 15
-			    "WeatherFlow Tempest",			// 16
-			    "Simulator",					// 17
-                "Davis WeatherLink Cloud (WLL/WLC)",  // 18
-                "Davis WeatherLink Cloud (VP2)",      // 19
-                "Ecowitt Cloud"                 // 20
+            "Davis Vantage Pro",            // 0
+			"Davis Vantage Pro2",           // 1
+			"Oregon Scientific WMR-928",    // 2
+			"Oregon Scientific WM-918",     // 3
+			"EasyWeather",                  // 4
+			"Fine Offset",                  // 5
+			"LaCrosse WS2300",              // 6
+			"Fine Offset with Solar",       // 7
+			"Oregon Scientific WMR100",     // 8
+			"Oregon Scientific WMR200",     // 9
+			"Instromet",                    // 10
+			"Davis WLL",                    // 11
+			"GW1000",                       // 12
+			"HTTP WUnderground",            // 13
+			"HTTP Ecowitt",                 // 14
+			"HTTP Ambient",                 // 15
+			"WeatherFlow Tempest",          // 16
+			"Simulator",                    // 17
+			"Ecowitt Cloud",                // 18
+			"Davis Cloud (WLL/WLC)",        // 19
+			"Davis Cloud (VP2)",            // 20
+			"JSON Data",                    // 21
+			"Ecowitt HTTP API"              // 22
             };
 
             if ( i < 0 || i > StationDesc.Length - 1 )

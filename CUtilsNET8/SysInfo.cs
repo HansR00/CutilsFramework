@@ -55,7 +55,7 @@ namespace CumulusUtils
 
         public async Task GenerateSystemStatusAsync()
         {
-            int DeviceType;
+            int StationType;
 
             Sup.LogTraceInfoMessage( "SystemStatus : starting" );
 
@@ -69,19 +69,19 @@ namespace CumulusUtils
                 StringBuilder DeviceInfo = new StringBuilder();
                 string tmp;
 
-                DeviceType = Convert.ToInt32( Sup.GetCumulusIniValue( "Station", "Type", "1" ), CUtils.Inv );
-                //DeviceType = 11;
-                Sup.LogTraceInfoMessage( $" SystemStatus: Found device {DeviceType} {CuSupport.StationInUse( DeviceType )}" );
+                StationType = Convert.ToInt32( Sup.GetCumulusIniValue( "Station", "Type", "" ), CUtils.Inv );
+                Sup.LogTraceInfoMessage( $" SystemStatus: Found device {StationType} {CuSupport.StationInUse( StationType )}" );
 
                 of.WriteLine( $"<div style='margin:auto; text-align:left; width:{Sup.GetUtilsIniValue( "SysInfo", "ReportWidth", "700" )}px'><pre>" );
 
                 // Just for recognition of where we are : start of Station Info
                 of.WriteLine( $"Cumulus version: {thisInfo.Version} (build: {thisInfo.Build})" );
                 of.WriteLine( $"Cumulus uptime: {thisInfo.ProgramUpTime}" );
-                of.WriteLine( $"Weather station: {CuSupport.StationInUse( DeviceType )}" );
+                of.WriteLine( $"Weather station: {CuSupport.StationInUse( StationType )}" );
+
                 of.WriteLine( "" );
 
-                switch ( DeviceType )
+                switch ( StationType )
                 {
                     case 0:
                     case 1: // Vantage Pro or Pro2

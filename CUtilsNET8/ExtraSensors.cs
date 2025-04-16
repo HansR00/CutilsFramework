@@ -246,8 +246,8 @@ namespace CumulusUtils
                     case (int) ExtraSensorType.CO2avg:
                         sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
                         sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                        sb.AppendLine( $"    $('#ajxCO2-24h').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {CO2conc.Text()}');" );
-                        sb.AppendLine( $"    $('#ajxCO2-24h').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                        sb.AppendLine( $"    $('#ajxCO2_24h').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {CO2conc.Text()}');" );
+                        sb.AppendLine( $"    $('#ajxCO2_24h').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
                         sb.AppendLine( "  }" );
                         break;
                     case (int) ExtraSensorType.CO2pm2p5:
@@ -260,8 +260,8 @@ namespace CumulusUtils
                     case (int) ExtraSensorType.CO2pm2p5avg:
                         sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
                         sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                        sb.AppendLine( $"    $('#ajxCO2pm2p5-24h').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {PMconc.Text()}');" );
-                        sb.AppendLine( $"    $('#ajxCO2pm2p5-24h').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                        sb.AppendLine( $"    $('#ajxCO2pm2p5_24h').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {PMconc.Text()}');" );
+                        sb.AppendLine( $"    $('#ajxCO2pm2p5_24h').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
                         sb.AppendLine( "  }" );
                         break;
                     case (int) ExtraSensorType.CO2pm10:
@@ -274,8 +274,8 @@ namespace CumulusUtils
                     case (int) ExtraSensorType.CO2pm10avg:
                         sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
                         sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                        sb.AppendLine( $"    $('#ajxCO2pm10-24h').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {PMconc.Text()} ');" );
-                        sb.AppendLine( $"    $('#ajxCO2pm10-24h').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
+                        sb.AppendLine( $"    $('#ajxCO2pm10_24h').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {PMconc.Text()} ');" );
+                        sb.AppendLine( $"    $('#ajxCO2pm10_24h').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
                         sb.AppendLine( "  }" );
                         break;
                     case (int) ExtraSensorType.CO2temp:
@@ -415,7 +415,7 @@ namespace CumulusUtils
                         break;
                     case (int) ExtraSensorType.CO2avg:
                         buf.Append(
-                            $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2-24h'></td></tr>" );
+                            $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2_24h'></td></tr>" );
                         break;
                     case (int) ExtraSensorType.CO2pm2p5:
                         buf.Append(
@@ -423,7 +423,7 @@ namespace CumulusUtils
                         break;
                     case (int) ExtraSensorType.CO2pm2p5avg:
                         buf.Append(
-                            $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2pm2p5-24h'></td></tr>" );
+                            $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2pm2p5_24h'></td></tr>" );
                         break;
                     case (int) ExtraSensorType.CO2pm10:
                         buf.Append(
@@ -431,7 +431,7 @@ namespace CumulusUtils
                         break;
                     case (int) ExtraSensorType.CO2pm10avg:
                         buf.Append(
-                            $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2pm10-24h'></td></tr>" );
+                            $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxCO2pm10_24h'></td></tr>" );
                         break;
                     case (int) ExtraSensorType.CO2temp:
                         buf.Append(
@@ -751,13 +751,13 @@ namespace CumulusUtils
                             sb.Append( $"<#CO2_pm2p5 rc=y> " );
                             break;
                         case (int) ExtraSensorType.CO2pm2p5avg:
-                            sb.Append( $"<#CO2_pm2p5-24h rc=y> " );
+                            sb.Append( $"<#CO2_pm2p5_24h rc=y> " );
                             break;
                         case (int) ExtraSensorType.CO2pm10:
                             sb.Append( $"<#CO2_pm10 rc=y> " );
                             break;
                         case (int) ExtraSensorType.CO2pm10avg:
-                            sb.Append( $"<#CO2_pm10-24h rc=y> " );
+                            sb.Append( $"<#CO2_pm10_24h rc=y> " );
                             break;
                         case (int) ExtraSensorType.CO2temp:
                             sb.Append( $"<#CO2_temp rc=y> " );
