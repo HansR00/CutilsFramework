@@ -37,7 +37,9 @@ namespace CumulusUtils
         highapparenttemp, timeofhighapptemp, lowapparenttemp, timeoflowapptemp, highHourlyRain, timeHighHourlyRain, lowwindchill,
         timeoflowwindchill, highdewpoint, timeofhighdewpoint, lowdewpoint, timeoflowdewpoint, dominantWindbearing,
         heatingdegreedays, coolingdegreedays, highsolarRadiation, timeofHighsolarRadiation, highUVindex, timeofHighUVIndex,
-        highFeelsLike, timeofhighFeelsLike, lowFeelsLike, timeoflowFeelsLike, highHumidex, timeofhighHumidex
+        highFeelsLike, timeofhighFeelsLike, lowFeelsLike, timeoflowFeelsLike, highHumidex, timeofhighHumidex,
+        ChillHours, High24hRain, timeofHigh24hRain
+
     };
 
     public struct DayfileValue
@@ -110,6 +112,10 @@ namespace CumulusUtils
         public float HighHumidex { get; set; }
         /* time of High Humidex     */
         public DateTime TimeHighHumidex { get; set; }
+
+        /* ChillHours */
+        /* High24hRain */
+        /* timeofHigh24hRain */
 
         public int WetPeriod { get; set; }
         public int DryPeriod { get; set; }

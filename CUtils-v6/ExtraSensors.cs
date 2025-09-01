@@ -518,7 +518,8 @@ namespace CumulusUtils
 
             for ( i = 0; i < ExtraSensorList.Count; )
             {
-                if ( ExtraSensorList[ i ].Type == ExtraSensorType.Lightning ) { i++; continue; }; // atm no lightning data in the JSON, later...Maybe...
+                if ( ExtraSensorList[ i ].Type == ExtraSensorType.Lightning ) { i++; continue; }
+                ; // atm no lightning data in the JSON, later...Maybe...
 
                 CutilsChartsMods.Add( $"Chart Extra{ExtraSensorList[ i ].Type} Title " +
                     $"{Sup.GetCUstringValue( "ExtraSensors", "Trend chart of Extra", "Trend chart of Extra", true )} " +

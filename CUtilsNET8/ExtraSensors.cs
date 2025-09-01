@@ -24,9 +24,9 @@
  * Design / Structure:
  *              1) create the  list of actual sensors being logged based on 
  *                 Cumulus.ini - [section Station], param: LogExtraSensors=1
- *                 strings.ini - [section ExtraTempCaptions] - all entry value != "Sensor i", i is 10  max
- *                             - [section ExtraHumCaptions]  - all entry value != "Sensor i", i is 10  max
- *                             - [section ExtraDPCaptions] - all entry value != "Sensor i", i is 10  max
+ *                 strings.ini - [section ExtraTempCaptions] - all entry value != "Sensor i", i is 16  max
+ *                             - [section ExtraHumCaptions]  - all entry value != "Sensor i", i is 16  max
+ *                             - [section ExtraDPCaptions] - all entry value != "Sensor i", i is 16  max
  *                             - [section SoilTempCaptions] - all entry value != "Sensor i", i is 16  max
  *                             - [section SoilMoistureCaptions] - all entry value != "Sensor i", i is 16  max
  *                             - [section LeafTempCaptions] - all entry value != "Sensor i", i is 4  max
@@ -340,6 +340,10 @@ namespace CumulusUtils
             sb.AppendLine( "}" );
             sb.AppendLine( "" );
 
+            #endregion javascript
+
+            #region HTML
+
             // Setup the HTML ExtraSensors table for the Dashboard area
 
             sb.AppendLine( "function SetupExtraSensorsTable() {" );
@@ -483,11 +487,13 @@ namespace CumulusUtils
                 of.WriteLine( CuSupport.StringRemoveWhiteSpace( sb.ToString(), " " ) );
 #endif
 
-                #endregion
             }
+
+            #endregion HTML
+
         }
 
-        #endregion
+        #endregion GenerateExtraSensorModule
 
         #region GenerateExtraSensorsCharts
 
@@ -534,7 +540,8 @@ namespace CumulusUtils
 
             for ( i = 0; i < ExtraSensorList.Count; )
             {
-                if ( ExtraSensorList[ i ].Type == ExtraSensorType.Lightning ) { i++; continue; }; // atm no lightning data in the JSON, later...Maybe...
+                if ( ExtraSensorList[ i ].Type == ExtraSensorType.Lightning ) { i++; continue; }
+                ; // atm no lightning data in the JSON, later...Maybe...
 
                 CutilsChartsMods.Add( $"Chart Extra{ExtraSensorList[ i ].Type} Title " +
                     $"{Sup.GetCUstringValue( "ExtraSensors", "Trend chart of Extra", "Trend chart of Extra", true )} " +
@@ -568,10 +575,22 @@ namespace CumulusUtils
                 }
                 else if ( ExtraSensorList[ i ].Type == ExtraSensorType.External )
                 {
-                    Sup.LogTraceInfoMessage( $"GenerateExtraSensorsCharts: Adding Sensor: {ExtraSensorList[ i ].Name}" );
+                    /* Take care of all External Extra Sensors - when entering here yoou reach the first External, there may be more */
+                    /* All External sensors are - should be - sequential in the list */
 
-                    CutilsChartsMods.Add( $"  Plot Extra {ExtraSensorList[ i ].Name}" );
-                    _ = Sup.GetCUstringValue( "Compiler", ExtraSensorList[ i ].Name, ExtraSensorList[ i ].Name, false );
+                    do
+                    {
+                        Sup.LogTraceInfoMessage( $"GenerateExtraSensorsCharts: Adding Sensor: {ExtraSensorList[ i ].Name}" );
+
+                        CutilsChartsMods.Add( $"  Plot Extra {ExtraSensorList[ i ].Name}" );
+                        _ = Sup.GetCUstringValue( "Compiler", ExtraSensorList[ i ].Name, ExtraSensorList[ i ].Name, false );
+
+                        if ( i + 1 < ExtraSensorList.Count && ExtraSensorType.External == ExtraSensorList[ i + 1 ].Type ) i++;
+                        else break;
+                    } while ( true );
+
+
+                    /* when done we have all  external sensors in one chart */
                 }
                 else
                 {
@@ -647,6 +666,8 @@ namespace CumulusUtils
                 if ( thisSensor.Type == ExtraSensorType.External )
                 {
                     List<ExternalExtraSensorslogValue> thisExternalList;
+
+                    Sup.LogTraceInfoMessage( $"Extra Sensors JSON generation for External Sensor {thisSensor.Name} " );
 
                     ExternalExtraSensorslog EEsl = new ExternalExtraSensorslog( Sup, thisSensor.Name );
                     thisExternalList = EEsl.ReadExternalExtraSensorslog();
@@ -814,7 +835,7 @@ namespace CumulusUtils
             }
 
             // Extra Humidity sensors
-            PlotvarStartindex += 10;
+            PlotvarStartindex += 16;
             ActiveSensors = GetActiveSensors( "ExtraHum" );
 
             foreach ( int i in ActiveSensors )
@@ -824,7 +845,7 @@ namespace CumulusUtils
             }
 
             // Extra Dewpoint sensors
-            PlotvarStartindex += 10;
+            PlotvarStartindex += 16;
             ActiveSensors = GetActiveSensors( "ExtraDP" );
 
             foreach ( int i in ActiveSensors )
@@ -834,7 +855,7 @@ namespace CumulusUtils
             }
 
             // Extra SoilTemperature sensors
-            PlotvarStartindex += 10;
+            PlotvarStartindex += 16;
             ActiveSensors = GetActiveSensors( "SoilTemp" );
 
             foreach ( int i in ActiveSensors )
@@ -970,10 +991,12 @@ namespace CumulusUtils
 
                         thisSensor = "WH45 Humidity";
                         registerSensor( thisSensor, 8, ExtraSensorType.CO2hum );
+
+                        Sup.LogTraceInfoMessage( $"GetActiveSensors: CO2 sensor is active and there is data so it is used." );
                     }
                     else
                     {
-                        Sup.LogTraceErrorMessage( $"GetActiveSensors: CO2 sensor is active but there is no data. Sensor is ignored" );
+                        Sup.LogTraceErrorMessage( $"GetActiveSensors: CO2 sensor is active but there is no data. Sensor is ignored." );
                     }
                     // @formatter:on
                 }

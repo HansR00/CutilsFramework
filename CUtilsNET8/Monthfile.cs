@@ -33,7 +33,8 @@ namespace CumulusUtils
     {
         thisDate, thisTime, CurrTemp, CurrRH, CurrDewpoint, CMXAverageWind, CMXGustSpeed, AvWindBearing, CurrRainRate,
         TotalRainToday, CurrPressure, TotalRainfallCounter, InsideTemp, InsideRH, CMXLatestGust, WindChill, HeatIndex, UVindex,
-        SolarRad, EVT, AnnualEVT, ApparentTemp, SolarTheoreticalMax, HrsOfSunshineSoFar, CurrWindBearing, RG11RainToday, TotalRainSinceMidnight
+        SolarRad, EVT, AnnualEVT, ApparentTemp, SolarTheoreticalMax, HrsOfSunshineSoFar, CurrWindBearing, RG11RainToday, TotalRainSinceMidnight,
+        FeelsLike, Humidex
     };
 
     public struct MonthfileValue

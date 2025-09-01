@@ -35,7 +35,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using FluentFTP;
 using Microsoft.Data.Sqlite;
 
 namespace CumulusUtils
@@ -60,7 +59,7 @@ namespace CumulusUtils
 
             Sup.LogTraceInfoMessage( "Diary constructor: starting" );
 
-            if ( Sup.GetUtilsIniValue( "Diary", "Diary", "true").Equals("true", CUtils.Cmp ) )
+            if ( Sup.GetUtilsIniValue( "Diary", "Diary", "true" ).Equals( "true", CUtils.Cmp ) )
             {
                 DiaryValues = LoadDiaryDatabase();
 
@@ -464,7 +463,7 @@ namespace CumulusUtils
                                     snowDepth = reader.IsDBNull( OrdinalSnowDepth ) ? null : reader.GetFloat( OrdinalSnowDepth )
                                 };
 
-                                if (tmp.snow24h is not null || tmp.snowDepth is not null) tmpList.Add( tmp );
+                                if ( tmp.snow24h is not null || tmp.snowDepth is not null ) tmpList.Add( tmp );
 
                                 Sup.LogTraceVerboseMessage( $"Value - Date: {tmp.ThisDate} Snow24h: {tmp.snow24h} SnowDepth: {tmp.snowDepth}" );
                             } // Loop over the records

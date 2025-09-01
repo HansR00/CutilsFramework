@@ -174,7 +174,7 @@ namespace CumulusUtils
             if ( DryPeriodActive ) { DryPeriodList.Add( previous ); }
             else { WetPeriodList.Add( previous ); }
 
-            Top10List[ (int) Top10Types.longestDryPeriod ] = DryPeriodList.OrderByDescending(x => x.ThisDate).OrderByDescending( x => x.DryPeriod ).Take( 10 ).ToList();
+            Top10List[ (int) Top10Types.longestDryPeriod ] = DryPeriodList.OrderByDescending( x => x.ThisDate ).OrderByDescending( x => x.DryPeriod ).Take( 10 ).ToList();
 
             Top10List[ (int) Top10Types.longestWetPeriod ] = WetPeriodList.OrderByDescending( x => x.ThisDate ).OrderByDescending( x => x.WetPeriod ).Take( 10 ).ToList();
 

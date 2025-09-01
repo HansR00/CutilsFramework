@@ -1141,7 +1141,7 @@ namespace CumulusUtils
                             {
                                 double? d = (double?) Field.GetValue( value );
 
-                                if ( d is not null )  sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d?.ToString( "F2", CUtils.Inv )}]," );
+                                if ( d is not null ) sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d?.ToString( "F2", CUtils.Inv )}]," );
                                 else sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},null]," );
                             }
 

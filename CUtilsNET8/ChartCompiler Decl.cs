@@ -135,9 +135,9 @@ namespace CumulusUtils
         };
 
         public readonly AxisType[] PlotvarAxisEXTRA = {
-            AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,
-            AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,
-            AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,
+            AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,
+            AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,AxisType.Humidity,
+            AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,
             AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,
             AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,AxisType.SoilMoisture,
             AxisType.AQ,AxisType.AQ,AxisType.AQ,AxisType.AQ,
@@ -173,9 +173,9 @@ namespace CumulusUtils
 
         // Static because needed in ExtraSensors
         public static string[] PlotvarTypesEXTRA = {
-            "Temp1","Temp2","Temp3","Temp4","Temp5","Temp6","Temp7","Temp8","Temp9","Temp10",
-            "Humidity1","Humidity2","Humidity3","Humidity4","Humidity5","Humidity6","Humidity7","Humidity8","Humidity9","Humidity10",
-            "Dewpoint1","Dewpoint2","Dewpoint3","Dewpoint4","Dewpoint5","Dewpoint6","Dewpoint7","Dewpoint8","Dewpoint9","Dewpoint10",
+            "Temp1","Temp2","Temp3","Temp4","Temp5","Temp6","Temp7","Temp8","Temp9","Temp10","Temp11","Temp12","Temp13","Temp14","Temp15","Temp16",
+            "Humidity1","Humidity2","Humidity3","Humidity4","Humidity5","Humidity6","Humidity7","Humidity8","Humidity9","Humidity10","Humidity11","Humidity12","Humidity13","Humidity14","Humidity15","Humidity16",
+            "Dewpoint1","Dewpoint2","Dewpoint3","Dewpoint4","Dewpoint5","Dewpoint6","Dewpoint7","Dewpoint8","Dewpoint9","Dewpoint10","Dewpoint11","Dewpoint12","Dewpoint13","Dewpoint14","Dewpoint15","Dewpoint16",
             "SoilTemp1","SoilTemp2","SoilTemp3","SoilTemp4","SoilTemp5","SoilTemp6","SoilTemp7","SoilTemp8","SoilTemp9","SoilTemp10","SoilTemp11","SoilTemp12","SoilTemp13","SoilTemp14","SoilTemp15","SoilTemp16",
             "SoilMoisture1","SoilMoisture2","SoilMoisture3","SoilMoisture4","SoilMoisture5","SoilMoisture6","SoilMoisture7","SoilMoisture8","SoilMoisture9","SoilMoisture10","SoilMoisture11","SoilMoisture12","SoilMoisture13","SoilMoisture14","SoilMoisture15","SoilMoisture16",
             "AirQuality1","AirQuality2","AirQuality3","AirQuality4",
@@ -211,9 +211,9 @@ namespace CumulusUtils
         };
 
         public readonly string[] DatafilesEXTRA = {
-            "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
-            "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
-            "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
+            "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
+            "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
+            "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
             "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
             "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
             "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
@@ -248,9 +248,9 @@ namespace CumulusUtils
         };
 
         public static string[] PlotvarKeywordEXTRA = {
-            "Temp1","Temp2","Temp3","Temp4","Temp5","Temp6","Temp7","Temp8","Temp9","Temp10",
-            "Humidity1","Humidity2","Humidity3","Humidity4","Humidity5","Humidity6","Humidity7","Humidity8","Humidity9","Humidity10",
-            "Dewpoint1","Dewpoint2","Dewpoint3","Dewpoint4","Dewpoint5","Dewpoint6","Dewpoint7","Dewpoint8","Dewpoint9","Dewpoint10",
+            "Temp1","Temp2","Temp3","Temp4","Temp5","Temp6","Temp7","Temp8","Temp9","Temp10","Temp11","Temp12","Temp13","Temp14","Temp15","Temp16",
+            "Humidity1","Humidity2","Humidity3","Humidity4","Humidity5","Humidity6","Humidity7","Humidity8","Humidity9","Humidity10","Humidity11","Humidity12","Humidity13","Humidity14","Humidity15","Humidity16",
+            "Dewpoint1","Dewpoint2","Dewpoint3","Dewpoint4","Dewpoint5","Dewpoint6","Dewpoint7","Dewpoint8","Dewpoint9","Dewpoint10","Dewpoint11","Dewpoint12","Dewpoint13","Dewpoint14","Dewpoint15","Dewpoint16",
             "SoilTemp1","SoilTemp2","SoilTemp3","SoilTemp4","SoilTemp5","SoilTemp6","SoilTemp7","SoilTemp8","SoilTemp9","SoilTemp10","SoilTemp11","SoilTemp12","SoilTemp13","SoilTemp14","SoilTemp15","SoilTemp16",
             "SoilMoisture1","SoilMoisture2","SoilMoisture3","SoilMoisture4","SoilMoisture5","SoilMoisture6","SoilMoisture7","SoilMoisture8","SoilMoisture9","SoilMoisture10","SoilMoisture11","SoilMoisture12","SoilMoisture13","SoilMoisture14","SoilMoisture15","SoilMoisture16",
             "AirQuality1","AirQuality2","AirQuality3","AirQuality4",
@@ -363,55 +363,55 @@ namespace CumulusUtils
             PlotvarUnitsALL[ 24 ] = Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in";
 
             PlotvarUnitsEXTRA = new string[ PlotvarTypesEXTRA.Length ];
-            //"Temp1","Temp2","Temp3","Temp4","Temp5","Temp6","Temp7","Temp8","Temp9","Temp10",
-            for ( int i = 0; i < 10; i++ )
+            //"Temp1","Temp2","Temp3","Temp4","Temp5","Temp6","Temp7","Temp8","Temp9","Temp10","Temp11","Temp12","Temp13","Temp14","Temp15","Temp16"
+            for ( int i = 0; i < 16; i++ )
                 PlotvarUnitsEXTRA[ 0 + i ] = Sup.StationTemp.Text();
 
-            //"Humidity1","Humidity2","Humidity3","Humidity4","Humidity5","Humidity6","Humidity7","Humidity8","Humidity9","Humidity10",
-            for ( int i = 0; i < 10; i++ )
-                PlotvarUnitsEXTRA[ 10 + i ] = "%";
+            //"Humidity1","Humidity2","Humidity3","Humidity4","Humidity5","Humidity6","Humidity7","Humidity8","Humidity9","Humidity10","Humidity11","Humidity12","Humidity13","Humidity14","Humidity15","Humidity16"
+            for ( int i = 0; i < 16; i++ )
+                PlotvarUnitsEXTRA[ 16 + i ] = "%";
 
-            //"Dewpoint1","Dewpoint2","Dewpoint3","Dewpoint4","Dewpoint5","Dewpoint6","Dewpoint7","Dewpoint8","Dewpoint9","Dewpoint10",
-            for ( int i = 0; i < 10; i++ )
-                PlotvarUnitsEXTRA[ 20 + i ] = Sup.StationTemp.Text();
+            //"Dewpoint1","Dewpoint2","Dewpoint3","Dewpoint4","Dewpoint5","Dewpoint6","Dewpoint7","Dewpoint8","Dewpoint9","Dewpoint10","Dewpoint11","Dewpoint12","Dewpoint13","Dewpoint14","Dewpoint15","Dewpoint16"
+            for ( int i = 0; i < 16; i++ )
+                PlotvarUnitsEXTRA[ 32 + i ] = Sup.StationTemp.Text();
 
             //"SoilTemp1","SoilTemp2","SoilTemp3","SoilTemp4","SoilTemp5","SoilTemp6","SoilTemp7","SoilTemp8","SoilTemp9","SoilTemp10","SoilTemp11","SoilTemp12","SoilTemp13","SoilTemp14","SoilTemp15","SoilTemp16",
             for ( int i = 0; i < 16; i++ )
-                PlotvarUnitsEXTRA[ 30 + i ] = Sup.StationTemp.Text();
+                PlotvarUnitsEXTRA[ 48 + i ] = Sup.StationTemp.Text();
 
             GetSoilMoistureUnitArray();
 
             //"SoilMoisture1","SoilMoisture2","SoilMoisture3","SoilMoisture4","SoilMoisture5","SoilMoisture6","SoilMoisture7","SoilMoisture8","SoilMoisture9","SoilMoisture10","SoilMoisture11","SoilMoisture12","SoilMoisture13","SoilMoisture14","SoilMoisture15","SoilMoisture16",
             for ( int i = 0; i < 16; i++ )
-                PlotvarUnitsEXTRA[ 46 + i ] = soilMoistureUnitArray[ 0 + i ];
+                PlotvarUnitsEXTRA[ 64 + i ] = soilMoistureUnitArray[ 0 + i ];
 
             //"AirQuality1","AirQuality2","AirQuality3","AirQuality4",
             //"AirQualityAvg1","AirQualityAvg2","AirQualityAvg3","AirQualityAvg4",
             for ( int i = 0; i < 8; i++ )
-                PlotvarUnitsEXTRA[ 62 + i ] = "μg/m3";
+                PlotvarUnitsEXTRA[ 72 + i ] = "μg/m3";
 
             //"UserTemp1","UserTemp2","UserTemp3","UserTemp4","UserTemp5","UserTemp6","UserTemp7","UserTemp8",
             for ( int i = 0; i < 8; i++ )
-                PlotvarUnitsEXTRA[ 70 + i ] = Sup.StationTemp.Text();
+                PlotvarUnitsEXTRA[ 80 + i ] = Sup.StationTemp.Text();
 
             //"LeafWetness1","LeafWetness2","LeafWetness3","LeafWetness4","LeafWetness5","LeafWetness6","LeafWetness7","LeafWetness8",
             for ( int i = 0; i < 8; i++ )
-                PlotvarUnitsEXTRA[ 78 + i ] = "";
+                PlotvarUnitsEXTRA[ 88 + i ] = "";
 
             //"LaserDist1","LaserDist2","LaserDist3","LaserDist4","LaserDepth1","LaserDepth2","LaserDepth3","LaserDepth4", 
             for ( int i = 0; i < 8; i++ )
-                PlotvarUnitsEXTRA[ 86 + i ] = "cm";
+                PlotvarUnitsEXTRA[ 94 + i ] = "cm";
 
             //"CO2", "CO2_24h", "CO2_pm2p5", "CO2_pm2p5_24h","CO2_pm10","CO2_pm10_24h","CO2_temp","CO2_hum",
-            PlotvarUnitsEXTRA[ 94 ] = CO2conc.Text();
-            PlotvarUnitsEXTRA[ 95 ] = CO2conc.Text();
-            PlotvarUnitsEXTRA[ 96 ] = PMconc.Text();
-            PlotvarUnitsEXTRA[ 97 ] = PMconc.Text();
-            PlotvarUnitsEXTRA[ 98 ] = PMconc.Text();
-            PlotvarUnitsEXTRA[ 99 ] = PMconc.Text();
-            PlotvarUnitsEXTRA[ 100 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 101 ] = "%";
-            PlotvarUnitsEXTRA[ 102 ] = "count";
+            PlotvarUnitsEXTRA[ 102 ] = CO2conc.Text();
+            PlotvarUnitsEXTRA[ 103 ] = CO2conc.Text();
+            PlotvarUnitsEXTRA[ 104 ] = PMconc.Text();
+            PlotvarUnitsEXTRA[ 105 ] = PMconc.Text();
+            PlotvarUnitsEXTRA[ 106 ] = PMconc.Text();
+            PlotvarUnitsEXTRA[ 107 ] = PMconc.Text();
+            PlotvarUnitsEXTRA[ 108 ] = Sup.StationTemp.Text();
+            PlotvarUnitsEXTRA[ 109 ] = "%";
+            PlotvarUnitsEXTRA[ 110 ] = "count";
 
             //"Lightning"
 

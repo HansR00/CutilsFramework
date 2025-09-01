@@ -609,7 +609,7 @@ namespace CumulusUtils
                         }
                     }
 
-                    foreach ( string thisValue in ValuesAsTextArray ) 
+                    foreach ( string thisValue in ValuesAsTextArray )
                     {
                         if ( !string.IsNullOrEmpty( thisValue ) )
                         {
@@ -708,10 +708,10 @@ namespace CumulusUtils
                     if ( !string.IsNullOrEmpty( thisValue ) )
                     {
                         try { tmp.Value.Add( Convert.ToDouble( thisValue, CUtils.Inv ) ); }
-                        catch 
+                        catch
                         {
                             Sup.LogTraceWarningMessage( $"CustomLogs ReadDailyCustomLog for {thisLog.Name}: Field Invalid value: {thisValue} , continuing" );
-                            tmp.Value.Add( null ); 
+                            tmp.Value.Add( null );
                         }
                     }
                     else
@@ -1204,10 +1204,39 @@ namespace CumulusUtils
                 Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in",
 
                 Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in",     // 420
-                Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in",     
                 Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in",
-                Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in"
+                Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in",
+                Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in",
+                Sup.StationRain.Text(),
+                Sup.StationRain.Text(),
+                Sup.StationRain.Text(),
+                Sup.StationRain.Text(),
+                Sup.StationRain.Text(),
+                Sup.StationRain.Text(),
 
+                Sup.StationRain.Text(),              // 430
+                Sup.StationRain.Text(),
+                Sup.StationRain.Text(),
+                Sup.StationRain.Text(),
+                Sup.StationRain.Text(),
+                Sup.StationRain.Text(),
+                "%",
+                "%",
+                "%",
+                "%",
+
+                "%",                                 //440
+                "%",
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationTemp.Text(),
+                Sup.StationRain.Text(),
+                Sup.StationDistance.Text(),
+                "hr",
+                Sup.StationRain.Text(),
+                "hr"
+
+                //450
             };
 
             TagAxis = new AxisType[]
@@ -1680,8 +1709,37 @@ namespace CumulusUtils
                 AxisType.Height,             //420
                 AxisType.Height,
                 AxisType.Height,
-                AxisType.Height
+                AxisType.Height,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
 
+                AxisType.Temp,              //430
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Humidity,
+                AxisType.Humidity,
+                AxisType.Humidity,
+                AxisType.Humidity,
+
+                AxisType.Humidity,           //440
+                AxisType.Humidity,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Temp,
+                AxisType.Rain,
+                AxisType.Wind,
+                AxisType.Hours,
+                AxisType.Rain,
+                AxisType.Hours,
+
+                //450
             };
 
             if ( Tagname.Length != TagUnit.Length )
@@ -2217,7 +2275,36 @@ namespace CumulusUtils
             "SnowAccum24h1",                //420
             "SnowAccum24h2",
             "SnowAccum24h3",
-            "SnowAccum24h4",   
+            "SnowAccum24h4",
+            "ExtraTemp11",
+            "ExtraTemp12",
+            "ExtraTemp13",
+            "ExtraTemp14",
+            "ExtraTemp15",
+            "ExtraTemp16",
+
+            "ExtraDP11",                    //430
+            "ExtraDP12",
+            "ExtraDP13",
+            "ExtraDP14",
+            "ExtraDP15",
+            "ExtraDP16",
+            "ExtraHum11",
+            "ExtraHum12",
+            "ExtraHum13",
+            "ExtraHum14",
+
+            "ExtraHum15",                   //440
+            "ExtraHum16",
+            "MonthAvgTemp",
+            "MonthAvgTempHigh",
+            "MonthAvgTempLow",
+            "MonthAvgTotalRainfall",
+            "MonthAvgTotalWindRun",
+            "MonthAvgTotalSunhours",
+            "MonthAvgTotalET",
+            "MonthAvgTotalChillHrs"
+
         };
 
     }

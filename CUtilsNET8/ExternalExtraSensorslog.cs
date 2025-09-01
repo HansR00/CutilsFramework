@@ -136,7 +136,7 @@ namespace CumulusUtils
 
                         // NOTE: formally this can be a series of values for all extra sensors in this definition
                         //       requires additional coding ToDo when required
-                        tmp.Value = Convert.ToSingle( splitLine[ 2 ] );
+                        tmp.Value = Convert.ToSingle( splitLine[ 2 ], CUtils.Inv );
                         ExternalExtraSensorsValuesList.Add( tmp );
                     }
                     catch ( Exception e ) when ( e is FormatException || e is OverflowException )

@@ -466,7 +466,7 @@ namespace CumulusUtils
 
             if ( string.IsNullOrEmpty( SpecificHighchartsVersion ) )
             {
-                SpecificHighchartsVersion = "11.2";
+                SpecificHighchartsVersion = "12.3";
             }
 
             sb.AppendLine( $"<script src='https://code.highcharts.com/stock/{SpecificHighchartsVersion}/highstock.js'></script>" );

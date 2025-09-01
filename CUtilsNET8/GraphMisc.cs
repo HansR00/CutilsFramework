@@ -857,6 +857,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "{" );
             thisBuffer.AppendLine( "  enabled: true" );
             thisBuffer.AppendLine( "}," );
+            thisBuffer.AppendLine( "rangeSelector:{allButtonsEnabled: true, selected: 1 }," ); // 3 months
 
             StringBuilder ds = new StringBuilder( "  series: [{\n" ); // ds: DataString
             ds.Append( $"    name: '{Sup.GetCUstringValue( "Graphs", "ClashSeries1Name", "Cumulus Daily Average", true )}',\n" );

@@ -43,7 +43,10 @@ namespace CumulusUtils
         AirQuality1, AirQuality2, AirQuality3, AirQuality4, AirQualityAvg1, AirQualityAvg2, AirQualityAvg3, AirQualityAvg4,
         UserTemp1, UserTemp2, UserTemp3, UserTemp4, UserTemp5, UserTemp6, UserTemp7, UserTemp8,
         CO2, CO2Avg, CO2_pm2_5, CO2_pm2_5_avg, CO2_pm10, CO2_PM10_avg, CO2_Temp, CO2_Hum,
-        LaserDist1, LaserDist2, LaserDist3, LaserDist4, LaserDepth1, LaserDepth2, LaserDepth3, LaserDepth4, Snow24h
+        LaserDist1, LaserDist2, LaserDist3, LaserDist4, LaserDepth1, LaserDepth2, LaserDepth3, LaserDepth4, Snow24h,
+        Temp11, Temp12, Temp13, Temp14, Temp15, Temp16,
+        Humidity11, Humidity12, Humidity13, Humidity14, Humidity15, Humidity16,
+        DewPoint11, DewPoint12, DewPoint13, DewPoint14, DewPoint15, DewPoint16
     };
 
     public struct ExtraSensorslogValue
@@ -162,6 +165,27 @@ namespace CumulusUtils
         public double? LaserDepth4 { get; set; }
 
         public double? Snow24h { get; set; }
+
+        public double? Temp11 { get; set; }
+        public double? Temp12 { get; set; }
+        public double? Temp13 { get; set; }
+        public double? Temp14 { get; set; }
+        public double? Temp15 { get; set; }
+        public double? Temp16 { get; set; }
+
+        public double? Humidity11 { get; set; }
+        public double? Humidity12 { get; set; }
+        public double? Humidity13 { get; set; }
+        public double? Humidity14 { get; set; }
+        public double? Humidity15 { get; set; }
+        public double? Humidity16 { get; set; }
+
+        public double? Dewpoint11 { get; set; }
+        public double? Dewpoint12 { get; set; }
+        public double? Dewpoint13 { get; set; }
+        public double? Dewpoint14 { get; set; }
+        public double? Dewpoint15 { get; set; }
+        public double? Dewpoint16 { get; set; }
 
         public bool Valid { get; set; }
     }
@@ -606,6 +630,60 @@ namespace CumulusUtils
 
                     FieldInUse = (int) ExtraSensorslogFieldName.Snow24h;
                     ThisValue.Snow24h = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+
+                    FieldInUse = (int) ExtraSensorslogFieldName.Temp11;
+                    ThisValue.Temp11 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+
+                    FieldInUse = (int) ExtraSensorslogFieldName.Temp12;
+                    ThisValue.Temp12 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+
+                    FieldInUse = (int) ExtraSensorslogFieldName.Temp13;
+                    ThisValue.Temp13 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+
+                    FieldInUse = (int) ExtraSensorslogFieldName.Temp14;
+                    ThisValue.Temp14 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+
+                    FieldInUse = (int) ExtraSensorslogFieldName.Temp15;
+                    ThisValue.Temp15 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+
+                    FieldInUse = (int) ExtraSensorslogFieldName.Temp16;
+                    ThisValue.Temp16 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+
+                    FieldInUse = (int) ExtraSensorslogFieldName.Humidity11;
+                    ThisValue.Humidity11 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+
+                    FieldInUse = (int) ExtraSensorslogFieldName.Humidity12;
+                    ThisValue.Humidity12 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+
+                    FieldInUse = (int) ExtraSensorslogFieldName.Humidity13;
+                    ThisValue.Humidity13 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+
+                    FieldInUse = (int) ExtraSensorslogFieldName.Humidity14;
+                    ThisValue.Humidity14 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+
+                    FieldInUse = (int) ExtraSensorslogFieldName.Humidity15;
+                    ThisValue.Humidity15 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+
+                    FieldInUse = (int) ExtraSensorslogFieldName.Humidity16;
+                    ThisValue.Humidity16 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+
+                    FieldInUse = (int) ExtraSensorslogFieldName.DewPoint11;
+                    ThisValue.Dewpoint11 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+
+                    FieldInUse = (int) ExtraSensorslogFieldName.DewPoint12;
+                    ThisValue.Dewpoint12 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+
+                    FieldInUse = (int) ExtraSensorslogFieldName.DewPoint13;
+                    ThisValue.Dewpoint13 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+
+                    FieldInUse = (int) ExtraSensorslogFieldName.DewPoint14;
+                    ThisValue.Dewpoint14 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+
+                    FieldInUse = (int) ExtraSensorslogFieldName.DewPoint15;
+                    ThisValue.Dewpoint15 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
+
+                    FieldInUse = (int) ExtraSensorslogFieldName.DewPoint16;
+                    ThisValue.Dewpoint16 = !string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) ? Convert.ToDouble( lineSplit[ FieldInUse ], CUtils.Inv ) : null;
 
                     ThisValue.Valid = true;
 

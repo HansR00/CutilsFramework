@@ -256,7 +256,7 @@ namespace CumulusUtils
                 of.WriteLine( "<div class='noaa_rep_container'>" ); // Format for table
 
                 // IS it HTML or pre-formatted - CMX version 4.4.0 and up 
-                if ( Sup.GetCumulusIniValue("NOAA", "NOAAUOutputText", "1" ).Equals("1") ) // pre text formatted
+                if ( Sup.GetCumulusIniValue( "NOAA", "NOAAUOutputText", "1" ).Equals( "1" ) ) // pre text formatted
                 {
                     of.WriteLine( "<pre id='NOAAplaceholder'></pre>" );
                 }

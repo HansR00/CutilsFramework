@@ -378,14 +378,15 @@ namespace CumulusUtils
                     {
                         string Info = $"{Sup.GetCUstringValue( "General", "Info", "Info", true )}";
 
+                        // See: https://stackoverflow.com/a/79749908/11931424
+
                         TheCharts.AppendLine( "chart.update({" );
-                        TheCharts.AppendLine( "  chart:{events:{render() {const {x,y,width} = this.exportingGroup.getBBox();" );
+                        TheCharts.AppendLine( "  chart:{events:{render() {const chart = this; if ( !chart.exporting.group ){return;}const { x, y, width } = chart.exporting.group.getBBox();" );
 
                         TheCharts.AppendLine( "  if ( !this.customText ){" ); // Create a customText if it doesn't exist
                         TheCharts.AppendLine( $"    this.customText = this.renderer.text( '{Info}', x - width - 15, y + 15 )" );
                         TheCharts.AppendLine( "      .add()" +
-                            ".css({color: this.title.styles.color})" +
-                            ".css({cursor: 'pointer'})" +
+                            ".css({ color: this.title && this.title.styles ? this.title.styles.color : '#333', cursor: 'pointer' })" +
                             $".on('click', () => $('#{thisChart.Id}').modal( 'show') );" );
                         TheCharts.AppendLine( "  } else {" ); // Update the label position on render event (i.e on window resize)
                         TheCharts.AppendLine( "    this.customText.attr({x: x - width - 15, y: y + 15}); } } } } });" );
