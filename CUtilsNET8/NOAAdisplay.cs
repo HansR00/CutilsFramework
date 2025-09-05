@@ -1,27 +1,8 @@
 ﻿/*
  * NOAAdisplay - Part of CumulusUtils
  *
- * © Copyright 2019-2024 Hans Rottier <hans.rottier@gmail.com>
- *
- * The code of CumulusUtils is public domain and distributed under the  
- * Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
- * (Note: this is different license than for CumulusMX itself, it is basically is usage license)
- * 
- * Author:      Hans Rottier <hans.rottier@gmail.com>
- * Project:     CumulusUtils meteo-wagenborgen.nl
- * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI .NET Framework 4.8
- *              Initial release: pwsFWI                 (version 1.0)
- *                               Website Generator      (version 3.0)
- *                               ChartsCompiler         (version 5.0)
- *                               Maintenance releases   (version 6.x) including CustomLogs
- *              Startdate : 16 november 2021 start of conversion to .NET 5, 6 and 7
- *              Startdate : 15 january 2024 start of conversion to .NET 8
- *              
- * Environment: Raspberry Pi 4B and up
- *              Raspberry Pi OS
- *              C# / Visual Studio / Windows for development
- * 
  */
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -31,7 +12,7 @@ using System.Text;
 
 namespace CumulusUtils
 {
-    // As the NOAA reports are written by Cumulus, the only thing I need to do is display
+    // As the NOAA reports are written by Cumulus, the only thing to be done is display
     // and as such be able to get rid the PHP procedures
     class NOAAdisplay( CuSupport s )
     {
@@ -44,9 +25,6 @@ namespace CumulusUtils
 
         public void GenerateNOAATxtfile( List<DayfileValue> Thislist )
         {
-            //int YearMax = Thislist.Select( x => x.ThisDate.Year ).Max();
-            //int YearMin = Thislist.Select( x => x.ThisDate.Year ).Min();
-
             // Produce the arrays for the months without data. Required for the selection  generation in javascript later on
             List<DayfileValue> yearlist = Thislist.Where( x => x.ThisDate.Year == CUtils.YearMin ).ToList();
             MonthsNotPresentYearMin = tmpIntArray.Except( yearlist.Select( x => x.ThisDate.Month ).Distinct() ).ToArray();

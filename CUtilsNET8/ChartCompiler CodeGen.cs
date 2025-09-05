@@ -1,33 +1,9 @@
 ﻿/*
  * ChartsCompiler CodeGen - Part of CumulusUtils
  *
- * © Copyright 2019-2024 Hans Rottier <hans.rottier@gmail.com>
- *
- * The code of CumulusUtils is public domain and distributed under the  
- * Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
- * (Note: this is different license than for CumulusMX itself, it is basically is usage license)
- * 
- * Author:      Hans Rottier <hans.rottier@gmail.com>
- * Project:     CumulusUtils meteo-wagenborgen.nl
- * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI .NET Framework 4.8
- *              Initial release: pwsFWI                 (version 1.0)
- *                               Website Generator      (version 3.0)
- *                               ChartsCompiler         (version 5.0)
- *                               Maintenance releases   (version 6.x) including CustomLogs
- *              Startdate : 16 november 2021 start of conversion to .NET 5, 6 and 7
- *              Startdate : 15 january 2024 start of conversion to .NET 8
- *              
- * Environment: Raspberry Pi 4B and up
- *              Raspberry Pi OS
- *              C# / Visual Studio / Windows for development
- * 
- * Literature:  https://github.com/jstat/jstat
- *              https://jstat.github.io/all.html
- *              https://www.highcharts.com/docs/chart-and-series-types/chart-types
- *              https://stackoverflow.com/questions/1232040/how-do-i-empty-an-array-in-javascript
- *              
- * 
- * Highcharts date/time format specifiers (https://api.highcharts.com/class-reference/Highcharts.Time) :
+ */
+
+/* Highcharts date/time format specifiers (https://api.highcharts.com/class-reference/Highcharts.Time) :
  * 
  *        * Supported format keys:
  *
@@ -50,8 +26,8 @@
  *        %P: Lower case AM or PM
  *        %S: Two digits seconds, 00 through 59
  *        %L: Milliseconds (naming from Ruby)
- *
  */
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -295,7 +271,7 @@ namespace CumulusUtils
                     TheCharts.AppendLine( $"function do{thisChart.Id}() {{" );
                     TheCharts.AppendLine( $"  console.log('Creating chart: {thisChart.Title}');" );
 
-                    TheCharts.AppendLine( "  chart = Highcharts.stockChart('chartcontainer', { title: {" );
+                    TheCharts.AppendLine( "  chart = Highcharts.stockChart('chartcontainer', {title: {" );
                     TheCharts.Append( $" text: '{thisChart.Title}'" );
                     if ( thisChart.HasWindBarbs && !thisChart.WindBarbsBelow ) TheCharts.Append( ", margin: 35" );
                     TheCharts.AppendLine( "}," );
@@ -972,7 +948,7 @@ namespace CumulusUtils
                             case PlotvarRangeType.Recent:
                                 Recent.Append( $"\"{thisVar.PlotVar}\":[" );
                                 foreach ( MonthfileValue entry in MonthlyListToWriteOut )
-                                    Recent.Append( $"[{CuSupport.DateTimeToJS( entry.ThisDate )},{entry.Evt.ToString( "F1", CUtils.Inv )}]," );
+                                    Recent.Append( $"[{CuSupport.DateTimeToJSUTC( entry.ThisDate )},{entry.Evt.ToString( "F1", CUtils.Inv )}]," );
                                 Recent.Remove( Recent.Length - 1, 1 );
                                 Recent.Append( $"]," );
 
@@ -987,15 +963,15 @@ namespace CumulusUtils
 
                                 if ( thisVar.PlotVar.Equals( "heatingdegreedays" ) )
                                     foreach ( DayfileValue entry in CUtils.MainList )
-                                        All.Append( $"[{CuSupport.DateTimeToJS( entry.ThisDate )},{entry.HeatingDegreeDays.ToString( "F1", CUtils.Inv )}]," );
+                                        All.Append( $"[{CuSupport.DateTimeToJSUTC( entry.ThisDate )},{entry.HeatingDegreeDays.ToString( "F1", CUtils.Inv )}]," );
 
                                 else if ( thisVar.PlotVar.Equals( "coolingdegreedays" ) )
                                     foreach ( DayfileValue entry in CUtils.MainList )
-                                        All.Append( $"[{CuSupport.DateTimeToJS( entry.ThisDate )},{entry.CoolingDegreeDays.ToString( "F1", CUtils.Inv )}]," );
+                                        All.Append( $"[{CuSupport.DateTimeToJSUTC( entry.ThisDate )},{entry.CoolingDegreeDays.ToString( "F1", CUtils.Inv )}]," );
 
                                 else if ( thisVar.PlotVar.Equals( "evapotranspiration" ) )
                                     foreach ( DayfileValue entry in CUtils.MainList )
-                                        All.Append( $"[{CuSupport.DateTimeToJS( entry.ThisDate )},{entry.EvapoTranspiration.ToString( "F1", CUtils.Inv )}]," );
+                                        All.Append( $"[{CuSupport.DateTimeToJSUTC( entry.ThisDate )},{entry.EvapoTranspiration.ToString( "F1", CUtils.Inv )}]," );
 
                                 All.Remove( All.Length - 1, 1 );
                                 All.Append( $"]," );

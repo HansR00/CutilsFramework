@@ -1,27 +1,10 @@
 ﻿/*
  * Top10 - Part of CumulusUtils
- *
- * © Copyright 2019-2024 Hans Rottier <hans.rottier@gmail.com>
- *
- * The code of CumulusUtils is public domain and distributed under the  
- * Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
- * (Note: this is different license than for CumulusMX itself, it is basically is usage license)
  * 
- * Author:      Hans Rottier <hans.rottier@gmail.com>
- * Project:     CumulusUtils meteo-wagenborgen.nl
- * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI .NET Framework 4.8
- *              Initial release: pwsFWI                 (version 1.0)
- *                               Website Generator      (version 3.0)
- *                               ChartsCompiler         (version 5.0)
- *                               Maintenance releases   (version 6.x) including CustomLogs
- *              Startdate : 16 november 2021 start of conversion to .NET 5, 6 and 7
- *              Startdate : 15 january 2024 start of conversion to .NET 8
- *              
- * Environment: Raspberry Pi 4B and up
- *              Raspberry Pi OS
- *              C# / Visual Studio / Windows for development
- * 
+ * Originally written in C - it still bears the scars :D
+ *
  */
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -57,6 +40,8 @@ namespace CumulusUtils
 
         private readonly CuSupport Sup;
 
+
+        #region Constructor
 
         // Constructor
         //[System.Diagnostics.CodeAnalysis.SuppressMessage( "Style", "IDE0059:Unnecessary assignment of a value", Justification = "<Pending>" )]
@@ -135,6 +120,10 @@ namespace CumulusUtils
             for ( i = 0; i < Enum.GetNames( typeof( Top10Types ) ).Length; i++ )
                 Top10List[ i ] = new List<DayfileValue>();
         }
+
+        #endregion
+
+        #region GenerateTop10List
 
         public void GenerateTop10List( List<DayfileValue> ThisList )
         {
@@ -470,6 +459,10 @@ namespace CumulusUtils
             return; //all done
         }
 
+        #endregion
+
+        #region HTMLexportTop10
+
         private void HTMLexportTop10()
         {
             int i, j, k;
@@ -672,6 +665,8 @@ namespace CumulusUtils
 
             } // End using of (output file)
         }
+
+        #endregion
 
         #region IDisposable
 

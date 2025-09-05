@@ -1,27 +1,8 @@
 ﻿/*
  * SysInfo - Part of CumulusUtils
  *
- * © Copyright 2019-2024 Hans Rottier <hans.rottier@gmail.com>
- *
- * The code of CumulusUtils is public domain and distributed under the  
- * Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
- * (Note: this is different license than for CumulusMX itself, it is basically is usage license)
- * 
- * Author:      Hans Rottier <hans.rottier@gmail.com>
- * Project:     CumulusUtils meteo-wagenborgen.nl
- * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI .NET Framework 4.8
- *              Initial release: pwsFWI                 (version 1.0)
- *                               Website Generator      (version 3.0)
- *                               ChartsCompiler         (version 5.0)
- *                               Maintenance releases   (version 6.x) including CustomLogs
- *              Startdate : 16 november 2021 start of conversion to .NET 5, 6 and 7
- *              Startdate : 15 january 2024 start of conversion to .NET 8
- *              
- * Environment: Raspberry Pi 4B and up
- *              Raspberry Pi OS
- *              C# / Visual Studio / Windows for development
- * 
  */
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -45,6 +26,7 @@ namespace CumulusUtils
 
         private InfoFromCMX thisInfo;
 
+        #region Constructor
         public SysInfo( CuSupport s, InetSupport i )
         {
             Sup = s;
@@ -52,6 +34,10 @@ namespace CumulusUtils
 
             thisIPC = new CmxIPC( Sup, Isup );
         }
+
+        #endregion
+
+        #region GenerateSystemStatusAsync
 
         public async Task GenerateSystemStatusAsync()
         {
@@ -193,6 +179,9 @@ namespace CumulusUtils
             return;
         }
 
+        #endregion
+
+        #region Doing Windows
         private void DoingWindows( StreamWriter of )
         {
             Sup.LogTraceInfoMessage( "SystemStatus : DoingWindows Start" );
@@ -244,6 +233,9 @@ namespace CumulusUtils
             return;
         }
 
+        #endregion
+
+        #region Doing Unix
         private void DoingUnix( StreamWriter of )
         {
             Sup.LogTraceInfoMessage( "SystemStatus : DoingUnix Start" );
@@ -348,6 +340,9 @@ namespace CumulusUtils
             return;
         }
 
+        #endregion
+
+        #region Doing MacOS
         private void DoingMacOS( StreamWriter of )
         {
             Sup.LogTraceInfoMessage( "SystemStatus : DoingMacOS Start" );
@@ -439,6 +434,9 @@ namespace CumulusUtils
             return;
         }
 
+        #endregion
+
+        #region StartProcess
         private void StartProcess( string command, string parameters )
         {
             Sup.LogTraceInfoMessage( "StartProcess " + command + " " + parameters );
@@ -469,6 +467,8 @@ namespace CumulusUtils
             process.WaitForExit();
             process.Dispose();
         }
+
+        #endregion
 
         #region supporting functions
         private LinuxDialects GetLinuxDialect()

@@ -1,126 +1,6 @@
 ﻿/*
  * CumulusUtils/Main
- *
- * © Copyright 2019-2024 Hans Rottier <hans.rottier@gmail.com>
- *
- * The code of CumulusUtils is public domain and distributed under the  
- * Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
- * (Note: this is different license than for CumulusMX itself, it is basically is usage license)
  * 
- * Author:      Hans Rottier <hans.rottier@gmail.com>
- * Project:     CumulusUtils meteo-wagenborgen.nl
- * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI .NET Framework 4.8
- *              Initial release: pwsFWI                 (version 1.0)
- *                               Website Generator      (version 3.0)
- *                               ChartsCompiler         (version 5.0)
- *                               Maintenance releases   (version 6.x) including CustomLogs
- *              Startdate : 16 november 2021 start of conversion to .NET 5, 6 and 7
- *              Startdate : 15 january 2024 start of conversion to .NET 8
- *              
- * Environment: Raspberry Pi 4B and up
- *              Raspberry Pi OS
- *              C# / Visual Studio / Windows for development
- * 
- * Files:       Main.cs
- *              AirLink.cs
- *              Airlinklog.cs
- *              AirQuality.cs
- *              ChartsCompiler CodeGen.cs
- *              ChartsCompiler Decl.cs
- *              ChartsCompiler Eval.cs
- *              ChartsCompiler Parser.cs
- *              CmxIPC.cs
- *              CustomLogs.cs
- *              Dayfile.cs
- *              DayRecords.cs
- *              Diary.cs
- *              ExternalExtraSensorslog.cs
- *              ExtraSensors.cs
- *              ExtraSensorslog.cs
- *              Forecast.cs
- *              GlobalSuppression.cs
- *              Graphs.cs
- *              GraphMisc.cs
- *              GraphRain.cs
- *              GraphSolar.cs
- *              GraphTemp.cs
- *              GraphWind.cs
- *              HelpTexts.cs
- *              InetSupport.cs
- *              IniFile.cs
- *              Maps.cs
- *              MeteoCam.cs
- *              Monthfile.cs
- *              NOAAdisplay.cs
- *              PwsFWI.cs
- *              receive.pl
- *              Records.cs
- *              StationMap.cs
- *              Support.cs
- *              SysInfo.cs
- *              Top10.cs
- *              UnitsAndConversions.cs
- *              UserReports.cs
- *              Website.cs
- *              Yadr.cs
- *              
- * Beside this direct C# code there are also supporting files:
- * Distribution:
- *              CutilsCharts-default-for-use.def
- *              CutilsMenu-example-for-use.def
- *              CUgauges.js
- *              CUgauges-ss.css
- *              CUsermenu-example.txt
- *              HighchartsDefaults.js
- *              CutilsCharts-examples.def
- *              CUlanguage.js
- *              LICENCE
- *              CUserAbout-example.txt
- *              
- * External but in distribution:
- *              CURGraph.common.core.js
- *              CURGraph.rose.js
- *              CUsteelseries.min.js
- *              suncalc.js
- *              CUtween.min.js
- * 
- */
-
-/* 
- * Important supporting sites (information, weather Forecasts whatever...)
- * 1) https://www.i18nqa.com/debug/utf8-debug.html
- * 2) https://www.wmo.int/pages/prog/www/IMOP/CIMO-Guide.html
- * 3) http://yourweather.co.uk/ (for the API)
- * 4) https://jsfiddle.net/
- * 5) https://highcharts.com/
- * 6) https://www.technical-recipes.com/2016/how-to-run-processes-and-obtain-the-output-in-c/
- * 7) https://www.encodedna.com/webapi/webapi-controller-for-file-upload-procedure.htm
- * 8) https://stackoverflow.com/questions/10168240/encrypting-decrypting-a-string-in-c-sharp
- * 9) https://port135.com/public-key-token-assembly-dll-file/ // When you have to map a version of a dll to another in cumulusutils.exe.config
- * 10) https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat (date formatting for locale in javascript)
- * 11)  10) found through https://stackoverflow.com/questions/5749548/javascript-date-format-international-settings?rq=4
- * 
- * Read this on HttpClient and async/await: 
- * https://stackoverflow.com/questions/42235677/httpclient-this-instance-has-already-started
- * https://medium.com/rubrikkgroup/understanding-async-avoiding-deadlocks-e41f8f2c6f5d
- * https://stackoverflow.com/questions/47944400/how-do-i-use-httpclient-postasync-parameters-properly
- * https://aspnetmonsters.com/2016/08/2016-08-27-httpclientwrong/
- * https://devblogs.microsoft.com/dotnet/configureawait-faq/
- * 
- * Read this on how to stop bubbling up the async thing:
- * https://stackoverflow.com/questions/48116738/stop-bubbling-up-async-await-task-to-caller-without-getting-deadlock
- * https://stackoverflow.com/questions/54388796/how-can-i-stop-async-await-from-bubbling-up-in-functions
- *
- * On colouring and Graphing:
- * https://stackoverflow.com/questions/309149/generate-distinctly-different-rgb-colors-in-graphs
- * https://sashamaps.net/docs/resources/20-colors/
- * https://graphicdesign.stackexchange.com/questions/3682/where-can-i-find-a-large-palette-set-of-contrasting-colors-for-coloring-many-d
- *
- * Never used but you never know:
- * 1) https://www.hanselman.com/blog/RemoteDebuggingWithVSCodeOnWindowsToARaspberryPiUsingNETCoreOnARM.aspx
- * 2) https://www.csharp-examples.net/
- * 3) https://jstween.blogspot.com/2007/01/javascript-motion-tween.html
- * 4) https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/demo/combo-meteogram
  */
 
 using System;
@@ -244,12 +124,6 @@ namespace CumulusUtils
         private static async Task Main( string[] args )
         {
             TraceListener FtpListener = null;
-
-            // For research puposes:
-            //string assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            //assemblyVersion = Assembly.LoadFile("your assembly file").GetName().Version.ToString();
-            //string fileVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
-            //string productVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
 
             try
             {
@@ -652,8 +526,6 @@ namespace CumulusUtils
 #endif
                 }
 
-                //
-                // YADR has no Async and is independent of InetSupport!!
                 if ( DoYadr )
                 {
 #if TIMING
@@ -669,9 +541,6 @@ namespace CumulusUtils
 #endif
                 }
 
-                //
-                // Records has no Async and is independent of InetSupport!!
-                //
                 if ( DoRecords )
                 {
 #if TIMING
@@ -686,9 +555,6 @@ namespace CumulusUtils
 #endif
                 }
 
-                //
-                // DayRecords  has no Async and is independent of InetSupport!!
-                //
                 if ( DoDayRecords )
                 {
 #if TIMING
@@ -703,9 +569,6 @@ namespace CumulusUtils
 #endif
                 }
 
-                //
-                // NOAA has no Async and is independent of InetSupport!!
-                //
                 if ( DoNOAA )
                 {
 #if TIMING
@@ -720,8 +583,6 @@ namespace CumulusUtils
 #endif
                 }
 
-                //
-                // Graphs has no Async and is independent of InetSupport!!
                 if ( DoGraphs )
                 {
 #if TIMING
@@ -739,7 +600,6 @@ namespace CumulusUtils
                 }
 
                 //
-                // Top10 has no Async and is independent of InetSupport!!
                 // This call must always be the last because it changes the sorting of the MainList
                 //
                 if ( DoTop10 )
@@ -790,11 +650,24 @@ namespace CumulusUtils
                     retval = await fncs.MapsOn();
                     Sup.LogTraceInfoMessage( retval );
 
-                    if ( DoCreateMap && File.Exists( "paMuCetaerCyaM.txt" ) ) fncs.CreateMap();
+                    if ( DoCreateMap && File.Exists( "paMuCetaerCyaM.txt" ) )
+                    {
+                        // This is for the MapManager to fetch all Map signatures and create and upload the map
+                        // Currently it is MeteoWagenborgen.nl but can be anybody on any domain. Just make sure you have the rights to upload
+                        // Note: the signature files are placed by the users in the Maps directory on the managers server and are handled by 
+                        //       a cgi-bin perl script receive.pl (also in the git)
+
+                        fncs.CreateMap();
+                    }
                     else if ( !File.Exists( "paMuCetaerCyaM.txt" ) )  // 
                     {
+                        // MeteoWagenborgen (or any other by agreement) creates the map once per hour (or at any frequency wanted/required)
+                        // All users may download that map at any time
+                        //
                         Sup.LogTraceInfoMessage( $"Fetch Map: Fetching the generated map" );
 
+                        // Change this URL when changing map manager role
+                        //
                         retval = await Isup.GetUrlDataAsync( new Uri( "https://meteo-wagenborgen.nl/maps.txt" ) );
 
                         if ( !string.IsNullOrEmpty( retval ) )
@@ -864,8 +737,9 @@ namespace CumulusUtils
 
                         ChartsCompiler fncs = new ChartsCompiler( Sup );
 
-                        // USerAskedData is created with a complete ChartsList so create the chartslist from all separate OutputDefs.
+                        // UserAskedData is created with a complete ChartsList so create the chartslist from all separate OutputDefs.
                         // It's a bit awkward to separate charts in different lists first and then reassemble but I see no other way.
+                        //
                         List<OutputDef> theseOutputs = fncs.ParseChartDefinitions();
 
                         if ( theseOutputs is not null )
@@ -1055,20 +929,19 @@ namespace CumulusUtils
                 await Isup.UploadFileAsync( $"{Sup.RecordsOutputFilename}", $"{Sup.PathUtils}{Sup.RecordsOutputFilename}" );
             }
 
-            if ( DoNOAA ) // Only useful on second day of month
+            if ( DoNOAA )
             {
                 await Isup.UploadFileAsync( $"{Sup.NOAAOutputFilename}", $"{Sup.PathUtils}{Sup.NOAAOutputFilename}" );
             }
 
-            if ( DoDayRecords /*&& ( !Thrifty || ThriftyDayRecordsDirty )*/ )  // Take care it is always uploaded to possibly change the format of yesterday even if there is no record
+            if ( DoDayRecords )  // Take care it is always uploaded to possibly change the format of yesterday even if there is no record
             {
-                Sup.LogTraceInfoMessage( $"Thrifty: DoDayRecords && (!Thrifty || ThriftyDayRecordsDirty) - {DoDayRecords && ( !Thrifty || ThriftyDayRecordsDirty )} => Uploading = {Sup.DayRecordsOutputFilename}" );
                 await Isup.UploadFileAsync( $"{Sup.DayRecordsOutputFilename}", $"{Sup.PathUtils}{Sup.DayRecordsOutputFilename}" );
             }
 
             if ( DoForecast ) { await Isup.UploadFileAsync( $"{Sup.ForecastOutputFilename}", $"{Sup.PathUtils}{Sup.ForecastOutputFilename}" ); }
 
-            if ( DoStationMap && ( !Thrifty || RunStarted.DayOfYear == 2 ) ) { await Isup.UploadFileAsync( $"{Sup.StationMapOutputFilename}", $"{Sup.PathUtils}{Sup.StationMapOutputFilename}" ); }
+            if ( DoStationMap && ( !Thrifty ) ) { await Isup.UploadFileAsync( $"{Sup.StationMapOutputFilename}", $"{Sup.PathUtils}{Sup.StationMapOutputFilename}" ); }
             if ( DoMeteoCam && HasMeteoCamMenu && !Thrifty ) { await Isup.UploadFileAsync( $"{Sup.MeteoCamOutputFilename}", $"{Sup.PathUtils}{Sup.MeteoCamOutputFilename}" ); }
 
             if ( DoAirLink && !Thrifty )

@@ -1,16 +1,10 @@
 ﻿;
 ; ChartsCompiler definitions - Part of CumulusUtils
 ; Dutch version
-;
-; © Copyright 2019 - 2022 Hans Rottier <hans.rottier@gmail.com>
-;
 ; 
 ; Author:      Hans Rottier <hans.rottier@gmail.com>
 ; Project:     CumulusUtils meteo-wagenborgen.nl
 ; Date:        18-11-2022
-;
-; This file is  part of the distribution. Users may modify this file up to the indicator line
-; Anything beyond that line will be removed at generation time (by the ExtraSensors module)
 ;
 
 Equations

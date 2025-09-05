@@ -1,27 +1,8 @@
 ﻿/*
  * CuSupport - Part of CumulusUtils
  *
- * © Copyright 2019-2024 Hans Rottier <hans.rottier@gmail.com>
- *
- * The code of CumulusUtils is public domain and distributed under the  
- * Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
- * (Note: this is different license than for CumulusMX itself, it is basically is usage license)
- * 
- * Author:      Hans Rottier <hans.rottier@gmail.com>
- * Project:     CumulusUtils meteo-wagenborgen.nl
- * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI .NET Framework 4.8
- *              Initial release: pwsFWI                 (version 1.0)
- *                               Website Generator      (version 3.0)
- *                               ChartsCompiler         (version 5.0)
- *                               Maintenance releases   (version 6.x) including CustomLogs
- *              Startdate : 16 november 2021 start of conversion to .NET 5, 6 and 7
- *              Startdate : 15 january 2024 start of conversion to .NET 8
- *              
- * Environment: Raspberry Pi 4B and up
- *              Raspberry Pi OS
- *              C# / Visual Studio / Windows for development
- * 
  */
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -191,6 +172,8 @@ namespace CumulusUtils
             {
                 using ( StreamWriter of = new StreamWriter( $"{PathUtils}HighchartsLanguage.js", false, Encoding.UTF8 ) )
                 {
+                    // This file is from version 8.0 also used for the time is UTC and Timezonde defs.
+
                     StringBuilder str = new StringBuilder();
 
                     str.AppendLine( "Highcharts.lang = {" );
@@ -219,7 +202,13 @@ namespace CumulusUtils
                     str.Remove( str.Length - 1, 1 );
                     str.AppendLine( "]," );
                     str.AppendLine( "    thousandsSep: \"\"" );
-                    str.AppendLine( "  }" );
+                    str.AppendLine( "  }," );
+
+                    // Now set the time and timezone defs
+
+                    //str.AppendLine( $"time:{{useUTC: false, timezone: '{GetCumulusIniValue( "Station", "TimeZone", "" )}'}}" );
+                    str.AppendLine( $"time:{{timezone: '{GetCumulusIniValue( "Station", "TimeZone", "" )}'}}" );
+
                     str.AppendLine( "};" );
 
                     of.WriteLine( $"{str}" );
@@ -433,7 +422,7 @@ namespace CumulusUtils
             return _ver + " " + beta;
         }
 
-        public static string Copyright() => "&copy; Hans Rottier";
+        public static string Copyright() => "&copy; GNU GPL v3";
 
         public static StringBuilder CopyrightForGeneratedFiles()
         {
@@ -441,10 +430,8 @@ namespace CumulusUtils
 
             result.AppendLine( "<!--" );
             result.AppendLine( $" This file is generated as part of CumulusUtils - {DateTime.Now}" );
-            result.AppendLine( " This header must not be removed and the user must comply to the Creative Commons 4.0 license" );
-            result.AppendLine( " The license conditions imply the non-commercial use of HighCharts for which the user is held responsible" );
-            result.AppendLine( $" © Copyright 2019 - {DateTime.Now:yyyy} Hans Rottier <hans.rottier@gmail.com>" );
-            result.AppendLine( " See also License conditions of CumulusUtils: https://meteo-wagenborgen.nl/" );
+            result.AppendLine( " This header must not be removed and the user must comply to the GNU General Public License" );
+            result.AppendLine( " See also License conditions of CumulusUtils at https://meteo-wagenborgen.nl/" );
             result.AppendLine( "-->" );
 
             return result;
@@ -593,8 +580,10 @@ namespace CumulusUtils
 
         #region Javascript / Unix time conversions
 
+
         public static long DateTimeToJS( DateTime timestamp ) => (long) ( timestamp - new DateTime( 1970, 1, 1, 0, 0, 0 ) ).TotalSeconds * 1000;
         public static long DateTimeToUnix( DateTime timestamp ) => (long) ( timestamp - new DateTime( 1970, 1, 1, 0, 0, 0 ) ).TotalSeconds;
+        public static long DateTimeToJSUTC( DateTime timestamp ) => (long) ( timestamp.ToUniversalTime() - new DateTime( 1970, 1, 1, 0, 0, 0 ) ).TotalSeconds * 1000;
         public static long DateTimeToUnixUTC( DateTime timestamp ) => (long) ( timestamp.ToUniversalTime() - new DateTime( 1970, 1, 1, 0, 0, 0 ) ).TotalSeconds;
 
         #endregion
@@ -673,7 +662,6 @@ namespace CumulusUtils
             return (float) ret;
         }
 
-        //Check, not sure this works because of the i-- required to stay on the position of the deleted item.
         public static T[] RemoveAt<T>( this T[] source, int index )
         {
             if ( source is null )
@@ -698,8 +686,10 @@ namespace CumulusUtils
         {
             UInt32 c;
 
+            // Just for the fun of it :D
+
             //try
-            //{  // Maybe required for overflow testing, howver the unchecke seems to take care of it.
+            //{  // Maybe required for overflow testing, howver the unchecked seems to take care of it.
 
             UInt32 v = (UInt32) axis;
             v = v - ( ( v >> 1 ) & 0x55555555 ); // reuse input as temporary
@@ -880,110 +870,5 @@ namespace CumulusUtils
 
     }
 
-    /*
-        /// <summary>
-        /// Cipher class 
-        /// Stole from https://stackoverflow.com/questions/10168240/encrypting-decrypting-a-string-in-c-sharp
-        /// Initially for Maps, getting the stationswithutils.xml file, changing it and putting it back
-        /// </summary>
-        /// <autogeneratedoc />
-        /// Done
-        public static class StringCipher
-        {
-            // This constant is used to determine the keysize of the encryption algorithm in bits.
-            // We divide this by 8 within the code below to get the equivalent number of bytes.
-            private const int Keysize = 256;
-
-            // This constant determines the number of iterations for the password bytes generation function.
-            private const int DerivationIterations = 1000;
-
-            public static string Encrypt( string plainText, string passPhrase )
-            {
-                // Salt and IV is randomly generated each time, but is preprended to encrypted cipher text
-                // so that the same Salt and IV values can be used when decrypting.  
-                var saltStringBytes = Generate256BitsOfRandomEntropy();
-                var ivStringBytes = Generate256BitsOfRandomEntropy();
-                var plainTextBytes = Encoding.UTF8.GetBytes( plainText );
-                using ( var password = new Rfc2898DeriveBytes( passPhrase, saltStringBytes, DerivationIterations ) )
-                {
-                    var keyBytes = password.GetBytes( Keysize / 8 );
-                    using ( var symmetricKey = new RijndaelManaged() )
-                    {
-                        symmetricKey.BlockSize = 256;
-                        symmetricKey.Mode = CipherMode.CBC;
-                        symmetricKey.Padding = PaddingMode.PKCS7;
-                        using ( var encryptor = symmetricKey.CreateEncryptor( keyBytes, ivStringBytes ) )
-                        {
-                            using ( var memoryStream = new MemoryStream() )
-                            {
-                                using ( var cryptoStream = new CryptoStream( memoryStream, encryptor, CryptoStreamMode.Write ) )
-                                {
-                                    cryptoStream.Write( plainTextBytes, 0, plainTextBytes.Length );
-                                    cryptoStream.FlushFinalBlock();
-                                    // Create the final bytes as a concatenation of the random salt bytes, the random iv bytes and the cipher bytes.
-                                    var cipherTextBytes = saltStringBytes;
-                                    cipherTextBytes = cipherTextBytes.Concat( ivStringBytes ).ToArray();
-                                    cipherTextBytes = cipherTextBytes.Concat( memoryStream.ToArray() ).ToArray();
-                                    //                memoryStream.Close();
-                                    //                cryptoStream.Close();
-                                    return Convert.ToBase64String( cipherTextBytes );
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            public static string Decrypt( string cipherText, string passPhrase )
-            {
-                // Get the complete stream of bytes that represent:
-                // [32 bytes of Salt] + [32 bytes of IV] + [n bytes of CipherText]
-                var cipherTextBytesWithSaltAndIv = Convert.FromBase64String( cipherText );
-                // Get the saltbytes by extracting the first 32 bytes from the supplied cipherText bytes.
-                var saltStringBytes = cipherTextBytesWithSaltAndIv.Take( Keysize / 8 ).ToArray();
-                // Get the IV bytes by extracting the next 32 bytes from the supplied cipherText bytes.
-                var ivStringBytes = cipherTextBytesWithSaltAndIv.Skip( Keysize / 8 ).Take( Keysize / 8 ).ToArray();
-                // Get the actual cipher text bytes by removing the first 64 bytes from the cipherText string.
-                var cipherTextBytes = cipherTextBytesWithSaltAndIv.Skip( ( Keysize / 8 ) * 2 ).Take( cipherTextBytesWithSaltAndIv.Length - ( ( Keysize / 8 ) * 2 ) ).ToArray();
-
-                using ( var password = new Rfc2898DeriveBytes( passPhrase, saltStringBytes, DerivationIterations ) )
-                {
-                    var keyBytes = password.GetBytes( Keysize / 8 );
-                    using ( var symmetricKey = new RijndaelManaged() )
-                    {
-                        symmetricKey.BlockSize = 256;
-                        symmetricKey.Mode = CipherMode.CBC;
-                        symmetricKey.Padding = PaddingMode.PKCS7;
-                        using ( var decryptor = symmetricKey.CreateDecryptor( keyBytes, ivStringBytes ) )
-                        {
-                            using ( var memoryStream = new MemoryStream( cipherTextBytes ) )
-                            {
-                                using ( var cryptoStream = new CryptoStream( memoryStream, decryptor, CryptoStreamMode.Read ) )
-                                {
-                                    var plainTextBytes = new byte[ cipherTextBytes.Length ];
-                                    var decryptedByteCount = cryptoStream.Read( plainTextBytes, 0, plainTextBytes.Length );
-                                    //                memoryStream.Close();
-                                    //                cryptoStream.Close();
-                                    return Encoding.UTF8.GetString( plainTextBytes, 0, decryptedByteCount );
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            private static byte[] Generate256BitsOfRandomEntropy()
-            {
-                var randomBytes = new byte[ 32 ]; // 32 Bytes will give us 256 bits.
-                using ( var rngCsp = new RNGCryptoServiceProvider() )
-                {
-                    // Fill the array with cryptographically secure random bytes.
-                    rngCsp.GetBytes( randomBytes );
-                }
-                return randomBytes;
-            }
-        }
-    */
-
-    #endregion
+#endregion
 }

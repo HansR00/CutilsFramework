@@ -1,27 +1,8 @@
 ﻿/*
- * Webcam - Part sb CumulusUtils
+ * Meteocam - Part sb CumulusUtils
  *
- * © Copyright 2019-2024 Hans Rottier <hans.rottier@gmail.com>
- *
- * The code of CumulusUtils is public domain and distributed under the  
- * Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
- * (Note: this is different license than for CumulusMX itself, it is basically is usage license)
- * 
- * Author:      Hans Rottier <hans.rottier@gmail.com>
- * Project:     CumulusUtils meteo-wagenborgen.nl
- * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI .NET Framework 4.8
- *              Initial release: pwsFWI                 (version 1.0)
- *                               Website Generator      (version 3.0)
- *                               ChartsCompiler         (version 5.0)
- *                               Maintenance releases   (version 6.x) including CustomLogs
- *              Startdate : 16 november 2021 start of conversion to .NET 5, 6 and 7
- *              Startdate : 15 january 2024 start of conversion to .NET 8
- *              
- * Environment: Raspberry Pi 4B and up
- *              Raspberry Pi OS
- *              C# / Visual Studio / Windows for development
- * 
  */
+
 using System.IO;
 using System.Text;
 
@@ -31,6 +12,7 @@ namespace CumulusUtils
     {
         readonly CuSupport Sup = s;
 
+        #region Constructor
         public void GenerateMeteoCam()
         {
             if ( !CUtils.HasMeteoCamMenu )
@@ -67,7 +49,9 @@ namespace CumulusUtils
 
             return;
         }
+        #endregion
 
+        #region Manual
         private string MeteoCamManual()
         {
             StringBuilder sb = new StringBuilder();
@@ -159,14 +143,16 @@ namespace CumulusUtils
 #endif
 
         }
+#endregion
 
+        #region HP10
         private string MeteoCamEcowittHP10()
         {
             StringBuilder sb = new StringBuilder();
 
             Sup.LogTraceInfoMessage( $"MeteoCam CamType : EcowittHP10" );
 
-            // I: First generate the RealTime AirLink file
+            // I: First generate the RealTime meteocam file
             //    Although the file is named Realtime, it is best to have this processed at the Interval frequency because the HP10 has an
             //    interval of 5, 10, 15, 20 or 25 minutes and it is the user who sets that interval.
             File.WriteAllText( $"{Sup.PathUtils}{Sup.MeteocamRealtimeFilename}", "<#EcowittCameraUrl>" );
@@ -221,6 +207,7 @@ namespace CumulusUtils
 #endif
 
         }
+#endregion
 
     }
 }

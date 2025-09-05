@@ -35,9 +35,30 @@ namespace CumulusUtils
                 TimeZoneInfo TZ;
                 int DST = 0;
 
-                TZ = TimeZoneInfo.Local;
-                if ( TZ.SupportsDaylightSavingTime )
-                    DST = TZ.GetUtcOffset( DateTime.Now ).Hours - TZ.BaseUtcOffset.Hours;
+                Sup.LogDebugMessage( $"Generating CUlib starting" );
+
+                string tz;
+
+                tz = Sup.GetCumulusIniValue( "Station", "TimeZone", "" );
+
+                if ( TimeZoneInfo.TryFindSystemTimeZoneById( tz, out TZ ) )
+                {
+                    Sup.LogDebugMessage( $"TimeZone Id:           {TZ.Id} " );
+                    Sup.LogDebugMessage( $"TimeZone StandardName: {TZ.StandardName} " );
+                    Sup.LogDebugMessage( $"TimeZone DaylightName: {TZ.DaylightName} " );
+                    Sup.LogDebugMessage( $"TimeZone DisplayName:  {TZ.DisplayName} " );
+                    Sup.LogDebugMessage( $"TimeZone SupportsDaylightSavingTime: {TZ.SupportsDaylightSavingTime}" );
+                    Sup.LogDebugMessage( $"TimeZone GetUtcOffset(now): {TZ.GetUtcOffset( DateTime.Now ).Hours}" );
+                    Sup.LogDebugMessage( $"TimeZone BaseUtcoffset: {TZ.BaseUtcOffset.Hours}" );
+
+                    if ( TZ.SupportsDaylightSavingTime )
+                        DST = TZ.GetUtcOffset( DateTime.Now ).Hours - TZ.BaseUtcOffset.Hours;
+                }
+                else
+                {
+                    Sup.LogDebugMessage( $"Internal error - Timezone {tz} not found in IAIN database - Exiting" );
+                    Environment.Exit( 0 );
+                }
 
                 string DecimalSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
                 string TimeSeparator = ":";
@@ -45,7 +66,6 @@ namespace CumulusUtils
 
                 bool ReplaceDecimalSeparator = !DecimalSeparator.Equals( "." );
 
-                Sup.LogDebugMessage( $"Generating CUlib starting" );
                 Sup.LogDebugMessage( $"Generating CUlib DecSep: |{DecimalSeparator}|, TimeSep: |{TimeSeparator}| and DateSep: |{DateSeparator}| for language {Sup.Language}" );
 
                 // Moved DST to index.html.

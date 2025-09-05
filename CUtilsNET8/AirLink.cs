@@ -1,40 +1,9 @@
 ﻿/*
- * DayRecords - Part of CumulusUtils
- *
- * © Copyright 2019-2024 Hans Rottier <hans.rottier@gmail.com>
- *
- * The code of CumulusUtils is public domain and distributed under the  
- * Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
- * (Note: this is different license than for CumulusMX itself, it is basically is usage license)
+ * AirLink - Part of CumulusUtils
  * 
- * Author:      Hans Rottier <hans.rottier@gmail.com>
- * Project:     CumulusUtils meteo-wagenborgen.nl
- * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI .NET Framework 4.8
- *              Initial release: pwsFWI                 (version 1.0)
- *                               Website Generator      (version 3.0)
- *                               ChartsCompiler         (version 5.0)
- *                               Maintenance releases   (version 6.x) including CustomLogs
- *              Startdate : 16 november 2021 start of conversion to .NET 5, 6 and 7
- *              Startdate : 15 january 2024 start of conversion to .NET 8
- *              
- * Environment: Raspberry Pi 4B and up
- *              Raspberry Pi OS
- *              C# / Visual Studio / Windows for development
  */
 
-/*
- * // How the AirLink sensor system works.
- * There are three components: 
- *   1) The historic data in the datafile AirLinkYYYYMMlog.txt
- *   2) The realtime data 
- *   3) The display of the actual data and the graphing of the data in addition to the archived data
- *   
- *ad 1) Apparently the datafile is not sent as a json. To create the graph, the data has to be sent to the module, the realtime data have to be added to the datastructure while the module is alive.
- *ad 2) The realtime data need to be sent to the module. Therefore:
- *     1) Cumulusutils must create the airlinkrealtime.txt and the entry in Cumulus.ini which processes and sends it to the site.
- *     2) On the site, the module - when active - needs to be hooked in the minute time to read the airlinkrealtime.txt and put the data in the respective fields
- *ad 3) The graphs need to be adjusted, realtime data added and redrawn
- *
+ /*
  * Below I reproduce the links as found in the AQI code of CMX. Please note that for Canada there is an issue because CMX just takes the PM component of a combined formula.
  * I will give some additional links for Canada. Canada has confusing information about its AirQuality system.
  * Please check also this post on the forum: https://cumulus.hosiene.co.uk/viewtopic.php?t=18602
@@ -327,7 +296,7 @@ namespace CumulusUtils
             WantToSee1hr = Sup.GetUtilsIniValue( "AirLink", "WantToSee1hr", "false" ).Equals( "true", CUtils.Cmp );
             WantToSee3hr = Sup.GetUtilsIniValue( "AirLink", "WantToSee3hr", "false" ).Equals( "true", CUtils.Cmp );
             WantToSee24hr = Sup.GetUtilsIniValue( "AirLink", "WantToSee24hr", "false" ).Equals( "true", CUtils.Cmp );
-            WantToSeeWind = Sup.GetUtilsIniValue( "AirLink", "WantToSeeWind", "false" ).Equals( "true", CUtils.Cmp );
+            WantToSeeWind = false; // Sup.GetUtilsIniValue( "AirLink", "WantToSeeWind", "false" ).Equals( "true", CUtils.Cmp );
 
             AirLinkIn = Sup.GetCumulusIniValue( "AirLink", "In-Enabled", "0" ).Equals( "1", CUtils.Cmp );
             AirLinkOut = Sup.GetCumulusIniValue( "AirLink", "Out-Enabled", "0" ).Equals( "1", CUtils.Cmp );
@@ -421,7 +390,7 @@ namespace CumulusUtils
             {
                 of.AppendLine( "<head>" );
                 of.AppendLine( " <meta charset=\"UTF-8\">" );
-                of.AppendLine( " <meta name=\"description\" content=\"Cumulus standard Website, part of CumulusUtils by( c )Hans Rottier\" />" );
+                of.AppendLine( " <meta name=\"description\" content=\"Cumulus standard Website, part of CumulusUtils\" />" );
                 of.AppendLine( " <meta name=\"keywords\" content=\"Cumulus, weather, data, weather station, CumulusUtils\" />" );
                 of.AppendLine( " <meta name=\"robots\" content=\"index, noarchive, follow, noimageindex, noimageclick\" />" );
                 of.AppendLine( " <link rel=\"shortcut icon\" href=\"favicon.ico\" type=\"image/x-icon\" />" );
@@ -433,7 +402,6 @@ namespace CumulusUtils
                 CUtils.DoLibraryIncludes = true;
                 CUtils.DoWebsite = false;
             }
-
 
             of.AppendLine( $"{CuSupport.GenjQueryIncludestring()}" );
 
@@ -1141,8 +1109,8 @@ namespace CumulusUtils
                             {
                                 double? d = (double?) Field.GetValue( value );
 
-                                if ( d is not null ) sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d?.ToString( "F2", CUtils.Inv )}]," );
-                                else sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},null]," );
+                                if ( d is not null ) sb.Append( $"[{CuSupport.DateTimeToJSUTC( value.ThisDate )},{d?.ToString( "F2", CUtils.Inv )}]," );
+                                else sb.Append( $"[{CuSupport.DateTimeToJSUTC( value.ThisDate )},null]," );
                             }
 
                             sb.Remove( sb.Length - 1, 1 );
@@ -1159,8 +1127,8 @@ namespace CumulusUtils
                             {
                                 double? d = (double?) Field.GetValue( value );
 
-                                if ( d is not null ) sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d?.ToString( "F2", CUtils.Inv )}]," );
-                                else sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},null]," );
+                                if ( d is not null ) sb.Append( $"[{CuSupport.DateTimeToJSUTC( value.ThisDate )},{d?.ToString( "F2", CUtils.Inv )}]," );
+                                else sb.Append( $"[{CuSupport.DateTimeToJSUTC( value.ThisDate )},null]," );
                             }
 
                             sb.Remove( sb.Length - 1, 1 );
@@ -1177,8 +1145,8 @@ namespace CumulusUtils
                             {
                                 double? d = (double?) Field.GetValue( value );
 
-                                if ( d is not null ) sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d?.ToString( "F2", CUtils.Inv )}]," );
-                                else sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},null]," );
+                                if ( d is not null ) sb.Append( $"[{CuSupport.DateTimeToJSUTC( value.ThisDate )},{d?.ToString( "F2", CUtils.Inv )}]," );
+                                else sb.Append( $"[{CuSupport.DateTimeToJSUTC( value.ThisDate )},null]," );
                             }
 
                             sb.Remove( sb.Length - 1, 1 );
@@ -1195,8 +1163,8 @@ namespace CumulusUtils
                             {
                                 double? d = (double?) Field.GetValue( value );
 
-                                if ( d is not null ) sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d?.ToString( "F2", CUtils.Inv )}]," );
-                                else sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},null]," );
+                                if ( d is not null ) sb.Append( $"[{CuSupport.DateTimeToJSUTC( value.ThisDate )},{d?.ToString( "F2", CUtils.Inv )}]," );
+                                else sb.Append( $"[{CuSupport.DateTimeToJSUTC( value.ThisDate )},null]," );
                             }
 
                             sb.Remove( sb.Length - 1, 1 );
@@ -1213,8 +1181,8 @@ namespace CumulusUtils
                             {
                                 double? d = (double?) Field.GetValue( value );
 
-                                if ( d is not null ) sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},{d?.ToString( "F2", CUtils.Inv )}]," );
-                                else sb.Append( $"[{CuSupport.DateTimeToJS( value.ThisDate )},null]," );
+                                if ( d is not null ) sb.Append( $"[{CuSupport.DateTimeToJSUTC( value.ThisDate )},{d?.ToString( "F2", CUtils.Inv )}]," );
+                                else sb.Append( $"[{CuSupport.DateTimeToJSUTC( value.ThisDate )},null]," );
                             }
 
                             sb.Remove( sb.Length - 1, 1 );

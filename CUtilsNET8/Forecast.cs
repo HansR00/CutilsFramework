@@ -1,26 +1,8 @@
 ﻿/*
  * Forecast - Part of CumulusUtils
  *
- * © Copyright 2019-2024 Hans Rottier <hans.rottier@gmail.com>
- *
- * The code of CumulusUtils is public domain and distributed under the  
- * Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
- * (Note: this is different license than for CumulusMX itself, it is basically is usage license)
- * 
- * Author:      Hans Rottier <hans.rottier@gmail.com>
- * Project:     CumulusUtils meteo-wagenborgen.nl
- * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI .NET Framework 4.8
- *              Initial release: pwsFWI                 (version 1.0)
- *                               Website Generator      (version 3.0)
- *                               ChartsCompiler         (version 5.0)
- *                               Maintenance releases   (version 6.x) including CustomLogs
- *              Startdate : 16 november 2021 start of conversion to .NET 5, 6 and 7
- *              Startdate : 15 january 2024 start of conversion to .NET 8
- *              
- * Environment: Raspberry Pi 4B and up
- *              Raspberry Pi OS
- *              C# / Visual Studio / Windows for development
- */
+ */ 
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -191,7 +173,7 @@ namespace CumulusUtils
         {
             bool retval = false;
 
-            if ( !String.IsNullOrEmpty( XMLresult ) )
+            if ( !string.IsNullOrEmpty( XMLresult ) )
             {
                 XElement localWeather = XElement.Parse( XMLresult );
 

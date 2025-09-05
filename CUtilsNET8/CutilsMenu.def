@@ -1,17 +1,11 @@
 ;
 ; CumulusUtils Menu definitions for Website- Part of CumulusUtils
 ;
-; © Copyright 2022 Hans Rottier <hans.rottier@gmail.com>
-;
 ; Author:      Hans Rottier <hans.rottier@gmail.com>
 ; Project:     CumulusUtils meteo-wagenborgen.nl
 ; Date:        21-10-2022
-; Version:     Goes with CumulusUtils version 6.14 and up
 ;
 ; This file is  part of the distribution
-; For use, please rename to CutilsMenu.def and move to the utils directory
-; Users may modify this file to change the order of the menu items and add it as they please
-; Items in this file are for instruction only
 ;
 Home
 

@@ -2,7 +2,6 @@
 # Project: CumulusUtils
 # Date:    22 april 2021
 # Purpose: CGI procedure to receive MapsOn files through HttpPost in the MapsOn function of Cutils
-# Author:  Hans Rottier
 #
 use warnings;
 use CGI;

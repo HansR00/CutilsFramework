@@ -46,13 +46,14 @@
   <PropertyGroup>
     <NoWin32Manifest>true</NoWin32Manifest>
     <AssemblyTitle>CumulusUtils</AssemblyTitle>
-    <Company>HansR</Company>
+    <Company></Company>
     <Product>CumulusUtils</Product>
-    <Copyright>Copyright © Hans Rottier 2019-2024</Copyright>
+    <Copyright></Copyright>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <AssemblyVersion>7.5.1</AssemblyVersion>
+    <AssemblyVersion>8.0.0</AssemblyVersion>
     <FileVersion>1.0.0</FileVersion>
     <PackAsTool>True</PackAsTool>
+    <RepositoryUrl></RepositoryUrl>
   </PropertyGroup>
   <ItemGroup>
     <Reference Update="System.Drawing">

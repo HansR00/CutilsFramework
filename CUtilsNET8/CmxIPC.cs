@@ -1,25 +1,6 @@
 ﻿/* 
  * CmxIPC - Part of CumulusUtils
  *
- * © Copyright 2019-2024 Hans Rottier <hans.rottier@gmail.com>
- *
- * The code of CumulusUtils is public domain and distributed under the  
- * Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
- * (Note: this is different license than for CumulusMX itself, it is basically is usage license)
- * 
- * Author:      Hans Rottier <hans.rottier@gmail.com>
- * Project:     CumulusUtils meteo-wagenborgen.nl
- * Dates:       Startdate : 2 september 2019 with Top10 and pwsFWI .NET Framework 4.8
- *              Initial release: pwsFWI                 (version 1.0)
- *                               Website Generator      (version 3.0)
- *                               ChartsCompiler         (version 5.0)
- *                               Maintenance releases   (version 6.x) including CustomLogs
- *              Startdate : 16 november 2021 start of conversion to .NET 5, 6 and 7
- *              Startdate : 15 january 2024 start of conversion to .NET 8
- *              
- * Environment: Raspberry Pi 4B and up
- *              Raspberry Pi OS
- *              C# / Visual Studio / Windows for development
  */
 
 using System;
@@ -54,7 +35,7 @@ namespace CumulusUtils
             string CMXport = Sup.GetUtilsIniValue( "General", "CMXport", "8998" );
 
 #if !RELEASE
-            CmxBaseURL = $"http://192.168.178.31:{CMXport}";
+            CmxBaseURL = $"http://192.168.178.2:{CMXport}";
 #else
             CmxBaseURL = $"http://localhost:{CMXport}";
 #endif
@@ -93,7 +74,7 @@ namespace CumulusUtils
 
         public async Task<string> GetCMXGraphdataAsync( string thisGraphDef, DateTime thisTime )
         {
-            // Overloaad woith a startdate
+            // Overload woith a startdate
             // Everything according to the spec in the Marks email of 16/03/2023 17h22 :
             // 1) (@17h22)
             // Would it help your CUtils if you could do something like this when fetching the graph data…
@@ -104,7 +85,11 @@ namespace CumulusUtils
             // Start ts = real Unix timestamp, no fudging of local time.
             // Graph data sets remain the same with pseudo TS.
             //
-            string GraphDataUrl = $"{CmxBaseURL}/api/graphdata/{thisGraphDef}?start={CuSupport.DateTimeToUnixUTC( thisTime )}";
+            //string GraphDataUrl = $"{CmxBaseURL}/api/graphdata/{thisGraphDef}?start={CuSupport.DateTimeToUnixUTC( thisTime )}";
+
+            // The above spec was invalidated while making v8 Not sure if this is going to be used again.
+
+            string GraphDataUrl = $"{CmxBaseURL}/api/graphdata/{thisGraphDef}?start={thisTime:yyyy-MM-dd}";
             string JSONstring = await Isup.GetUrlDataAsync( new Uri( GraphDataUrl ) );
 
             return JSONstring;
@@ -188,8 +173,6 @@ namespace CumulusUtils
 
             string MultipleWebtagURL = $"{CmxBaseURL}/api/tags/process.txt";
             retval = await Isup.PostUrlDataAsync( new Uri( MultipleWebtagURL ), content );
-
-            //Sup.LogTraceVerboseMessage( $"ReplaceWebtagsPostAsync End. Returning {retval}" );
 
             return retval;
         } // End ReplaceWebtags
