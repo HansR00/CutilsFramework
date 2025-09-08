@@ -626,7 +626,7 @@ namespace CumulusUtils
 
                     Website fncs = new Website( Sup, Isup );
                     await fncs.GenerateWebsite();
-                    await fncs.CheckPackageAndCopy();
+                    //await fncs.CheckPackageAndCopy();
 
 #if TIMING
                     watch.Stop();
@@ -868,6 +868,20 @@ namespace CumulusUtils
 
             //********************************  Do the uploading when required **************************************
             //
+
+            if ( !Thrifty )
+            {
+                // Always upload the package files
+                Sup.LogTraceInfoMessage( $"Uploading = The Package" );
+                await Sup.CheckPackageAndCopy();
+            }
+
+            if (DoWebsite)
+            {
+                Sup.LogTraceInfoMessage( $"Uploading = {Sup.IndexOutputFilename}" );
+                await Isup.UploadFileAsync( $"{Sup.IndexOutputFilename}", $"{Sup.PathUtils}{Sup.IndexOutputFilename}" );
+            }
+
             if ( DoPwsFWI )
             {
                 Sup.LogTraceInfoMessage( $"Uploading = {Sup.PwsFWIOutputFilename}" );

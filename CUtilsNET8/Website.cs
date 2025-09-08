@@ -29,10 +29,6 @@ namespace CumulusUtils
 
     class Website
     {
-        private readonly string[] Package = new string[] {"index.html", "cumulusutils.js","cumuluscharts.txt","CUgauges.js","HighchartsDefaults.js","HighchartsLanguage.js",
-                                     "suncalc.js","CUtween.min.js", "CUsteelseries.min.js","CURGraph.rose.js","CURGraph.common.core.js","CUlanguage.js",
-                                     "CUgauges-ss.css"};
-
         private readonly string[] PanelsConfiguration;
         private readonly string StatisticsType;
 
@@ -555,7 +551,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     Sup.LogDebugMessage( $"Errors in Charts definition. See logfile, please correct and run again." );
                     Sup.LogTraceErrorMessage( $"No new cumuluscharts.txt is generated and the old one remains in place!" );
                 }
-            } // End generating the cumuluscharts.txt as a result of CutilsCharts.def file - a totally new concept of generating the charts
+            } // End generating the cumuluscharts.txt as a result of CutilsCharts.def file
             else
             {
                 Sup.LogDebugMessage( $"{Sup.PathUtils}{Sup.CutilsChartsDef} does not exist. No fall back exists from version 8 and up!" );
@@ -564,94 +560,6 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
                 Environment.Exit( 0 );
             }
-        }
-
-        #endregion
-
-        #region Package Upload
-        public async Task<bool> CheckPackageAndCopy()
-        {
-            bool MustUpload = false;
-
-            foreach ( string file in Package )
-            {
-                string filename = Sup.PathUtils + file;
-
-                if ( File.Exists( filename ) )
-                {
-                    string FTPfilename = "";
-
-                    if ( Path.GetExtension( filename ).Equals( ".html" ) )
-                    {
-                        // copy to cumulus dir 
-                        FTPfilename = file;
-                        MustUpload = true;
-                    }
-
-                    if ( Path.GetExtension( filename ).Equals( ".txt" ) )
-                    {
-                        FTPfilename = file;
-                    }
-
-                    if ( Path.GetExtension( filename ).Equals( ".js" ) )
-                    {
-                        FTPfilename = "lib/" + file;
-                    }
-
-                    if ( Path.GetExtension( filename ).Equals( ".css" ) )
-                    {
-                        FTPfilename = "css/" + file;
-                    }
-
-                    // Copy file
-
-                    if ( string.IsNullOrEmpty( FTPfilename ) )
-                    {
-                        Sup.LogTraceWarningMessage( $"CheckPackageAndCopy: File (IsNullOrEmpty) can't be copied. Cancelling operation." );
-                        Sup.LogTraceWarningMessage( "CheckPackageAndCopy: Website not created/updated. Website may not be [fully] operational" );
-                        Sup.LogTraceWarningMessage( "CheckPackageAndCopy: NOTE: This has no influence on the operation of Cumulus itself." );
-
-                        return false;
-                    }
-                    else
-                    {
-                        if ( !CUtils.Thrifty || ( CUtils.Thrifty && MustUpload ) )
-                        {
-                            if ( await Isup.UploadFileAsync( FTPfilename, filename ) )
-                                Sup.LogTraceInfoMessage( $"CheckPackageAndCopy: Uploaded {filename} to {FTPfilename}" );
-                            else
-                            {
-                                Sup.LogTraceErrorMessage( $"CheckPackageAndCopy: Upload of {filename} to {FTPfilename} failed." );
-                                return false;
-                            }
-                        }
-                        else
-                        {
-                            Sup.LogTraceInfoMessage( $"CheckPackageAndCopy: {filename} not uploaded because of Thrifty condition." );
-                        }
-
-                        MustUpload = false;
-                    }
-                }
-                else // File does  not exist
-                {
-                    if ( filename.Equals( "index.html" ) || filename.Equals( "cumulusutils.js" ) )
-                    {
-                        Sup.LogTraceErrorMessage( $"CheckPackageAndCopy: File {filename} is missing. Cancelling operation." );
-                        Sup.LogTraceErrorMessage( "CheckPackageAndCopy: Website not created/updated. Website may not be [fully] operational" );
-                        Sup.LogTraceInfoMessage( "CheckPackageAndCopy: NOTE: This has no influence on the operation of Cumulus itself." );
-
-                        return false;
-                    }
-                    else
-                    {
-                        Sup.LogTraceInfoMessage( $"CheckPackageAndCopy: File {filename} is missing." );
-                        Sup.LogTraceInfoMessage( "CheckPackageAndCopy: Website may not be [fully] operational but file may still exist from previous installation." );
-                    }
-                }
-            }
-
-            return true;
         }
 
         #endregion

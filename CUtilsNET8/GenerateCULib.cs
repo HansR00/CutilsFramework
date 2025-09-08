@@ -91,7 +91,7 @@ namespace CumulusUtils
                   "  else Report2Load = 'cumuluscharts.txt';" +
                   "" +
                   "  Promise.allSettled([ $.getScript('lib/CUgauges.js'), " +
-                  "                       LoadCUsermenu('CUsermenu.txt'), " +
+                  //"                       LoadCUsermenu('CUsermenu.txt'), " +
                   "                       LoadCUserAbout('CUserAbout.txt') ])" +
                   "    .then(() => { " +
                   "      loadRealtimeTxt();" +

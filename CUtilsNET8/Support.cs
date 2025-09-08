@@ -75,6 +75,9 @@ namespace CumulusUtils
         public string CutilsChartsDef { get; } = "CutilsCharts.def";
         public string CutilsMenuDef { get; } = "CutilsMenu.def";
         public string CUhelptexts { get; } = "CUhelptexts.txt";
+
+        public string IndexOutputFilename { get; } = "index.html";
+
         public bool LoggingOn { get; set; }
         public TraceSwitch CUTraceSwitch { get; set; }
 
@@ -585,6 +588,70 @@ namespace CumulusUtils
         public static long DateTimeToUnix( DateTime timestamp ) => (long) ( timestamp - new DateTime( 1970, 1, 1, 0, 0, 0 ) ).TotalSeconds;
         public static long DateTimeToJSUTC( DateTime timestamp ) => (long) ( timestamp.ToUniversalTime() - new DateTime( 1970, 1, 1, 0, 0, 0 ) ).TotalSeconds * 1000;
         public static long DateTimeToUnixUTC( DateTime timestamp ) => (long) ( timestamp.ToUniversalTime() - new DateTime( 1970, 1, 1, 0, 0, 0 ) ).TotalSeconds;
+
+        #endregion
+
+        #region Upload Package
+
+        private readonly string[] Package = new string[] {"cumulusutils.js","CUgauges.js","HighchartsDefaults.js","HighchartsLanguage.js",
+                                     "suncalc.js","CUtween.min.js", "CUsteelseries.min.js","CURGraph.rose.js","CURGraph.common.core.js","CUlanguage.js",
+                                     "CUgauges-ss.css"};
+
+        public async Task<bool> CheckPackageAndCopy()
+        {
+            foreach ( string file in Package )
+            {
+                string filename = PathUtils + file;
+
+                if ( File.Exists( filename ) )
+                {
+                    string FTPfilename = "";
+
+                    if ( Path.GetExtension( filename ).Equals( ".txt" ) )
+                    {
+                        FTPfilename = file;
+                    }
+
+                    if ( Path.GetExtension( filename ).Equals( ".js" ) )
+                    {
+                        FTPfilename = "lib/" + file;
+                    }
+
+                    if ( Path.GetExtension( filename ).Equals( ".css" ) )
+                    {
+                        FTPfilename = "css/" + file;
+                    }
+
+                    // Copy file
+
+                    if ( string.IsNullOrEmpty( FTPfilename ) )
+                    {
+                        LogTraceWarningMessage( $"CheckPackageAndCopy: File (IsNullOrEmpty) can't be copied. Cancelling operation." );
+                        LogTraceWarningMessage( "CheckPackageAndCopy: Website not created/updated. Website may not be [fully] operational" );
+                        LogTraceWarningMessage( "CheckPackageAndCopy: NOTE: This has no influence on the operation of Cumulus itself." );
+
+                        return false;
+                    }
+                    else
+                    {
+                        if ( await CUtils.Isup.UploadFileAsync( FTPfilename, filename ) )
+                            LogTraceInfoMessage( $"CheckPackageAndCopy: Uploaded {filename} to {FTPfilename}" );
+                        else
+                        {
+                            LogTraceErrorMessage( $"CheckPackageAndCopy: Upload of {filename} to {FTPfilename} failed." );
+                            return false;
+                        }
+                    }
+                }
+                else // File does  not exist
+                {
+                    LogTraceInfoMessage( $"CheckPackageAndCopy: File {filename} is missing." );
+                    LogTraceInfoMessage( "CheckPackageAndCopy: Website may not be [fully] operational but file may still exist from previous installation." );
+                }
+            }
+
+            return true;
+        }
 
         #endregion
 
