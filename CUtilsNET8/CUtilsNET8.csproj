@@ -50,7 +50,7 @@
     <Product>CumulusUtils</Product>
     <Copyright></Copyright>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <AssemblyVersion>8.0.1</AssemblyVersion>
+    <AssemblyVersion>8.1.1</AssemblyVersion>
     <FileVersion>1.0.0</FileVersion>
     <PackAsTool>True</PackAsTool>
     <RepositoryUrl></RepositoryUrl>

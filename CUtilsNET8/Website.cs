@@ -135,14 +135,31 @@ namespace CumulusUtils
             NewVersionAvailable = thisCMXInfo.NewBuildAvailable?.Equals( "1" ) ?? false;
 
             indexFile.Append( "<!DOCTYPE HTML>" +
-              $"<html lang='{Sup.Locale}'><head>" +
-              "<meta charset=\"UTF-8\"><meta name=\"description\" content=\"Cumulus standard Website, part of CumulusUtils\"/>" +
-              "<meta name=\"keywords\" content=\"Cumulus, weather, data, weather station, CumulusUtils\" />" +
-              "<meta name=\"robots\" content=\"index, noarchive, follow, noimageindex, noimageclick\" />" +
+             $"<html lang='{Sup.Locale}'><head>" +
               "<link rel=\"shortcut icon\" href=\"favicon.ico\" type=\"image/x-icon\" />" +
-              "<meta name=\"theme-color\" content=\"#ffffff\" />" +
              $"<title>{Sup.GetCumulusIniValue( "Station", "LocName", "" )} - CumulusUtils</title>" +
-              "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" );
+              "<meta name=\"theme-color\" content=\"#ffffff\" />" +
+              "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" +
+              "<meta charset=\"UTF-8\">" );
+
+            // Possibility of a user header meta section
+            //
+            if ( File.Exists( $"{Sup.PathUtils}{Sup.CutilsHeadDef}" ) )
+            {
+                string allText = File.ReadAllText( $"{Sup.PathUtils}{Sup.CutilsHeadDef}" );
+
+                Sup.LogTraceInfoMessage( $"{allText}/>" );
+                indexFile.Append( allText );
+            }
+            else
+            {
+                Sup.LogDebugMessage( $"CutilsHead.def does not exist, Using default <Meta> strings." );
+
+                indexFile.Append( 
+                  "<meta name=\"description\" content=\"CumulusMX Website, part of CumulusUtils\"/>" +
+                  "<meta name=\"keywords\" content=\"CumulusMX, weather, data, private weather station, CumulusUtils\" />" +
+                  "<meta name=\"robots\" content=\"index, noarchive, follow, noimageindex, noimageclick\" />" );
+            }
 
 #if !RELEASE
             ////
@@ -934,7 +951,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                         default:
                             tmpMenu.Append( "      <li class='nav-item dropdown'>" +
                                 "        <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownAbout' role='button' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
-                                $"          {thisKeyword}" +
+                                $"          {thisKeyword.Replace( '_', ' ' )}" +
                                 "        </a>" );
                             tmpMenu.Append( "        <ul class='dropdown-menu' aria-labelledby='navbarDropdown'>" );
                             AllMenuFiles.AddRange( WriteUserItems( Keywords, false, tmpMenu, ref i ) );
