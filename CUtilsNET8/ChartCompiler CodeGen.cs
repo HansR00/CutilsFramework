@@ -301,7 +301,7 @@ namespace CumulusUtils
                             "}}," );
                         TheCharts.AppendLine( "      tooltip: { xDateFormat: '%A, %b %e %H:%M ', " +
                             "pointFormatter() {return this.series.name + ': ' + this.y}," +
-                            "headerFormat: '{point.key}' }," );
+                            "headerFormat: '{point.key}<br>' }," );
                     }
                     else
                     {

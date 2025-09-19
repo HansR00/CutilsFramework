@@ -11,15 +11,6 @@ using System.Threading.Tasks;
 
 namespace CumulusUtils
 {
-    // RealtimeFields is used in cumulusutils.js library to index realtime.txt
-    public enum RealtimeFields
-    {
-        date, timehhmmss, temp, hum, dew, wspeed, wlatest, bearing, rrate, rfall, press, currentwdir, beaufortnumber, windunit, tempunitnodeg, pressunit, rainunit,
-        windrun, presstrendval, rmonth, ryear, rfallY, intemp, inhum, wchill, temptrend, tempTH, TtempTH, tempTL, TtempTL, windTM, TwindTM, wgustTM, TwgustTM, pressTH,
-        TpressTH, pressTL, TpressTL, version, build, wgust, heatindex, humidex, UV, ET, SolarRad, avgbearing, rhour, forecastnumber, isdaylight, SensorContactLost,
-        wdir, cloudbasevalue, cloudbaseunit, apptemp, SunshineHours, CurrentSolarMax, IsSunny, feelslike, rweek
-    };
-
     // DashboardPanels is used in GenerateWebsite at specific location and the dedicated function GeneratePanelCode(thisPanel)
     public enum DashboardPanels
     {
@@ -864,7 +855,8 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
         #region GenerateMenu
 
-        enum ItemTypes : int { None, External, Internal, Image, Report, Separator };
+        enum ItemTypes : int { None, External, Internal, Image, Report, Separator }
+        enum CompulsoryItems : int { Home, ToggleDashboard, Reports, Graphs, Records, Extra, Misc, About }
 
         private async Task<string> GenerateMenu()
         {
@@ -886,7 +878,8 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
                 // End of preparation
 
-                char[] charSeparators = new char[] { ' ', ';' };
+                bool[] CompulsoryItemsPresent = new bool[ Enum.GetNames( typeof( CompulsoryItems ) ).Length ];
+                char[] charSeparators = new char[] { ' ', '\t', ';' };
                 string[] Keywords;
                 string thisKeyword;
 
@@ -903,30 +896,36 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     switch ( thisKeyword )
                     {
                         case "Home":
+                            CompulsoryItemsPresent[ (int) CompulsoryItems.Home ] = true;
                             WriteMenuHome( tmpMenu );
                             break;
                         case "About":
+                            CompulsoryItemsPresent[ (int) CompulsoryItems.About ] = true;
                             WriteAboutMenu( tmpMenu );
                             AllMenuFiles.AddRange( WriteUserItems( Keywords, true, tmpMenu, ref i ) );
                             tmpMenu.Append( "</ul></li>" );
                             break;
                         case "Reports":
+                            CompulsoryItemsPresent[ (int) CompulsoryItems.Reports ] = true;
                             WriteReportsMenu( tmpMenu );
                             AllMenuFiles.AddRange( WriteUserItems( Keywords, true, tmpMenu, ref i ) );
                             tmpMenu.Append( "</ul></li>" );
                             break;
                         case "Graphs":
+                            CompulsoryItemsPresent[ (int) CompulsoryItems.Graphs ] = true;
                             WriteGraphsMenu( tmpMenu );
                             AllMenuFiles.AddRange( WriteUserItems( Keywords, true, tmpMenu, ref i ) );
                             tmpMenu.Append( "</ul></li>" );
                             break;
                         case "Records":
+                            CompulsoryItemsPresent[ (int) CompulsoryItems.Records ] = true;
                             WriteRecordsMenu( tmpMenu );
                             AllMenuFiles.AddRange( WriteUserItems( Keywords, true, tmpMenu, ref i ) );
                             tmpMenu.Append( "</ul></li>" );
                             break;
                         case "Extra":
                             // Prevent the menu to be generated if it is not required.
+                            CompulsoryItemsPresent[ (int) CompulsoryItems.Extra ] = true;
                             if ( CUtils.HasAirLink || CUtils.HasExtraSensors || CUtils.HasCustomLogs )
                             {
                                 WriteExtraMenu( tmpMenu );
@@ -935,6 +934,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                             }
                             break;
                         case "Misc":
+                            CompulsoryItemsPresent[ (int) CompulsoryItems.Misc ] = true;
                             WriteMiscellaneousMenu( tmpMenu );
                             AllMenuFiles.AddRange( WriteUserItems( Keywords, true, tmpMenu, ref i ) );
                             tmpMenu.Append( "</ul></li>" );
@@ -946,6 +946,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                             WritePrintMenu( tmpMenu );
                             break;
                         case "ToggleDashboard":
+                            CompulsoryItemsPresent[ (int) CompulsoryItems.ToggleDashboard ] = true;
                             WriteToggleMenu( tmpMenu );
                             break;
                         default:
@@ -958,25 +959,61 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                             tmpMenu.Append( "</ul></li>" );
                             break;
                     }
-                }
+                } // Loop over all Keywords
 
                 WriteMenuEnd( tmpMenu );
+
+                if ( !Keywords[ Keywords.Length - 1 ].Equals( "About", CUtils.Cmp ) || !Keywords[ 0 ].Equals( "Home", CUtils.Cmp ) )
+                {
+                    Sup.LogTraceErrorMessage( $"Website Menu generator: 'Home' not first or 'About' not last Top Menu item." );
+                    Sup.LogTraceErrorMessage( $"Website Menu generator: Using default menu." );
+
+                    WriteDefaultMenu();
+                }
+                else // Did  we have all compulsory items?
+                {
+                    foreach ( CompulsoryItems thisItem in Enum.GetValues( typeof( CompulsoryItems ) ) )
+                    {
+                        if ( CompulsoryItemsPresent[ (int) thisItem ] != true )
+                        {
+                            Sup.LogTraceErrorMessage( $"Website Menu generator: Missing compulsory item {thisItem}." );
+                            Sup.LogTraceErrorMessage( $"Website Menu generator: Missing compulsory items: Using default menu." );
+
+                            WriteDefaultMenu();
+
+                            // no need to continue
+                            break; 
+                        }
+                    }
+                }
 
                 //Write out all menufiles in the list
                 foreach ( string thisFile in AllMenuFiles )
                     await Isup.UploadFileAsync( $"{thisFile}", $"{Sup.PathUtils}{thisFile}" );
 
-                Sup.LogTraceInfoMessage( $"Website Menu generator: Menu generation finished." );
             }
             else
             {
-                Sup.LogTraceWarningMessage( $"Website Menu generator: No Menu definition found, using standard menu" );
+                WriteDefaultMenu();
+            }
+
+            Sup.LogTraceInfoMessage( $"Website Menu generator: Menu generation finished." );
+
+            return tmpMenu.ToString();
+
+            //
+            // Below are the functions local to GenerateMenu()
+
+            void WriteDefaultMenu()
+            {
+                Sup.LogTraceWarningMessage( $"Website Menu generator: using default menu" );
+
+                tmpMenu.Clear();
 
                 // No user definition found so generate the default standard menu
                 //
                 WriteMenuStart( tmpMenu );
                 WriteMenuHome( tmpMenu );
-                WriteAboutMenu( tmpMenu ); tmpMenu.Append( "</ul></li>" );
                 WriteReportsMenu( tmpMenu ); tmpMenu.Append( "</ul></li>" );
                 WriteGraphsMenu( tmpMenu ); tmpMenu.Append( "</ul></li>" );
                 WriteRecordsMenu( tmpMenu ); tmpMenu.Append( "</ul></li>" );
@@ -990,7 +1027,10 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 WriteMiscellaneousMenu( tmpMenu ); tmpMenu.Append( "</ul></li>" );
                 WriteToggleMenu( tmpMenu );
                 WritePrintMenu( tmpMenu );
+                WriteAboutMenu( tmpMenu ); tmpMenu.Append( "</ul></li>" );
                 WriteMenuEnd( tmpMenu );
+
+                return;
             }
 
             List<string> WriteUserItems( string[] K, bool UseDivider, StringBuilder s, ref int i )
@@ -1087,7 +1127,6 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                                     sw.WriteLine( $"<image src='{Destination}' style='width:100%; height:100%; border:0;'>" );
 
                                 Sup.LogTraceInfoMessage( $"Website Menu generator: Created Image-link file {MenuFile}" );
-                                //Isup.UploadFile( $"{MenuFile}", $"{Sup.PathUtils}{MenuFile}" );
                                 thisMenuFileList.Add( MenuFile );
 
                                 s.AppendLine( $"<li class='nav-link' onclick=\"LoadUtilsReport('{MenuFile}');\" {WidthStyleString}>{ItemNameURL}</li>" );
@@ -1098,7 +1137,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                                 break;
 
                             default:
-                                Sup.LogTraceInfoMessage( $"Website Menu generator: Illegal UserItem, can't generate..." );
+                                Sup.LogTraceErrorMessage( $"Website Menu generator: Illegal UserItem, can't generate..." );
                                 break;
                         }
                     }
@@ -1293,9 +1332,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
                 return;
             }
-
-            return tmpMenu.ToString();
-        }
+        } // End GenerateMenu()
 
 
         #endregion
@@ -1388,44 +1425,45 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
         #endregion
 
-        #region Other Functions
+        #region Useful NOT USED (GetAreaGradientColors)
         // Note that these colors contain transparency in the first two HEX digits. If not it is NOT OK
-        private string GetAreaGradientColors( string Color1, string Color2, string Color3 )
-        {
-            bool ValidColor1 = false;
-            bool ValidColor2 = false;
-            bool ValidColor3 = false;
-            StringBuilder result = new StringBuilder();
+        // Not Used
+        //private string GetAreaGradientColors( string Color1, string Color2, string Color3 )
+        //{
+        //    bool ValidColor1 = false;
+        //    bool ValidColor2 = false;
+        //    bool ValidColor3 = false;
+        //    StringBuilder result = new StringBuilder();
 
-            if ( !String.IsNullOrEmpty( Color1 ) )
-                ValidColor1 = true;
-            if ( !String.IsNullOrEmpty( Color2 ) )
-                ValidColor2 = true;
-            if ( !String.IsNullOrEmpty( Color3 ) )
-                ValidColor3 = true;
+        //    if ( !String.IsNullOrEmpty( Color1 ) )
+        //        ValidColor1 = true;
+        //    if ( !String.IsNullOrEmpty( Color2 ) )
+        //        ValidColor2 = true;
+        //    if ( !String.IsNullOrEmpty( Color3 ) )
+        //        ValidColor3 = true;
 
-            if ( ValidColor1 )
-            {
-                // There  is only the first color, return what we need
-                Sup.LogTraceVerboseMessage( "GetAreaGradientColors : Generating the color code..." );
-                result.Append( $"color: '{Color1}'," );
+        //    if ( ValidColor1 )
+        //    {
+        //        // There  is only the first color, return what we need
+        //        Sup.LogTraceVerboseMessage( "GetAreaGradientColors : Generating the color code..." );
+        //        result.Append( $"color: '{Color1}'," );
 
-                if ( ValidColor2 && ValidColor3 )
-                {
-                    // Add the gradient to the result
-                    Sup.LogTraceVerboseMessage( "GetAreaGradientColors : Generating the code for just 3 colors so a full gradient" );
-                    result.Append( "fillColor: {linearGradient:{x1: 0,y1: 1,x2: 0,y2: 0}," +
-                      $"stops:[[0,'{Color2}'],[1,'{Color3}']]}}," );
-                }
-            }
-            else
-            {
-                Sup.LogTraceVerboseMessage( $"GetAreaGradientColors : No valid colours supplied: 1: {Color1}, 2: {Color2}, 3: {Color3}" );
-                result.Append( "" );
-            }
+        //        if ( ValidColor2 && ValidColor3 )
+        //        {
+        //            // Add the gradient to the result
+        //            Sup.LogTraceVerboseMessage( "GetAreaGradientColors : Generating the code for just 3 colors so a full gradient" );
+        //            result.Append( "fillColor: {linearGradient:{x1: 0,y1: 1,x2: 0,y2: 0}," +
+        //              $"stops:[[0,'{Color2}'],[1,'{Color3}']]}}," );
+        //        }
+        //    }
+        //    else
+        //    {
+        //        Sup.LogTraceVerboseMessage( $"GetAreaGradientColors : No valid colours supplied: 1: {Color1}, 2: {Color2}, 3: {Color3}" );
+        //        result.Append( "" );
+        //    }
 
-            return result.ToString();
-        }
+        //    return result.ToString();
+        //}
 
         #endregion
 

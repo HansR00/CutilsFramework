@@ -5,6 +5,16 @@ using System.Text;
 
 namespace CumulusUtils
 {
+    // RealtimeFields is used in cumulusutils.js library to index realtime.txt
+    public enum RealtimeFields
+    {
+        date, timehhmmss, temp, hum, dew, wspeed, wlatest, bearing, rrate, rfall, press, currentwdir, beaufortnumber, windunit, tempunitnodeg, pressunit, rainunit,
+        windrun, presstrendval, rmonth, ryear, rfallY, intemp, inhum, wchill, temptrend, tempTH, TtempTH, tempTL, TtempTL, windTM, TwindTM, wgustTM, TwgustTM, pressTH,
+        TpressTH, pressTL, TpressTL, version, build, wgust, heatindex, humidex, UV, ET, SolarRad, avgbearing, rhour, forecastnumber, isdaylight, SensorContactLost,
+        wdir, cloudbasevalue, cloudbaseunit, apptemp, SunshineHours, CurrentSolarMax, IsSunny, feelslike, rweek
+    };
+
+
     class CUlib
     {
         private readonly CuSupport Sup;
