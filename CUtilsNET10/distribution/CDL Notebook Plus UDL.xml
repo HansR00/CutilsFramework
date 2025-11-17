@@ -1,0 +1,64 @@
+<NotepadPlus>
+    <UserLang name="Cutils DEF" ext="def" udlVersion="2.1">
+        <Settings>
+            <Global caseIgnored="yes" allowFoldOfComments="no" foldCompact="no" forcePureLC="1" decimalSeparator="0" />
+            <Prefix Keywords1="no" Keywords2="no" Keywords3="no" Keywords4="no" Keywords5="no" Keywords6="no" Keywords7="no" Keywords8="no" />
+        </Settings>
+        <KeywordLists>
+            <Keywords name="Comments">00; 01 02 03 04</Keywords>
+            <Keywords name="Numbers, prefix1"></Keywords>
+            <Keywords name="Numbers, prefix2"></Keywords>
+            <Keywords name="Numbers, extras1"></Keywords>
+            <Keywords name="Numbers, extras2"></Keywords>
+            <Keywords name="Numbers, suffix1"></Keywords>
+            <Keywords name="Numbers, suffix2"></Keywords>
+            <Keywords name="Numbers, range"></Keywords>
+            <Keywords name="Operators1"></Keywords>
+            <Keywords name="Operators2"></Keywords>
+            <Keywords name="Folders in code1, open">CHART</Keywords>
+            <Keywords name="Folders in code1, middle"></Keywords>
+            <Keywords name="Folders in code1, close">ENDCHART</Keywords>
+            <Keywords name="Folders in code2, open"></Keywords>
+            <Keywords name="Folders in code2, middle"></Keywords>
+            <Keywords name="Folders in code2, close"></Keywords>
+            <Keywords name="Folders in comment, open"></Keywords>
+            <Keywords name="Folders in comment, middle"></Keywords>
+            <Keywords name="Folders in comment, close"></Keywords>
+            <Keywords name="Keywords1">EQUATIONS&#x000D;&#x000A;TITLE&#x000D;&#x000A;CONNECTSTO&#x000D;&#x000A;HAS WINDBARBS&#x000D;&#x000A;ZOOM&#x000D;&#x000A;PLOT&#x000D;&#x000A;STATS&#x000D;&#x000A;RECENT&#x000D;&#x000A;EXTRA&#x000D;&#x000A;EVAL&#x000D;&#x000A;COLOUR&#x000D;&#x000A;ZINDEX&#x000D;&#x000A;LINEWIDTH&#x000D;&#x000A;OPACITY&#x000D;&#x000A;INVISIBLE&#x000D;&#x000A;OUTPUT&#x000D;&#x000A;INFO&#x000D;&#x000A;PERIOD&#x000D;&#x000A;ABOVE&#x000D;&#x000A;BELOW&#x000D;&#x000A;SMA</Keywords>
+            <Keywords name="Keywords2">InsideTemp&#x000D;&#x000A;Dewpoint&#x000D;&#x000A;ApparentTemp&#x000D;&#x000A;FeelsLike&#x000D;&#x000A;WindChill&#x000D;&#x000A;HeatIndex&#x000D;&#x000A;Temperature&#x000D;&#x000A;Humidex&#x000D;&#x000A;WindGust&#x000D;&#x000A;WindSpeed&#x000D;&#x000A;Bearing&#x000D;&#x000A;AverageBearing&#x000D;&#x000A;UV&#x000D;&#x000A;CurrentSolarRad&#x000D;&#x000A;TheoreticalSolarMax&#x000D;&#x000A;RainFall&#x000D;&#x000A;RainRate&#x000D;&#x000A;Pressure&#x000D;&#x000A;Humidity&#x000D;&#x000A;InsideHumidity&#x000D;&#x000A;EvapoTranspiration</Keywords>
+            <Keywords name="Keywords3">MinTemp&#x000D;&#x000A;MaxTemp&#x000D;&#x000A;AverageTemp&#x000D;&#x000A;AvgWindChill&#x000D;&#x000A;MaxDewpoint&#x000D;&#x000A;MinDewpoint&#x000D;&#x000A;MaxFeelsLike&#x000D;&#x000A;MinFeelsLike &#x000D;&#x000A;MaxGust&#x000D;&#x000A;WindRun&#x000D;&#x000A;HighAvgWindSpeed &#x000D;&#x000A;UV-Index&#x000D;&#x000A;SolarRadiation&#x000D;&#x000A;SunHours&#x000D;&#x000A;DayRain&#x000D;&#x000A;MaxRainRate&#x000D;&#x000A;MinBarometer&#x000D;&#x000A;MaxBarometer&#x000D;&#x000A;MinHumidity&#x000D;&#x000A;MaxHumidity&#x000D;&#x000A;HeatingDegreeDays&#x000D;&#x000A;CoolingDegreeDays&#x000D;&#x000A;DayEVT</Keywords>
+            <Keywords name="Keywords4">Temp1&#x000D;&#x000A;Temp2&#x000D;&#x000A;Temp3&#x000D;&#x000A;Temp4&#x000D;&#x000A;Temp5&#x000D;&#x000A;Temp6&#x000D;&#x000A;Temp7&#x000D;&#x000A;Temp8&#x000D;&#x000A;Temp9&#x000D;&#x000A;Temp10&#x000D;&#x000A;Humidity1&#x000D;&#x000A;Humidity2&#x000D;&#x000A;Humidity3&#x000D;&#x000A;Humidity4&#x000D;&#x000A;Humidity5&#x000D;&#x000A;Humidity6&#x000D;&#x000A;Humidity7&#x000D;&#x000A;Humidity8&#x000D;&#x000A;Humidity9&#x000D;&#x000A;Humidity10&#x000D;&#x000A;Dewpoint1&#x000D;&#x000A;Dewpoint2&#x000D;&#x000A;Dewpoint3&#x000D;&#x000A;Dewpoint4&#x000D;&#x000A;Dewpoint5&#x000D;&#x000A;Dewpoint6&#x000D;&#x000A;Dewpoint7&#x000D;&#x000A;Dewpoint8&#x000D;&#x000A;Dewpoint9&#x000D;&#x000A;Dewpoint10&#x000D;&#x000A;SoilTemp1&#x000D;&#x000A;SoilTemp2&#x000D;&#x000A;SoilTemp3&#x000D;&#x000A;SoilTemp4&#x000D;&#x000A;SoilTemp5&#x000D;&#x000A;SoilTemp6&#x000D;&#x000A;SoilTemp7&#x000D;&#x000A;SoilTemp8&#x000D;&#x000A;SoilTemp9&#x000D;&#x000A;SoilTemp10&#x000D;&#x000A;SoilTemp11&#x000D;&#x000A;SoilTemp12&#x000D;&#x000A;SoilTemp13&#x000D;&#x000A;SoilTemp14&#x000D;&#x000A;SoilTemp15&#x000D;&#x000A;SoilTemp16&#x000D;&#x000A;SoilMoisture1&#x000D;&#x000A;SoilMoisture2&#x000D;&#x000A;SoilMoisture3&#x000D;&#x000A;SoilMoisture4&#x000D;&#x000A;SoilMoisture5&#x000D;&#x000A;SoilMoisture6&#x000D;&#x000A;SoilMoisture7&#x000D;&#x000A;SoilMoisture8&#x000D;&#x000A;SoilMoisture9&#x000D;&#x000A;SoilMoisture10&#x000D;&#x000A;SoilMoisture11&#x000D;&#x000A;SoilMoisture12&#x000D;&#x000A;SoilMoisture13&#x000D;&#x000A;SoilMoisture14&#x000D;&#x000A;SoilMoisture15&#x000D;&#x000A;SoilMoisture16&#x000D;&#x000A;AirQuality1&#x000D;&#x000A;AirQuality2&#x000D;&#x000A;AirQuality3&#x000D;&#x000A;AirQuality4&#x000D;&#x000A;AirQualityAvg1&#x000D;&#x000A;AirQualityAvg2&#x000D;&#x000A;AirQualityAvg3&#x000D;&#x000A;AirQualityAvg4&#x000D;&#x000A;UserTemp1&#x000D;&#x000A;UserTemp2&#x000D;&#x000A;UserTemp3&#x000D;&#x000A;UserTemp4&#x000D;&#x000A;UserTemp5&#x000D;&#x000A;UserTemp6&#x000D;&#x000A;UserTemp7&#x000D;&#x000A;UserTemp8&#x000D;&#x000A;LeafTemp1&#x000D;&#x000A;LeafTemp2&#x000D;&#x000A;LeafWetness1&#x000D;&#x000A;LeafWetness2&#x000D;&#x000A;CO2&#x000D;&#x000A;CO2_24h&#x000D;&#x000A;CO2_pm2p5&#x000D;&#x000A;CO2_pm2p5_24h&#x000D;&#x000A;CO2_pm10&#x000D;&#x000A;CO2_pm10_24h&#x000D;&#x000A;CO2_temp&#x000D;&#x000A;CO2_hum</Keywords>
+            <Keywords name="Keywords5">&quot;AS Line&quot;&#x000D;&#x000A;&quot;AS SpLine&quot;&#x000D;&#x000A;&quot;AS Area&quot;&#x000D;&#x000A;&quot;AS Scatter&quot;&#x000D;&#x000A;&quot;AS Column&quot;&#x000D;&#x000A;&quot;AS ColumnRange&quot;</Keywords>
+            <Keywords name="Keywords6">&quot;AXIS Temp&quot;&#x000D;&#x000A;&quot;AXIS Wind&quot;&#x000D;&#x000A;&quot;AXIS Distance&quot;&#x000D;&#x000A;&quot;AXIS Height&quot;&#x000D;&#x000A;&quot;AXIS Hours&quot;&#x000D;&#x000A;&quot;AXIS Solar&quot;&#x000D;&#x000A;&quot;AXIS UV&quot;&#x000D;&#x000A;&quot;AXIS Rain&quot;&#x000D;&#x000A;&quot;AXIS Rrate&quot;&#x000D;&#x000A;&quot;AXIS Pressure&quot;&#x000D;&#x000A;&quot;AXIS Humidity&quot;&#x000D;&#x000A;&quot;AXIS DegreeDays&quot;&#x000D;&#x000A;&quot;AXIS EVT&quot;&#x000D;&#x000A;&quot;AXIS AQ&quot;&#x000D;&#x000A;&quot;AXIS ppm&quot;&#x000D;&#x000A;&quot;AXIS Free&quot;</Keywords>
+            <Keywords name="Keywords7">ALL&#x000D;&#x000A;DAILY&#x000D;&#x000A;RECENT&#x000D;&#x000A;EXTRA</Keywords>
+            <Keywords name="Keywords8"></Keywords>
+            <Keywords name="Delimiters">00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23</Keywords>
+        </KeywordLists>
+        <Styles>
+            <WordsStyle name="DEFAULT" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="COMMENTS" fgColor="FF0080" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="LINE COMMENTS" fgColor="008800" bgColor="FFFFFF" fontStyle="2" nesting="0" />
+            <WordsStyle name="NUMBERS" fgColor="FF0000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="KEYWORDS1" fgColor="FF0000" bgColor="FFFFFF" fontStyle="1" nesting="0" />
+            <WordsStyle name="KEYWORDS2" fgColor="CE00CE" bgColor="FFFFFF" fontStyle="1" nesting="0" />
+            <WordsStyle name="KEYWORDS3" fgColor="8000FF" bgColor="FFFFFF" fontStyle="1" nesting="0" />
+            <WordsStyle name="KEYWORDS4" fgColor="E17100" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="KEYWORDS5" fgColor="2691A4" bgColor="FFFFFF" fontStyle="1" nesting="0" />
+            <WordsStyle name="KEYWORDS6" fgColor="A26120" bgColor="FFFFFF" fontStyle="1" nesting="0" />
+            <WordsStyle name="KEYWORDS7" fgColor="D22D88" bgColor="FFFFFF" fontStyle="1" nesting="0" />
+            <WordsStyle name="KEYWORDS8" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="OPERATORS" fgColor="0080C0" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="FOLDER IN CODE1" fgColor="0000FF" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="FOLDER IN CODE2" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="FOLDER IN COMMENT" fgColor="FF0000" bgColor="FFFFFF" fontStyle="1" nesting="0" />
+            <WordsStyle name="DELIMITERS1" fgColor="FF0000" bgColor="FFFFFF" colorStyle="2" fontStyle="0" nesting="261121" />
+            <WordsStyle name="DELIMITERS2" fgColor="FF0000" bgColor="FFFFFF" colorStyle="2" fontStyle="0" nesting="261121" />
+            <WordsStyle name="DELIMITERS3" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS4" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS5" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS6" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS7" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS8" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+        </Styles>
+    </UserLang>
+</NotepadPlus>

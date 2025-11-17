@@ -1,0 +1,64 @@
+HT_DailyRain = " "
+HT_MonthlyRain = " "
+HT_YearlyRainStats = " "
+HT_YearlyMonthlyRainStats = " "
+
+HT_RAINvsEVT = " The cumulative rain is plotted versus the cumulative evapotranspiration. The latter coming either from the device (Davis) or calculated by CMX. The plot is implemented as a coloured area plot showing a surplus of rain in green and a rain deficit as red. Best is to show some years from the start of the rain season (use the date selector).<br/>
+<br/>
+This chart is an effort to graphically display droughts. It must be understood that EVT is a very complex meteorological aggregate in that it is highly dependent on the interaction between soil, vegetation and meteorology. CMX uses only one equation for all situations on earth. That equation seems to be fitted to the moderate climate. As such it bypasses plant strategies to battle drought and low humidity situations such as the stomata closure and deep rooting. The chart as such must be used with some caution.<br/>
+<br/>
+It is advised to always use the CMX calculation as that would result in comparable charts. CMX uses the <a href=https://www.fao.org/3/x0490e/x0490e08.htm#penman%20monteith%20equation target='_blank'>FAO Penman-Monteith equation</a> with reference to the implementation of Weewx.<br/>
+<br/>
+The user is advised not to take the EvapoTranspiration figures as absolute but, for a good understanding of the complexity of EvapoTranspiration, to study the relevant chapter <a href=https://www.fao.org/3/x0490e/x0490e00.htm#Contents target='_blank'>FAO Crop evapotranspiration - Guidelines for computing crop water requirements - FAO Irrigation and drainage paper 56</a>. <br/>
+<br/>
+(this is a copy of the <a href=https://www.cumuluswiki.org/a/Charts_-_Rain_charts#Rain_versus_EvapoTranspiration_(EVT)  target='_blank'>Wiki entry</a>)<br/> "
+
+HT_MonthlyTemp = " "
+HT_YearlyTempStats = " "
+HT_YearlyMonthlyTempStats = " "
+HT_WarmerDays = " "
+HT_FrostDays = " A <i>Frost Day</i> is defined as a day where the minimum temperature is below zero (or 32 Fahrenheit) but the maximum is above zero. 
+                 An <i>Ice Day</i> is defined as a day where the maximum temperature is below zero (or 32 Fahrenheit)<br/><br/>
+                 See also: 
+                 <a href=https://www.plantmaps.com/index.php target='_blank'>Plant Maps</a><br/>
+                 <a href=https://www.eea.europa.eu/data-and-maps/figures#c0=15&c5=&c15=all&b_start=0&c8=frost target='_blank'>EU Environment Agency Frost maps & charts</a><br/> "
+
+HT_HeatMap = " "
+HT_WindRose = " "
+HT_WindRun = " "
+HT_YearlySolarHRSstats = " "
+HT_YearlyMonthlySolarHRSstats = " "
+HT_YearlyInsolationStats = " "
+HT_YearlyMonthlyInsolationStats = " "
+HT_TempSum = " "
+HT_GrowingDegreeDays = " "
+HT_ThermalSeasons = " This chart is based on what they do in Finland (see <a href=https://cumulus.hosiene.co.uk/viewtopic.php?p=153478#p153478 target='_blank'>this post</a> on the forum) and it all has to do with the duration of the temperature on average being lower or higher than the definition. It shows the relative duration of the seasons over the years.<br/><br/>
+
+I.e. if the temperature in Winter 1 (start of year) is above the lower boundary (default is zero) for more than 10 days we go spring (and it won't go back).<br/>
+
+So a short summer/long autumn has to do with a period in early(?) summer where the average temperature was below 10 (default) degrees for at least 10 days. The algorithm then switches to autumn and did not go back. Meteo Wagenborgen had a similar issue which made me change the limits to 4/14 (it was 5/15).<br/><br/>
+
+A short summer would indicate a season anomaly with an abnormal cold period in summer.<br/><br/>
+
+It is a chart showing an algorithmic calculation of seasons. That may be wrong once in a while. It is not an official statistic. A one year anomaly may be accepted. If that happens regularly, you might have to change the boundary temperatures for your station or you may have to abandon the chart (set <i>Seasons=false</i> in section <i>Graphs</i> in <i>cumulusutils.ini</i>).<br/><br/>
+
+(this info is based on <a href=https://cumulus.hosiene.co.uk/viewtopic.php?t=22674 target='_blank'>this thread</a>)<br/> "
+
+HT_DailyEVT = " "
+HT_MonthlyEVT = " "
+
+HT_ClashOfAverages = " At least two times there was a discussion on the forum about the way the daily average for temperature was or should be calculated (see <a href=https://cumulus.hosiene.co.uk/viewtopic.php?p=138513#p138513 target='_blank'>here</a> and <a href=https://cumulus.hosiene.co.uk/viewtopic.php?p=152909#p152909 target='_blank'>here</a>). CumulusMX uses an integration method which means it samples the temperature continuously at the sampling frequency and stores the average of those samples at the logging frequency. It creates the sum of the logged entries and at the end of day it divides them by the number of observations giving the arithmetic average of all values logged which acts as an estimator of the physical average.<br/>
+<br/>
+<b>(Max+Min)/2</b> is used with the argument that comparison with observations from before the computer era must be made. Note that the KNMI (the Dutch Meteorological Service) takes hourly measurements so there is no consistency between countries to start with.<br/>
+<br/>
+As an argument in this discussion this chart was made to make the difference between the institutional method and the Cumulus Integral Method visible. What is shown is the Cumulus Method Daily Average Temperature (one minute sampling): 
+<b>(SUM <sub>over each minute</sub> (Temp measurement)) / 1440</b>, the <b>(Max+Min)/2</b> and the difference between the two. It is clear that the first is the more accurate estimator of the two sample estimators (note they both are estimators for the statistic <i>averagetemperatureoftheday</i>).<br/>
+<br/>
+The difference has a pretty even distributed noise around the zero line so comparison of current integral with observations from the past (for climatic studies) should be possible with statistical proof and a consolidation of past and current measurements has actually been executed by the KNMI <sup>[1]</sup><br/>.
+<br/>
+Another interesting article on the subject is below. <sup>[2]</sup><br/>
+<br/>
+ [1]: <a href=https://cdn.knmi.nl/system/data_center_publications/files/000/068/325/original/CNT.pdf?1495621137 target='_blank'>The Construction of a Central Netherlands Temperature</a><br/>
+ [2]: <a href=https://rmets.onlinelibrary.wiley.com/doi/full/10.1002/joc.6528 target='_blank'>Sampling frequency of climate data for the determination of daily temperature and daily temperature extrema</a><br/> 
+<br/>
+(this is a copy of the <a href=https://www.cumuluswiki.org/a/Charts_-_Misc_charts#Clash_of_Averages  target='_blank'>Wiki entry</a>)<br/> "

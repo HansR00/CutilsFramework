@@ -21,7 +21,7 @@ namespace CumulusUtils
     public class CuSupport : IDisposable
     {
         // Is it a version number beta shown at users?
-        private const string beta = "";
+        private const string beta = ".NET 8";
 
         #region declarations
         public Wind StationWind { get; set; }
@@ -385,21 +385,6 @@ namespace CumulusUtils
                 return StationDesc[ i ];
         }
 
-        public bool DateIsToday( DateTime thisDate )
-        {
-            bool retval;
-
-            TimeSpan thisSpan = DateTime.Now - thisDate;
-
-            LogTraceInfoMessage( $"DateIsToday for thisDate: {thisDate} | thisDate.DayOfYear: {thisDate.DayOfYear} versus Now.DayOfYear: {DateTime.Now.DayOfYear})" );
-            LogTraceInfoMessage( $"DateIsToday: thisSpan: {thisSpan} | thisSpan.TotalDays = {thisSpan.TotalDays}" );
-
-            if ( thisSpan.TotalDays > 1 ) retval = false;
-            else retval = true;
-
-            return retval;
-        }
-
         public static string FormattedVersion()
         {
             string _ver;
@@ -455,20 +440,20 @@ namespace CumulusUtils
             string SpecificHighchartsVersion = GetUtilsIniValue( "General", "UseSpecificHighchartsVersion", "" );
             bool UseHighchartsBoostModule = GetUtilsIniValue( "Graphs", "UseHighchartsBoostModule", "true" ).Equals( "true", CUtils.Cmp );
 
-            if ( string.IsNullOrEmpty( SpecificHighchartsVersion ) )
+            if ( !string.IsNullOrEmpty( SpecificHighchartsVersion ) )
             {
-                SpecificHighchartsVersion = "12.3";
+                SpecificHighchartsVersion += '/';
             }
 
-            sb.AppendLine( $"<script src='https://code.highcharts.com/stock/{SpecificHighchartsVersion}/highstock.js'></script>" );
-            sb.AppendLine( $"<script src=\"https://code.highcharts.com/stock/{SpecificHighchartsVersion}/highcharts-more.js\"></script>" );
-            sb.AppendLine( $"<script src=\"https://code.highcharts.com/stock/{SpecificHighchartsVersion}/indicators/indicators.js\"></script>" );
-            sb.AppendLine( $"<script src=\"https://code.highcharts.com/stock/{SpecificHighchartsVersion}/modules/exporting.js\" ></script>" );
-            sb.AppendLine( $"<script src=\"https://code.highcharts.com/stock/{SpecificHighchartsVersion}/modules/heatmap.js\"></script>" );
-            sb.AppendLine( $"<script src='https://code.highcharts.com/stock/{SpecificHighchartsVersion}/modules/windbarb.js'></script>" );
-            //sb.AppendLine( $"<script src='https://code.highcharts.com/stock/{SpecificHighchartsVersion}/indicators/indicators.js'></script>" );
-            //sb.AppendLine( $"<script src='https://code.highcharts.com/stock/{SpecificHighchartsVersion}/indicators/trendline.js'></script>" );
-            sb.AppendLine( $"<script defer src='https://code.highcharts.com/{SpecificHighchartsVersion}/modules/accessibility.js'></script>" );
+            sb.AppendLine( $"<script src='https://code.highcharts.com/stock/{SpecificHighchartsVersion}highstock.js'></script>" );
+            sb.AppendLine( $"<script src=\"https://code.highcharts.com/stock/{SpecificHighchartsVersion}highcharts-more.js\"></script>" );
+            sb.AppendLine( $"<script src=\"https://code.highcharts.com/stock/{SpecificHighchartsVersion}indicators/indicators.js\"></script>" );
+            sb.AppendLine( $"<script src=\"https://code.highcharts.com/stock/{SpecificHighchartsVersion}modules/exporting.js\" ></script>" );
+            sb.AppendLine( $"<script src=\"https://code.highcharts.com/stock/{SpecificHighchartsVersion}modules/heatmap.js\"></script>" );
+            sb.AppendLine( $"<script src='https://code.highcharts.com/stock/{SpecificHighchartsVersion}modules/windbarb.js'></script>" );
+            sb.AppendLine( $"<script src='https://code.highcharts.com/stock/{SpecificHighchartsVersion}indicators/indicators.js'></script>" );
+            sb.AppendLine( $"<script src='https://code.highcharts.com/stock/{SpecificHighchartsVersion}indicators/trendline.js'></script>" );
+            sb.AppendLine( $"<script defer src='https://code.highcharts.com/{SpecificHighchartsVersion}modules/accessibility.js'></script>" );
 
             if ( UseHighchartsBoostModule )
                 sb.AppendLine( $"<script src=\"https://code.highcharts.com/stock/{SpecificHighchartsVersion}/modules/boost.js\"></script>" );
@@ -492,6 +477,21 @@ namespace CumulusUtils
         #endregion
 
         #region Methods Incremental Dates
+
+        public bool DateIsToday( DateTime thisDate )
+        {
+            bool retval;
+
+            TimeSpan thisSpan = DateTime.Now - thisDate;
+
+            LogTraceInfoMessage( $"DateIsToday for thisDate: {thisDate} | thisDate.DayOfYear: {thisDate.DayOfYear} versus Now.DayOfYear: {DateTime.Now.DayOfYear})" );
+            LogTraceInfoMessage( $"DateIsToday: thisSpan: {thisSpan} | thisSpan.TotalDays = {thisSpan.TotalDays}" );
+
+            if ( thisSpan.TotalDays > 1 ) retval = false;
+            else retval = true;
+
+            return retval;
+        }
 
         public void SetStartAndEndForData( out DateTime Start, out DateTime End )
         {
@@ -589,12 +589,13 @@ namespace CumulusUtils
         public static long DateTimeToUnix( DateTime timestamp ) => (long) ( timestamp - new DateTime( 1970, 1, 1, 0, 0, 0 ) ).TotalSeconds;
         public static long DateTimeToJSUTC( DateTime timestamp ) => (long) ( timestamp.ToUniversalTime() - new DateTime( 1970, 1, 1, 0, 0, 0 ) ).TotalSeconds * 1000;
         public static long DateTimeToUnixUTC( DateTime timestamp ) => (long) ( timestamp.ToUniversalTime() - new DateTime( 1970, 1, 1, 0, 0, 0 ) ).TotalSeconds;
+        public static DateTime UnixTimestampToDateTime( string unixTime ) => new DateTime( 1970, 1, 1, 0, 0, 0 ).AddSeconds( Convert.ToInt64( unixTime ) ).ToLocalTime();
 
         #endregion
 
         #region Upload Package
 
-        private readonly string[] Package = new string[] {"cumulusutils.js","CUgauges.js","HighchartsDefaults.js","HighchartsLanguage.js",
+        private readonly string[] Package = new string[] {"CUgauges.js","HighchartsDefaults.js","HighchartsLanguage.js",
                                      "suncalc.js","CUtween.min.js", "CUsteelseries.min.js","CURGraph.rose.js","CURGraph.common.core.js","CUlanguage.js",
                                      "CUgauges-ss.css"};
 
@@ -938,5 +939,5 @@ namespace CumulusUtils
 
     }
 
-#endregion
+    #endregion
 }

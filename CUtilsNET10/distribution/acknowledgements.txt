@@ -1,0 +1,15 @@
+CumulusUtils thanks the respective authors for the use of the following:
+
+** Steve Loft ** Original author of Cumulus. Enjoying his retirement
+
+Mark Crossley for continuing work and support on CumulusMX
+Mark Crossley and Gerrit Grunwald for the SteelSeries gauges
+Highcharts
+The Bootstrap framework
+jQuery
+Microsoft Corporation for Visual Studio 2015 Community Edition
+
+and...
+
+Cumulus[Utils] users for their continued use and support.
+Special thanks to the CUtils beta testers

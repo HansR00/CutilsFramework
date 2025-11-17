@@ -1,0 +1,63 @@
+;
+; CumulusUtils Menu definitions for Website- Part of CumulusUtils
+;
+; Author:      Hans Rottier <hans.rottier@gmail.com>
+; Project:     CumulusUtils meteo-wagenborgen.nl
+; Date:        21-10-2022
+;
+; This file is  part of the distribution
+;
+Home
+
+Reports
+  Item Today Yesterday Report TodayYesterday.txt EndItem
+  Item AllTime Month Report AllTimeMonth.txt EndItem
+  Item AllTime Year Report AllTimeYear.txt EndItem
+  Item System Report SystemeUtils.txt EndItem
+;  Item Test Report Test.txt EndItem
+
+Graphs
+  Item Daily charts Report DailyCharts.txt EndItem
+  Item PwsFWI charts Report pwsFWIcharts.txt EndItem
+  Item Temp-EVT charts Report TempEvtCharts.txt EndItem
+  Item Experiments Report Experiments.txt EndItem
+
+Records
+Extra
+Misc
+  Item ECMWF Forecast Internal https://charts.ecmwf.int/products/medium-mslp-rain EndItem
+
+ToggleDashboard
+
+Maps
+  Item European Forest Fire Information System External https://effis.jrc.ec.europa.eu/apps/effis_current_situation/ EndItem
+  Item ECMWF Maps Internal https://charts.ecmwf.int/ EndItem
+  Item NASA WorldView External https://worldview.earthdata.nasa.gov/ EndItem
+  Item Separator EndItem
+  Item Windy External https://www.windy.com/station/pws-f06f5696?53.259,6.932,8 EndItem
+  Item Global Winds Internal https://earth.nullschool.net/#current/wind/surface/level/orthographic=2.43,49.85,1306/loc=6.931,53.259 EndItem 
+  Item Sat24 Infrarood Image https://api.sat24.com/animated/EU/infraPolair/3/W_dot_%20Europe%20Standard%20Time/3820315 EndItem
+  Item Sat24 Visual Image https://api.sat24.com/mostrecent/EU/visual5hdcomplete EndItem
+  Item Separator EndItem
+  Item Rain Radar External https://www.rainviewer.com/map.html?loc=52.6364,7.0093,6&oFa=0&oC=1&oU=0&oCS=1&oF=1&oAP=0&c=1&o=83&lm=1&layer=radar&sm=1&sn=1 EndItem
+  Item BlitzOrtung External https://map.blitzortung.org/index.php?interactive=1&Advertisment=0#3.91/49.43/9.76 EndItem
+  Item MeteoAlarm External https://www.meteoalarm.org/en/live/region/NL EndItem
+  Item Separator EndItem
+  Item WeatherCloud External https://app.weathercloud.net/map#7449416149 EndItem
+  Item KNMI WOW External https://wow.knmi.nl/#1211bb08-6c93-e911-80e7-0003ff59889d EndItem
+  Item Weather Underground External https://www.wunderground.com/dashboard/pws/IWAGEN6?cm_ven=localwx_pwsdash EndItem
+  Item Fire Status of Australia External https://bushfire.io/?location=3.827593300918422/-24.745913771873134/137.4636121243725/satellite/0/0 EndItem
+
+NL
+  Item Waterstanden External https://waterinfo.rws.nl/#!/kaart/waterhoogte/ EndItem
+  Item TopoNL External https://topotijdreis.nl EndItem
+  Item Hoogtekaart External https://ahn.arcgisonline.nl/ahnviewer/ EndItem
+  Item Julianadorp Weerstation External https://www.meteo-julianadorp.nl/ EndItem
+  Item Julianadorp Theory External https://www.meteo-julianadorp.nl/Meteorologie/index-meteorologie.html EndItem
+  Item Separator EndItem
+  Item Waterstanden (Int) Internal https://waterinfo.rws.nl/#!/kaart/waterhoogte/ EndItem
+  Item TopoNL (Int) Internal https://topotijdreis.nl EndItem
+
+About
+
+Print

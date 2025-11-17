@@ -1,0 +1,182 @@
+;
+; ChartsCompiler Demo and test chart definitions - Part of CumulusUtils
+;
+; © Copyright 2019 - 2021 Hans Rottier <hans.rottier@gmail.com>
+;
+; 
+; Author:      Hans Rottier <hans.rottier@gmail.com>
+; Project:     CumulusUtils meteo-wagenborgen.nl
+; Date:        04-08-2021
+;
+
+Equations
+; Water Vapour Saturation Pressure according to the August-Roche-Magnus equation for the 1980 version, the 2008 version and the sub-zero version
+  Psat2008 EVAL [ 6.112 * EXP(17.62*Temperature/(243.12+Temperature)) ]
+  Psat2008ALL EVAL [ 6.112 * EXP(17.62*AverageTemp/(243.12+AverageTemp)) ]
+  Psat1980 EVAL [ 6.1094 * EXP(17.625*Temperature/(243.04+Temperature)) ]
+  PsatSub0 EVAL [ 6.112 * EXP(22.46*Temperature/(272.62+Temperature)) ]
+
+; Actual Vapour Pressure
+  Avp Eval [ Humidity / 100 * Psat2008 ]
+
+; Humidex as in CMX
+  CDLHumidex Eval [ (Temperature + 5.0 / 9.0 * (Psat2008 - 10.0)) ]
+
+; Do the WindChill According to https://sciencing.com/relative-humidity-7611453.html / CMX
+; Note: the eqn is only valid for degr Celsius and Kmh.
+; See https://sciencing.com/relative-humidity-7611453.html for imperial formula.
+;  WindPOW Eval [ pow(WindSpeed, 0.16) ]
+;  CDLWindChill Eval [ 13.12 + 0.6215 * Temperature - 11.37 * WindPOW + 0.3965 * Temperature * WindPOW ] 
+
+; Apparent Temperature as in CMX (WindSpeed in ms so convert to Kmh, divide by 3.6
+  AppTemp Eval [ Temperature + 0.33 * Avp - 0.7 * WindSpeed / 3.6 - 4.0 ]
+
+; WetbulbTemperature in degr Celsius
+  WetBulbTemp Eval [ 0.00066 * Pressure * Temperature + 4098 * Psat2008 / (Pow( Dewpoint + 237.7, 2) * Dewpoint) / (0.00066 * Pressure + 4098 * Psat2008 / Pow(Dewpoint + 237.7, 2)) ]
+
+
+Chart Overzicht Title Overzicht van de huidige weerstatus ConnectsTo 2 4 15 20
+  PLOT Temperature Colour #058DC7 zindex 90
+  PLOT DewPoint Colour #50B432 zindex 80
+  PLOT pressure Colour red zindex 70
+  Plot Humidity Colour #64E572 zindex 60
+	Plot CurrentSolarRad As Area Opacity 0.2 Colour Orange zindex 20
+  Plot RainFall As Area colour #33B4FF opacity 0.2 zindex 10
+EndChart
+
+Chart Temperatuur Title Temperatuur en afgeleiden ConnectsTo 1 13 14
+  Plot InsideTemp As Spline Colour #DDDF00 zIndex 100
+  PLOT Temperature As SPline Colour #058DC7 zindex 90
+  PLOT FeelsLike As SPline Colour #ED561B zindex 80
+  PLOT DewPoint As SPline Colour #50B432 zindex 70
+EndCHART
+
+Chart Wind Title Wind ConnectsTo 5 8
+	Plot WindGust
+	Plot WindSpeed
+EndCHART
+
+Chart Windrichting Title Windrichting ConnectsTo 6 7 
+	Plot Bearing As Scatter
+	Plot AverageBearing As Scatter
+EndCHART
+
+Chart Regen Title Regen and Regensnelheid ConnectsTo 3 21 22
+  Plot RainFall As Area Colour green Opacity 0.2
+  Plot RainRate zIndex 100
+EndChart
+
+Chart Vochtigheid Title Relatieve vochtigheid binnen en buiten ConnectsTo 11 16
+  Plot Humidity
+  Plot InsideHumidity
+EndChart
+
+Chart Zon Title (Max)Straling en UV ConnectsTo 12 23 24
+	Plot	UV	zIndex 100
+	Plot 	CurrentSolarRad As Area Opacity 0.4 Colour Orange zIndex 50 
+	Plot	TheoreticalSolarMax As Area Colour Gold zIndex 10 Opacity 0.2
+EndChart
+
+CHART DagelijkseTemp TITLE Dagelijkse gem. temperatuur met columnrange
+  PLOT DAILY AverageTemp colour green As ColumnRange
+  PLOT DAILY AverageTemp colour black As spline
+EndChart
+
+CHART DagelijkseBaro TITLE Dagelijkse gem. barometer met columnrange
+  PLOT DAILY MinBarometer colour Crimson As ColumnRange
+  PLOT DAILY AverageBarometer EVAL [ (MinBarometer + MaxBarometer)/2 ] colour black As spline Axis Pressure
+EndChart
+
+CHART DagTemp TITLE Dagelijkse Gemiddelde Temperatuur met Min/Max van afgelopen jaar
+  PLOT DAILY AverageTemp colour green
+  Plot DAILY MinTemp colour blue
+  Plot DAILY MaxTemp colour red
+EndChart OUTPUT AllChart.txt
+
+Chart DagRegen Title Dagelijkse regenval van afgelopen jaar
+  Plot DAILY RainFall As Column colour lightblue
+EndChart 
+
+Chart DagZonuren Title Zonuren per dag van afgelopen jaar
+  Plot ALL SunHours As Column colour gold
+EndChart 
+
+Chart TempEVT Title Temperatuur en EVT - Historische Data ConnectsTo 12 23 24
+  PLOT ALL AverageTemp As SPline Colour #058DC7 zindex 90 LineWidth 10
+  PLOT ALL Evapotranspiration As Column Colour #cc0000
+EndCHART OUTPUT RarityCharts.txt
+
+Chart TempEVTRecent Title Temperatuur en EVT - Recente Data
+  PLOT Temperature As SPline Colour #058DC7 zindex 90 LineWidth 10
+  PLOT Evapotranspiration As Area Colour #cc0000
+EndCHART
+
+Chart CoolingDays Title Overige variabelen
+  Plot All AverageTemp
+  Plot ALL CoolingDegreeDays
+  Plot ALL HeatingDegreeDays
+  Plot All Evapotranspiration
+EndChart
+
+CHART DailyTemp TITLE Dagelijkse temp met rangecolumn
+  PLOT DAILY AverageTemp colour green As ColumnRange
+  PLOT DAILY AverageTemp colour black As spline
+EndChart OUTPUT ColumnRange.txt
+
+CHART DailyBarometer TITLE Dagelijkse Barometer met rangecolumn
+  PLOT DAILY MinBarometer colour Crimson As ColumnRange
+  PLOT DAILY AverageBarometer EVAL [ (MinBarometer + MaxBarometer)/2 ] colour black As spline Axis Pressure
+EndChart
+
+CHART DailyTempStats TITLE Temp with statistics offset 5
+  PLOT ALL AverageTemp colour pink
+  PLOT ALL sumAverageTemp EVAL [ Sum(AverageTemp-5) ] COLOUR green AXIS DegreeDays
+  STATS ALL AverageTemp SMA COLOUR crimson
+EndChart  Output Statistics.txt
+
+CHART DailyRainStats TITLE Rain with statistics
+  PLOT ALL RainFall colour CornflowerBlue as column 
+  PLOT ALL sumRainFall EVAL [ SUM( RainFall) ] COLOUR crimson AXIS Free
+  STATS ALL RainFall SMA colour green
+EndChart 
+
+; Documentation:
+; https://en.wikipedia.org/wiki/Dew_point
+; https://iridl.ldeo.columbia.edu/dochelp/QA/Basic/dewpoint.html
+;
+; Compare the Dewpoint from Cumulus with the caclculated approximation
+; Later I will enter the Cumulus Calculation and have the Humidity be produced by the Davis station
+; Nice comparison
+;
+
+Chart Dewpoint Title Dewpoint Calculations in CDL
+  Plot Humidity
+  Plot Dewpoint
+  Plot Approximation1 EVAL [ (243.12 * LN(Psat2008) - 440.1) / (19.43 - LN(Psat2008)) ] Axis Temp
+  Plot Approximation2 EVAL [ Temperature - ((100 - Humidity)/5) ] Axis Temp
+;  STATS Dewpoint SMA colour green
+EndChart
+
+Chart VapourPressure Title August-Roche-Magnus Eqn 1980/2008/SubZero in CDL
+  Plot Temperature
+  Plot Psat2008 Eval [ Psat2008 ] Axis Free
+  Plot Psat1980 Eval [ Psat1980 ] Axis Free
+  Plot PsatSub0 Eval [ PsatSub0 ] Axis Free
+  Plot Avp Eval [ Avp ] Axis Free
+EndChart
+
+Chart TempDerivatives Title Temperature Derivatives full in CDL
+  Plot Temperature
+;  Plot CDLWindChill Eval [ CDLWindChill ] Axis Temp
+  Plot AppTemp Eval [ AppTemp ] Axis Temp
+  Plot WetBulbTemp Eval [ WetBulbTemp ] Axis Temp
+  Plot CDLHumidex Eval [ CDLHumidex ] Axis Temp
+EndChart
+
+Chart pwsFWI Title Raw pwsFWI as a chart
+  Plot DAILY pwsFWI Eval [ Psat2008ALL * (1 - MinHumidity/100)*HighAvgWindSpeed ] As spline Axis Free Colour Crimson
+EndChart Output pwsFWIchart.txt
+
+Chart pwsFWInow Title Raw pwsFWI intraday as a chart
+  Plot RECENT pwsFWI Eval [ Psat2008 * (1 - Humidity/100)*WindSpeed ] As spline Axis Free Colour Red
+EndChart

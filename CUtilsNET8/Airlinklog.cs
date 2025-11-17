@@ -218,20 +218,42 @@ namespace CumulusUtils
 
         private AirlinklogValue SetValues( string line, DateTime StartTime )
         {
-            string tmpDatestring;
+            string tmpDatestring, tmpTimestring;
+            int FieldInUse = 0;
+
             string[] lineSplit = line.Split( GlobConst.CommaSeparator );
 
             AirlinklogValue ThisValue = new AirlinklogValue();
 
-            int FieldInUse = (int) AirlinklogFieldName.thisDate;
 
             try
             {
-                // DateTime
-                tmpDatestring = lineSplit[ FieldInUse ];
-                FieldInUse = (int) AirlinklogFieldName.thisTime;
-                tmpDatestring += " " + lineSplit[ FieldInUse ];
-                ThisValue.ThisDate = DateTime.ParseExact( tmpDatestring, "dd/MM/yy HH:mm", CUtils.Inv );
+                if (false)
+                {
+                    // This is the new code for version 8.2/CMX 4.7 
+                    // DateTime
+                    FieldInUse = (int) AirlinklogFieldName.thisDate;
+                    tmpDatestring = lineSplit[ FieldInUse ];
+
+                    FieldInUse = (int) AirlinklogFieldName.thisTime;
+                    tmpTimestring = lineSplit[ FieldInUse ];
+
+                    //ThisValue.ThisDate = DateTime.ParseExact( tmpDatestring, "dd/MM/yy HH:mm", CUtils.Inv );
+                    ThisValue.ThisDate = CuSupport.UnixTimestampToDateTime( tmpTimestring );
+                }
+                else
+                {
+                    // This is the old code for version before the UNIX time
+                    // DateTime
+                    FieldInUse = (int) AirlinklogFieldName.thisDate;
+                    tmpDatestring = lineSplit[ FieldInUse ];
+
+                    FieldInUse = (int) AirlinklogFieldName.thisTime;
+                    tmpTimestring = tmpDatestring + ' ' + lineSplit[ FieldInUse ];
+
+                    ThisValue.ThisDate = DateTime.ParseExact( tmpTimestring, "dd/MM/yy HH:mm", CUtils.Inv );
+                    //ThisValue.ThisDate = CuSupport.UnixTimestampToDateTime( tmpTimestring );
+                }
 
                 if ( ThisValue.ThisDate < StartTime )
                 {

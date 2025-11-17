@@ -2,8 +2,8 @@
   "profiles": {
     "CUtilsNET8": {
       "commandName": "Project",
-      "commandLineArgs": "thrifty website",
-      "workingDirectory": "C:\\Users\\hansr\\Documents\\GitHub\\CutilsFramework\\CUtilsNET8\\bin\\Debug\\net8.0",
+      "commandLineArgs": "useraskeddata",
+      "workingDirectory": "C:\\Users\\hansr\\Documents\\GitHub\\CutilsFramework\\CUtilsNET8\\bin\\Debug\\net10.0",
       "nativeDebugging": false,
       "hotReloadEnabled": true
     }

@@ -233,6 +233,7 @@ namespace CumulusUtils
             int FieldInUse = 0;
 
             string tmpDatestring;
+            string tmpTimestring;
             string[] lineSplit = line.Split( GlobConst.CommaSeparator );
 
             // Do check for the recordlength. If record length too short, then  return null
@@ -251,11 +252,28 @@ namespace CumulusUtils
                     /*ThisValue.ThisDate = AncientCumulus; return ThisValue;*/
                 }
 
-                FieldInUse = (int) MonthfileFieldName.thisDate;
-                tmpDatestring = lineSplit[ FieldInUse ];
-                FieldInUse = (int) MonthfileFieldName.thisTime;
-                tmpDatestring += " " + lineSplit[ FieldInUse ];
-                ThisValue.ThisDate = DateTime.ParseExact( tmpDatestring, "dd/MM/yy HH:mm", CUtils.Inv );
+                if (false)
+                {
+                    FieldInUse = (int) MonthfileFieldName.thisDate;
+                    tmpDatestring = lineSplit[ FieldInUse ];
+
+                    FieldInUse = (int) MonthfileFieldName.thisTime;
+                    tmpTimestring = lineSplit[ FieldInUse ];  // The Unix timestring from version 8.2.0 and up (CMX 4.7.0)
+
+                    ThisValue.ThisDate = CuSupport.UnixTimestampToDateTime( tmpTimestring );
+                }
+                else
+                {
+                    // DateTime
+                    FieldInUse = (int) MonthfileFieldName.thisDate;
+                    tmpDatestring = lineSplit[ FieldInUse ];
+
+                    FieldInUse = (int) MonthfileFieldName.thisTime;
+                    tmpTimestring = tmpDatestring + ' ' + lineSplit[ FieldInUse ];
+
+                    ThisValue.ThisDate = DateTime.ParseExact( tmpTimestring, "dd/MM/yy HH:mm", CUtils.Inv );
+                    //ThisValue.ThisDate = CuSupport.UnixTimestampToDateTime( tmpTimestring );
+                }
 
                 ThisValue.UseAverageBearing = lineSplit.Length <= (int) MonthfileFieldName.CurrWindBearing;
 
