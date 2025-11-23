@@ -252,28 +252,13 @@ namespace CumulusUtils
                     /*ThisValue.ThisDate = AncientCumulus; return ThisValue;*/
                 }
 
-                if (false)
-                {
-                    FieldInUse = (int) MonthfileFieldName.thisDate;
-                    tmpDatestring = lineSplit[ FieldInUse ];
+                FieldInUse = (int) MonthfileFieldName.thisDate;
+                tmpDatestring = lineSplit[ FieldInUse ];
 
-                    FieldInUse = (int) MonthfileFieldName.thisTime;
-                    tmpTimestring = lineSplit[ FieldInUse ];  // The Unix timestring from version 8.2.0 and up (CMX 4.7.0)
+                FieldInUse = (int) MonthfileFieldName.thisTime;
+                tmpTimestring = lineSplit[ FieldInUse ];  // The Unix timestring from version 8.2.0 and up to CMX 4.7.0 it is just time
 
-                    ThisValue.ThisDate = CuSupport.UnixTimestampToDateTime( tmpTimestring );
-                }
-                else
-                {
-                    // DateTime
-                    FieldInUse = (int) MonthfileFieldName.thisDate;
-                    tmpDatestring = lineSplit[ FieldInUse ];
-
-                    FieldInUse = (int) MonthfileFieldName.thisTime;
-                    tmpTimestring = tmpDatestring + ' ' + lineSplit[ FieldInUse ];
-
-                    ThisValue.ThisDate = DateTime.ParseExact( tmpTimestring, "dd/MM/yy HH:mm", CUtils.Inv );
-                    //ThisValue.ThisDate = CuSupport.UnixTimestampToDateTime( tmpTimestring );
-                }
+                ThisValue.ThisDate = DateTime.ParseExact( tmpDatestring + ' ' + tmpTimestring, "dd/MM/yy HH:mm", CUtils.Inv );
 
                 ThisValue.UseAverageBearing = lineSplit.Length <= (int) MonthfileFieldName.CurrWindBearing;
 

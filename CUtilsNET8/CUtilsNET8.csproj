@@ -27,7 +27,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <NoWarn>IDE0090</NoWarn>
-    <DefineConstants>$(DefineConstants);TIMING</DefineConstants>
+    <DefineConstants>$(DefineConstants);TIMING;NET8</DefineConstants>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <WarningLevel>9999</WarningLevel>
     <DebugType>embedded</DebugType>
@@ -36,7 +36,7 @@
     <DebugType>embedded</DebugType>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <NoWarn>IDE0090</NoWarn>
-    <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
+    <DefineConstants>$(DefineConstants);DEBUG;NET8</DefineConstants>
     <WarningLevel>9999</WarningLevel>
     <Optimize>False</Optimize>
   </PropertyGroup>

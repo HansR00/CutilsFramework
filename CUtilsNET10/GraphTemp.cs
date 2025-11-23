@@ -684,8 +684,8 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "  }," );
             thisBuffer.AppendLine( $"  min: {minTemp.ToString( "F2", CUtils.Inv )}," );
             thisBuffer.AppendLine( $"  max: {maxTemp.ToString( "F2", CUtils.Inv )}" );
-            thisBuffer.AppendLine( "},{" );
-            thisBuffer.AppendLine( "   opposite: true, labels: { align: 'left',x: 5}," );
+            //thisBuffer.AppendLine( "},{" );
+            //thisBuffer.AppendLine( "   opposite: true, labels: { align: 'left',x: 5}," );
             //thisBuffer.AppendLine( $"   max: {(int) ( ( minTemp + maxTemp ) / 2 + stddev[ 0 ] )}," ); //estimate for min/max for this Yaxis
             //thisBuffer.AppendLine( $"   min: {(int) ( ( minTemp + maxTemp ) / 2 - stddev[ 0 ] )}" );
             thisBuffer.AppendLine( "}]," );
@@ -735,7 +735,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( $"{sb}" );
 
             thisBuffer.AppendLine( "  ]},{" );
-            thisBuffer.AppendLine($"  name: '{Sup.GetCUstringValue( "Graphs", "YTSAverageTemp", "Average Temperature", true )}'," );
+            thisBuffer.AppendLine( $"  name: '{Sup.GetCUstringValue( "Graphs", "YTSAverageTemp", "Average Temperature", true )}'," );
             thisBuffer.AppendLine( "  id: 'Average', zIndex: 2," );
             thisBuffer.AppendLine( "  type: 'spline', yAxis: 0," );
             thisBuffer.AppendLine( "  lineWidth: 1," );
@@ -746,16 +746,17 @@ namespace CumulusUtils
             {
                 sb.Append( $"[{average[ i ].ToString( "F2", CUtils.Inv )}]," );
             }
-            
+
             sb.Remove( sb.Length - 1, 1 );
             thisBuffer.AppendLine( $"{sb}" );
 
-            thisBuffer.AppendLine( "  ]},{" );
-            thisBuffer.AppendLine( "    type: 'trendline'," );
-            thisBuffer.AppendLine( "    linkedTo: 'Average'," ); // Links to the ID of the data series
-            thisBuffer.AppendLine( "    color: 'gray'," );
-            thisBuffer.AppendLine( "    yAxis: 0," );
-            thisBuffer.AppendLine( "  },{" );
+            thisBuffer.AppendLine( "  ]}," );
+            thisBuffer.AppendLine( "  {" );
+            //thisBuffer.AppendLine( "    type: 'trendline'," );
+            //thisBuffer.AppendLine( "    linkedTo: 'Average'," ); // Links to the ID of the data series
+            //thisBuffer.AppendLine( "    color: 'gray'," );
+            //thisBuffer.AppendLine( "    yAxis: 0," );
+            //thisBuffer.AppendLine( "  },{" );
 
             thisBuffer.AppendLine( $"  name: '{Sup.GetCUstringValue( "Graphs", "StdDev", "Standard Deviation", true )}'," );
             thisBuffer.AppendLine( "zIndex: 1," );

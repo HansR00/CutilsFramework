@@ -595,7 +595,7 @@ namespace CumulusUtils
                           //
                           "    let daylength = DurationOfPartOfDay(ST.sunrise, ST.sunset) * DayMilliSeconds / 100;" +
                           "    let hrs = Math.floor(daylength / 1000 / 60 / 60); let rest = daylength - hrs * 1000 * 60 * 60; let mins = Math.floor(rest / 1000 / 60);" +
-                          "    $('#CUdaylength').html( HHmm( new Date(1970, 01, 01, hrs, mins) ) );" +
+                          "    $('#CUdaylength').html( HHmm( new Date(1970, 1, 1, hrs, mins) ) );" +
                           "  }" +
                           "  if (haveDay) StartAngle = Math.PI * (1 / 12 * (ST.sunrise.getHours() + ST.sunrise.getMinutes() / 60) - 1);" +
                           "  else StartAngle = 0;" +

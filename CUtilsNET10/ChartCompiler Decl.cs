@@ -364,30 +364,30 @@ namespace CumulusUtils
             //"AirQuality1","AirQuality2","AirQuality3","AirQuality4",
             //"AirQualityAvg1","AirQualityAvg2","AirQualityAvg3","AirQualityAvg4",
             for ( int i = 0; i < 8; i++ )
-                PlotvarUnitsEXTRA[ 72 + i ] = "μg/m3";
+                PlotvarUnitsEXTRA[ 80 + i ] = "μg/m3";
 
             //"UserTemp1","UserTemp2","UserTemp3","UserTemp4","UserTemp5","UserTemp6","UserTemp7","UserTemp8",
             for ( int i = 0; i < 8; i++ )
-                PlotvarUnitsEXTRA[ 80 + i ] = Sup.StationTemp.Text();
+                PlotvarUnitsEXTRA[ 88 + i ] = Sup.StationTemp.Text();
 
             //"LeafWetness1","LeafWetness2","LeafWetness3","LeafWetness4","LeafWetness5","LeafWetness6","LeafWetness7","LeafWetness8",
             for ( int i = 0; i < 8; i++ )
-                PlotvarUnitsEXTRA[ 88 + i ] = "";
+                PlotvarUnitsEXTRA[ 96 + i ] = "";
 
             //"LaserDist1","LaserDist2","LaserDist3","LaserDist4","LaserDepth1","LaserDepth2","LaserDepth3","LaserDepth4", 
             for ( int i = 0; i < 8; i++ )
-                PlotvarUnitsEXTRA[ 94 + i ] = "cm";
+                PlotvarUnitsEXTRA[ 104 + i ] = "cm";
 
             //"CO2", "CO2_24h", "CO2_pm2p5", "CO2_pm2p5_24h","CO2_pm10","CO2_pm10_24h","CO2_temp","CO2_hum",
-            PlotvarUnitsEXTRA[ 102 ] = CO2conc.Text();
-            PlotvarUnitsEXTRA[ 103 ] = CO2conc.Text();
-            PlotvarUnitsEXTRA[ 104 ] = PMconc.Text();
-            PlotvarUnitsEXTRA[ 105 ] = PMconc.Text();
-            PlotvarUnitsEXTRA[ 106 ] = PMconc.Text();
-            PlotvarUnitsEXTRA[ 107 ] = PMconc.Text();
-            PlotvarUnitsEXTRA[ 108 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 109 ] = "%";
-            PlotvarUnitsEXTRA[ 110 ] = "count";
+            PlotvarUnitsEXTRA[ 112 ] = CO2conc.Text();
+            PlotvarUnitsEXTRA[ 113 ] = CO2conc.Text();
+            PlotvarUnitsEXTRA[ 114 ] = PMconc.Text();
+            PlotvarUnitsEXTRA[ 115 ] = PMconc.Text();
+            PlotvarUnitsEXTRA[ 116 ] = PMconc.Text();
+            PlotvarUnitsEXTRA[ 117 ] = PMconc.Text();
+            PlotvarUnitsEXTRA[ 118 ] = Sup.StationTemp.Text();
+            PlotvarUnitsEXTRA[ 119 ] = "%";
+            PlotvarUnitsEXTRA[ 120 ] = "count";
 
             //"Lightning"
 

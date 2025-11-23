@@ -225,35 +225,16 @@ namespace CumulusUtils
 
             AirlinklogValue ThisValue = new AirlinklogValue();
 
-
             try
             {
-                if (false)
-                {
-                    // This is the new code for version 8.2/CMX 4.7 
-                    // DateTime
-                    FieldInUse = (int) AirlinklogFieldName.thisDate;
-                    tmpDatestring = lineSplit[ FieldInUse ];
 
-                    FieldInUse = (int) AirlinklogFieldName.thisTime;
-                    tmpTimestring = lineSplit[ FieldInUse ];
+                FieldInUse = (int) AirlinklogFieldName.thisDate;
+                tmpDatestring = lineSplit[ FieldInUse ];
 
-                    //ThisValue.ThisDate = DateTime.ParseExact( tmpDatestring, "dd/MM/yy HH:mm", CUtils.Inv );
-                    ThisValue.ThisDate = CuSupport.UnixTimestampToDateTime( tmpTimestring );
-                }
-                else
-                {
-                    // This is the old code for version before the UNIX time
-                    // DateTime
-                    FieldInUse = (int) AirlinklogFieldName.thisDate;
-                    tmpDatestring = lineSplit[ FieldInUse ];
+                FieldInUse = (int) AirlinklogFieldName.thisTime;
+                tmpTimestring = lineSplit[ FieldInUse ];
 
-                    FieldInUse = (int) AirlinklogFieldName.thisTime;
-                    tmpTimestring = tmpDatestring + ' ' + lineSplit[ FieldInUse ];
-
-                    ThisValue.ThisDate = DateTime.ParseExact( tmpTimestring, "dd/MM/yy HH:mm", CUtils.Inv );
-                    //ThisValue.ThisDate = CuSupport.UnixTimestampToDateTime( tmpTimestring );
-                }
+                ThisValue.ThisDate = DateTime.ParseExact( tmpDatestring + ' ' + tmpTimestring, "dd/MM/yy HH:mm", CUtils.Inv );
 
                 if ( ThisValue.ThisDate < StartTime )
                 {

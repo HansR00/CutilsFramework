@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -461,9 +460,9 @@ namespace CumulusUtils
             while ( !process.StandardOutput.EndOfStream )
             {
                 string? line = process.StandardOutput.ReadLine();
-                if (line != null)
+                if ( line != null )
                 {
-                    returnValues.Add(line);
+                    returnValues.Add( line );
                     Sup.LogTraceInfoMessage( "StartProcess " + command + ": output=" + line );
                 }
             }

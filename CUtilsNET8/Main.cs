@@ -695,7 +695,7 @@ namespace CumulusUtils
                                     {
                                         string? line;
 
-                                        while ((line = await MapFile.ReadLineAsync()) is not null)
+                                        while ( ( line = await MapFile.ReadLineAsync() ) is not null )
                                         {
                                             of.WriteLine( line );
                                         }
@@ -1080,7 +1080,7 @@ namespace CumulusUtils
                     DoAirLink = true;
                     DoExtraSensors = true;
                     DoCustomLogs = true;
-                    DoCUlib = false;            // this is implicit for website so if user sets it undo tha
+                    DoCUlib = true;            // this is implicit for website so if user sets it undo tha
                     DoDiary = true;
 
                     break;

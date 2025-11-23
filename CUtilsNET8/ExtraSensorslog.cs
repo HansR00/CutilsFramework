@@ -296,33 +296,17 @@ namespace CumulusUtils
             string[] lineSplit = line.Split( GlobConst.CommaSeparator );
 
             ExtraSensorslogValue ThisValue = new ExtraSensorslogValue();
-
             int FieldInUse = 0;
 
             try
             {
-                if ( false )
-                {
-                    FieldInUse = (int) ExtraSensorslogFieldName.thisDate;
-                    tmpDatestring = lineSplit[ FieldInUse ];
+                FieldInUse = (int) ExtraSensorslogFieldName.thisDate;
+                tmpDatestring = lineSplit[ FieldInUse ];
 
-                    FieldInUse = (int) ExtraSensorslogFieldName.thisTime;
-                    tmpTimestring = lineSplit[ FieldInUse ];
+                FieldInUse = (int) ExtraSensorslogFieldName.thisTime;
+                tmpTimestring = lineSplit[ FieldInUse ];
 
-                    ThisValue.ThisDate = CuSupport.UnixTimestampToDateTime( tmpTimestring );
-                }
-                else
-                {
-                    // DateTime
-                    FieldInUse = (int) ExtraSensorslogFieldName.thisDate;
-                    tmpDatestring = lineSplit[ FieldInUse ];
-
-                    FieldInUse = (int) ExtraSensorslogFieldName.thisTime;
-                    tmpTimestring = tmpDatestring + ' ' + lineSplit[ FieldInUse ];
-
-                    ThisValue.ThisDate = DateTime.ParseExact( tmpTimestring, "dd/MM/yy HH:mm", CUtils.Inv );
-                    //ThisValue.ThisDate = CuSupport.UnixTimestampToDateTime( tmpTimestring );
-                }
+                ThisValue.ThisDate = DateTime.ParseExact( tmpDatestring + ' ' + tmpTimestring, "dd/MM/yy HH:mm", CUtils.Inv );
 
                 if ( ThisValue.ThisDate < StartTime )
                 {

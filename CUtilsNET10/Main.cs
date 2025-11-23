@@ -1080,7 +1080,7 @@ namespace CumulusUtils
                     DoAirLink = true;
                     DoExtraSensors = true;
                     DoCustomLogs = true;
-                    DoCUlib = false;            // this is implicit for website so if user sets it undo tha
+                    DoCUlib = true;            // this is implicit for website so if user sets it undo tha
                     DoDiary = true;
 
                     break;
