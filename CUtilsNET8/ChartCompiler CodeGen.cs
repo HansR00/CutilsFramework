@@ -97,8 +97,6 @@ namespace CumulusUtils
 
                 GenericJavascript.AppendLine( "var chart, config, freezing;" );
 
-                //var InitCumulusCharts = () => { };
-
                 // The Document Ready function
                 GenericJavascript.Append( "$( function(){  " );
 

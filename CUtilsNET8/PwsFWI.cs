@@ -13,8 +13,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace CumulusUtils
 {
@@ -72,7 +72,6 @@ namespace CumulusUtils
         private readonly InetSupport Isup;
 
         private string PredictionBackground;
-        private string predictionURL;
         private bool DoPrediction;
 
         #endregion
@@ -122,15 +121,12 @@ namespace CumulusUtils
 
             string csvFilename = "pwsFWIanalyse.csv";
 
-            // Add the prediction days to thisList if wanted by the user. This means the predictionURL must be set
-            predictionURL = Sup.GetUtilsIniValue( "pwsFWI", "predictionURL", "" );
-
-            if ( !String.IsNullOrEmpty( predictionURL ) )
+            if ( true )  // always do prediction with OpenMeteo
             {
                 // The prediciton has to be removed after generation of pwsFWI
                 // That is being done in the dispose sequence
                 //
-                if ( !await AddPrediction( predictionURL, ThisList ) )
+                if ( !await AddOpenMeteoPrediction( ThisList ) )
                 {
                     // When returning false something went wrong. Not a problem, only DoPrediction becomes false
                     DoPrediction = false;
@@ -152,8 +148,6 @@ namespace CumulusUtils
                 // On return, ThisList contains 5 extra days from the prediction. They should automatically be taken into the system
                 // of pwsFWI calculation. Afterwards, they must be deleted from the list.
             }
-            else
-                DoPrediction = false;
 
             Sup.LogTraceInfoMessage( $" PwsFWIfuncs BeteljuiceFormat = {BeteljuiceFormat}" );
             Sup.LogTraceInfoMessage( $" PwsFWIfuncs USerFireImage = {UseFireImage}" );
@@ -549,7 +543,8 @@ namespace CumulusUtils
                     of.WriteLine( $"{CuSupport.FormattedVersion()} - {CuSupport.Copyright()} <br/>" );
                 }
 
-                of.WriteLine( "<a href='https://cumuluswiki.org/a/Theoretical_background_on_pwsFWI' target='_blank'>Science background here.</a> Prediction: <a href='https://www.yourweather.co.uk/' target='_blank'>https://www.yourweather.co.uk/</a>" );
+                of.WriteLine( "<a href='https://cumuluswiki.org/a/Theoretical_background_on_pwsFWI' target='_blank'>Science background here.</a> " +
+                    "Prediction: <a href='https://open-meteo.com/' target='_blank'>https://open-meteo.com/</a>" );
                 of.WriteLine( " </div>" );
 
                 // Done with HTML generation
@@ -920,111 +915,117 @@ namespace CumulusUtils
 
         #region Supportfunctions Prediction and Format
 
-        async Task<bool> AddPrediction( string URL, List<DayfileValue> ThisList )
+        private class DailyUnits
         {
-            // Get the interface and loop over the days to extract the data. Fill in the DayfileValue structure
-            // Note: the units in the interface always seem to be metric. That in itself may be a problem because the conversion
-            // takes place by assignment to the localFWI struct. Which is the locigal place to do because the owner of the weatherstation
-            // has given this as units.
-            //
-            // If the user uses imperial units and the prediction is metric, the metric numbers will be amended by the imperial
-            // to metric conversion despite the fact that they are already metric. I do not have a solution at the moment.
-            //
-            // Next is my API URL for testing etc... I deliver without a default because it is userspecific
-            // string from http://api.yourweather.co.uk/
-            //
+            public string time { get; set; }
+            public string temperature_2m_max { get; set; }
+            public string rain_sum { get; set; }
+            public string wind_speed_10m_max { get; set; }
+            public string relative_humidity_2m_min { get; set; }
+        }
 
-            Sup.LogDebugMessage( "PwsFWI XML AddPrediction - starting" );
+        private class Daily
+        {
+            // The lists hold the actual daily data.
+            public List<long> time { get; set; }
+            public List<double> temperature_2m_max { get; set; }
+            public List<double> rain_sum { get; set; }
+            public List<double> wind_speed_10m_max { get; set; }
+            public List<int> relative_humidity_2m_min { get; set; }
+        }
 
-            Uri xmlAPI = new Uri( URL );
-            string XMLresult = await Isup.GetUrlDataAsync( xmlAPI );
+        private class WeatherData
+        {
+            public double latitude { get; set; }
+            public double longitude { get; set; }
+            public double generationtime_ms { get; set; }
+            public int utc_offset_seconds { get; set; }
+            public string timezone { get; set; }
+            public string timezone_abbreviation { get; set; }
+            public double elevation { get; set; }
 
-            DayfileValue ThisValue = new DayfileValue();
-            bool retval = false;
+            // This property will hold the units object
+            public DailyUnits daily_units { get; set; }
 
-            if ( !String.IsNullOrEmpty( XMLresult ) )
+            // This is the property you want to access
+            public Daily daily { get; set; }
+        }
+
+        private async Task<bool> AddOpenMeteoPrediction( List<DayfileValue> ThisList )
+        {
+            // This is necessary for the use of the units the users has set in Cumulus
+            // The order is the same as in the UnitsAndConversions but the wording of the units in the URL is different.
+            // values are added to the list in the units the user has chosen
+            string[] TempUnitForOpenMeteo = new string[] { "celsius", "fahrenheit" };
+            string[] WindUnitForOpenMeteo = new string[] { "ms", "mph", "kmh", "kn" };
+            string[] RainUnitForOpenMeteo = new string[] { "mm", "inch" };
+
+            try
             {
-                try
+                // Required to use the SetExtraValues procedure
+                Dayfile tmpDayfile = new Dayfile( Sup );
+                DayfileValue ThisValue = new DayfileValue();
+
+
+                string thisURL = $"https://api.open-meteo.com/v1/forecast?" +
+                    $"latitude={Sup.GetCumulusIniValue( "Station", "Latitude", "" ).Substring( 0, 5 )}&" +
+                    $"longitude={Sup.GetCumulusIniValue( "Station", "Longitude", "" ).Substring( 0, 5 )}&" +
+                    $"daily=temperature_2m_max,rain_sum,wind_speed_10m_max,relative_humidity_2m_min&" +
+                    $"timezone={Sup.GetCumulusIniValue( "Station", "TimeZone", "" )}&" +
+                    $"timeformat=unixtime&" +
+                    $"wind_speed_unit={WindUnitForOpenMeteo[ (int) Sup.StationWind.Dim ]}&" +
+                    $"temperature_unit={TempUnitForOpenMeteo[ (int) Sup.StationTemp.Dim ]}&" +
+                    $"precipitation_unit={RainUnitForOpenMeteo[ (int) Sup.StationRain.Dim ]}";
+
+                string JSONresult = await Isup.GetUrlDataAsync( new Uri( thisURL ) );
+                Sup.LogTraceInfoMessage( $"JSONresult: {JSONresult} " );
+
+                WeatherData data = JsonSerializer.Deserialize<WeatherData>( JSONresult );
+                Daily dailyData = data.daily;
+                DailyUnits dailyUnits = data.daily_units;
+
+                // Now you can work with the lists:
+
+                List<long> times = dailyData.time;
+                List<double> maxTemps = dailyData.temperature_2m_max;
+                List<double> rainSums = dailyData.rain_sum;
+                List<double> windSpeeds = dailyData.wind_speed_10m_max;
+                List<int> RHs = dailyData.relative_humidity_2m_min;
+
+                for ( int i = 0; i < 5; i++ ) // 5 days prediction
                 {
-                    XElement localWeather = XElement.Parse( XMLresult );
+                    ThisValue.ThisDate = CuSupport.UnixTimestampToDateTime( times[ i ].ToString() );
+                    ThisValue.MaxTemp = (float) maxTemps[ i ];
+                    ThisValue.HighAverageWindSpeed = (float) windSpeeds[ i ];
+                    ThisValue.TotalRainThisDay = (float) rainSums[ i ];
+                    ThisValue.LowHumidity = RHs[ i ];
 
-                    IEnumerable<XElement> de =
-                      from el in localWeather.Descendants( "day" )
-                      select el;
+                    Sup.LogTraceInfoMessage( "Open Meteo AddPrediction - The data:" );
+                    Sup.LogTraceInfoMessage( $"ThisValue date: {ThisValue.ThisDate:d}" );
+                    Sup.LogTraceInfoMessage( $"ThisValue MaxTemp: {ThisValue.MaxTemp:F1}" );
+                    Sup.LogTraceInfoMessage( $"ThisValue LowHumidity: {ThisValue.LowHumidity:F1}" );
+                    Sup.LogTraceInfoMessage( $"ThisValue High Av. Windspeed: {ThisValue.HighAverageWindSpeed:F1}" );
+                    Sup.LogTraceInfoMessage( $"ThisValue Rain This Day: {ThisValue.TotalRainThisDay:F1}" );
 
-                    // Required to use the SetExtraValues procedure
-                    Dayfile tmpDayfile = new Dayfile( Sup );
+                    // The actual carry over from the history is done in SetExtraValues
+                    //
+                    if ( ThisValue.TotalRainThisDay >= (float) Sup.StationRain.Convert( RainDim.millimeter, Sup.StationRain.Dim, GlobConst.RainLimit ) ) { ThisValue.DryPeriod = 0; ThisValue.WetPeriod = 1; }
+                    else { ThisValue.DryPeriod = 1; ThisValue.WetPeriod = 0; }
 
-                    foreach ( XElement el in de ) // loop over the days in  the prediction
-                    {
-                        float lowHum = 0;
+                    ThisList.Add( ThisValue );
 
-                        Sup.LogTraceVerboseMessage( $"XML AddPrediction: {el}" );
-
-                        ThisValue.LowHumidity = 100; // init at highest value possible
-
-                        IEnumerable<XElement> hour =
-                          from hr in el.Descendants( "hour" )
-                          select hr;
-
-                        foreach ( XElement hr in hour ) // loop over the days in  the prediction to get the lowest estimate of RH
-                        {
-                            lowHum = Convert.ToSingle( hr.Element( "humidity" ).Attribute( "value" ).Value, CUtils.Inv );
-
-                            if ( lowHum < ThisValue.LowHumidity )
-                                ThisValue.LowHumidity = lowHum;
-                        }
-
-                        ThisValue.ThisDate = DateTime.ParseExact( el.Attribute( "value" ).Value, "yyyyMMdd", CUtils.Inv );
-
-                        // We require conversions if the units used are not deg Celsius, km/h, mm, hPa
-                        // So we make an intermediate value while storing in xxxxAPI valiable. That variable contains the non standard value
-                        // (eg m/s iso km/hr) Then we assign the API variable into the DayfileValue list entry which will be added to the list.
-                        // As a result that assignment converts back to the km/hr unit. 
-                        // Ridiculous, but thats life of a free interface.
-
-                        // If user uses Fahrenheit, but interface delivers Celsius so we convert that to Fahrenheit and then later
-                        // assign it to the FWIValue structure element which assignment converts it back to Celsius
-                        // For Wind and Rain similar 
-                        Temp t = new Temp( TempDim.celsius );
-                        Wind w = new Wind( WindDim.kmh, Sup );
-                        Rain r = new Rain( RainDim.millimeter );
-
-                        ThisValue.MaxTemp = (float) Sup.StationTemp.Convert( TempDim.celsius, Sup.StationTemp.Dim, Convert.ToSingle( el.Element( "tempmax" ).Attribute( "value" ).Value, CUtils.Inv ) );
-                        ThisValue.HighAverageWindSpeed = (float) Sup.StationWind.Convert( WindDim.kmh, Sup.StationWind.Dim, Convert.ToSingle( el.Element( "wind" ).Attribute( "value" ).Value, CUtils.Inv ) );
-                        ThisValue.TotalRainThisDay = (float) Sup.StationRain.Convert( RainDim.millimeter, Sup.StationRain.Dim, Convert.ToSingle( el.Element( "rain" ).Attribute( "value" ).Value, CUtils.Inv ) );
-
-                        Sup.LogTraceInfoMessage( "XML AddPrediction - The data:" );
-                        Sup.LogTraceInfoMessage( $"ThisValue converted date: {ThisValue.ThisDate:d}" );
-                        Sup.LogTraceInfoMessage( $"ThisValue converted MaxTemp: {ThisValue.MaxTemp:F1}" );
-                        Sup.LogTraceInfoMessage( $"ThisValue converted LowHumidity: {ThisValue.LowHumidity:F1}" );
-                        Sup.LogTraceInfoMessage( $"ThisValue converted High Av. Windspeed: {ThisValue.HighAverageWindSpeed:F1}" );
-                        Sup.LogTraceInfoMessage( $"ThisValue converted Rain This Day: {ThisValue.TotalRainThisDay:F1}" );
-
-                        // The actual carry over from the history is done in SetExtraValues
-                        //
-                        if ( ThisValue.TotalRainThisDay >= (float) Sup.StationRain.Convert( RainDim.millimeter, Sup.StationRain.Dim, GlobConst.RainLimit ) ) { ThisValue.DryPeriod = 0; ThisValue.WetPeriod = 1; }
-                        else { ThisValue.DryPeriod = 1; ThisValue.WetPeriod = 0; }
-
-                        ThisList.Add( ThisValue );
-
-                        tmpDayfile.SetExtraValues( ThisList );
-                    }
-
-                    tmpDayfile.Dispose();
-                    retval = true; //success, we have a go for prediction.
+                    tmpDayfile.SetExtraValues( ThisList );
                 }
-                catch ( Exception e )
-                {
-                    Sup.LogTraceErrorMessage( $"XML AddPrediction: {e.Message}" );
-                    throw;
-                }
+
+                tmpDayfile.Dispose();
             }
-            // else no data, return, no prediction can be made; retval default is false
+            catch ( Exception e )
+            {
+                Sup.LogTraceErrorMessage( $"Open Meteo AddPrediction: {e.Message}" );
+                throw;
+            }
 
-            Sup.LogTraceInfoMessage( $"XML AddPrediction - retval = {retval}" );
-
-            return retval;
+            return true;
         }
 
         private static bool RemovePrediction( List<DayfileValue> ThisList )

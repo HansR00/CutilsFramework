@@ -21,7 +21,7 @@ namespace CumulusUtils
     public class CuSupport : IDisposable
     {
         // Is it a version number beta shown at users?
-        private const string beta = "beta .NET 8";
+        private const string beta = ".NET 8";
 
         #region declarations
         public Wind StationWind { get; set; }

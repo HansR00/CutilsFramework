@@ -320,7 +320,7 @@ CumulusUtils stands on the shoulders of the following (but is unrelated to):<br/
 <li><a href='https://github.com/d3/d3'>d3</a> - License: BSD 3-Clause 'New' or 'Revised' License;</li>
 <li><a href='https://github.com/mourner'>suncalc</a> - License: BSD 2-Clause 'Simplified' License.</li>
 <li><a href='https://github.com/Leaflet/Leaflet'>Leaflet</a> - License: BSD 2-Clause 'Simplified' License;</li>
-<li><a href='https://www.yourweather.co.uk'>Yourweather.co.uk</a> - License: <a href='https://creativecommons.org/licenses/by-sa/4.0/deed.en'>Attribution-ShareAlike 4.0 International</a> License (used for predictions);</li>
+<li><a href='https://open-meteo.com/'>Open Meteo</a> - License:Free, non-commercial (used for predictions/Forecasts);</li>
 <li><a href='https://getbootstrap.com/'>Bootstrap</a> - License: <a href='https://github.com/twbs/bootstrap/blob/v4.4.1/LICENSE'>MIT</a>;</li>
 </ul>
 
@@ -1280,9 +1280,12 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 $"          {Sup.GetCUstringValue( "Website", "Misc", "Misc.", false )}" +
                 "        </a>" +
                 "        <ul class='dropdown-menu' aria-labelledby='navbarDropdownMisc'>" +
-                  $"          <li class='nav-link' onclick=\"LoadUtilsReport('forecast.txt', false);\">{Sup.GetCUstringValue( "Website", "Forecast", "Forecast", false )}</li>" +
-                  $"          <li class='nav-link' onclick=\"LoadUtilsReport('systeminfoTable.txt', false);\">{Sup.GetCUstringValue( "Website", "SystemInfo", "System Info", false )}</li>" +
-                  $"          <li class='nav-link' onclick=\"LoadUtilsReport('maps.txt', false);\">{Sup.GetCUstringValue( "Website", "UserMap", "User Map", false )}</li>" );
+                $"          <li class='nav-link' onclick=\"LoadUtilsReport('forecast.txt', false);\">{Sup.GetCUstringValue( "Website", "Forecast", "Forecast", false )}</li>" );
+
+                if ( CUtils.HasSystemInfoMenu )
+                    s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('systeminfoTable.txt', false);\">{Sup.GetCUstringValue( "Website", "SystemInfo", "System Info", false )}</li>" );
+
+                s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('maps.txt', false);\">{Sup.GetCUstringValue( "Website", "UserMap", "User Map", false )}</li>" );
 
                 if ( CUtils.HasStationMapMenu )
                     s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('stationmap.txt', false);loadRealtimeTxt();\">{Sup.GetCUstringValue( "Website", "StationMap", "StationMap", false )}</li>" );

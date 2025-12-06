@@ -90,6 +90,7 @@ namespace CumulusUtils
         public static bool HasSolarGraphMenu { get; set; }
         public static bool HasMiscGraphMenu { get; set; }
         public static bool HasStationMapMenu { get; set; }
+        public static bool HasSystemInfoMenu { get; set; }
         public static bool HasMeteoCamMenu { get; set; }
         public static bool HasDiaryMenu { get; set; }
 
@@ -194,6 +195,7 @@ namespace CumulusUtils
                 DoModular = Sup.GetUtilsIniValue( "General", "DoModular", "false" ).Equals( "true", Cmp );
                 ModulePath = Sup.GetUtilsIniValue( "General", "ModulePath", "" );
 
+                HasSystemInfoMenu = Sup.GetUtilsIniValue( "SysInfo", "SystemInfoMenu", "true" ).Equals( "true", Cmp );
                 HasStationMapMenu = Sup.GetUtilsIniValue( "StationMap", "StationMapMenu", "true" ).Equals( "true", Cmp );
                 HasMeteoCamMenu = Sup.GetUtilsIniValue( "MeteoCam", "MeteoCamMenu", "true" ).Equals( "true", Cmp );
                 HasExtraSensors = Sup.GetUtilsIniValue( "ExtraSensors", "ExtraSensors", "false" ).Equals( "true", Cmp ) &&

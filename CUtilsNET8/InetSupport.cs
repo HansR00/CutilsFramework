@@ -533,7 +533,7 @@ namespace CumulusUtils
         {
             Sup.LogTraceInfoMessage( $"GetUrlData Start: URL - {thisURL} " );
 
-            // Note: I use 'using' because it is easier and it gets only called for UserReports, MAps and yourweather.co.uk so 
+            // Note: I use 'using' because it is easier and it gets only called for UserReports, Maps and open-meteo so 
             //       there is no risk - I don't see a risk - of socket exhaustion
             //
             using ( HttpClient GetClient = new HttpClient() )
