@@ -21,7 +21,7 @@ namespace CumulusUtils
     public class CuSupport : IDisposable
     {
         // Is it a version number beta shown at users?
-        private const string beta = "beta .NET 10";
+        private const string beta = "beta3 .NET 10";
 
         #region declarations
         public Wind StationWind { get; set; }
@@ -64,7 +64,6 @@ namespace CumulusUtils
         public string CustomLogsRealtimeFilename { get; } = "customlogsrealtime.txt";
         public string CustomLogsCharts { get; } = "customlogscharts.txt";
         public string SensorCommunityOutputFilename { get; } = "sensorcommunity.txt";
-        //public string DiaryOutputFilename { get; } = "diary.txt";
         public string DiaryOutputFilename { get; } = "diary.txt";
         public string CUserdataRECENT { get; } = "CUserdataRECENT.json";
         public string CUserdataDAILY { get; } = "CUserdataDAILY.json";
@@ -276,9 +275,7 @@ namespace CumulusUtils
                 CmxIPC thisIPC = new CmxIPC( this, CUtils.Isup );
 
                 // Prevent having to make this method async by using AsyncTask
-                Task<string> AsyncTask = thisIPC.ReplaceWebtagsGetAsync( tmp );
-                AsyncTask.Wait();
-                tmp = AsyncTask.Result;
+                tmp = thisIPC.ReplaceWebtagsGet( tmp );
             }
 
             LogTraceVerboseMessage( DateTime.Now + $" GetUtilsIniValue {key} / {tmp}" );
@@ -575,10 +572,10 @@ namespace CumulusUtils
             if ( LoggingOn ) Debug.WriteLine( DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + message );
         }
 
-        public void LogTraceErrorMessage( string message ) => Trace.WriteLineIf( CUTraceSwitch.TraceError, DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + "Error " + message );
-        public void LogTraceWarningMessage( string message ) => Trace.WriteLineIf( CUTraceSwitch.TraceWarning, DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + "Warning " + message );
-        public void LogTraceInfoMessage( string message ) => Trace.WriteLineIf( CUTraceSwitch.TraceInfo, DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + "Information " + message );
-        public void LogTraceVerboseMessage( string message ) => Trace.WriteLineIf( CUTraceSwitch.TraceVerbose, DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + "Verbose " + message );
+        public void LogTraceErrorMessage( string message ) => Trace.WriteLineIf( CUTraceSwitch.TraceError, DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + "❌ Error :" + message );
+        public void LogTraceWarningMessage( string message ) => Trace.WriteLineIf( CUTraceSwitch.TraceWarning, DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + "Warning :" + message );
+        public void LogTraceInfoMessage( string message ) => Trace.WriteLineIf( CUTraceSwitch.TraceInfo, DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + "Information :" + message );
+        public void LogTraceVerboseMessage( string message ) => Trace.WriteLineIf( CUTraceSwitch.TraceVerbose, DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + "Verbose :" + message );
 
         #endregion
 

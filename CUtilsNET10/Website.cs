@@ -470,7 +470,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
               "<div class='col-sm-12 CUFooter'>" +
               "  <table style='width:100%; margin:auto'><tr>" +
               "    <td style='text-align: left; font-size: smaller'>Powered by <a href='https://cumulus.hosiene.co.uk/index.php'>Cumulus[MX]</a>&nbsp;" +
-              $"         <span id=programVersion>&nbsp;{thisCMXInfo.Version}&nbsp;(build:&nbsp;{thisCMXInfo.Build})</span>" +
+              $"         <span id=programVersion>&nbsp;{thisCMXInfo.version}&nbsp;(build:&nbsp;{thisCMXInfo.build})</span>" +
               $"         &nbsp;{( NewVersionAvailable ? "[New version available:&nbsp;build: " + thisCMXInfo.NewBuildNumber + "]" : "" )}<br/>" +
                "      See further under <a data-bs-toggle='modal' href='#CUabout'>About</a> / <a data-bs-toggle='modal' href='#CUlicense'>Licenses</a>.</td>" +
               $"   <td style='text-align: right; font-size: smaller'>{CuSupport.FormattedVersion()} - {CuSupport.Copyright()}</td>" +
@@ -1280,9 +1280,12 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 $"          {Sup.GetCUstringValue( "Website", "Misc", "Misc.", false )}" +
                 "        </a>" +
                 "        <ul class='dropdown-menu' aria-labelledby='navbarDropdownMisc'>" +
-                  $"          <li class='nav-link' onclick=\"LoadUtilsReport('forecast.txt', false);\">{Sup.GetCUstringValue( "Website", "Forecast", "Forecast", false )}</li>" +
-                  $"          <li class='nav-link' onclick=\"LoadUtilsReport('systeminfoTable.txt', false);\">{Sup.GetCUstringValue( "Website", "SystemInfo", "System Info", false )}</li>" +
-                  $"          <li class='nav-link' onclick=\"LoadUtilsReport('maps.txt', false);\">{Sup.GetCUstringValue( "Website", "UserMap", "User Map", false )}</li>" );
+                $"          <li class='nav-link' onclick=\"LoadUtilsReport('forecast.txt', false);\">{Sup.GetCUstringValue( "Website", "Forecast", "Forecast", false )}</li>" );
+
+                if ( CUtils.HasSystemInfoMenu )
+                    s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('systeminfoTable.txt', false);\">{Sup.GetCUstringValue( "Website", "SystemInfo", "System Info", false )}</li>" );
+
+                s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('maps.txt', false);\">{Sup.GetCUstringValue( "Website", "UserMap", "User Map", false )}</li>" );
 
                 if ( CUtils.HasStationMapMenu )
                     s.Append( $"<li class='nav-link' onclick=\"LoadUtilsReport('stationmap.txt', false);loadRealtimeTxt();\">{Sup.GetCUstringValue( "Website", "StationMap", "StationMap", false )}</li>" );

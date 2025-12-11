@@ -14,12 +14,6 @@ using System.Threading.Tasks;
 
 namespace CumulusUtils
 {
-    // 
-    // Use GlobConst as a store for constants as you would use C #defines...
-    // That's what you get when you act as a hybrid between C and C#
-    // 
-    enum Months : int { Jan = 1, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec };
-
     public static class GlobConst
     {
         public const double RainLimit = 0.2; //When more or equal than this amount in mm/day this limit is used when necessary
@@ -89,6 +83,7 @@ namespace CumulusUtils
         public static bool HasWindGraphMenu { get; set; }
         public static bool HasSolarGraphMenu { get; set; }
         public static bool HasMiscGraphMenu { get; set; }
+        public static bool HasSystemInfoMenu { get; set; }
         public static bool HasStationMapMenu { get; set; }
         public static bool HasMeteoCamMenu { get; set; }
         public static bool HasDiaryMenu { get; set; }
@@ -194,6 +189,7 @@ namespace CumulusUtils
                 DoModular = Sup.GetUtilsIniValue( "General", "DoModular", "false" ).Equals( "true", Cmp );
                 ModulePath = Sup.GetUtilsIniValue( "General", "ModulePath", "" );
 
+                HasSystemInfoMenu = Sup.GetUtilsIniValue( "SysInfo", "SystemInfoMenu", "true" ).Equals( "true", Cmp );
                 HasStationMapMenu = Sup.GetUtilsIniValue( "StationMap", "StationMapMenu", "true" ).Equals( "true", Cmp );
                 HasMeteoCamMenu = Sup.GetUtilsIniValue( "MeteoCam", "MeteoCamMenu", "true" ).Equals( "true", Cmp );
                 HasExtraSensors = Sup.GetUtilsIniValue( "ExtraSensors", "ExtraSensors", "false" ).Equals( "true", Cmp ) &&
@@ -695,7 +691,7 @@ namespace CumulusUtils
                                     {
                                         string? line;
 
-                                        while ((line = await MapFile.ReadLineAsync()) is not null)
+                                        while ( ( line = await MapFile.ReadLineAsync() ) is not null )
                                         {
                                             of.WriteLine( line );
                                         }

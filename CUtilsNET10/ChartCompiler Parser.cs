@@ -9,7 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using FluentFTP.Helpers;
 
 namespace CumulusUtils
 {
@@ -41,7 +40,7 @@ namespace CumulusUtils
                 DefLinesArray = File.ReadAllLines( $"{Sup.PathUtils}{Sup.CutilsChartsDef}", Encoding.UTF8 );
 
                 foreach ( string line in DefLinesArray )
-                    if ( line.IsBlank() || line[ 0 ] == ';' ) continue;
+                    if ( string.IsNullOrEmpty( line ) || line[ 0 ] == ';' ) continue;
                     else
                         DefContents += line + ' ';
 
@@ -65,7 +64,6 @@ namespace CumulusUtils
 
                     if ( !ParseEquationBlock() )
                     {
-                        //Sup.LogTraceErrorMessage( $"Parsing User Charts: Error in Equations Block." );
                         // ParseEquationBlock has its own error messaging
                         return null;
                     }

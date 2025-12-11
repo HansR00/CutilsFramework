@@ -229,7 +229,7 @@ namespace CumulusUtils
             return;
         }
 
-        void GenerateYearMonthSolarHoursStatistics( Months thisMonth, StringBuilder thisBuffer )
+        void GenerateYearMonthSolarHoursStatistics( int thisMonth, StringBuilder thisBuffer )
         {
             StringBuilder sb = new StringBuilder();
             ;
@@ -242,7 +242,7 @@ namespace CumulusUtils
 
             for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
-                List<DaySolarValues> yearMonthlist = DailySolarValuesList.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == (int) thisMonth ).ToList();
+                List<DaySolarValues> yearMonthlist = DailySolarValuesList.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == thisMonth ).ToList();
 
                 //Sup.LogTraceInfoMessage( $"Generating Year Month Solar Hours Statistics, doing year {i} and month {thisMonth}" );
 
@@ -273,7 +273,8 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "title:" );
             thisBuffer.AppendLine( "{" );
-            thisBuffer.AppendLine( $"  text: '{Sup.GetCUstringValue( "Graphs", "YMSHSTitle", "Yearly Solar Hours Statistics per month for", true )} {CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( (int) thisMonth )}' " );
+            thisBuffer.AppendLine( $"  text: '{Sup.GetCUstringValue( "Graphs", "YMSHSTitle", "Yearly Solar Hours Statistics per month for", true )} " +
+                $"{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( thisMonth )}' " );
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "subtitle:" );
             thisBuffer.AppendLine( "{" );
@@ -556,7 +557,7 @@ namespace CumulusUtils
             return;
         }
 
-        void GenerateYearMonthSolarEnergyStatistics( Months thisMonth, StringBuilder thisBuffer )
+        void GenerateYearMonthSolarEnergyStatistics( int thisMonth, StringBuilder thisBuffer )
         {
             StringBuilder sb = new StringBuilder();
 
@@ -568,7 +569,7 @@ namespace CumulusUtils
 
             for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
-                List<DaySolarValues> yearMonthlist = DailySolarValuesList.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == (int) thisMonth ).ToList();
+                List<DaySolarValues> yearMonthlist = DailySolarValuesList.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == thisMonth ).ToList();
 
                 //Sup.LogTraceInfoMessage( $"Generating Year Month Solar Energy Statistics, doing year {i} and month {thisMonth}" );
 
@@ -599,7 +600,8 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "title:" );
             thisBuffer.AppendLine( "{" );
-            thisBuffer.AppendLine( $"  text: '{Sup.GetCUstringValue( "Graphs", "YMSESTitle", "Monthly Insolation Statistics per year for", true )} {CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( (int) thisMonth )}' " );
+            thisBuffer.AppendLine( $"  text: '{Sup.GetCUstringValue( "Graphs", "YMSESTitle", "Monthly Insolation Statistics per year for", true )} " +
+                $"{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( thisMonth )}' " );
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "subtitle:" );
             thisBuffer.AppendLine( "{" );

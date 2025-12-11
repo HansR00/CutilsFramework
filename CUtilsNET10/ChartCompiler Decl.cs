@@ -6,6 +6,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace CumulusUtils
@@ -86,7 +88,7 @@ namespace CumulusUtils
     partial class ChartsCompiler
     {
 
-        #region Declarations
+        #region Declarations RECENT
 
         public readonly AxisType[] PlotvarAxisRECENT = {
             AxisType.Temp, AxisType.Temp, AxisType.Temp, AxisType.Temp, AxisType.Temp, AxisType.Temp, AxisType.Temp, AxisType.Temp,
@@ -99,6 +101,43 @@ namespace CumulusUtils
             AxisType.EVT
         };
 
+        public readonly string[] PlotvarTypesRECENT = {
+          "intemp", "dew", "apptemp", "feelslike", "wchill", "heatindex", "temp", "humidex",
+          "wgust", "wspeed",
+          "bearing", "avgbearing",
+          "UV", "SolarRad", "CurrentSolarMax",
+          "rfall", "rrate",
+          "press",
+          "hum", "inhum",
+          "evapotranspiration"
+        };
+
+        public readonly string[] PlotvarKeywordRECENT = {
+          "InsideTemp", "Dewpoint", "ApparentTemp", "FeelsLike", "WindChill", "HeatIndex", "Temperature", "Humidex",
+          "WindGust", "WindSpeed",
+          "Bearing", "AverageBearing",
+          "UV", /*"SolarRadiation",*/ "CurrentSolarRad", "TheoreticalSolarMax",
+          "RainFall", "RainRate",
+          "Pressure",
+          "Humidity", "InsideHumidity",
+          "EvapoTranspiration"
+        };
+
+        public readonly string[] DatafilesRECENT = {
+          "tempdata.json", "tempdata.json", "tempdata.json", "tempdata.json", "tempdata.json", "tempdata.json", "tempdata.json", "tempdata.json",
+          "winddata.json", "winddata.json",
+          "wdirdata.json", "wdirdata.json",
+          "solardata.json", "solardata.json", "solardata.json",
+          "raindata.json", "raindata.json",
+          "pressdata.json",
+          "humdata.json", "humdata.json",
+          "CUserdataRECENT.json"
+        };
+
+        #endregion
+
+        #region Declarations ALL
+
         public readonly AxisType[] PlotvarAxisALL = {
             AxisType.Temp, AxisType.Temp, AxisType.Temp, AxisType.Temp, AxisType.Temp, AxisType.Temp, AxisType.Temp, AxisType.Temp,
             AxisType.Wind, AxisType.Distance, AxisType.Wind,
@@ -109,6 +148,44 @@ namespace CumulusUtils
             AxisType.DegreeDays, AxisType.DegreeDays, AxisType.EVT,
             AxisType.Height, AxisType.Height
         };
+
+        public readonly string[] PlotvarTypesALL = {
+          "minTemp", "maxTemp", "avgTemp", "windChill", "maxDew", "minDew", "maxFeels", "minFeels",
+          "maxGust", "windRun", "maxWind",
+          "sunHours", "solarRad", "uvi",
+          "rain", "maxRainRate",
+          "minBaro", "maxBaro",
+          "minHum", "maxHum",
+          "heatingdegreedays", "coolingdegreedays", "evapotranspiration",
+          "Snow24h", "SnowDepth"
+        };
+
+        public readonly string[] DatafilesALL = {
+          "alldailytempdata.json","alldailytempdata.json","alldailytempdata.json","alldailytempdata.json",
+          "alldailytempdata.json","alldailytempdata.json","alldailytempdata.json","alldailytempdata.json",
+          "alldailywinddata.json","alldailywinddata.json", "alldailywinddata.json",
+          "alldailysolardata.json","alldailysolardata.json", "alldailysolardata.json",
+          "alldailyraindata.json","alldailyraindata.json",
+          "alldailypressdata.json","alldailypressdata.json",
+          "alldailyhumdata.json","alldailyhumdata.json",
+          "CUserdataALL.json", "CUserdataALL.json", "CUserdataALL.json",
+          "alldailysnowdata.json", "alldailysnowdata.json"
+        };
+
+        public readonly string[] PlotvarKeywordALL = {
+          "MinTemp", "MaxTemp", "AverageTemp", "AvgWindChill", /*"WindChill",*/ "MaxDewpoint", "MinDewpoint", "MaxFeelsLike", "MinFeelsLike",
+          "MaxGust", "WindRun", "HighAvgWindSpeed", /* "WindSpeed",*/
+          "SunHours", "SolarRadiation", "UVIndex",
+          /*"RainFall",*/ "DayRain", "MaxRainRate",
+          "MinBarometer", "MaxBarometer",
+          "MinHumidity", "MaxHumidity",
+          "HeatingDegreeDays","CoolingDegreeDays","DayEVT",      /*"EvapoTranspiration"*/
+          "Snow24h", "SnowDepth"
+        };
+
+        #endregion
+
+        #region Declarations EXTRA
 
         public readonly AxisType[] PlotvarAxisEXTRA = {
             AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,AxisType.Temp,
@@ -123,28 +200,6 @@ namespace CumulusUtils
             AxisType.Distance, AxisType.Distance, AxisType.Distance, AxisType.Distance, AxisType.Distance, AxisType.Distance, AxisType.Distance, AxisType.Distance,
             AxisType.ppm,AxisType.ppm,AxisType.AQ,AxisType.AQ,AxisType.AQ,AxisType.AQ,AxisType.Temp,AxisType.Humidity,
             AxisType.Free
-        };
-
-        public readonly string[] PlotvarTypesRECENT = {
-          "intemp", "dew", "apptemp", "feelslike", "wchill", "heatindex", "temp", "humidex",
-          "wgust", "wspeed",
-          "bearing", "avgbearing",
-          "UV", "SolarRad", "CurrentSolarMax",
-          "rfall", "rrate",
-          "press",
-          "hum", "inhum",
-          "evapotranspiration"
-        };
-
-        public readonly string[] PlotvarTypesALL = {
-          "minTemp", "maxTemp", "avgTemp", "windChill", "maxDew", "minDew", "maxFeels", "minFeels",
-          "maxGust", "windRun", "maxWind",
-          "sunHours", "solarRad", "uvi",
-          "rain", "maxRainRate",
-          "minBaro", "maxBaro",
-          "minHum", "maxHum",
-          "heatingdegreedays", "coolingdegreedays", "evapotranspiration",
-          "Snow24h", "SnowDepth"
         };
 
         // Static because needed in ExtraSensors
@@ -163,29 +218,6 @@ namespace CumulusUtils
             "Lightning"
         };
 
-        public readonly string[] DatafilesRECENT = {
-          "tempdata.json", "tempdata.json", "tempdata.json", "tempdata.json", "tempdata.json", "tempdata.json", "tempdata.json", "tempdata.json",
-          "winddata.json", "winddata.json",
-          "wdirdata.json", "wdirdata.json",
-          "solardata.json", "solardata.json", "solardata.json",
-          "raindata.json", "raindata.json",
-          "pressdata.json",
-          "humdata.json", "humdata.json",
-          "CUserdataRECENT.json"
-        };
-
-        public readonly string[] DatafilesALL = {
-          "alldailytempdata.json","alldailytempdata.json","alldailytempdata.json","alldailytempdata.json",
-          "alldailytempdata.json","alldailytempdata.json","alldailytempdata.json","alldailytempdata.json",
-          "alldailywinddata.json","alldailywinddata.json", "alldailywinddata.json",
-          "alldailysolardata.json","alldailysolardata.json", "alldailysolardata.json",
-          "alldailyraindata.json","alldailyraindata.json",
-          "alldailypressdata.json","alldailypressdata.json",
-          "alldailyhumdata.json","alldailyhumdata.json",
-          "CUserdataALL.json", "CUserdataALL.json", "CUserdataALL.json",
-          "alldailysnowdata.json", "alldailysnowdata.json"
-        };
-
         public readonly string[] DatafilesEXTRA = {
             "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
             "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
@@ -199,28 +231,6 @@ namespace CumulusUtils
             "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
             "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
             "extrasensorsdata.json"
-        };
-
-        public readonly string[] PlotvarKeywordRECENT = {
-          "InsideTemp", "Dewpoint", "ApparentTemp", "FeelsLike", "WindChill", "HeatIndex", "Temperature", "Humidex",
-          "WindGust", "WindSpeed",
-          "Bearing", "AverageBearing",
-          "UV", /*"SolarRadiation",*/ "CurrentSolarRad", "TheoreticalSolarMax",
-          "RainFall", "RainRate",
-          "Pressure",
-          "Humidity", "InsideHumidity",
-          "EvapoTranspiration"
-        };
-
-        public readonly string[] PlotvarKeywordALL = {
-          "MinTemp", "MaxTemp", "AverageTemp", "AvgWindChill", /*"WindChill",*/ "MaxDewpoint", "MinDewpoint", "MaxFeelsLike", "MinFeelsLike",
-          "MaxGust", "WindRun", "HighAvgWindSpeed", /* "WindSpeed",*/
-          "SunHours", "SolarRadiation", "UVIndex",
-          /*"RainFall",*/ "DayRain", "MaxRainRate",
-          "MinBarometer", "MaxBarometer",
-          "MinHumidity", "MaxHumidity",
-          "HeatingDegreeDays","CoolingDegreeDays","DayEVT",      /*"EvapoTranspiration"*/
-          "Snow24h", "SnowDepth"
         };
 
         public static string[] PlotvarKeywordEXTRA = {
@@ -238,13 +248,17 @@ namespace CumulusUtils
             "Lightning"
         };
 
+        #endregion
+
+        #region General Declarations
+
         public readonly string[] ValidColumnRangeVars = {
               "MinTemp", "MaxTemp", "AverageTemp", "MaxDewpoint", "MinDewpoint", "MaxFeelsLike", "MinFeelsLike",
               "MinBarometer", "MaxBarometer",
               "MinHumidity", "MaxHumidity"
             };
 
-        public AxisType[] PlotvarAxis;
+        private AxisType[] PlotvarAxis;
         public string[] PlotvarUnits;
         public string[] PlotvarTypes;
         public string[] PlotvarKeyword;
@@ -255,8 +269,8 @@ namespace CumulusUtils
         public readonly string[] AxisKeywords = { "Temp", "Wind", "Distance", "Height", "Hours", "Solar", "UV", "Rain", "Rrate", "Pressure", "Humidity", "DegreeDays", "EVT", "Free", "AQ", "ppm", "SoilMoisture" };
         public readonly string[] StatsTypeKeywords = { "SMA" };
 
-        private readonly string[] soilMoistureUnitArray = { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
-        private int soilMoistureUnitArrayIndex;
+        public static int SoilMoistureUnitArraySize = 16;
+        public List<string> soilMoistureUnitArray;
 
         readonly CuSupport Sup;
         readonly float MaxPressure, MinPressure;
@@ -387,7 +401,7 @@ namespace CumulusUtils
             PlotvarUnitsEXTRA[ 117 ] = PMconc.Text();
             PlotvarUnitsEXTRA[ 118 ] = Sup.StationTemp.Text();
             PlotvarUnitsEXTRA[ 119 ] = "%";
-            PlotvarUnitsEXTRA[ 120 ] = "count";
+            //            PlotvarUnitsEXTRA[ 120 ] = "count";   // I think this one is superfluous and wrong counting
 
             //"Lightning"
 
@@ -544,33 +558,64 @@ namespace CumulusUtils
             return Estimation;
         }
 
+        #endregion
+
+        #region GetSoilMoistureArray
+
+        // Represents the configuration object for soil moisture
+        private class SoilMoistureConfig
+        {
+            // Ensure the property name matches the JSON key "units"
+            // Use [JsonPropertyName] if you want a different C# property name
+            [JsonPropertyName( "units" )]
+            public List<string> Units { get; set; } = new List<string>();
+        }
+
+        // Represents the root of your JSON structure
+        private class Root
+        {
+            // Represents the "soilmoisture" key in the JSON
+            [JsonPropertyName( "soilmoisture" )]
+            public SoilMoistureConfig SoilMoisture { get; set; } = new SoilMoistureConfig();
+        }
+
         private void GetSoilMoistureUnitArray()
         {
-            const string SoilMoisture = "\"soilmoisture\":{\"units\":[";
-            string tmp;
+            // Why this procedure: Because soil moisture units are stored in graphconfig.json and they can be different for different devices
+            // (specifically for Davis (centiBar) and Ecowitt soilmoisture (percentage) devices)
 
             CmxIPC thisCmxIPC = new CmxIPC( CUtils.Sup, CUtils.Isup );
 
-            Task<string> AsyncTask = thisCmxIPC.GetCMXGraphdataAsync( "graphconfig.json" );
-            AsyncTask.Wait();
-            tmp = AsyncTask.Result;
-
-            if ( tmp.Length < 1 ) return; // No string returned, CMX probably not running
-
-            soilMoistureUnitArrayIndex = tmp.IndexOf( SoilMoisture ) + SoilMoisture.Length;
-
-            int i = 0;
-            int a = soilMoistureUnitArrayIndex;
-
-            for ( ; tmp[ a ] != ']'; a++ )
+            try
             {
-                while ( tmp[ a ] != '"' && tmp[ a ] != ',' )
-                    soilMoistureUnitArray[ i ] += tmp[ a++ ];
+                Task<string> AsyncTask = thisCmxIPC.GetCMXGraphdataAsync( "graphconfig.json" );
+                AsyncTask.Wait();
+                string jsonString = AsyncTask.Result;
 
-                if ( tmp[ a ] == ',' ) { i++; soilMoistureUnitArray[ i ] = ""; }
+                // Deserialize the entire JSON into the Root class object
+                Root data = JsonSerializer.Deserialize<Root>( jsonString );
+
+                // Access the units through the strongly-typed properties
+                soilMoistureUnitArray = data?.SoilMoisture?.Units ?? new List<string>();
+
+                if ( soilMoistureUnitArray.Count < SoilMoistureUnitArraySize )
+                {
+                    // If there are fewer units than expected, fill the rest with "%"
+                    int unitsToAdd = SoilMoistureUnitArraySize - soilMoistureUnitArray.Count;
+                    for ( int i = 0; i < unitsToAdd; i++ ) soilMoistureUnitArray.Add( "%" );
+                }
+                else if ( soilMoistureUnitArray.Count > SoilMoistureUnitArraySize )
+                {
+                    // If there are more units than expected, truncate the list
+                    soilMoistureUnitArray = soilMoistureUnitArray.GetRange( 0, SoilMoistureUnitArraySize );
+                }
+            }
+            catch ( Exception e )
+            {
+                Sup.LogTraceErrorMessage( $"Init ChartsCompiler - Exception creating SoilMoistureUnitsArray - {e.Message}" );
             }
         }
 
         #endregion
-    } // Class DefineCharts
+    } // Class ChartsCompiler
 }// Namespace

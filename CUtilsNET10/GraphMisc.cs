@@ -19,7 +19,6 @@ namespace CumulusUtils
         {
             int i = 0, j;
             float sum = 0, movingAverage = 0;
-            int period = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "PeriodMovingAverage", "180" ), CUtils.Inv );
 
             Sup.LogDebugMessage( "GenDailyEVTGraphData: starting" );
 
@@ -153,11 +152,11 @@ namespace CumulusUtils
 
             for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
-                MonthlyEVTValues = new float[ Enum.GetNames( typeof( Months ) ).Length ];
+                MonthlyEVTValues = new float[ m.Length ];
                 YearValues.Add( MonthlyEVTValues );
                 years.Add( i );
 
-                for ( int j = (int) Months.Jan; j <= (int) Months.Dec; j++ )
+                for ( int j = 1; j <= 12; j++ )
                 {
                     //Now do the actual month work
                     if ( ThisList.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == j ).Any() )
@@ -784,8 +783,6 @@ namespace CumulusUtils
         private void GenerateClashOfAverages( List<DayfileValue> ThisList, StringBuilder thisBuffer )
         {
             float sumCumulusAverage = 0, sumMinMaxAverage = 0;
-
-            int period = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "PeriodMovingAverage", "180" ), CUtils.Inv );
 
             Sup.LogDebugMessage( "GenerateClashOfAverages : starting" );
 

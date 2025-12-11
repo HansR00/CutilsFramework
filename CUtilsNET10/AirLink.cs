@@ -48,11 +48,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
-using FluentFTP.Helpers;
-using ServiceStack.Text;
 
 namespace CumulusUtils
 {
@@ -101,7 +101,7 @@ namespace CumulusUtils
 
             // Check the country. Order is 1) found  in inifile 2) part of locale 3) Use the default if not present or not supported
             string tmp = Sup.GetUtilsIniValue( "AirLink", "CountrySelected", "" );
-            if ( tmp.IsBlank() ) tmp = Sup.Country;
+            if ( string.IsNullOrEmpty( tmp ) ) tmp = Sup.Country;
 
             try
             {
@@ -296,7 +296,7 @@ namespace CumulusUtils
             WantToSee1hr = Sup.GetUtilsIniValue( "AirLink", "WantToSee1hr", "false" ).Equals( "true", CUtils.Cmp );
             WantToSee3hr = Sup.GetUtilsIniValue( "AirLink", "WantToSee3hr", "false" ).Equals( "true", CUtils.Cmp );
             WantToSee24hr = Sup.GetUtilsIniValue( "AirLink", "WantToSee24hr", "false" ).Equals( "true", CUtils.Cmp );
-            WantToSeeWind = false; // Sup.GetUtilsIniValue( "AirLink", "WantToSeeWind", "false" ).Equals( "true", CUtils.Cmp );
+            WantToSeeWind = Sup.GetUtilsIniValue( "AirLink", "WantToSeeWind", "false" ).Equals( "true", CUtils.Cmp );
 
             AirLinkIn = Sup.GetCumulusIniValue( "AirLink", "In-Enabled", "0" ).Equals( "1", CUtils.Cmp );
             AirLinkOut = Sup.GetCumulusIniValue( "AirLink", "Out-Enabled", "0" ).Equals( "1", CUtils.Cmp );
@@ -811,7 +811,7 @@ namespace CumulusUtils
             #region HTML
 
             // Create the page header titles, station  identification etc...
-            if ( !Message.IsBlank() ) of.AppendLine( Message );
+            if ( !string.IsNullOrEmpty( Message ) ) of.AppendLine( Message );
 
             of.AppendLine( "<div style='float:right;'>" );
             of.AppendLine( "<input type='button' class=buttonSlim id='TableViewBtn' value='TableView' onclick='SetTableView()'>" );
@@ -1081,6 +1081,8 @@ namespace CumulusUtils
             string VariableName;
             PropertyInfo Field;
 
+            Sup.LogTraceInfoMessage( $"Creating AirLink JSON..." );
+
             Airlinklog All = new Airlinklog( Sup );
             thisList = All.ReadAirlinklog();
 
@@ -1101,6 +1103,8 @@ namespace CumulusUtils
                     {
                         if ( WantToSeeNow )
                         {
+                            Sup.LogTraceInfoMessage( $"DoAirLink adding {InOut}_pm{thisConc}{Series[ 0 ]} to JSON" );
+
                             VariableName = $"{InOut}_pm{thisConc}{Series[ 0 ]}";
                             sb.Append( $"\"{VariableName}\":[" );
 
@@ -1119,6 +1123,8 @@ namespace CumulusUtils
 
                         if ( WantToSee1hr )
                         {
+                            Sup.LogTraceInfoMessage( $"DoAirLink adding {InOut}_pm{thisConc}{Series[ 1 ]} to JSON" );
+
                             VariableName = $"{InOut}_pm{thisConc}{Series[ 1 ]}";
                             sb.Append( $"\"{VariableName}\":[" );
 
@@ -1137,6 +1143,8 @@ namespace CumulusUtils
 
                         if ( WantToSee3hr )
                         {
+                            Sup.LogTraceInfoMessage( $"DoAirLink adding {InOut}_pm{thisConc}{Series[ 2 ]} to JSON" );
+
                             VariableName = $"{InOut}_pm{thisConc}{Series[ 2 ]}";
                             sb.Append( $"\"{VariableName}\":[" );
 
@@ -1155,6 +1163,8 @@ namespace CumulusUtils
 
                         if ( WantToSee24hr )
                         {
+                            Sup.LogTraceInfoMessage( $"DoAirLink adding {InOut}_pm{thisConc}{Series[ 3 ]} to JSON" );
+
                             VariableName = $"{InOut}_pm{thisConc}{Series[ 3 ]}";
                             sb.Append( $"\"{VariableName}\":[" );
 
@@ -1173,6 +1183,8 @@ namespace CumulusUtils
 
                         if ( WantToSeeNowCast )
                         {
+                            Sup.LogTraceInfoMessage( $"DoAirLink adding {InOut}_pm{thisConc}{Series[ 4 ]} to JSON" );
+
                             VariableName = $"{InOut}_pm{thisConc}{Series[ 4 ]}";
                             sb.Append( $"\"{VariableName}\":[" );
 
@@ -1191,72 +1203,54 @@ namespace CumulusUtils
 
                         if ( WantToSeeWind )
                         {
-                            string JSONstringWind, JSONstringWindDir, wspeedArray, wdirArray, thisWindSubstr, thisWindDirSubstr;
-                            int startWind, startWindDir;
+                            Sup.LogTraceInfoMessage( $"DoAirLink adding WindBarb data to JSON" );
+
+                            string jsonWindSpeed;
+                            string jsonWindDir;
+                            string jsonWindBarbs;
 
                             DateTime StartDateTime = DateTime.ParseExact( Sup.GetUtilsIniValue( "General", "LastUploadTime", "" ), "dd/MM/yy HH:mm", CUtils.Inv ).AddMinutes( 1 );
 
-                            CmxIPC thisCmxIPC = new CmxIPC( CUtils.Sup, CUtils.Isup );
-
-                            // Now, the wind JSONs should have the same startingtime as the AirLink data.
-                            // Fetch the wind data and winddir data as they must be combined in one json for the windbarbs
-                            //
-                            Sup.LogTraceInfoMessage( $"GenAirLinkJson - Doing Wind for {thisConc}." );
-
-                            if ( CUtils.Isup.IsIncrementalAllowed() )
+                            try
                             {
-                                JSONstringWind = await thisCmxIPC.GetCMXGraphdataAsync( "winddata.json", StartDateTime );
-                                JSONstringWindDir = await thisCmxIPC.GetCMXGraphdataAsync( "wdirdata.json", StartDateTime );
+                                CmxIPC thisCmxIPC = new CmxIPC( CUtils.Sup, CUtils.Isup );
+
+                                // Now, the wind JSONs should have the same startingtime as the AirLink data.
+                                // Fetch the wind data and winddir data as they must be combined in one json for the windbarbs
+                                //
+                                Sup.LogTraceInfoMessage( $"GenAirLinkJson - Doing Wind for {thisConc}." );
+
+                                if ( CUtils.Isup.IsIncrementalAllowed() )
+                                {
+                                    jsonWindSpeed = await thisCmxIPC.GetCMXGraphdataAsync( "winddata.json", StartDateTime );
+                                    jsonWindDir = await thisCmxIPC.GetCMXGraphdataAsync( "wdirdata.json", StartDateTime );
+                                }
+                                else
+                                {
+                                    jsonWindSpeed = await thisCmxIPC.GetCMXGraphdataAsync( "winddata.json" );
+                                    jsonWindDir = await thisCmxIPC.GetCMXGraphdataAsync( "wdirdata.json" );
+                                }
+
+                                jsonWindBarbs = CombineWindData( jsonWindSpeed, jsonWindDir ).Substring( 1 ); // Start accolade removed
+
+                                // Sup.LogTraceInfoMessage( $"DoAirLink Windbarb JSON: {jsonWindBarbs}" );
+
+                                sb.Append( jsonWindBarbs );
                             }
-                            else
+                            catch ( ArgumentException ex )
                             {
-                                JSONstringWind = await thisCmxIPC.GetCMXGraphdataAsync( "winddata.json" );
-                                JSONstringWindDir = await thisCmxIPC.GetCMXGraphdataAsync( "wdirdata.json" );
+                                Sup.LogTraceErrorMessage( $"Can't combine WindSpeed and WindDir for WindBarbs: {ex.Message}" );
                             }
 
-                            // Now combine into one json
-                            //
-                            var ws = JsonObject.Parse( JSONstringWind );
-                            wspeedArray = ws.Get<string>( "wspeed" );
-
-                            var wd = JsonObject.Parse( JSONstringWindDir );
-                            wdirArray = wd.Get<string>( "avgbearing" );
-
-                            //Sup.LogTraceInfoMessage( $"StartDateTime = {StartDateTime}" );
-                            //Sup.LogTraceInfoMessage( $"ws = {wspeedArray}" );
-                            //Sup.LogTraceInfoMessage( $"wd = {wdirArray}" );
-
-                            startWind = 1;        // Set at start of the first entry
-                            startWindDir = 1;
-
-                            sb.Append( $"\"wind\":[" );
-
-                            int L1 = 0, L2 = 0, L3 = 0;
-
-                            do
-                            {
-                                L1 = wspeedArray.IndexOf( ']', startWind ) - startWind;
-                                if ( L1 <= 0 || L1 >= wspeedArray.Length ) break; // if not incremental we have to stop at some point 
-
-                                L2 = wdirArray.IndexOf( ',', startWindDir );
-                                L3 = wdirArray.IndexOf( ']', L2 );
-
-                                thisWindSubstr = wspeedArray.Substring( startWind, L1 );
-                                thisWindDirSubstr = wdirArray.Substring( L2, L3 - L2 + 1 );
-                                startWind += thisWindSubstr.Length + 2;
-                                startWindDir = L3 + 2;
-
-                                sb.Append( $"{thisWindSubstr}{thisWindDirSubstr}," );
-                            } while ( true );
-
-                            sb.Remove( sb.Length - 1, 1 );
-                            sb.Append( $"]," );
+                            sb.Remove( sb.Length - 1, 1 ); // remove the final accolade
+                        } // WantToSeeWind
+                        else
+                        {
+                            sb.Remove( sb.Length - 1, 1 );  // remove the final comma from previous json strings which does not occur in WindBarbs
                         }
+                    } // if thisList.Count != 0
 
-                        sb.Remove( sb.Length - 1, 1 );
-                    } // WantToSeeWind
-
-                    sb.Append( '}' );
+                    sb.Append( '}' ); // add final accolade
 
                     using ( StreamWriter thisJSON = new StreamWriter( $"{Sup.PathUtils}{Sup.AirlinkJSONpart}{InOut}{thisConc}.json", false, Encoding.UTF8 ) )
                     {
@@ -1273,6 +1267,54 @@ namespace CumulusUtils
 
         #region Divers
         private string DetermineSensor( int j, bool TwoSensors ) => ( j == 0 ) ? TwoSensors ? "In" : AirLinkIn ? "In" : "Out" : "Out";
+
+        private string CombineWindData( string jsonWspeed, string jsonBearing )
+        {
+            var dataWspeed = JsonSerializer.Deserialize<Dictionary<string, List<List<object>>>>( jsonWspeed );
+            var dataBearing = JsonSerializer.Deserialize<Dictionary<string, List<List<object>>>>( jsonBearing );
+
+            // Extract the specific lists we need
+            var wspeedList = dataWspeed?.GetValueOrDefault( "wspeed" );
+            var bearingList = dataBearing?.GetValueOrDefault( "bearing" );
+
+            if ( wspeedList == null || bearingList == null )
+            {
+                throw new ArgumentException( "Input JSON was not in the expected format (missing 'wspeed' or 'bearing' key)." );
+            }
+
+            // Zip requires lists to be of the same length and in the same order.
+            if ( wspeedList.Count != bearingList.Count )
+            {
+                // If lengths differ, the Zip method will skip the extra elements in the longer list.
+                // It's safer to throw an error or handle the mismatch explicitly.
+                // throw new InvalidOperationException
+                Sup.LogTraceErrorMessage( $"CombineWindData: wspeed and bearing are not in sync.{wspeedList.Count} vs {bearingList.Count}" );
+                Sup.LogTraceInfoMessage( "The 'wspeed' and 'bearing' lists must contain the same number of data points for the Zip method to work correctly." );
+            }
+
+            // Zip combines elements pairwise from two sequences into a single sequence.
+            // The timestamp from the wind speed data (index 0) is the primary timestamp.
+            // wspeed value is index 1 of the first entry.
+            // bearing value is index 1 of the second entry.
+
+            // Note: Since the lists are identical, the timestamps (wspeedEntry[0] and bearingEntry[0]) 
+            // should be the same, but we only need to use one.
+
+            // Output format: [UnixDate, wspeed, bearing]
+
+            var combinedBarbs = wspeedList.Zip( bearingList, ( wspeedEntry, bearingEntry ) => 
+            {
+                return new List<object> { wspeedEntry[ 0 ], wspeedEntry[ 1 ], bearingEntry[ 1 ] };
+            } 
+            ).ToList();
+
+            var finalResult = new Dictionary<string, List<List<object>>>
+            {
+                {"wind", combinedBarbs}
+            };
+
+            return JsonSerializer.Serialize( finalResult, new JsonSerializerOptions { WriteIndented = false } );
+        }
 
         #endregion
 

@@ -9,7 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using FluentFTP.Helpers;
 
 namespace CumulusUtils
 {
@@ -70,13 +69,13 @@ namespace CumulusUtils
             LinesArray = File.ReadAllLines( $"{Sup.PathUtils}{Sup.CUhelptexts}", Encoding.UTF8 );
 
             foreach ( string line in LinesArray )
-                if ( line.IsBlank() || line[ 0 ] == ';' ) continue;
+                if ( string.IsNullOrEmpty( line ) || line[ 0 ] == ';' ) continue;
                 else
                     Contents += line + ' ';
 
             Contents = Regex.Replace( Contents, @"\s+", " " );
 
-            Keywords = Contents.Split( ' ' ).Where( tmp => !tmp.IsBlank() ).ToList();
+            Keywords = Contents.Split( ' ' ).Where( tmp => !string.IsNullOrEmpty( tmp ) ).ToList();
             int i = 0;
 
             while ( i < Keywords.Count )

@@ -20,6 +20,9 @@ using Microsoft.Data.Sqlite;
 
 namespace CumulusUtils
 {
+    // Enum is only used for the report printing of months. Could be done differently?
+    enum Months : int { Jan = 1, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec };
+
     struct DiaryValue
     {
         public DateTime ThisDate;

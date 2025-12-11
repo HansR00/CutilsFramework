@@ -11,7 +11,6 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using ServiceStack;
 
 namespace CumulusUtils
 {
@@ -207,24 +206,22 @@ namespace CumulusUtils
             }
         } // Upload
 
+
         public static string GetSHA256Hash( string key, string data )
         {
             byte[] hashValue;
 
             // Initialize the keyed hash object.
-            using ( HMACSHA256 hmac = new HMACSHA256( key.ToAsciiBytes() ) )
+            using HMACSHA256 hmac = new HMACSHA256( Encoding.ASCII.GetBytes( key ) );
+
+            // convert string to stream
+            byte[] byteArray = Encoding.UTF8.GetBytes( data );
+            using ( MemoryStream stream = new MemoryStream( byteArray ) )
             {
-                // convert string to stream
-                byte[] byteArray = Encoding.UTF8.GetBytes( data );
-
-                using ( MemoryStream stream = new MemoryStream( byteArray ) )
-                {
-                    // Compute the hash of the input string.
-                    hashValue = hmac.ComputeHash( stream );
-                }
-
-                return BitConverter.ToString( hashValue ).Replace( "-", string.Empty ).ToLower();
+                // Compute the hash of the input string.
+                hashValue = hmac.ComputeHash( stream );
             }
-        } // GetSHA256Hash
+            return BitConverter.ToString( hashValue ).Replace( "-", string.Empty ).ToLower();
+        }
     } // Class InetPhp
 }

@@ -61,548 +61,550 @@ namespace CumulusUtils
             bool TheseChartsUseWindBarbs = theseCharts.Where( p => p.HasWindBarbs ).Any();
             bool TheseChartsUseInfo = theseCharts.Where( p => p.HasInfo ).Any();
 
-            using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{filename}", false, Encoding.UTF8 ) )
+            bool UseHighchartsBoostModule = Sup.GetUtilsIniValue( "Graphs", "UseHighchartsBoostModule", "true" ).Equals( "true", CUtils.Cmp );
+
+            Html.AppendLine( CuSupport.GenjQueryIncludestring() );
+
+            if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes && TheseChartsUseInfo )
+                Html.AppendLine( "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.2/jquery.modal.min.js\"  crossorigin=\"anonymous\" referrerpolicy=\"no-referrer\"></script>" +
+                   "<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.2/jquery.modal.css\" crossorigin=\"anonymous\" referrerpolicy=\"no-referrer\" />" );
+
+            if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes ) Html.AppendLine( Sup.GenHighchartsIncludes().ToString() );
+
+            Html.AppendLine( "<style>" );
+            Html.AppendLine( "#report{" );
+            Html.AppendLine( "  font-family: arial;" );
+            Html.AppendLine( "  border-radius: 15px;" );
+            Html.AppendLine( "  border-spacing: 0;" );
+            Html.AppendLine( "  border: 1px solid #b0b0b0;" );
+            Html.AppendLine( "}" );
+            Html.AppendLine( Sup.HighchartsAllowBackgroundImage() );
+            Html.AppendLine( "</style>" );
+
+            Html.AppendLine( "<div><p style='text-align:center;'>" );
+            Html.AppendLine( $"<select id='graph{UniqueOutputId}'>" );
+
+            MenuJavascript.AppendLine( $"console.log( 'Debug... {filename}' );" );
+            MenuJavascript.AppendLine( $"$('#graph{UniqueOutputId}').change(function(){{" );
+
+
+            MenuJavascript.AppendLine( $"handleChange{UniqueOutputId}();}});" );
+            MenuJavascript.AppendLine( "var prevChartRange;" );
+            MenuJavascript.AppendLine( $"function handleChange{UniqueOutputId}() {{" );
+            MenuJavascript.AppendLine( $"  var w1 = document.getElementById('graph{UniqueOutputId}').value;" );
+
+            GenericJavascript.AppendLine( "var chart, config, freezing;" );
+
+            //var InitCumulusCharts = () => { };
+
+            // The Document Ready function
+            GenericJavascript.Append( "$( function(){  " );
+
+            // This complex conditional must make sure the initialisation of the chart is done and is done only once.
+            //   1) !website means we are doing compileonly (modular) but that maybe for use in the CUtils website or really for another website
+            //   2) CUtils.DojQueryInclude || CUtils.DoLibraryIncludes is used to determine compileonly is used for another website
+            //   3) If UniqueOutputId > 0 the Init is not called by the runtime system and needs to be done here
+            //   4) If the condition is true, the chart needs the initialisation on itself
+            //      --- this must be a rewrite: initialisation should always be done from the runtime such that we know what the last chart is and that the timer can 
+            //      refresh whatever chart is loaded
+
+            GenericJavascript.Append( $"InitCumulusCharts = InitCumulusCharts{UniqueOutputId};" );
+            GenericJavascript.Append( "InitCumulusCharts();" );
+
+            GenericJavascript.AppendLine( $"     if ( urlParams.get( 'dropdown' ) != '' ) document.getElementById('graph{UniqueOutputId}').value = urlParams.get( 'dropdown' ); " );
+            GenericJavascript.AppendLine( $"     else document.getElementById('graph{UniqueOutputId}').value = '{theseCharts[ 0 ].Id}';" );
+
+            GenericJavascript.AppendLine( " } );" );
+
+            // Generate InitCumulusCharts
+            GenericJavascript.Append( $"function InitCumulusCharts{UniqueOutputId}() {{" );
+            GenericJavascript.Append( "  ChartsType = 'compiler';" );
+
+            GenericJavascript.Append( "    ClickEventChart = [" );
+            for ( int i = 0; i < 24; i++ )
+                GenericJavascript.Append( $"'{ClickEvents[ i ]}'," );
+            GenericJavascript.Remove( GenericJavascript.Length - 1, 1 );
+            GenericJavascript.AppendLine( "];" );
+
+            // This part reinitialises the charts (either Home, Extern, Custom and others
+            //
+            GenericJavascript.AppendLine( $"  $.when( Promise.all([GraphconfigAjax()" );
+
+            foreach ( string df in theseDatafiles )
             {
-                bool UseHighchartsBoostModule = Sup.GetUtilsIniValue( "Graphs", "UseHighchartsBoostModule", "true" ).Equals( "true", CUtils.Cmp );
+                if ( !string.IsNullOrEmpty( df ) )
+                    GenericJavascript.AppendLine( $", {df[ ..df.IndexOf( '.' ) ]}Ajax()" );
+            }
 
-                Html.AppendLine( CuSupport.GenjQueryIncludestring() );
+            // Add the WindBarbs line
+            if ( TheseChartsUseWindBarbs ) GenericJavascript.AppendLine( $", WindBarbsAjax()" );
 
-                if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes && TheseChartsUseInfo )
-                    Html.AppendLine( "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.2/jquery.modal.min.js\"  crossorigin=\"anonymous\" referrerpolicy=\"no-referrer\"></script>" +
-                       "<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.2/jquery.modal.css\" crossorigin=\"anonymous\" referrerpolicy=\"no-referrer\" />" );
+            GenericJavascript.AppendLine( $"])).then( () => $( '#graph{UniqueOutputId}' ).trigger( 'change' ) ); " );
+            //
+            // End of reinitialisation of the charts (inital and through timer)
 
-                if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes ) Html.AppendLine( Sup.GenHighchartsIncludes().ToString() );
+            GenericJavascript.AppendLine( $"     console.log('Cumuluscharts{UniqueOutputId} Compiler version has been initialised');" );
 
-                Html.AppendLine( "<style>" );
-                Html.AppendLine( "#report{" );
-                Html.AppendLine( "  font-family: arial;" );
-                Html.AppendLine( "  border-radius: 15px;" );
-                Html.AppendLine( "  border-spacing: 0;" );
-                Html.AppendLine( "  border: 1px solid #b0b0b0;" );
-                Html.AppendLine( "}" );
-                Html.AppendLine( Sup.HighchartsAllowBackgroundImage() );
-                Html.AppendLine( "</style>" );
+            GenericJavascript.AppendLine( "  }" );
 
-                Html.AppendLine( "<div><p style='text-align:center;'>" );
-                Html.AppendLine( $"<select id='graph{UniqueOutputId}'>" );
+            if ( TheseChartsUseWindBarbs )
+                GenericJavascript.Append( "function convertToMs(data) {" +
+                    "  data.map( " +
+                   $"  s => {{s[ 1 ] = s[ 1 ] * {Sup.StationWind.Convert( Sup.StationWind.Dim, WindDim.ms, 1 ).ToString( "F5", CUtils.Inv )} }} );" +
+                    "  return" +
+                    "}\n" );
 
-                MenuJavascript.AppendLine( $"console.log( 'Debug... {filename}' );" );
-                MenuJavascript.AppendLine( $"$('#graph{UniqueOutputId}').change(function(){{" );
+            GenericJavascript.AppendLine( "var compassP = function (deg) {" );
+            GenericJavascript.AppendLine( "  var a = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];" );
+            GenericJavascript.AppendLine( "  return a[Math.floor((deg + 22.5) / 45) % 8];" );
+            GenericJavascript.AppendLine( "};" );
 
+            GenericJavascript.AppendLine( "function GraphconfigAjax(){" );
+            GenericJavascript.AppendLine( "  console.log( 'Highcharts version : ' + Highcharts.version );" );
+            GenericJavascript.AppendLine( "  return $.ajax({" );
+            GenericJavascript.AppendLine( $"    url: '{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}graphconfig.json', cache: true, datatype: 'json'}})" );
+            GenericJavascript.AppendLine( "    .done( function(resp) {" +
+                "      config = resp;" +
+                "      freezing = config.temp.units === 'C' ? 0 : 32;" +
+                "      console.log('Succes in Ajax Graphconfig');" +
+                "})" ); // End .done()
+            GenericJavascript.AppendLine( "    .fail(function ( xhr, textStatus, errorThrown) {" +
+                "      console.log('graphconfig.json ' + textStatus + ' : ' + errorThrown);" +
+                "});" ); // End $.ajax
+            GenericJavascript.AppendLine( "}" ); // End GraphconfigAjax
 
-                MenuJavascript.AppendLine( $"handleChange{UniqueOutputId}();}});" );
-                MenuJavascript.AppendLine( "var prevChartRange;" );
-                MenuJavascript.AppendLine( $"function handleChange{UniqueOutputId}() {{" );
-                MenuJavascript.AppendLine( $"  var w1 = document.getElementById('graph{UniqueOutputId}').value;" );
+            bool first = true;
 
-                GenericJavascript.AppendLine( "var chart, config, freezing;" );
-
-                //var InitCumulusCharts = () => { };
-
-                // The Document Ready function
-                GenericJavascript.Append( "$( function(){  " );
-
-                // This complex conditional must make sure the initialisation of the chart is done and is done only once.
-                //   1) !website means we are doing compileonly (modular) but that maybe for use in the CUtils website or really for another website
-                //   2) CUtils.DojQueryInclude || CUtils.DoLibraryIncludes is used to determine compileonly is used for another website
-                //   3) If UniqueOutputId > 0 the Init is not called by the runtime system and needs to be done here
-                //   4) If the condition is true, the chart needs the initialisation on itself
-                //      --- this must be a rewrite: initialisation should always be done from the runtime such that we know what the last chart is and that the timer can 
-                //      refresh whatever chart is loaded
-
-                GenericJavascript.Append( $"InitCumulusCharts = InitCumulusCharts{UniqueOutputId};" );
-                GenericJavascript.Append( "InitCumulusCharts();" );
-
-                GenericJavascript.AppendLine( $"     if ( urlParams.get( 'dropdown' ) != '' ) document.getElementById('graph{UniqueOutputId}').value = urlParams.get( 'dropdown' ); " );
-                GenericJavascript.AppendLine( $"     else document.getElementById('graph{UniqueOutputId}').value = '{theseCharts[ 0 ].Id}';" );
-
-                GenericJavascript.AppendLine( " } );" );
-
-                // Generate InitCumulusCharts
-                GenericJavascript.Append( $"function InitCumulusCharts{UniqueOutputId}() {{" );
-                GenericJavascript.Append( "  ChartsType = 'compiler';" );
-
-                GenericJavascript.Append( "    ClickEventChart = [" );
-                for ( int i = 0; i < 24; i++ )
-                    GenericJavascript.Append( $"'{ClickEvents[ i ]}'," );
-                GenericJavascript.Remove( GenericJavascript.Length - 1, 1 );
-                GenericJavascript.AppendLine( "];" );
-
-                // This part reinitialises the charts (either Home, Extern, Custom and others
-                //
-                GenericJavascript.AppendLine( $"  $.when( Promise.all([GraphconfigAjax()" );
-
-                foreach ( string df in theseDatafiles )
+            // Loop over the datafiles to create the Ajax calls
+            // Already determined in the AllVars loop, now independent of all charts
+            foreach ( string df in theseDatafiles )
+            {
+                if ( !string.IsNullOrEmpty( df ) )
                 {
-                    if ( !string.IsNullOrEmpty( df ) )
-                        GenericJavascript.AppendLine( $", {df[ ..df.IndexOf( '.' ) ]}Ajax()" );
-                }
+                    AjaxJavascript.AppendLine( $"function {df[ ..df.IndexOf( '.' ) ]}Ajax(){{" );
 
-                // Add the WindBarbs line
-                if ( TheseChartsUseWindBarbs ) GenericJavascript.AppendLine( $", WindBarbsAjax()" );
+                    foreach ( AllVarInfo avi in AllVars )
+                        if ( df == avi.Datafile )
+                            AjaxJavascript.AppendLine( $"  {avi.KeywordName}.length = 0;" );
 
-                GenericJavascript.AppendLine( $"])).then( () => $( '#graph{UniqueOutputId}' ).trigger( 'change' ) ); " );
-                //
-                // End of reinitialisation of the charts (inital and through timer)
+                    AjaxJavascript.AppendLine( "  return $.ajax({" );
 
-                GenericJavascript.AppendLine( $"     console.log('Cumuluscharts{UniqueOutputId} Compiler version has been initialised');" );
-
-                GenericJavascript.AppendLine( "  }" );
-
-                if ( TheseChartsUseWindBarbs )
-                    GenericJavascript.Append( "function convertToMs(data) {" +
-                        "  data.map( " +
-                       $"  s => {{s[ 1 ] = s[ 1 ] * {Sup.StationWind.Convert( Sup.StationWind.Dim, WindDim.ms, 1 ).ToString( "F5", CUtils.Inv )} }} );" +
-                        "  return" +
-                        "}\n" );
-
-                GenericJavascript.AppendLine( "var compassP = function (deg) {" );
-                GenericJavascript.AppendLine( "  var a = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];" );
-                GenericJavascript.AppendLine( "  return a[Math.floor((deg + 22.5) / 45) % 8];" );
-                GenericJavascript.AppendLine( "};" );
-
-                GenericJavascript.AppendLine( "function GraphconfigAjax(){" );
-                GenericJavascript.AppendLine( "  console.log( 'Highcharts version : ' + Highcharts.version );" );
-                GenericJavascript.AppendLine( "  return $.ajax({" );
-                GenericJavascript.AppendLine( $"    url: '{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}graphconfig.json', cache: true, datatype: 'json'}})" );
-                GenericJavascript.AppendLine( "    .done( function(resp) {" +
-                    "      config = resp;" +
-                    "      freezing = config.temp.units === 'C' ? 0 : 32;" +
-                    "      console.log('Succes in Ajax Graphconfig');" +
-                    "})" ); // End .done()
-                GenericJavascript.AppendLine( "    .fail(function ( xhr, textStatus, errorThrown) {" +
-                    "      console.log('graphconfig.json ' + textStatus + ' : ' + errorThrown);" +
-                    "});" ); // End $.ajax
-                GenericJavascript.AppendLine( "}" ); // End GraphconfigAjax
-
-                bool first = true;
-
-                // Loop over the datafiles to create the Ajax calls
-                // Already determined in the AllVars loop, now independent of all charts
-                foreach ( string df in theseDatafiles )
-                {
-                    if ( !string.IsNullOrEmpty( df ) )
-                    {
-                        AjaxJavascript.AppendLine( $"function {df[ ..df.IndexOf( '.' ) ]}Ajax(){{" );
-
-                        foreach ( AllVarInfo avi in AllVars )
-                            if ( df == avi.Datafile )
-                                AjaxJavascript.AppendLine( $"  {avi.KeywordName}.length = 0;" );
-
-                        AjaxJavascript.AppendLine( "  return $.ajax({" );
-
-                        // Make a distinction between CumulusUtils JSONfiles and regular CMX JSONfiles
-                        // CumulusUtils JSONs are always in the CumulusUtils directory. So: the current webroot
-                        if ( df.StartsWith( "CUserdata" ) || df.StartsWith( "extrasensors" ) || df.StartsWith( "customlogs" ) )
-                            if ( CUtils.DoModular )
-                                AjaxJavascript.AppendLine( $"    url: '{CUtils.ModulePath}{df}'," );
-                            else
-                                AjaxJavascript.AppendLine( $"    url: '{df}'," );
+                    // Make a distinction between CumulusUtils JSONfiles and regular CMX JSONfiles
+                    // CumulusUtils JSONs are always in the CumulusUtils directory. So: the current webroot
+                    if ( df.StartsWith( "CUserdata" ) || df.StartsWith( "extrasensors" ) || df.StartsWith( "customlogs" ) )
+                        if ( CUtils.DoModular )
+                            AjaxJavascript.AppendLine( $"    url: '{CUtils.ModulePath}{df}'," );
                         else
-                            AjaxJavascript.AppendLine( $"    url: '{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}{df}'," );
-
-                        AjaxJavascript.AppendLine( $"    cache: false, datatype: 'json'" );
-                        AjaxJavascript.AppendLine( "    })" );
-                        AjaxJavascript.AppendLine( $"    .fail( function (xhr, textStatus, errorThrown) {{ console.log( '{df} ' + textStatus + ' : ' + errorThrown ); }})" );
-                        AjaxJavascript.AppendLine( "    .done( function(resp) {" );      // Add the series
-
-                        foreach ( AllVarInfo avi in AllVars )
-                            if ( df == avi.Datafile )
-                            {
-                                AjaxJavascript.AppendLine( $"      for (var i = 0; i < resp.{avi.TypeName}.length; i++)" );
-                                AjaxJavascript.AppendLine( $"        {avi.KeywordName}.push([resp.{avi.TypeName}[i][0], resp.{avi.TypeName}[i][1] ]);" );
-                            }
-                        AjaxJavascript.AppendLine( "    })" ); // End .done / .ajax
-                        AjaxJavascript.AppendLine( "  }" ); // End datafilenameAjax() function
-                    }
-                }
-
-                // Add the WindBarbsAjax() function when needed
-                if ( TheseChartsUseWindBarbs )
-                {
-                    AjaxJavascript.AppendLine( "function WindBarbsAjax() {" );
-                    AjaxJavascript.AppendLine( "  WindBarbData.length = 0;" );
-                    AjaxJavascript.AppendLine( "  return $.when( " );
-                    AjaxJavascript.AppendLine( "  $.ajax({" );
-                    AjaxJavascript.AppendLine( $"    url: '{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}winddata.json'," );
-                    AjaxJavascript.AppendLine( "    cache: false," );
-                    AjaxJavascript.AppendLine( "    datatype: 'json' }), " );
-                    AjaxJavascript.AppendLine( "  $.ajax({" );
-                    AjaxJavascript.AppendLine( $"    url: '{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}wdirdata.json'," );
-                    AjaxJavascript.AppendLine( "    cache: false," );
-                    AjaxJavascript.AppendLine( "    datatype: 'json' })" );
-                    AjaxJavascript.AppendLine( "  ).then( " );
-                    AjaxJavascript.AppendLine( "    function( resp1, resp2 ) { " +
-                        "  for ( var i = 0; i < resp1[0].wspeed.length; i++ ) " +
-                        "    WindBarbData.push([ resp1[0].wspeed[ i ][ 0 ], resp1[0].wspeed[ i ][ 1 ], resp2[0].avgbearing[ i ][ 1 ] ]); " +
-                        "  convertToMs( WindBarbData );" +
-                        "}," );
-                    AjaxJavascript.AppendLine( "    function(){ console.log( 'FAIL reading WindBarb Data...' )}" );
-                    AjaxJavascript.AppendLine( "  );" );
-                    AjaxJavascript.AppendLine( "}" );
-                }
-
-                Sup.LogTraceInfoMessage( $"Compiler - CodeGen: {filename} Written the Ajax calls" );
-
-                foreach ( ChartDef thisChart in theseCharts )
-                {
-                    AxisType AxisSet = AxisType.None;
-
-                    Html.AppendLine( $"  <option value='{thisChart.Id}'{( first ? " selected" : "" )}>{thisChart.Id.Replace( '_', ' ' )}</option>" );
-                    MenuJavascript.AppendLine( $" if (w1=='{thisChart.Id}') {{ " );
-
-                    // Meaning we are dealing with CustomLogs in the website (with realtime values table);
-                    // A bit awkward method, may change that sometime haha...
-                    if ( filename.Equals( Sup.CustomLogsCharts ) )
-                    {
-                        // Add some code to subdivide the realtime tables into RECENT and DAILY and show only one of them. 
-                        // They are already defined of limited length and have an overflow.
-                        MenuJavascript.AppendLine( $"if (prevChartRange != {(int) thisChart.Range} ) {{" );
-                        MenuJavascript.AppendLine( "  $( '.slideOptions' ).slideUp('slow');" );
-                        MenuJavascript.Append( thisChart.Range == PlotvarRangeType.Extra ? "  $( '#RecentCustomLogs' )" : "  $( '#DailyCustomLogs' )" );
-                        MenuJavascript.AppendLine( ".slideDown('slow'); " );
-                        MenuJavascript.AppendLine( $"prevChartRange = {(int) thisChart.Range};" );
-                        MenuJavascript.AppendLine( "}" );
-                    }
-                    MenuJavascript.AppendLine( $"    do{thisChart.Id}()}}" );
-                    MenuJavascript.AppendLine( " else " );
-
-                    // AlignTicks must be true!! (is the default of HighCharts) this also makes softMax superfluous
-                    TheCharts.AppendLine( $"function do{thisChart.Id}() {{" );
-                    TheCharts.AppendLine( $"  console.log('Creating chart: {thisChart.Title}');" );
-
-                    TheCharts.AppendLine( "  chart = Highcharts.stockChart('chartcontainer', {title: {" );
-                    TheCharts.Append( $" text: '{thisChart.Title}'" );
-                    if ( thisChart.HasWindBarbs && !thisChart.WindBarbsBelow ) TheCharts.Append( ", margin: 35" );
-                    TheCharts.AppendLine( "}," );
-
-                    TheCharts.Append( "      xAxis:" );
-                    if ( thisChart.HasWindBarbs ) TheCharts.Append( '[' );
-
-                    TheCharts.AppendLine( "      {type: 'datetime', crosshair: true, ordinal: false,dateTimeLabelFormats:{day: '%e %b',week: '%e %b %y',month: '%b %y',year: '%Y'}}," );
-                    if ( thisChart.HasWindBarbs )
-                    {
-                        if ( thisChart.WindBarbsBelow )
-                            TheCharts.AppendLine( "{linkedTo:0, labels: {enabled: false}, offset: 0}" );
-                        else
-                            TheCharts.AppendLine( "{linkedTo:0, opposite: true, labels: {enabled: false} }" );
-
-                        TheCharts.AppendLine( "]," );
-                    }
-                    TheCharts.AppendLine( "      yAxis:{ visible: false }," );
-
-                    TheCharts.AppendLine( "      legend:{enabled: true}," );
-
-                    if ( thisChart.HasScatter )
-                    {
-                        TheCharts.AppendLine( "      plotOptions: { scatter: {cursor: 'pointer'," +
-                            $"{( Graphx.UseHighchartsBoostModule ? "boostThreshold: 200," : "" )} lineWidth:0," +
-                            $"marker: {{radius: {thisChart.PlotVars.First().LineWidth} }}, " +
-                            "}}," );
-                        TheCharts.AppendLine( "      tooltip: { xDateFormat: '%A, %b %e %H:%M ', " +
-                            "pointFormatter() {return this.series.name + ': ' + this.y}," +
-                            "headerFormat: '{point.key}<br>' }," );
-                    }
+                            AjaxJavascript.AppendLine( $"    url: '{df}'," );
                     else
-                    {
-                        TheCharts.AppendLine( $"      plotOptions: {{ series: {{ clip: false, connectNulls: {Sup.GetUtilsIniValue( "General", "ConnectNulls", "false" ).ToLower()}, turboThreshold: 0, " +
-                            "states: { hover: { halo: { size: 5,opacity: 0.25} } }," +
-                            "marker: { enabled: false, states: { hover: { enabled: true, radius: 0.1} } } }, }," );
-                        TheCharts.AppendLine( "      tooltip: {split: true, valueDecimals: 1, xDateFormat: '%A, %b %e, %H:%M'}," );
-                    }
+                        AjaxJavascript.AppendLine( $"    url: '{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}{df}'," );
 
-                    TheCharts.AppendLine( "      series:[]," );
+                    AjaxJavascript.AppendLine( $"    cache: false, datatype: 'json'" );
+                    AjaxJavascript.AppendLine( "    })" );
+                    AjaxJavascript.AppendLine( $"    .fail( function (xhr, textStatus, errorThrown) {{ console.log( '{df} ' + textStatus + ' : ' + errorThrown ); }})" );
+                    AjaxJavascript.AppendLine( "    .done( function(resp) {" );      // Add the series
 
-                    if ( thisChart.Range == PlotvarRangeType.Recent || thisChart.Range == PlotvarRangeType.Extra )
-                    {
-                        TheCharts.AppendLine( "      rangeSelector:{" );
-
-                        if ( thisChart.HasWindBarbs && !thisChart.WindBarbsBelow ) TheCharts.AppendLine( "    floating: true, y: -50," );
-
-                        TheCharts.AppendLine( "      buttons:[{" );
-                        TheCharts.AppendLine( $"       count: {CUtils.HoursInGraph / 4},type: 'hour',text: '{CUtils.HoursInGraph / 4}h'}}, {{" );
-                        TheCharts.AppendLine( $"       count: {CUtils.HoursInGraph / 2},type: 'hour',text: '{CUtils.HoursInGraph / 2}h'}}, {{" );
-                        TheCharts.AppendLine( "        type: 'all',text: 'All'}]," );
-                        TheCharts.AppendLine( "      inputEnabled: false," );
-
-                        if ( thisChart.Zoom == -1 )
-                            TheCharts.AppendLine( "     selected: 2 }" );
-                        else
-                            TheCharts.AppendLine( $"     selected: {thisChart.Zoom} - 1 }}" );
-                    }
-                    else
-                    {
-                        if ( thisChart.Range == PlotvarRangeType.Daily )
+                    foreach ( AllVarInfo avi in AllVars )
+                        if ( df == avi.Datafile )
                         {
-                            if ( thisChart.Zoom == -1 )
-                                TheCharts.AppendLine( "      rangeSelector:{allButtonsEnabled: true, selected: 0 }" );
-                            else
-                                TheCharts.AppendLine( $"      rangeSelector:{{allButtonsEnabled: true, selected: {thisChart.Zoom} - 1 }}" );
+                            AjaxJavascript.AppendLine( $"      for (var i = 0; i < resp.{avi.TypeName}.length; i++)" );
+                            AjaxJavascript.AppendLine( $"        {avi.KeywordName}.push([resp.{avi.TypeName}[i][0], resp.{avi.TypeName}[i][1] ]);" );
                         }
-                        else
-                        {
-                            if ( thisChart.Zoom == -1 )
-                                TheCharts.AppendLine( "      rangeSelector:{allButtonsEnabled: true, selected: 4 }" );
-                            else
-                                TheCharts.AppendLine( $"      rangeSelector:{{allButtonsEnabled: true, selected: {thisChart.Zoom} - 1 }}" );
-                        }
-                    }
+                    AjaxJavascript.AppendLine( "    })" ); // End .done / .ajax
+                    AjaxJavascript.AppendLine( "  }" ); // End datafilenameAjax() function
+                }
+            }
 
-                    TheCharts.AppendLine( "  });" );
+            // Add the WindBarbsAjax() function when needed
+            if ( TheseChartsUseWindBarbs )
+            {
+                AjaxJavascript.AppendLine( "function WindBarbsAjax() {" );
+                AjaxJavascript.AppendLine( "  WindBarbData.length = 0;" );
+                AjaxJavascript.AppendLine( "  return $.when( " );
+                AjaxJavascript.AppendLine( "  $.ajax({" );
+                AjaxJavascript.AppendLine( $"    url: '{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}winddata.json'," );
+                AjaxJavascript.AppendLine( "    cache: false," );
+                AjaxJavascript.AppendLine( "    datatype: 'json' }), " );
+                AjaxJavascript.AppendLine( "  $.ajax({" );
+                AjaxJavascript.AppendLine( $"    url: '{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}wdirdata.json'," );
+                AjaxJavascript.AppendLine( "    cache: false," );
+                AjaxJavascript.AppendLine( "    datatype: 'json' })" );
+                AjaxJavascript.AppendLine( "  ).then( " );
+                AjaxJavascript.AppendLine( "    function( resp1, resp2 ) { " +
+                    "  for ( var i = 0; i < resp1[0].wspeed.length; i++ ) " +
+                    "    WindBarbData.push([ resp1[0].wspeed[ i ][ 0 ], resp1[0].wspeed[ i ][ 1 ], resp2[0].avgbearing[ i ][ 1 ] ]); " +
+                    "  convertToMs( WindBarbData );" +
+                    "}," );
+                AjaxJavascript.AppendLine( "    function(){ console.log( 'FAIL reading WindBarb Data...' )}" );
+                AjaxJavascript.AppendLine( "  );" );
+                AjaxJavascript.AppendLine( "}" );
+            }
 
-                    if ( thisChart.HasInfo )
-                    {
-                        string Info = $"{Sup.GetCUstringValue( "General", "Info", "Info", true )}";
+            Sup.LogTraceInfoMessage( $"Compiler - CodeGen: {filename} Written the Ajax calls" );
 
-                        // See: https://stackoverflow.com/a/79749908/11931424
+            foreach ( ChartDef thisChart in theseCharts )
+            {
+                AxisType AxisSet = AxisType.None;
 
-                        TheCharts.AppendLine( "chart.update({" );
-                        TheCharts.AppendLine( "  chart:{events:{render() {const chart = this; if ( !chart.exporting.group ){return;}const { x, y, width } = chart.exporting.group.getBBox();" );
+                Html.AppendLine( $"  <option value='{thisChart.Id}'{( first ? " selected" : "" )}>{thisChart.Id.Replace( '_', ' ' )}</option>" );
+                MenuJavascript.AppendLine( $" if (w1=='{thisChart.Id}') {{ " );
 
-                        TheCharts.AppendLine( "  if ( !this.customText ){" ); // Create a customText if it doesn't exist
-                        TheCharts.AppendLine( $"    this.customText = this.renderer.text( '{Info}', x - width - 15, y + 15 )" );
-                        TheCharts.AppendLine( "      .add()" +
-                            ".css({ color: this.title && this.title.styles ? this.title.styles.color : '#333', cursor: 'pointer' })" +
-                            $".on('click', () => $('#{thisChart.Id}').modal( 'show') );" );
-                        TheCharts.AppendLine( "  } else {" ); // Update the label position on render event (i.e on window resize)
-                        TheCharts.AppendLine( "    this.customText.attr({x: x - width - 15, y: y + 15}); } } } } });" );
-                    }
-
-                    TheCharts.AppendLine( "  chart.showLoading();" );
-
-                    CreateAxis( thisChart, TheCharts, ref AxisSet );
-
-                    TheCharts.AppendLine( $"  Promise.all([" );
-                    TheCharts.AppendLine( "]).then(() => {" );
-                    TheCharts.AppendLine( $"  {thisChart.Id}AddSeries(chart);" );
-
-                    TheCharts.AppendLine( "  chart.hideLoading();" );
-                    TheCharts.AppendLine( "  chart.redraw();});" );
-                    TheCharts.AppendLine( "}" );
-
-                    Sup.LogTraceInfoMessage( $"Compiler - CodeGen: {filename} Written the Chart {thisChart.Id}" );
-
-                    // Rewrite below for the create series
-                    AddSeriesJavascript.AppendLine( $"function {thisChart.Id}AddSeries(thisChart){{" );
-
-                    foreach ( Plotvar thisPlotvar in thisChart.PlotVars )
-                    {
-                        string pvSuffix = thisPlotvar.PlotVar.Length > 2 ? thisPlotvar.PlotVar[ 3.. ] : "";
-
-                        if ( thisPlotvar.GraphType == "columnrange" )
-                        {
-                            // By beteljuice (in principle that is)
-                            AddSeriesJavascript.AppendLine( $"var {pvSuffix}RangeMinMax = [];" );
-                            AddSeriesJavascript.AppendLine( $"for(var i=0; i<{thisPlotvar.Keyword}.length; i++) {{" +
-                                $"{pvSuffix}RangeMinMax.push([{thisPlotvar.Keyword}[i][0],min{pvSuffix}[i][1], max{pvSuffix}[i][1]]) }}" );
-                        }
-                        else if ( thisPlotvar.Equation is not null ) // | Must be done for all variables
-                        {
-                            string sumExpr = "";
-
-                            string tmpEquation = thisPlotvar.Equation;
-
-                            if ( thisPlotvar.Equation.Contains( "sum(" ) )
-                            {
-                                int startSum, endSum;
-                                string tmp;
-
-                                startSum = tmpEquation.IndexOf( "sum(" );
-                                endSum = tmpEquation.IndexOf( ')', startSum );
-                                sumExpr = tmpEquation.Substring( startSum + 4, endSum - startSum - 4 );
-                                tmp = tmpEquation.Remove( startSum, endSum + 1 - startSum );
-                                tmpEquation = tmp.Insert( startSum, "sumResult[i][1]" );
-
-                                foreach ( AllVarInfo avi in thisPlotvar.EqAllVarList )
-                                    if ( sumExpr.Contains( avi.KeywordName, CUtils.Cmp ) )
-                                        sumExpr = sumExpr.Replace( avi.KeywordName, $"{avi.KeywordName}[i][1]" );
-
-                                GenerateSumFunction( GenericJavascript );
-                                AddSeriesJavascript.AppendLine( $"sumResult.length = 0;" );
-                                AddSeriesJavascript.AppendLine( $"for(var i=0; i<{thisPlotvar.EqAllVarList[ 0 ].KeywordName}.length; i++) {{" );
-                                AddSeriesJavascript.AppendLine( $"  sum( {sumExpr}, sumResult, i, {thisPlotvar.EqAllVarList[ 0 ].KeywordName}[i][0]);" );
-                                AddSeriesJavascript.AppendLine( "}" );
-                            }
-
-                            if ( thisPlotvar.Equation.Contains( "ln(" ) )
-                                tmpEquation = tmpEquation.Replace( "ln(", "Math.log(" );
-                            if ( thisPlotvar.Equation.Contains( "sqrt(" ) )
-                                tmpEquation = tmpEquation.Replace( "sqrt(", "Math.sqrt(" );
-                            if ( thisPlotvar.Equation.Contains( "exp(" ) )
-                                tmpEquation = tmpEquation.Replace( "exp(", "Math.exp(" );
-                            if ( thisPlotvar.Equation.Contains( "pow(" ) )
-                                tmpEquation = tmpEquation.Replace( "pow(", "Math.pow(" );
-
-                            if ( thisPlotvar.EqAllVarList.Count > 0 )
-                            {
-                                foreach ( AllVarInfo avi in thisPlotvar.EqAllVarList )
-                                    if ( tmpEquation.Contains( avi.KeywordName, CUtils.Cmp ) )
-                                        tmpEquation = tmpEquation.Replace( avi.KeywordName, $"{avi.KeywordName}[i][1]" );
-
-                                // Now write out the values in the array at runtime.
-                                AddSeriesJavascript.AppendLine( $"{thisPlotvar.Keyword}.length=0;" );
-                                AddSeriesJavascript.AppendLine( $"for(var i=0; i<{thisPlotvar.EqAllVarList[ 0 ].KeywordName}.length; i++) {{" );
-                                AddSeriesJavascript.AppendLine( $"  {thisPlotvar.Keyword}.push([ {thisPlotvar.EqAllVarList[ 0 ].KeywordName}[i][0], {tmpEquation} ]);" );
-                                AddSeriesJavascript.AppendLine( "}" );
-                            }
-                            else
-                            {
-                                Sup.LogTraceErrorMessage( $"Compiler - CodeGen: Using Function without Plotvariable - NOT Supported in {thisChart.Id}/{thisPlotvar.Keyword}" );
-                            }
-                        }
-
-                        AddSeriesJavascript.AppendLine( "   thisChart.addSeries({ " );
-
-                        if ( thisPlotvar.GraphType == "columnrange" )
-                        {
-                            AddSeriesJavascript.AppendLine( $"    name:'{Sup.GetCUstringValue( "Compiler", pvSuffix + "range", pvSuffix + "range", true )}'," );
-                            AddSeriesJavascript.AppendLine( $"    id:'{pvSuffix}range'," );
-                            AddSeriesJavascript.AppendLine( $"    data: {pvSuffix}RangeMinMax," );
-                        }
-                        else if ( thisPlotvar.Equation is not null )
-                        {
-                            AddSeriesJavascript.AppendLine( $"    name:'{Sup.GetCUstringValue( "Compiler", thisPlotvar.Keyword, thisPlotvar.Keyword, true )}'," );
-                            AddSeriesJavascript.AppendLine( $"    id:'{thisPlotvar.Keyword}'," );
-                            AddSeriesJavascript.AppendLine( $"    data: {thisPlotvar.Keyword}," );
-                        }
-                        else if ( thisPlotvar.IsStats && thisPlotvar.GraphType == "sma" )
-                        {
-                            AddSeriesJavascript.AppendLine( $"    name:'{thisPlotvar.GraphType}{Sup.GetCUstringValue( "Compiler", thisPlotvar.Keyword, thisPlotvar.Keyword, true )}'," );
-                            AddSeriesJavascript.AppendLine( $"    id:'{thisPlotvar.GraphType}{thisPlotvar.Keyword}'," );
-                            AddSeriesJavascript.AppendLine( $"    linkedTo:'{thisPlotvar.Keyword}'," );
-                            AddSeriesJavascript.AppendLine( $"    showInLegend:true," );
-                            AddSeriesJavascript.AppendLine( $"    params: {{period: {thisPlotvar.Period} }}," );
-                        }
-                        else
-                        {
-                            AddSeriesJavascript.AppendLine( $"    name:'{Sup.GetCUstringValue( "Compiler", thisPlotvar.Keyword, thisPlotvar.Keyword, true )}'," );
-                            AddSeriesJavascript.AppendLine( $"    id:'{thisPlotvar.Keyword}'," );
-                            AddSeriesJavascript.AppendLine( $"    data: {thisPlotvar.Keyword}," );
-                        }
-
-                        if ( thisPlotvar.GraphType == "area" )
-                            AddSeriesJavascript.AppendLine( $"    fillOpacity: {thisPlotvar.Opacity.ToString( "F1", CUtils.Inv )}," );
-
-
-                        AddSeriesJavascript.AppendLine( $"    color: '{thisPlotvar.Color}'," );
-                        AddSeriesJavascript.AppendLine( $"    yAxis: '{thisPlotvar.AxisId}'," );
-                        AddSeriesJavascript.AppendLine( $"    type: '{thisPlotvar.GraphType}'," );
-
-                        if ( !thisChart.HasScatter ) AddSeriesJavascript.AppendLine( $"    lineWidth: {thisPlotvar.LineWidth}," );
-                        if ( !thisPlotvar.Visible ) AddSeriesJavascript.AppendLine( $"    visible: false," );
-
-                        AddSeriesJavascript.AppendLine( $"    zIndex: {thisPlotvar.zIndex}," );
-                        AddSeriesJavascript.AppendLine( $"    tooltip:{{valueSuffix: ' {thisPlotvar.Unit}'}}" );
-                        AddSeriesJavascript.AppendLine( "   }, false);" );
-
-                        Sup.LogTraceInfoMessage( $"Compiler - CodeGen: {filename} Written the Series {thisPlotvar.Keyword}" );
-
-                    } // Loop over all plotvars within the chart
-
-                    if ( thisChart.HasWindBarbs )
-                    {
-                        // Since the data is in m/s in the WindBarbData array it has to be converted back for the tooltip
-                        // 
-
-                        AddSeriesJavascript.AppendLine( "  thisChart.addSeries({ " );
-                        AddSeriesJavascript.AppendLine( $"    name: '{Sup.GetCUstringValue( "Compiler", "WindBarbs", "WindBarbs", true )}'," );
-                        AddSeriesJavascript.AppendLine( "    xAxis: 1," );
-                        AddSeriesJavascript.AppendLine( $"    color: '{thisChart.WindBarbColor}'," );
-                        AddSeriesJavascript.AppendLine( "    type: 'windbarb'," );
-                        AddSeriesJavascript.AppendLine( "    visible: true," );
-                        AddSeriesJavascript.AppendLine( $"    dataGrouping: {{enabled: true,units: [ ['hour', [{Sup.HighChartsWindBarbSpacing()}] ] ]}}, " );
-                        AddSeriesJavascript.AppendLine( $"    tooltip: {{pointFormatter() {{return this.series.name + ': ' + " +
-                            $"(this.value/{Sup.StationWind.Convert( Sup.StationWind.Dim, WindDim.ms, 1 ).ToString( "F5", CUtils.Inv )}).toFixed(1) + " +
-                            $"' {Sup.StationWind.Text()}'}} }}," );
-                        AddSeriesJavascript.AppendLine( "    data: WindBarbData" );
-                        AddSeriesJavascript.AppendLine( "  }, false);" );
-                    }
-
-                    AddSeriesJavascript.AppendLine( "  }" );
-
-                    first = false;
-                } // Loop over all charts
-
-                Sup.LogTraceInfoMessage( $"Compiler - CodeGen: {filename} Written the AddSeries Calls" );
-
-                MenuJavascript.AppendLine( "{" );
+                // Meaning we are dealing with CustomLogs in the website (with realtime values table);
+                // A bit awkward method, may change that sometime haha...
                 if ( filename.Equals( Sup.CustomLogsCharts ) )
                 {
+                    // Add some code to subdivide the realtime tables into RECENT and DAILY and show only one of them. 
+                    // They are already defined of limited length and have an overflow.
+                    MenuJavascript.AppendLine( $"if (prevChartRange != {(int) thisChart.Range} ) {{" );
                     MenuJavascript.AppendLine( "  $( '.slideOptions' ).slideUp('slow');" );
-                    MenuJavascript.Append( "  $( '#RecentCustomLogs' ).slideDown('slow'); " );
-                    MenuJavascript.AppendLine( $" prevChartRange = 1;" );
+                    MenuJavascript.Append( thisChart.Range == PlotvarRangeType.Extra ? "  $( '#RecentCustomLogs' )" : "  $( '#DailyCustomLogs' )" );
+                    MenuJavascript.AppendLine( ".slideDown('slow'); " );
+                    MenuJavascript.AppendLine( $"prevChartRange = {(int) thisChart.Range};" );
+                    MenuJavascript.AppendLine( "}" );
                 }
-                MenuJavascript.AppendLine( $" document.getElementById('graph{UniqueOutputId}').value = '{theseCharts[ 0 ].Id}';" );
-                MenuJavascript.AppendLine( $" do{theseCharts[ 0 ].Id}();" );   // Close the script
-                MenuJavascript.AppendLine( "}" );
+                MenuJavascript.AppendLine( $"    do{thisChart.Id}()}}" );
+                MenuJavascript.AppendLine( " else " );
 
-                MenuJavascript.AppendLine( "urlParams.delete('dropdown');" );
-                MenuJavascript.AppendLine( $"urlParams.set('dropdown', document.getElementById('graph{UniqueOutputId}').value);" );
-                MenuJavascript.AppendLine( "history.pushState(null, null, window.location.origin + window.location.pathname + '?' + urlParams);" );
-                MenuJavascript.AppendLine( "}" );
+                // AlignTicks must be true!! (is the default of HighCharts) this also makes softMax superfluous
+                TheCharts.AppendLine( $"function do{thisChart.Id}() {{" );
+                TheCharts.AppendLine( $"  console.log('Creating chart: {thisChart.Title}');" );
 
-                Html.AppendLine( "</select>" );
-                Html.AppendLine( "</p>" );
-                Html.AppendLine( "</div>" );
+                TheCharts.AppendLine( "  chart = Highcharts.stockChart('chartcontainer', {title: {" );
+                TheCharts.Append( $" text: '{thisChart.Title}'" );
+                if ( thisChart.HasWindBarbs && !thisChart.WindBarbsBelow ) TheCharts.Append( ", margin: 35" );
+                TheCharts.AppendLine( "}," );
 
-                Html.AppendLine( "<div id=report><br/>" );
+                TheCharts.Append( "      xAxis:" );
+                if ( thisChart.HasWindBarbs ) TheCharts.Append( '[' );
 
-                Html.AppendLine( $"<div id='chartcontainer' style='min-height:{Convert.ToInt32( Sup.GetUtilsIniValue( "General", "ChartContainerHeight", "650" ) )}px;margin-top: 10px;margin-bottom: 5px;'> </div>" );
-                Html.AppendLine( $" <p style='text-align:center;font-size:11px;'>Generated with the ChartsCompiler {CuSupport.FormattedVersion()} - {CuSupport.Copyright()}</p>" );
-                Html.AppendLine( "</div>" ); // #Report
-                Html.AppendLine( "<script>" );
-
-                Html.AppendLine( MenuJavascript.ToString() );
-                Html.AppendLine( GenericJavascript.ToString() );
-                Html.AppendLine( AjaxJavascript.ToString() );
-                Html.AppendLine( AddSeriesJavascript.ToString() );
-                Html.AppendLine( TheCharts.ToString() );
-
-                Html.AppendLine( "</script>" );
-
-                // Now write out the modal popup texts for the chart info's
-
-                foreach ( ChartDef thisChart in theseCharts )
+                TheCharts.AppendLine( "      {type: 'datetime', crosshair: true, ordinal: false,dateTimeLabelFormats:{day: '%e %b',week: '%e %b %y',month: '%b %y',year: '%Y'}}," );
+                if ( thisChart.HasWindBarbs )
                 {
-                    if ( thisChart.HasInfo )
+                    if ( thisChart.WindBarbsBelow )
+                        TheCharts.AppendLine( "{linkedTo:0, labels: {enabled: false}, offset: 0}" );
+                    else
+                        TheCharts.AppendLine( "{linkedTo:0, opposite: true, labels: {enabled: false} }" );
+
+                    TheCharts.AppendLine( "]," );
+                }
+                TheCharts.AppendLine( "      yAxis:{ visible: false }," );
+
+                TheCharts.AppendLine( "      legend:{enabled: true}," );
+
+                if ( thisChart.HasScatter )
+                {
+                    TheCharts.AppendLine( "      plotOptions: { scatter: {cursor: 'pointer'," +
+                        $"{( Graphx.UseHighchartsBoostModule ? "boostThreshold: 200," : "" )} lineWidth:0," +
+                        $"marker: {{radius: {thisChart.PlotVars.First().LineWidth} }}, " +
+                        "}}," );
+                    TheCharts.AppendLine( "      tooltip: { xDateFormat: '%A, %b %e %H:%M ', " +
+                        "pointFormatter() {return this.series.name + ': ' + this.y}," +
+                        "headerFormat: '{point.key}<br>' }," );
+                }
+                else
+                {
+                    TheCharts.AppendLine( $"      plotOptions: {{ series: {{ clip: false, connectNulls: {Sup.GetUtilsIniValue( "General", "ConnectNulls", "false" ).ToLower()}, turboThreshold: 0, " +
+                        "states: { hover: { halo: { size: 5,opacity: 0.25} } }," +
+                        "marker: { enabled: false, states: { hover: { enabled: true, radius: 0.1} } } }, }," );
+                    TheCharts.AppendLine( "      tooltip: {split: true, valueDecimals: 1, xDateFormat: '%A, %b %e, %H:%M'}," );
+                }
+
+                TheCharts.AppendLine( "      series:[]," );
+
+                if ( thisChart.Range == PlotvarRangeType.Recent || thisChart.Range == PlotvarRangeType.Extra )
+                {
+                    TheCharts.AppendLine( "      rangeSelector:{" );
+
+                    if ( thisChart.HasWindBarbs && !thisChart.WindBarbsBelow ) TheCharts.AppendLine( "    floating: true, y: -50," );
+
+                    TheCharts.AppendLine( "      buttons:[{" );
+                    TheCharts.AppendLine( $"       count: {CUtils.HoursInGraph / 4},type: 'hour',text: '{CUtils.HoursInGraph / 4}h'}}, {{" );
+                    TheCharts.AppendLine( $"       count: {CUtils.HoursInGraph / 2},type: 'hour',text: '{CUtils.HoursInGraph / 2}h'}}, {{" );
+                    TheCharts.AppendLine( "        type: 'all',text: 'All'}]," );
+                    TheCharts.AppendLine( "      inputEnabled: false," );
+
+                    if ( thisChart.Zoom == -1 )
+                        TheCharts.AppendLine( "     selected: 2 }" );
+                    else
+                        TheCharts.AppendLine( $"     selected: {thisChart.Zoom} - 1 }}" );
+                }
+                else
+                {
+                    if ( thisChart.Range == PlotvarRangeType.Daily )
                     {
-                        if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes )
-                        {
-                            // Use the jQuery modal, by setting the DoLibraryIncludes to false the user has control whether or not to use the 
-                            // supplied includes or do it all by her/himself
-                            Html.AppendLine(
-                                $"<div class='modal' id='{thisChart.Id}' style='font-family: Verdana, Geneva, Tahoma, sans-serif;font-size: 120%;'>" +
-                                "      <div>" +
-                                $"        <h5 class='modal-title'>{thisChart.Title}</h5>" +
-                                "      </div>" +
-                                "      <div style='text-align: left;'>" +
-                                $"       {thisChart.InfoText}" +
-                                "      </div>" +
-                                "</div>" );
-                        }
+                        if ( thisChart.Zoom == -1 )
+                            TheCharts.AppendLine( "      rangeSelector:{allButtonsEnabled: true, selected: 0 }" );
                         else
-                        {
-                            // Use the bootstrap modal --- tabindex='-1' 
-                            Html.AppendLine( $"<div class='modal fade' id='{thisChart.Id}' role='dialog' aria-hidden='true'>" +
-                            "  <div class='modal-dialog modal-dialog-centered modal-dialog modal-lg' role='document'>" +
-                            "    <div class='modal-content'>" +
-                            "      <div class='modal-header'>" +
-                            $"        <h5 class='modal-title'>{thisChart.Title}</h5>" +
-                            "        <button type='button' class='close' data-bs-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>" +
-                            "      </div>" +
-                            "      <div class='modal-body text-start'>" +
-                            $"       {thisChart.InfoText}" +
-                            "      </div>" +
-                            "      <div class='modal-footer'>" +
-                            $"       <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>{Sup.GetCUstringValue( "Website", "Close", "Close", false )}</button>" +
-                            "      </div>" +
-                            "    </div>" +
-                            "  </div>" +
-                            "</div>" );
-                        }
+                            TheCharts.AppendLine( $"      rangeSelector:{{allButtonsEnabled: true, selected: {thisChart.Zoom} - 1 }}" );
+                    }
+                    else
+                    {
+                        if ( thisChart.Zoom == -1 )
+                            TheCharts.AppendLine( "      rangeSelector:{allButtonsEnabled: true, selected: 4 }" );
+                        else
+                            TheCharts.AppendLine( $"      rangeSelector:{{allButtonsEnabled: true, selected: {thisChart.Zoom} - 1 }}" );
                     }
                 }
 
+                TheCharts.AppendLine( "  });" );
+
+                if ( thisChart.HasInfo )
+                {
+                    string Info = $"{Sup.GetCUstringValue( "General", "Info", "Info", true )}";
+
+                    // See: https://stackoverflow.com/a/79749908/11931424
+
+                    TheCharts.AppendLine( "chart.update({" );
+                    TheCharts.AppendLine( "  chart:{events:{render() {const chart = this; if ( !chart.exporting.group ){return;}const { x, y, width } = chart.exporting.group.getBBox();" );
+
+                    TheCharts.AppendLine( "  if ( !this.customText ){" ); // Create a customText if it doesn't exist
+                    TheCharts.AppendLine( $"    this.customText = this.renderer.text( '{Info}', x - width - 15, y + 15 )" );
+                    TheCharts.AppendLine( "      .add()" +
+                        ".css({ color: this.title && this.title.styles ? this.title.styles.color : '#333', cursor: 'pointer' })" +
+                        $".on('click', () => $('#{thisChart.Id}').modal( 'show') );" );
+                    TheCharts.AppendLine( "  } else {" ); // Update the label position on render event (i.e on window resize)
+                    TheCharts.AppendLine( "    this.customText.attr({x: x - width - 15, y: y + 15}); } } } } });" );
+                }
+
+                TheCharts.AppendLine( "  chart.showLoading();" );
+
+                CreateAxis( thisChart, TheCharts, ref AxisSet );
+
+                TheCharts.AppendLine( $"  Promise.all([" );
+                TheCharts.AppendLine( "]).then(() => {" );
+                TheCharts.AppendLine( $"  {thisChart.Id}AddSeries(chart);" );
+
+                TheCharts.AppendLine( "  chart.hideLoading();" );
+                TheCharts.AppendLine( "  chart.redraw();});" );
+                TheCharts.AppendLine( "}" );
+
+                Sup.LogTraceInfoMessage( $"Compiler - CodeGen: {filename} Written the Chart {thisChart.Id}" );
+
+                // Rewrite below for the create series
+                AddSeriesJavascript.AppendLine( $"function {thisChart.Id}AddSeries(thisChart){{" );
+
+                foreach ( Plotvar thisPlotvar in thisChart.PlotVars )
+                {
+                    string pvSuffix = thisPlotvar.PlotVar.Length > 2 ? thisPlotvar.PlotVar[ 3.. ] : "";
+
+                    if ( thisPlotvar.GraphType == "columnrange" )
+                    {
+                        // By beteljuice (in principle that is)
+                        AddSeriesJavascript.AppendLine( $"var {pvSuffix}RangeMinMax = [];" );
+                        AddSeriesJavascript.AppendLine( $"for(var i=0; i<{thisPlotvar.Keyword}.length; i++) {{" +
+                            $"{pvSuffix}RangeMinMax.push([{thisPlotvar.Keyword}[i][0],min{pvSuffix}[i][1], max{pvSuffix}[i][1]]) }}" );
+                    }
+                    else if ( thisPlotvar.Equation is not null ) // | Must be done for all variables
+                    {
+                        string sumExpr = "";
+
+                        string tmpEquation = thisPlotvar.Equation;
+
+                        if ( thisPlotvar.Equation.Contains( "sum(" ) )
+                        {
+                            // https://stackoverflow.com/questions/1230233/how-to-find-the-sum-of-an-array-of-numbers
+
+                            int startSum, endSum;
+                            string tmp;
+
+                            startSum = tmpEquation.IndexOf( "sum(" );
+                            endSum = tmpEquation.IndexOf( ')', startSum );
+                            sumExpr = tmpEquation.Substring( startSum + 4, endSum - startSum - 4 );
+                            tmp = tmpEquation.Remove( startSum, endSum + 1 - startSum );
+                            tmpEquation = tmp.Insert( startSum, "sumResult[i][1]" );
+
+                            foreach ( AllVarInfo avi in thisPlotvar.EqAllVarList )
+                                if ( sumExpr.Contains( avi.KeywordName, CUtils.Cmp ) )
+                                    sumExpr = sumExpr.Replace( avi.KeywordName, $"{avi.KeywordName}[i][1]" );
+
+                            GenerateSumFunction( GenericJavascript );
+                            AddSeriesJavascript.AppendLine( $"sumResult.length = 0;" );
+                            AddSeriesJavascript.AppendLine( $"for(var i=0; i<{thisPlotvar.EqAllVarList[ 0 ].KeywordName}.length; i++) {{" );
+                            AddSeriesJavascript.AppendLine( $"  sum( {sumExpr}, sumResult, i, {thisPlotvar.EqAllVarList[ 0 ].KeywordName}[i][0]);" );
+                            AddSeriesJavascript.AppendLine( "}" );
+                        }
+
+                        if ( thisPlotvar.Equation.Contains( "ln(" ) )
+                            tmpEquation = tmpEquation.Replace( "ln(", "Math.log(" );
+                        if ( thisPlotvar.Equation.Contains( "sqrt(" ) )
+                            tmpEquation = tmpEquation.Replace( "sqrt(", "Math.sqrt(" );
+                        if ( thisPlotvar.Equation.Contains( "exp(" ) )
+                            tmpEquation = tmpEquation.Replace( "exp(", "Math.exp(" );
+                        if ( thisPlotvar.Equation.Contains( "pow(" ) )
+                            tmpEquation = tmpEquation.Replace( "pow(", "Math.pow(" );
+
+                        if ( thisPlotvar.EqAllVarList.Count > 0 )
+                        {
+                            foreach ( AllVarInfo avi in thisPlotvar.EqAllVarList )
+                                if ( tmpEquation.Contains( avi.KeywordName, CUtils.Cmp ) )
+                                    tmpEquation = tmpEquation.Replace( avi.KeywordName, $"{avi.KeywordName}[i][1]" );
+
+                            // Now write out the values in the array at runtime.
+                            AddSeriesJavascript.AppendLine( $"{thisPlotvar.Keyword}.length=0;" );
+                            AddSeriesJavascript.AppendLine( $"for(var i=0; i<{thisPlotvar.EqAllVarList[ 0 ].KeywordName}.length; i++) {{" );
+                            AddSeriesJavascript.AppendLine( $"  {thisPlotvar.Keyword}.push([ {thisPlotvar.EqAllVarList[ 0 ].KeywordName}[i][0], {tmpEquation} ]);" );
+                            AddSeriesJavascript.AppendLine( "}" );
+                        }
+                        else
+                        {
+                            Sup.LogTraceErrorMessage( $"Compiler - CodeGen: Using Function without Plotvariable - NOT Supported in {thisChart.Id}/{thisPlotvar.Keyword}" );
+                        }
+                    }
+
+                    AddSeriesJavascript.AppendLine( "   thisChart.addSeries({ " );
+
+                    if ( thisPlotvar.GraphType == "columnrange" )
+                    {
+                        AddSeriesJavascript.AppendLine( $"    name:'{Sup.GetCUstringValue( "Compiler", pvSuffix + "range", pvSuffix + "range", true )}'," );
+                        AddSeriesJavascript.AppendLine( $"    id:'{pvSuffix}range'," );
+                        AddSeriesJavascript.AppendLine( $"    data: {pvSuffix}RangeMinMax," );
+                    }
+                    else if ( thisPlotvar.Equation is not null )
+                    {
+                        AddSeriesJavascript.AppendLine( $"    name:'{Sup.GetCUstringValue( "Compiler", thisPlotvar.Keyword, thisPlotvar.Keyword, true )}'," );
+                        AddSeriesJavascript.AppendLine( $"    id:'{thisPlotvar.Keyword}'," );
+                        AddSeriesJavascript.AppendLine( $"    data: {thisPlotvar.Keyword}," );
+                    }
+                    else if ( thisPlotvar.IsStats && thisPlotvar.GraphType == "sma" )
+                    {
+                        AddSeriesJavascript.AppendLine( $"    name:'{thisPlotvar.GraphType}{Sup.GetCUstringValue( "Compiler", thisPlotvar.Keyword, thisPlotvar.Keyword, true )}'," );
+                        AddSeriesJavascript.AppendLine( $"    id:'{thisPlotvar.GraphType}{thisPlotvar.Keyword}'," );
+                        AddSeriesJavascript.AppendLine( $"    linkedTo:'{thisPlotvar.Keyword}'," );
+                        AddSeriesJavascript.AppendLine( $"    showInLegend:true," );
+                        AddSeriesJavascript.AppendLine( $"    params: {{period: {thisPlotvar.Period} }}," );
+                    }
+                    else
+                    {
+                        AddSeriesJavascript.AppendLine( $"    name:'{Sup.GetCUstringValue( "Compiler", thisPlotvar.Keyword, thisPlotvar.Keyword, true )}'," );
+                        AddSeriesJavascript.AppendLine( $"    id:'{thisPlotvar.Keyword}'," );
+                        AddSeriesJavascript.AppendLine( $"    data: {thisPlotvar.Keyword}," );
+                    }
+
+                    if ( thisPlotvar.GraphType == "area" )
+                        AddSeriesJavascript.AppendLine( $"    fillOpacity: {thisPlotvar.Opacity.ToString( "F1", CUtils.Inv )}," );
+
+
+                    AddSeriesJavascript.AppendLine( $"    color: '{thisPlotvar.Color}'," );
+                    AddSeriesJavascript.AppendLine( $"    yAxis: '{thisPlotvar.AxisId}'," );
+                    AddSeriesJavascript.AppendLine( $"    type: '{thisPlotvar.GraphType}'," );
+
+                    if ( !thisChart.HasScatter ) AddSeriesJavascript.AppendLine( $"    lineWidth: {thisPlotvar.LineWidth}," );
+                    if ( !thisPlotvar.Visible ) AddSeriesJavascript.AppendLine( $"    visible: false," );
+
+                    AddSeriesJavascript.AppendLine( $"    zIndex: {thisPlotvar.zIndex}," );
+                    AddSeriesJavascript.AppendLine( $"    tooltip:{{valueSuffix: ' {thisPlotvar.Unit}'}}" );
+                    AddSeriesJavascript.AppendLine( "   }, false);" );
+
+                    Sup.LogTraceInfoMessage( $"Compiler - CodeGen: {filename} Written the Series {thisPlotvar.Keyword}" );
+
+                } // Loop over all plotvars within the chart
+
+                if ( thisChart.HasWindBarbs )
+                {
+                    // Since the data is in m/s in the WindBarbData array it has to be converted back for the tooltip
+                    // 
+
+                    AddSeriesJavascript.AppendLine( "  thisChart.addSeries({ " );
+                    AddSeriesJavascript.AppendLine( $"    name: '{Sup.GetCUstringValue( "Compiler", "WindBarbs", "WindBarbs", true )}'," );
+                    AddSeriesJavascript.AppendLine( "    xAxis: 1," );
+                    AddSeriesJavascript.AppendLine( $"    color: '{thisChart.WindBarbColor}'," );
+                    AddSeriesJavascript.AppendLine( "    type: 'windbarb'," );
+                    AddSeriesJavascript.AppendLine( "    visible: true," );
+                    AddSeriesJavascript.AppendLine( $"    dataGrouping: {{enabled: true,units: [ ['hour', [{Sup.HighChartsWindBarbSpacing()}] ] ]}}, " );
+                    AddSeriesJavascript.AppendLine( $"    tooltip: {{pointFormatter() {{return this.series.name + ': ' + " +
+                        $"(this.value/{Sup.StationWind.Convert( Sup.StationWind.Dim, WindDim.ms, 1 ).ToString( "F5", CUtils.Inv )}).toFixed(1) + " +
+                        $"' {Sup.StationWind.Text()}'}} }}," );
+                    AddSeriesJavascript.AppendLine( "    data: WindBarbData" );
+                    AddSeriesJavascript.AppendLine( "  }, false);" );
+                }
+
+                AddSeriesJavascript.AppendLine( "  }" );
+
+                first = false;
+            } // Loop over all charts
+
+            Sup.LogTraceInfoMessage( $"Compiler - CodeGen: {filename} Written the AddSeries Calls" );
+
+            MenuJavascript.AppendLine( "{" );
+            if ( filename.Equals( Sup.CustomLogsCharts ) )
+            {
+                MenuJavascript.AppendLine( "  $( '.slideOptions' ).slideUp('slow');" );
+                MenuJavascript.Append( "  $( '#RecentCustomLogs' ).slideDown('slow'); " );
+                MenuJavascript.AppendLine( $" prevChartRange = 1;" );
+            }
+            MenuJavascript.AppendLine( $" document.getElementById('graph{UniqueOutputId}').value = '{theseCharts[ 0 ].Id}';" );
+            MenuJavascript.AppendLine( $" do{theseCharts[ 0 ].Id}();" );   // Close the script
+            MenuJavascript.AppendLine( "}" );
+
+            MenuJavascript.AppendLine( "urlParams.delete('dropdown');" );
+            MenuJavascript.AppendLine( $"urlParams.set('dropdown', document.getElementById('graph{UniqueOutputId}').value);" );
+            MenuJavascript.AppendLine( "history.pushState(null, null, window.location.origin + window.location.pathname + '?' + urlParams);" );
+            MenuJavascript.AppendLine( "}" );
+
+            Html.AppendLine( "</select>" );
+            Html.AppendLine( "</p>" );
+            Html.AppendLine( "</div>" );
+
+            Html.AppendLine( "<div id=report><br/>" );
+
+            Html.AppendLine( $"<div id='chartcontainer' style='min-height:{Convert.ToInt32( Sup.GetUtilsIniValue( "General", "ChartContainerHeight", "650" ) )}px;margin-top: 10px;margin-bottom: 5px;'> </div>" );
+            Html.AppendLine( $" <p style='text-align:center;font-size:11px;'>Generated with the ChartsCompiler {CuSupport.FormattedVersion()} - {CuSupport.Copyright()}</p>" );
+            Html.AppendLine( "</div>" ); // #Report
+            Html.AppendLine( "<script>" );
+
+            Html.AppendLine( MenuJavascript.ToString() );
+            Html.AppendLine( GenericJavascript.ToString() );
+            Html.AppendLine( AjaxJavascript.ToString() );
+            Html.AppendLine( AddSeriesJavascript.ToString() );
+            Html.AppendLine( TheCharts.ToString() );
+
+            Html.AppendLine( "</script>" );
+
+            // Now write out the modal popup texts for the chart info's
+
+            foreach ( ChartDef thisChart in theseCharts )
+            {
+                if ( thisChart.HasInfo )
+                {
+                    if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes )
+                    {
+                        // Use the jQuery modal, by setting the DoLibraryIncludes to false the user has control whether or not to use the 
+                        // supplied includes or do it all by her/himself
+                        Html.AppendLine(
+                            $"<div class='modal' id='{thisChart.Id}' style='font-family: Verdana, Geneva, Tahoma, sans-serif;font-size: 120%;'>" +
+                            "      <div>" +
+                            $"        <h5 class='modal-title'>{thisChart.Title}</h5>" +
+                            "      </div>" +
+                            "      <div style='text-align: left;'>" +
+                            $"       {thisChart.InfoText}" +
+                            "      </div>" +
+                            "</div>" );
+                    }
+                    else
+                    {
+                        // Use the bootstrap modal --- tabindex='-1' 
+                        Html.AppendLine( $"<div class='modal fade' id='{thisChart.Id}' role='dialog' aria-hidden='true'>" +
+                        "  <div class='modal-dialog modal-dialog-centered modal-dialog modal-lg' role='document'>" +
+                        "    <div class='modal-content'>" +
+                        "      <div class='modal-header'>" +
+                        $"        <h5 class='modal-title'>{thisChart.Title}</h5>" +
+                        "        <button type='button' class='close' data-bs-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>" +
+                        "      </div>" +
+                        "      <div class='modal-body text-start'>" +
+                        $"       {thisChart.InfoText}" +
+                        "      </div>" +
+                        "      <div class='modal-footer'>" +
+                        $"       <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>{Sup.GetCUstringValue( "Website", "Close", "Close", false )}</button>" +
+                        "      </div>" +
+                        "    </div>" +
+                        "  </div>" +
+                        "</div>" );
+                    }
+                }
+            }
+
+            using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{filename}", false, Encoding.UTF8 ) )
+            {
                 of.WriteLine( CuSupport.CopyrightForGeneratedFiles() );
 
 #if !RELEASE
@@ -859,6 +861,8 @@ namespace CumulusUtils
 
         void GenerateSumFunction( StringBuilder buf )
         {
+            // https://stackoverflow.com/questions/1230233/how-to-find-the-sum-of-an-array-of-numbers
+
             Sup.LogTraceVerboseMessage( $"Compiler - Creating Runtime Sum function" );
 
             if ( SumFunctionGenerated )
@@ -896,7 +900,7 @@ namespace CumulusUtils
                 return DateTime.Now;
             }
 
-            // Take the FTP frequency or the LogInterval (whichever is the largest) and use the minute value being a multiple of that one cycle below the now time as the end time
+            // Take the Interval frequency or the LogInterval (whichever is the largest) and use the minute value being a multiple of that one cycle below the now time as the end time
             // Then go the hours in Graphs back to complete the full cycle. 
             // So with a 10 min FTP cycle and Now = 08h09 the endtime must be 08h00 -> the minute value MOD FTP frequency
             // This should give it the same starttime as the CMX JSONS, this is relevant for the wind addition later on.

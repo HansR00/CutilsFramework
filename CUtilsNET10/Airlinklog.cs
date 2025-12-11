@@ -6,7 +6,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using FluentFTP.Helpers;
 
 namespace CumulusUtils
 {
@@ -431,7 +430,7 @@ namespace CumulusUtils
                     Console.WriteLine( $"{m} fail: {e.Message}" );
                     Console.WriteLine( $"{m}: in field nr {FieldInUse} ({enumFieldTypeNames[ FieldInUse ]})" );
 
-                    if ( lineSplit[ FieldInUse ].IsBlank() )
+                    if ( string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) )
                         Sup.LogTraceErrorMessage( $"{m}: Field {enumFieldTypeNames[ FieldInUse ]} is Empty" );
                 }
 

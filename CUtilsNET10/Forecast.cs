@@ -39,66 +39,68 @@ namespace CumulusUtils
             // Make sure the parameters exist in one run, otherwise the user has to run, define and run again
             ForecastSystem = Sup.GetUtilsIniValue( "Forecasts", "ForecastSystem", "SpotWx" );
 
-            if ( ForecastSystem.Equals( "Yourweather", CUtils.Cmp ) )
-            {
-                string YourWeatherPredictionURL = Sup.GetUtilsIniValue( "Forecasts", "SevenDayPredictionURL", "" );
+            //if ( ForecastSystem.Equals( "Yourweather", CUtils.Cmp ) )
+            //{
+            //    string YourWeatherPredictionURL = Sup.GetUtilsIniValue( "Forecasts", "SevenDayPredictionURL", "" );
 
-                // IF no PRediction URL set, then no prediction possible
-                if ( string.IsNullOrEmpty( YourWeatherPredictionURL ) )
-                {
-                    Sup.LogTraceErrorMessage( "Prediction : No URL in Prediction ini section." );
-                    Sup.LogTraceErrorMessage( "Prediction : Impossible to continue, exiting procedure." );
-                    return;
-                }
+            //    // IF no PRediction URL set, then no prediction possible
+            //    if ( string.IsNullOrEmpty( YourWeatherPredictionURL ) )
+            //    {
+            //        Sup.LogTraceErrorMessage( "Prediction : No URL in Prediction ini section." );
+            //        Sup.LogTraceErrorMessage( "Prediction : Impossible to continue, exiting procedure." );
+            //        return;
+            //    }
 
-                string XMLresult = await Isup.GetUrlDataAsync( new Uri( YourWeatherPredictionURL ) );
+            //    string XMLresult = await Isup.GetUrlDataAsync( new Uri( YourWeatherPredictionURL ) );
 
-                if ( CreateSevenDayPrediction( XMLresult ) )
-                {
-                    Sup.LogTraceInfoMessage( "Prediction : Read the predicition XML, now generating the  table." );
+            //    if ( CreateSevenDayPrediction( XMLresult ) )
+            //    {
+            //        Sup.LogTraceInfoMessage( "Prediction : Read the predicition XML, now generating the  table." );
 
-                    // OK, Generate the HTML table straightforward from the structs
-                    using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.ForecastOutputFilename}", false, Encoding.UTF8 ) )
-                    {
-                        of.WriteLine( "<style>" );
-                        of.WriteLine( "#report{font-family: arial;text-align: center;border-radius: 15px;border-spacing: 0;border: 1px solid #b0b0b0;}" );
-                        of.WriteLine( "#report .CUtable{border-radius: 15px; text-align: center; border-collapse: collapse; border-spacing: 0; width: 100%; max-width: 1000px; margin: auto;}" );
-                        of.WriteLine( "#report th{text-align: left; border: 0px solid #b0b0b0; background-color: #d0d0d0; padding: 0px;}" );
-                        of.WriteLine( "#report td{text-align: left; border: 0px solid #b0b0b0; background-color: #f0f0f0; padding: 0px;}" );
-                        of.WriteLine( "</style>" );
+            //        // OK, Generate the HTML table straightforward from the structs
+            //        using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.ForecastOutputFilename}", false, Encoding.UTF8 ) )
+            //        {
+            //            of.WriteLine( "<style>" );
+            //            of.WriteLine( "#report{font-family: arial;text-align: center;border-radius: 15px;border-spacing: 0;border: 1px solid #b0b0b0;}" );
+            //            of.WriteLine( "#report .CUtable{border-radius: 15px; text-align: center; border-collapse: collapse; border-spacing: 0; width: 100%; max-width: 1000px; margin: auto;}" );
+            //            of.WriteLine( "#report th{text-align: left; border: 0px solid #b0b0b0; background-color: #d0d0d0; padding: 0px;}" );
+            //            of.WriteLine( "#report td{text-align: left; border: 0px solid #b0b0b0; background-color: #f0f0f0; padding: 0px;}" );
+            //            of.WriteLine( "</style>" );
 
-                        of.WriteLine( "<div id='report'>" );
+            //            of.WriteLine( "<div id='report'>" );
 
-                        //string Title = Sup.GetUtilsIniValue( "Forecasts", "SevenDayPredictionURL", "" );
-                        string Title = Sup.GetCUstringValue( "Forecasts", "Title", "Seven Day Prediction", false );
-                        of.WriteLine( $"<h2>{Title}</h2>" );
+            //            //string Title = Sup.GetUtilsIniValue( "Forecasts", "SevenDayPredictionURL", "" );
+            //            string Title = Sup.GetCUstringValue( "Forecasts", "Title", "Seven Day Prediction", false );
+            //            of.WriteLine( $"<h2>{Title}</h2>" );
 
-                        of.WriteLine( "<table class=CUtable><tbody>" );
-                        of.WriteLine( $"<tr style='border-bottom: 1px'><th>{Sup.GetCUstringValue( "Forecasts", "Day", "Day", false )}</th>" +
-                          $"<th></th><th></th><th>{Sup.GetCUstringValue( "Forecasts", "Forecast", "Forecast", false )}</th>" +
-                          $"<th></th><th>{Sup.GetCUstringValue( "Forecasts", "Wind", "Wind", false )}</th></tr>" );
+            //            of.WriteLine( "<table class=CUtable><tbody>" );
+            //            of.WriteLine( $"<tr style='border-bottom: 1px'><th>{Sup.GetCUstringValue( "Forecasts", "Day", "Day", false )}</th>" +
+            //              $"<th></th><th></th><th>{Sup.GetCUstringValue( "Forecasts", "Forecast", "Forecast", false )}</th>" +
+            //              $"<th></th><th>{Sup.GetCUstringValue( "Forecasts", "Wind", "Wind", false )}</th></tr>" );
 
-                        for ( int i = 0; i < 7; i++ )
-                        {
-                            StructPrediction tmp = PredictionList[ i ];
+            //            for ( int i = 0; i < 7; i++ )
+            //            {
+            //                StructPrediction tmp = PredictionList[ i ];
 
-                            of.WriteLine( $"<tr><td>{tmp.Day}</td>" +
-                              $"<td text-align:center;><img src='CUicons/weather/{tmp.WeatherIcon}.png' alt='{tmp.WeatherIcon}.png'/></td>" +
-                              $"<td style='text-align: center; font-size: 80%;padding: 0px 10px'><div style='color: red'>{tmp.MaxTemp}</div><div style='color: blue'>{tmp.MinTemp}</div></td>" +
-                              $"<td>{tmp.WeatherText}</td>" +
-                              $"<td><img src='CUicons/wind/{tmp.WindIcon}.png' alt='{tmp.WindIcon}.png'/></td>" +
-                              $"<td>{tmp.WindText}</td></tr>" );
-                        }
-                        of.WriteLine( "</tbody></table>" );
-                        of.WriteLine( "<p style='font-size: 80%;padding-top: 20px !important'>" +
-                            $"{Sup.GetCUstringValue( "Forecasts", "Footer1", "Forecast API by", false )} " +
-                            $"<a href='https://www.yourweather.co.uk/'>yourweather.co.uk</a>" +
-                            $" {Sup.GetCUstringValue( "Forecasts", "Footer2", "on the basis of", false )} " +
-                            $"<a href='https://www.ecmwf.int/'>ECMWF</a>.</div>" );
-                    }
-                }
-            }
-            else if ( ForecastSystem.Equals( "Norway", CUtils.Cmp ) )
+            //                of.WriteLine( $"<tr><td>{tmp.Day}</td>" +
+            //                  $"<td text-align:center;><img src='CUicons/weather/{tmp.WeatherIcon}.png' alt='{tmp.WeatherIcon}.png'/></td>" +
+            //                  $"<td style='text-align: center; font-size: 80%;padding: 0px 10px'><div style='color: red'>{tmp.MaxTemp}</div><div style='color: blue'>{tmp.MinTemp}</div></td>" +
+            //                  $"<td>{tmp.WeatherText}</td>" +
+            //                  $"<td><img src='CUicons/wind/{tmp.WindIcon}.png' alt='{tmp.WindIcon}.png'/></td>" +
+            //                  $"<td>{tmp.WindText}</td></tr>" );
+            //            }
+            //            of.WriteLine( "</tbody></table>" );
+            //            of.WriteLine( "<p style='font-size: 80%;padding-top: 20px !important'>" +
+            //                $"{Sup.GetCUstringValue( "Forecasts", "Footer1", "Forecast API by", false )} " +
+            //                $"<a href='https://www.yourweather.co.uk/'>yourweather.co.uk</a>" +
+            //                $" {Sup.GetCUstringValue( "Forecasts", "Footer2", "on the basis of", false )} " +
+            //                $"<a href='https://www.ecmwf.int/'>ECMWF</a>.</div>" );
+            //        }
+            //    }
+            //}
+            //else 
+
+            if ( ForecastSystem.Equals( "Norway", CUtils.Cmp ) )
             {
                 // https://developer.yr.no/
                 //

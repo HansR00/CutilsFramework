@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,7 +45,7 @@ namespace CumulusUtils
             Sup.LogTraceInfoMessage( "SystemStatus : starting" );
 
             thisInfo = await thisIPC.GetCMXInfoAsync();
-            Sup.LogDebugMessage( $"CumulusMX Version: {thisInfo.Version} build {thisInfo.Build}" );
+            Sup.LogDebugMessage( $"CumulusMX Version: {thisInfo.version} build {thisInfo.build}" );
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.SysInfoOutputFilename}", false, Encoding.UTF8 ) )
             {
@@ -61,7 +60,7 @@ namespace CumulusUtils
                 of.WriteLine( $"<div style='margin:auto; text-align:left; width:{Sup.GetUtilsIniValue( "SysInfo", "ReportWidth", "700" )}px'><pre>" );
 
                 // Just for recognition of where we are : start of Station Info
-                of.WriteLine( $"Cumulus version: {thisInfo.Version} (build: {thisInfo.Build})" );
+                of.WriteLine( $"Cumulus version: {thisInfo.version} (build: {thisInfo.build})" );
                 of.WriteLine( $"Cumulus uptime: {thisInfo.ProgramUpTime}" );
                 of.WriteLine( $"Weather station: {CuSupport.StationInUse( StationType )}" );
 
@@ -279,7 +278,7 @@ namespace CumulusUtils
                 if ( !string.IsNullOrEmpty( returnValues[ 2 ] ) ) of.WriteLine( $"System: {returnValues[ 2 ].Remove( 0, "    product: ".Length )}" );
                 if ( !string.IsNullOrEmpty( returnValues[ 1 ] ) ) of.WriteLine( $"Processor: {returnValues[ 1 ].Remove( 0, "    description: ".Length )}" );
                 of.WriteLine( $"Nr of processors: {thisInfo.CpuCount}" );
-                of.WriteLine( $"Processor Temperature: {thisInfo.CpuTemp} °C" );
+                of.WriteLine( $"Processor Temperature: {thisInfo.CPUTemp} °C" );
             }
             catch ( Exception e )
             {
@@ -373,7 +372,7 @@ namespace CumulusUtils
                 if ( !string.IsNullOrEmpty( returnValues[ 1 ] ) )
                     of.WriteLine( $"Processor: {returnValues[ 1 ].Remove( 0, "    description: ".Length )}" );
                 of.WriteLine( $"Nr of processors: {thisInfo.CpuCount}" );
-                of.WriteLine( $"Processor Temperature: {thisInfo.CpuTemp} °C" );
+                of.WriteLine( $"Processor Temperature: {thisInfo.CPUTemp} °C" );
             }
             catch ( Exception e )
             {
@@ -461,9 +460,9 @@ namespace CumulusUtils
             while ( !process.StandardOutput.EndOfStream )
             {
                 string? line = process.StandardOutput.ReadLine();
-                if (line != null)
+                if ( line != null )
                 {
-                    returnValues.Add(line);
+                    returnValues.Add( line );
                     Sup.LogTraceInfoMessage( "StartProcess " + command + ": output=" + line );
                 }
             }

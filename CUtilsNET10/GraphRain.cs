@@ -19,7 +19,6 @@ namespace CumulusUtils
         {
             int i, j;
             float sum = 0, movingAverage = 0;
-            int period = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "PeriodMovingAverage", "180" ), CUtils.Inv );
 
             Sup.LogDebugMessage( "GenDailyRainGraphData : starting" );
 
@@ -125,20 +124,17 @@ namespace CumulusUtils
             StringBuilder ds = new StringBuilder( "  series: [{\n" ); // ds: DataString
             ds.Append( "    type: 'column',\n" );
             ds.Append( $"    name: '{Sup.GetCUstringValue( "Graphs", "DRSeries1Name", "Rainfall", true )}',\n" );
-            //      ds.Append("    color: 'blue',\n");
             ds.Append( "    data: [ \n" );
 
             StringBuilder ma = new StringBuilder( "{\n" ); // ma: MovingAverage
             ma.Append( "    type: 'spline',\n" );
             ma.Append( $"    name: '{Sup.GetCUstringValue( "Graphs", "DRSeries2Name", "Moving Average", true )}',  lineWidth: 1,\n" );
-            //      ma.Append("    color: 'red',\n");
             ma.Append( "    yAxis: 1,\n" );
             ma.Append( "    data: [ \n" );
 
             StringBuilder cr = new StringBuilder( "{\n" ); // cr: Cumulative rain
             cr.Append( "    type: 'spline',\n" );
             cr.Append( $"    name: '{Sup.GetCUstringValue( "Graphs", "DRSeries3Name", "Yearly Rain to Date", true )}',  lineWidth: 1,\n" );
-            //      cr.Append("    color: 'red',\n");
             cr.Append( "    yAxis: 2,\n" );
             cr.Append( "    data: [ \n" );
 
@@ -216,9 +212,9 @@ namespace CumulusUtils
             {
                 StationNormal = true;
 
-                for ( int i = (int) Months.Jan; i <= (int) Months.Dec; i++ )
+                for ( int i = 1; i <= 12; i++ )
                 {
-                    string iniKeyName = "NOAARainNorm" + Enum.GetNames( typeof( Months ) )[ i - 1 ];
+                    string iniKeyName = "NOAARainNorm" + m[ i - 1 ];
                     string iniResult = Sup.GetCumulusIniValue( "NOAA", iniKeyName, "0.0" );
                     if ( iniResult.IndexOf( ',' ) > 0 )
                         iniResult = iniResult.Replace( ',', '.' );
@@ -233,7 +229,7 @@ namespace CumulusUtils
             {
                 StationAverage = true;
 
-                for ( int i = (int) Months.Jan; i <= (int) Months.Dec; i++ )
+                for ( int i = 1; i <= 12; i++ )
                 {
                     List<float> tmp = new List<float>();
 
@@ -255,7 +251,7 @@ namespace CumulusUtils
                     else
                         NOAARainStationAv[ i - 1 ] = -1;
 
-                    Sup.LogTraceInfoMessage( $" Station Average values: {Enum.GetNames( typeof( Months ) )[ i - 1 ]} -> {NOAARainNorm[ i - 1 ].ToString( "F1", CUtils.Inv )}" );
+                    Sup.LogTraceInfoMessage( $" Station Average values: {m[ i - 1 ]} -> {NOAARainNorm[ i - 1 ].ToString( "F1", CUtils.Inv )}" );
                 }
             }
 
@@ -263,11 +259,11 @@ namespace CumulusUtils
 
             for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
-                MonthlyRainValues = new float[ Enum.GetNames( typeof( Months ) ).Length ];
+                MonthlyRainValues = new float[ m.Length ];
                 YearValues.Add( MonthlyRainValues );
                 years.Add( i );
 
-                for ( int j = (int) Months.Jan; j <= (int) Months.Dec; j++ )
+                for ( int j = 1; j <= 12; j++ )
                 {
                     //Now do the actual month work
                     if ( ThisList.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == j ).Any() )
@@ -308,7 +304,7 @@ namespace CumulusUtils
             sb = new StringBuilder();
             sb.Append( "    categories: [" );
 
-            for ( int i = (int) Months.Jan; i <= (int) Months.Dec; i++ )
+            for ( int i = 1; i <= 12; i++ )
                 sb.Append( $"'{CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName( i )}'," );
 
             sb.Remove( sb.Length - 1, 1 );
@@ -347,7 +343,7 @@ namespace CumulusUtils
                 //Do the NORMAL series
                 sb.Append( $"       name : '{Sup.GetCUstringValue( "Graphs", "MTNormal", "Normal", true )}', color: 'black', visible:true, zIndex:-1,\n" +
                           "       data : [" );
-                for ( int i = (int) Months.Jan; i <= (int) Months.Dec; i++ )
+                for ( int i = 1; i <= 12; i++ )
                     sb.Append( $"{NOAARainNorm[ i - 1 ].ToString( "F1", NumberFormatInfo.InvariantInfo )}," );
 
                 sb.Remove( sb.Length - 1, 1 ); //remove last comma
@@ -362,7 +358,7 @@ namespace CumulusUtils
                 //Do the Station Average serie
                 sb.Append( $"       name : '{Sup.GetCUstringValue( "Graphs", "MTStationAverage", "Station average", true )}', color: 'grey', visible:true, zIndex:-2,\n" +
                   "       data : [" );
-                for ( int i = (int) Months.Jan; i <= (int) Months.Dec; i++ )
+                for ( int i = 1; i <= 12; i++ )
                     sb.Append( $"{NOAARainStationAv[ i - 1 ].ToString( "F1", NumberFormatInfo.InvariantInfo )}," );
 
                 sb.Remove( sb.Length - 1, 1 ); //remove last comma
@@ -375,7 +371,7 @@ namespace CumulusUtils
                 sb.Append( "       type: 'areasplinerange',\n" );
                 sb.Append( "       data: [" );
 
-                for ( int i = (int) Months.Jan; i <= (int) Months.Dec; i++ )
+                for ( int i = 1; i <= 12; i++ )
                     sb.Append( $"[{Math.Max( 0.0, NOAARainStationAv[ i - 1 ] - NOAARainStdDev[ i - 1 ] ).ToString( "F1", NumberFormatInfo.InvariantInfo )}," +
                       $"{( NOAARainStationAv[ i - 1 ] + NOAARainStdDev[ i - 1 ] ).ToString( "F1", NumberFormatInfo.InvariantInfo )}]," );
 
@@ -582,7 +578,7 @@ namespace CumulusUtils
 
         #region YearMonthRain Statistics
 
-        private void GenerateYearMonthRainStatistics( List<DayfileValue> Thislist, Months thisMonth, StringBuilder thisBuffer )
+        private void GenerateYearMonthRainStatistics( List<DayfileValue> Thislist, int thisMonth, StringBuilder thisBuffer )
         {
             StringBuilder sb = new StringBuilder();
 
@@ -596,7 +592,7 @@ namespace CumulusUtils
 
             for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
-                List<DayfileValue> yearmonthlist = Thislist.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == (int) thisMonth ).ToList();
+                List<DayfileValue> yearmonthlist = Thislist.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == thisMonth ).ToList();
 
                 Sup.LogTraceVerboseMessage( $"Generating Year Month Rain Statistics, doing year {i} and month {thisMonth}" );
 
@@ -626,7 +622,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "title:" );
             thisBuffer.AppendLine( "{" );
             thisBuffer.AppendLine( $"  text: '{Sup.GetCUstringValue( "Graphs", "YMRSTitle", "Year Rain Statistics for", true )} " +
-              $"{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( (int) thisMonth )} ({Sup.GetCUstringValue( "Graphs", "LogarithmicScale", "Logarithmic scale!", true )})' " );
+              $"{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( thisMonth )} ({Sup.GetCUstringValue( "Graphs", "LogarithmicScale", "Logarithmic scale!", true )})' " );
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "subtitle:" );
             thisBuffer.AppendLine( "{" );

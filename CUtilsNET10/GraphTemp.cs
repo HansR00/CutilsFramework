@@ -38,9 +38,9 @@ namespace CumulusUtils
             {
                 StationNormal = true;
 
-                for ( int i = (int) Months.Jan; i <= (int) Months.Dec; i++ )
+                for ( int i = 1; i <= 12; i++ )
                 {
-                    string iniKeyName = "NOAATempNorm" + Enum.GetNames( typeof( Months ) )[ i - 1 ];
+                    string iniKeyName = "NOAATempNorm" + m[ i - 1 ];
                     string iniResult = Sup.GetCumulusIniValue( "NOAA", iniKeyName, "0.0" );
                     if ( iniResult.IndexOf( ',' ) > 0 )
                         iniResult = iniResult.Replace( ',', '.' );
@@ -57,7 +57,7 @@ namespace CumulusUtils
             {
                 StationAverage = true;
 
-                for ( int i = (int) Months.Jan; i <= (int) Months.Dec; i++ )
+                for ( int i = 1; i <= 12; i++ )
                 {
                     if ( ThisList.Where( x => x.ThisDate.Month == i ).Any() )
                     {
@@ -67,7 +67,7 @@ namespace CumulusUtils
                     else
                         NOAATempStationAv[ i - 1 ] = -1;
 
-                    Sup.LogTraceInfoMessage( $" Station Average values: {Enum.GetNames( typeof( Months ) )[ i - 1 ]} -> {NOAATempStationAv[ i - 1 ].ToString( "F1", CUtils.Inv )}" );
+                    Sup.LogTraceInfoMessage( $" Station Average values: {m[ i - 1 ]} -> {NOAATempStationAv[ i - 1 ].ToString( "F1", CUtils.Inv )}" );
                 }
             }
             else
@@ -77,11 +77,11 @@ namespace CumulusUtils
 
             for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
-                MonthlyTempValues = new float[ Enum.GetNames( typeof( Months ) ).Length ];
+                MonthlyTempValues = new float[ m.Length ];
                 YearValues.Add( MonthlyTempValues );
                 years.Add( i );
 
-                for ( int j = (int) Months.Jan; j <= (int) Months.Dec; j++ )
+                for ( int j = 1; j <= 12; j++ )
                 {
                     //Now do the actual month work
                     if ( ThisList.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == j ).Any() )
@@ -122,7 +122,7 @@ namespace CumulusUtils
             sb = new StringBuilder();
             sb.Append( "    categories: [" );
 
-            for ( int i = (int) Months.Jan; i <= (int) Months.Dec; i++ )
+            for ( int i = 1; i <= 12; i++ )
                 sb.Append( $"'{CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName( i )}'," );
 
             sb.Remove( sb.Length - 1, 1 );
@@ -159,7 +159,7 @@ namespace CumulusUtils
                 //Do the NORMAL series
                 sb.Append( $"       name : '{Sup.GetCUstringValue( "Graphs", "MTNormal", "Normal", true )}', color: 'black', visible:true, zIndex:-1,\n" +
                           "       data : [" );
-                for ( int i = (int) Months.Jan; i <= (int) Months.Dec; i++ )
+                for ( int i = 1; i <= 12; i++ )
                     sb.Append( $"{NOAATempNorm[ i - 1 ].ToString( "F1", NumberFormatInfo.InvariantInfo )}," );
 
                 sb.Remove( sb.Length - 1, 1 ); //remove last comma
@@ -174,7 +174,7 @@ namespace CumulusUtils
                 //Do the Station Average serie
                 sb.Append( $"       name : '{Sup.GetCUstringValue( "Graphs", "MTStationAverage", "Station average", true )}', color: 'grey', visible:true, zIndex:-2,\n" +
                   "       data : [" );
-                for ( int i = (int) Months.Jan; i <= (int) Months.Dec; i++ )
+                for ( int i = 1; i <= 12; i++ )
                     sb.Append( $"{NOAATempStationAv[ i - 1 ].ToString( "F1", NumberFormatInfo.InvariantInfo )}," );
 
                 sb.Remove( sb.Length - 1, 1 ); //remove last comma
@@ -187,7 +187,7 @@ namespace CumulusUtils
                 sb.Append( "type: 'areasplinerange',\n" );
                 sb.Append( "data: [" );
 
-                for ( int i = (int) Months.Jan; i <= (int) Months.Dec; i++ )
+                for ( int i = 1; i <= 12; i++ )
                     sb.Append( $"[{( NOAATempStationAv[ i - 1 ] - NOAATempStdDev[ i - 1 ] ).ToString( "F1", NumberFormatInfo.InvariantInfo )}," +
                       $"{( NOAATempStationAv[ i - 1 ] + NOAATempStdDev[ i - 1 ] ).ToString( "F1", NumberFormatInfo.InvariantInfo )}]," );
 
@@ -776,7 +776,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "});" );
         }
 
-        private void GenerateYearMonthTempStatistics( List<DayfileValue> Thislist, Months thisMonth, StringBuilder thisBuffer )
+        private void GenerateYearMonthTempStatistics( List<DayfileValue> Thislist, int thisMonth, StringBuilder thisBuffer )
         {
             StringBuilder sb = new StringBuilder();
 
@@ -790,7 +790,7 @@ namespace CumulusUtils
 
             for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
-                List<DayfileValue> yearmonthlist = Thislist.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == (int) thisMonth ).ToList();
+                List<DayfileValue> yearmonthlist = Thislist.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == thisMonth ).ToList();
 
                 Sup.LogTraceVerboseMessage( $"Generating Year Month Temp Statistics, doing year {i} and month {thisMonth}" );
 
@@ -819,7 +819,7 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "title:" );
             thisBuffer.AppendLine( "{" );
-            thisBuffer.AppendLine( $"  text: '{Sup.GetCUstringValue( "Graphs", "YMTSTitle", "Year Temperature Statistics for", true )} {CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( (int) thisMonth )}' " );
+            thisBuffer.AppendLine( $"  text: '{Sup.GetCUstringValue( "Graphs", "YMTSTitle", "Year Temperature Statistics for", true )} {CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName( thisMonth )}' " );
             thisBuffer.AppendLine( "}," );
             thisBuffer.AppendLine( "subtitle:" );
             thisBuffer.AppendLine( "{" );

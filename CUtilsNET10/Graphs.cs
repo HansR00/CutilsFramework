@@ -44,10 +44,8 @@ namespace CumulusUtils
             GraphRAINvsEVT,
             GraphAverageClash;
 
-        //private enum Months : int { Jan = 1, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec };
-
-        // Is this one really necessary???
-        private readonly string[] m = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };  //Culture independent, just strings to compare in the menu
+        //Culture independent, just strings to compare in the menu
+        public readonly string[] m = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
 
         private enum WarmDayType { Zero, Plus25Day, Plus30Day, Plus35Day, Plus40Day };
         private enum ColdDayType { Zero, FrostDay, IceDay };
@@ -76,10 +74,9 @@ namespace CumulusUtils
         private float NOAARainNormYearAv = 0.0F;
         private float StationRainYearAv = 0.0F;
         private float MaxYearlyRainAlltime = 0.0F;
-        //private readonly int YearMax;
-        //private readonly int YearMin;
         private readonly bool SplitHeatmapPages;
         private readonly int HeatmapNrOfYearsPerPage;
+        private readonly int period;
 
         private readonly int maxNrOfSeriesVisibleInGraph;
 
@@ -152,6 +149,13 @@ namespace CumulusUtils
             minTemp = thisList.Select( x => x.MinTemp ).Min();
             maxRain = thisList.Select( x => x.TotalRainThisDay ).Max();
 
+            period = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "PeriodMovingAverage", "180" ), CUtils.Inv );
+
+            if ( period == 365 && DateTime.IsLeapYear( DateTime.Now.Year ) )
+                if ( period > 366 ) period = 366;
+                else if ( period > 365 ) period = 365;
+
+
             maxNrOfSeriesVisibleInGraph = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "MaxNrOfSeriesVisibileInGraph", "2" ), CUtils.Inv );
 
             GenerateNOAAparameters( thisList );
@@ -161,7 +165,7 @@ namespace CumulusUtils
 
             // For windrose
             NrOfCompassSectors = Convert.ToInt32( Sup.GetCumulusIniValue( "Display", "NumWindRosePoints", "" ), CUtils.Inv );
-            CompassSector = (float) ( 360.0 / (float) NrOfCompassSectors );
+            CompassSector = (float) ( 360.0 / NrOfCompassSectors );
             HalfCompassSector = (float) ( CompassSector / 2.0 );
 
             NrOfWindforceClasses = Convert.ToSingle( Sup.GetUtilsIniValue( "Graphs", "WindRoseNrOfWindforceClasses", "6" ), CUtils.Inv );
@@ -344,7 +348,7 @@ namespace CumulusUtils
                         thisBuffer.AppendLine( "{" );
                         if ( GraphYearMonthRainStats )
                         {
-                            GenerateYearMonthRainStatistics( ThisList, (Months) thisMonth, thisBuffer );
+                            GenerateYearMonthRainStatistics( ThisList, thisMonth, thisBuffer );
                             thisBuffer.AppendLine( ActivateChartInfo( chartId: "YearlyMonthlyRainStats" ) );
                         }
                         thisBuffer.AppendLine( "}" );
@@ -538,7 +542,7 @@ namespace CumulusUtils
                         thisBuffer.AppendLine( "{" );
                         if ( GraphYearMonthTempStats )
                         {
-                            GenerateYearMonthTempStatistics( ThisList, (Months) thisMonth, thisBuffer );
+                            GenerateYearMonthTempStatistics( ThisList, thisMonth, thisBuffer );
                             thisBuffer.AppendLine( ActivateChartInfo( chartId: "YearlyMonthlyTempStats" ) );
                         }
                         thisBuffer.AppendLine( "}" );
@@ -937,7 +941,7 @@ namespace CumulusUtils
                         thisBuffer.AppendLine( "{" );
                         if ( GraphYearMonthSolarHoursStats )
                         {
-                            GenerateYearMonthSolarHoursStatistics( (Months) thisMonth, thisBuffer );
+                            GenerateYearMonthSolarHoursStatistics( thisMonth, thisBuffer );
                             thisBuffer.AppendLine( ActivateChartInfo( chartId: "YearlyMonthlySolarHRSstats" ) );
                         }
                         thisBuffer.AppendLine( "}" );
@@ -966,7 +970,7 @@ namespace CumulusUtils
                         thisBuffer.AppendLine( "{" );
                         if ( GraphYearMonthSolarEnergyStats )
                         {
-                            GenerateYearMonthSolarEnergyStatistics( (Months) thisMonth, thisBuffer );
+                            GenerateYearMonthSolarEnergyStatistics( thisMonth, thisBuffer );
                             thisBuffer.AppendLine( ActivateChartInfo( chartId: "YearlyMonthlyInsolationStats" ) );
                         }
                         thisBuffer.AppendLine( "}" );
@@ -1190,16 +1194,18 @@ namespace CumulusUtils
                 }
 
                 StringBuilder tmp = new StringBuilder();
+
                 string Info = $"{Sup.GetCUstringValue( "General", "Info", "Info", true )}";
 
+                // See: https://stackoverflow.com/a/79749908/11931424
+
                 tmp.AppendLine( "chart.update({" );
-                tmp.AppendLine( "  chart:{events:{render() {const {x,y,width} = this.exportingGroup.getBBox();" );
+                tmp.AppendLine( "  chart:{events:{render() {const chart = this; if ( !chart.exporting.group ){return;}const { x, y, width } = chart.exporting.group.getBBox();" );
 
                 tmp.AppendLine( "  if ( !this.customText ){" ); // Create a customText if it doesn't exist
                 tmp.AppendLine( $"    this.customText = this.renderer.text( '{Info}', x - width - 15, y + 15 )" );
                 tmp.AppendLine( "      .add()" +
-                    ".css({color: this.title.styles.color})" +
-                    ".css({cursor: 'pointer'})" +
+                    ".css({ color: this.title && this.title.styles ? this.title.styles.color : '#333', cursor: 'pointer' })" +
                     $".on('click', () => $('#{chartId}').modal( 'show') );" );
                 tmp.AppendLine( "  } else {" ); // Update the label position on render event (i.e on window resize)
                 tmp.AppendLine( "    this.customText.attr({x: x - width - 15, y: y + 15}); } } } } });" );
@@ -1265,10 +1271,8 @@ namespace CumulusUtils
 
         private void GenerateNOAAparameters( List<DayfileValue> ThisList )
         {
-            // Now we have to determine the reference values for the total rainfall. A lot of work for two value :)
+            // Now we have to determine the reference values for the total rainfall. A lot of work for two values :)
             //
-
-            //List<float> YearlyValues = new List<float>();
 
             NormalUsage = Sup.GetUtilsIniValue( "Graphs", "UseNormalRainReference", "Normal" );
 
@@ -1276,16 +1280,14 @@ namespace CumulusUtils
             {
                 StationNormal = true;
 
-                for ( int i = (int) Months.Jan; i <= (int) Months.Dec; i++ )
+                for ( int i = 1; i <= 12; i++ )
                 {
-                    string iniKeyName = "NOAARainNorm" + Enum.GetNames( typeof( Months ) )[ i - 1 ];
+                    string iniKeyName = "NOAARainNorm" + m[ i - 1 ];
                     string iniResult = Sup.GetCumulusIniValue( "NOAA", iniKeyName, "0.0" );
                     if ( iniResult.IndexOf( ',' ) > 0 )
                         iniResult = iniResult.Replace( ',', '.' );
                     NOAARainNormYearAv += (float) Convert.ToDouble( iniResult, CUtils.Inv );
                 }
-
-                //YearlyValues.Add( NOAARainNormYearAv );
 
                 Sup.LogTraceInfoMessage( $" GenerateNOAAparameters: NOAARainNormYearAv {NOAARainNormYearAv:F1}" );
             }
@@ -1294,7 +1296,6 @@ namespace CumulusUtils
             if ( NormalUsage.Equals( "StationAverage", CUtils.Cmp ) || NormalUsage.Equals( "Both", CUtils.Cmp ) )
             {
                 List<float> tmp = new List<float>();
-                //Calendar Cal = new GregorianCalendar();
 
                 StationAverage = true;
 
@@ -1319,8 +1320,6 @@ namespace CumulusUtils
             //  Now get the highest year rainfall ever
             for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
                 MaxYearlyRainAlltime = Math.Max( ThisList.Where( x => x.ThisDate.Year == i ).Select( x => x.TotalRainThisDay ).Sum(), MaxYearlyRainAlltime );
-
-
 
             return;
         }

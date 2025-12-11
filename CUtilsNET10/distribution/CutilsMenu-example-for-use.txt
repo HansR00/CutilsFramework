@@ -4,21 +4,20 @@
 ; This file is  part of the distribution as example
 ; For use, please rename to CutilsMenu.def and move to the utils directory
 ; Users may modify this file to change the order of the menu items and add items as they please
+; Home must be the first item and About must be the last. All other items can be placed at will.
 ; Items in this file are for instruction only
 ;
 Home
 Reports
 
 Graphs
-  Item Extra Report extrasensors.txt EndItem
+;  Item Extra Report extrasensors.txt EndItem
 
 Records
 Extra
 Misc
 
 User
-  Item ./wu.png External https://www.wunderground.com/dashboard/pws/IWAGEN6?cm_ven=localwx_pwsdash EndItem
-  Item Sat24 Infrarood Image https://api.sat24.com/animated/EU/infraPolair/3/W_dot_%20Europe%20Standard%20Time/3820315 EndItem
 
 NL
   Item Waterstanden External https://waterinfo.rws.nl/#!/kaart/waterhoogte/ EndItem
@@ -30,5 +29,5 @@ NL
   Item TopoNL (Int) Internal https://topotijdreis.nl EndItem
 
 ToggleDashboard
-About
 Print
+About

@@ -192,7 +192,7 @@ namespace CumulusUtils
             Top10List[ (int) Top10Types.totalWindrun ] = ThisList.OrderByDescending( x => x.TotalWindRun ).Take( 10 ).ToList();
 
             //HighRainRate
-            Top10List[ (int) Top10Types.highRainRate ] = ThisList.OrderByDescending( x => x.MaxRainRate ).Take( 10 ).ToList();
+            Top10List[ (int) Top10Types.highRainRate ] = ThisList.OrderByDescending( x => x.MaxRainRate ).Take( 100 ).ToList();
 
             //HighHourlyRain
             Top10List[ (int) Top10Types.highHourlyRain ] = ThisList.OrderByDescending( x => x.HighHourlyRain ).Take( 10 ).ToList();

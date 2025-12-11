@@ -310,22 +310,22 @@ namespace CumulusUtils
 
         public void GenerateCustomLogsRealtime()
         {
+            StringBuilder sb = new StringBuilder();
+
+            Sup.LogDebugMessage( $"GenerateCustomLogsRealtime: Writing the CustomLogs realtime file for the actual valid tags found" );
+
+            foreach ( CustomLog tmp in CustomLogsList )
+            {
+                foreach ( string Tag in tmp.TagsRaw )
+                {
+                    sb.Append( $"{Tag} " );
+                }
+            }
+
+            Sup.LogTraceInfoMessage( $"GenerateCustomLogsRealtime: {sb}" );
+
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.CustomLogsRealtimeFilename}", false, Encoding.UTF8 ) )
             {
-                StringBuilder sb = new StringBuilder();
-
-                Sup.LogDebugMessage( $"GenerateCustomLogsRealtime: Writing the CustomLogs realtime file for the actual valid tags found" );
-
-                foreach ( CustomLog tmp in CustomLogsList )
-                {
-                    foreach ( string Tag in tmp.TagsRaw )
-                    {
-                        sb.Append( $"{Tag} " );
-                    }
-                }
-
-                Sup.LogTraceInfoMessage( $"GenerateCustomLogsRealtime: {sb}" );
-
                 of.Write( sb );
             }
 
