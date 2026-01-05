@@ -303,7 +303,7 @@ namespace CumulusUtils
                     }
                     else
                     {
-                        TheCharts.AppendLine( $"      plotOptions: {{ series: {{ clip: false, connectNulls: {Sup.GetUtilsIniValue( "General", "ConnectNulls", "false" ).ToLower()}, turboThreshold: 0, " +
+                        TheCharts.AppendLine( $"      plotOptions: {{ series: {{ connectNulls: {Sup.GetUtilsIniValue( "General", "ConnectNulls", "false" ).ToLower()}, turboThreshold: 0, " +
                             "states: { hover: { halo: { size: 5,opacity: 0.25} } }," +
                             "marker: { enabled: false, states: { hover: { enabled: true, radius: 0.1} } } }, }," );
                         TheCharts.AppendLine( "      tooltip: {split: true, valueDecimals: 1, xDateFormat: '%A, %b %e, %H:%M'}," );
@@ -726,7 +726,7 @@ namespace CumulusUtils
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Humidity", "Humidity", true )} (%)'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
-                    buf.Append( "min: 0, max: 100," );
+                    buf.Append( "min: 0, max: 101, endOnTick: false," );
                     buf.Append( "allowDecimals: false,showLastLabel: true," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}," );
                     AxisSet |= AxisType.Humidity;
