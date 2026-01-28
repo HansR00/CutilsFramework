@@ -480,10 +480,10 @@ namespace CumulusUtils
                                "background: #f0f0f0; text-align: right;'>" );
                     of.WriteLine( "<span >></span></div></div>" );
                     of.WriteLine( $"<div style='width: {TableWidth}%; margin-left: auto; margin-right: auto; text-align: left;'>" +
-                          $"Current FWI value = {FWIlist[ IndexOfCurrent ].SmoothedFWI.ToString( "F1", CUtils.Inv )} " +
-                          $"(maximum scale = {ExtremeFWIvalue})</div>" );
+                          $"{Sup.GetCUstringValue( "pwsFWI", "CurrentValue", "Current FWI value", false )} = {FWIlist[ IndexOfCurrent ].SmoothedFWI.ToString( "F1", CUtils.Inv )} " +
+                          $"({Sup.GetCUstringValue( "pwsFWI", "MaxScale", "maximum scale", false )} = {ExtremeFWIvalue})</div>" );
                     of.WriteLine( $"<div style ='width: {TableWidth}%; margin-left: auto; margin-right: auto; text-align:left;'>" +
-                                 "<small>For more information on the Fire Weather Index, see the end of this page.</small></div>" );
+                                 $"<small>{Sup.GetCUstringValue( "pwsFWI", "MoreInfo", "For more information on the Fire Weather Index, see the end of this page.", false )}</small></div>" );
                     of.WriteLine( "<br/><br/>" );
 
                     of.WriteLine( $"<table style='width: {TableWidth}%; margin-left: auto; margin-right: auto; border-collapse: collapse; background-color: #d7d7d7;'><tbody>" );

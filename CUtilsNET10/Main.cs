@@ -113,6 +113,11 @@ namespace CumulusUtils
 
         public static List<DayfileValue> MainList = new List<DayfileValue>();
 
+        // Following for code generation and axis generation and maybe somewhere else
+        public static bool PressureInInchHg { get; set; }
+        public static bool RainInInch { get; set; }
+
+
         #endregion
 
         #region Main
@@ -213,6 +218,9 @@ namespace CumulusUtils
                 FTPIntervalInMinutes = Convert.ToInt32( Sup.GetCumulusIniValue( "FTP site", "UpdateInterval", "" ) );
                 UtilsRealTimeInterval = Convert.ToInt32( Sup.GetUtilsIniValue( "Website", "CumulusRealTimeInterval", "15" ) ); // Sorry for the confused naming
                 ConnectNulls = Sup.GetUtilsIniValue( "General", "ConnectNulls", "false" ).Equals( "true", Cmp );
+
+                PressureInInchHg = Sup.StationPressure.Dim == PressureDim.inchHg ? true : false;
+                RainInInch = Sup.StationRain.Dim == RainDim.inch ? true : false;
 
                 // Now start doing things
                 CUtils p = new CUtils();

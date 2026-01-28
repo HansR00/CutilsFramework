@@ -1231,7 +1231,7 @@ namespace CumulusUtils
                                     jsonWindDir = await thisCmxIPC.GetCMXGraphdataAsync( "wdirdata.json" );
                                 }
 
-                                jsonWindBarbs = CombineWindData( jsonWindSpeed, jsonWindDir ).Substring( 1 ); // Start accolade removed
+                                jsonWindBarbs = CombineWindData( jsonWindSpeed, jsonWindDir )[ 1.. ]; // Start accolade removed
 
                                 // Sup.LogTraceInfoMessage( $"DoAirLink Windbarb JSON: {jsonWindBarbs}" );
 
@@ -1302,10 +1302,9 @@ namespace CumulusUtils
 
             // Output format: [UnixDate, wspeed, bearing]
 
-            var combinedBarbs = wspeedList.Zip( bearingList, ( wspeedEntry, bearingEntry ) => 
-            {
+            var combinedBarbs = wspeedList.Zip( bearingList, ( wspeedEntry, bearingEntry ) => {
                 return new List<object> { wspeedEntry[ 0 ], wspeedEntry[ 1 ], bearingEntry[ 1 ] };
-            } 
+            }
             ).ToList();
 
             var finalResult = new Dictionary<string, List<List<object>>>

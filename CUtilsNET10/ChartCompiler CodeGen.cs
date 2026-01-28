@@ -303,10 +303,10 @@ namespace CumulusUtils
                 }
                 else
                 {
-                    TheCharts.AppendLine( $"      plotOptions: {{ series: {{ clip: false, connectNulls: {Sup.GetUtilsIniValue( "General", "ConnectNulls", "false" ).ToLower()}, turboThreshold: 0, " +
-                        "states: { hover: { halo: { size: 5,opacity: 0.25} } }," +
-                        "marker: { enabled: false, states: { hover: { enabled: true, radius: 0.1} } } }, }," );
-                    TheCharts.AppendLine( "      tooltip: {split: true, valueDecimals: 1, xDateFormat: '%A, %b %e, %H:%M'}," );
+                    TheCharts.AppendLine( $"      plotOptions: {{ series: {{ connectNulls: {Sup.GetUtilsIniValue( "General", "ConnectNulls", "false" ).ToLower()}, turboThreshold: 0, " +
+                            "states: { hover: { halo: { size: 5,opacity: 0.25} } }," +
+                            "marker: { enabled: false, states: { hover: { enabled: true, radius: 0.1} } } }, }," );
+                    TheCharts.AppendLine( $"      tooltip: {{split: true, valueDecimals: 1, xDateFormat: '%A, %b %e, %H:%M'}}," );
                 }
 
                 TheCharts.AppendLine( "      series:[]," );
@@ -492,7 +492,13 @@ namespace CumulusUtils
                     if ( !thisPlotvar.Visible ) AddSeriesJavascript.AppendLine( $"    visible: false," );
 
                     AddSeriesJavascript.AppendLine( $"    zIndex: {thisPlotvar.zIndex}," );
-                    AddSeriesJavascript.AppendLine( $"    tooltip:{{valueSuffix: ' {thisPlotvar.Unit}'}}" );
+
+                    int NrOfDecimals = 1;
+
+                    if ( thisPlotvar.Axis == AxisType.Pressure && CUtils.PressureInInchHg || thisPlotvar.Axis == AxisType.Rain && CUtils.RainInInch )
+                        NrOfDecimals = 2;
+
+                    AddSeriesJavascript.AppendLine( $"    tooltip:{{valueDecimals: {NrOfDecimals}, valueSuffix: ' {thisPlotvar.Unit}'}}" );
                     AddSeriesJavascript.AppendLine( "   }, false);" );
 
                     Sup.LogTraceInfoMessage( $"Compiler - CodeGen: {filename} Written the Series {thisPlotvar.Keyword}" );
@@ -662,33 +668,46 @@ namespace CumulusUtils
                 }
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.Pressure ) && !AxisSet.HasFlag( AxisType.Pressure ) )
                 {
-                    int NrOfDecimals = Sup.StationPressure.Dim == PressureDim.inchHg ? 2 : 0;
-
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Pressure", "Pressure", true )} ({thisPlotvar.Unit})'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
-                    _ = Sup.StationPressure.Dim == PressureDim.inchHg ? buf.Append( "allowDecimals: true," ) : buf.Append( "allowDecimals: false," );
-                    buf.Append( $"softMin: {Sup.StationPressure.Format( MinPressure ).Replace( ',', '.' )}, softMax: {Sup.StationPressure.Format( MaxPressure ).Replace( ',', '.' )}," +
+                    buf.Append( $"softMin: {MinPressure.ToString( $"F{Sup.StationPressure.NrOfDecimals()}" ).Replace( ',', '.' )}, " +
+                        $"softMax: {MaxPressure.ToString( $"F{Sup.StationPressure.NrOfDecimals()}" ).Replace( ',', '.' )}, " +
                         $"showLastLabel: true," );
-                    buf.Append( $"labels: {{ formatter: function () {{return Highcharts.numberFormat(this.value, {NrOfDecimals}, '.', '');}}, " +
+
+                    if ( Sup.StationPressure.NrOfDecimals() == 2 ) buf.Append( "allowDecimals: true," );
+                    else buf.Append( "allowDecimals: false," );
+
+                    buf.Append( $"labels: {{ formatter: function () {{return Highcharts.numberFormat(this.value, {Sup.StationPressure.NrOfDecimals()}, '.', '');}}, " +
                         $"{( opposite ? "align: 'left',x: 5,y: -2}," : "align: 'right',x: -5, y: -2}," )}" );
+
                     AxisSet |= AxisType.Pressure;
                 }
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.Rain ) && !AxisSet.HasFlag( AxisType.Rain ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Rain", "Rain", true )} ({thisPlotvar.Unit})'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
-                    buf.Append( $"endOnTick: false, softMax: 1,min: 0,showLastLabel: true," );
-                    buf.Append( "allowDecimals: false," );
-                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}," );
+                    buf.Append( $"endOnTick: false, softMax: {( Sup.StationRain.NrOfDecimals() == 2 ? "0.04" : "1")},min: 0,showLastLabel: true," );
+
+                    if ( Sup.StationRain.NrOfDecimals() == 2 ) buf.Append( "allowDecimals: true," );
+                    else buf.Append( "allowDecimals: false," );
+
+                    buf.Append( $"labels: {{ formatter: function () {{return Highcharts.numberFormat(this.value, {Sup.StationRain.NrOfDecimals()}, '.', '');}}, " +
+                        $"{( opposite ? "align: 'left',x: 5,y: -2}," : "align: 'right',x: -5, y: -2}," )}" );
+
                     AxisSet |= AxisType.Rain;
                 }
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.Rrate ) && !AxisSet.HasFlag( AxisType.Rrate ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Rainrate", "Rain Rate", true )} ({thisPlotvar.Unit})'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
-                    buf.Append( $"endOnTick: false, showLastLabel: true, softMax: 1,min: 0," );
-                    buf.Append( "allowDecimals: false," );
-                    buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}," );
+                    buf.Append( $"endOnTick: false, softMax: {( CUtils.RainInInch ? "0.04" : "1" )},min: 0,showLastLabel: true," );
+
+                    if ( Sup.StationRain.NrOfDecimals() == 2 ) buf.Append( "allowDecimals: true," );
+                    else buf.Append( "allowDecimals: false," );
+
+                    buf.Append( $"labels: {{ formatter: function () {{return Highcharts.numberFormat(this.value, {Sup.StationRain.NrOfDecimals()}, '.', '');}}, " +
+                        $"{( opposite ? "align: 'left',x: 5,y: -2}," : "align: 'right',x: -5, y: -2}," )}" );
+
                     AxisSet |= AxisType.Rrate;
                 }
                 else if ( thisPlotvar.Axis.HasFlag( AxisType.Wind ) && !AxisSet.HasFlag( AxisType.Wind ) )
@@ -730,7 +749,7 @@ namespace CumulusUtils
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Humidity", "Humidity", true )} (%)'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
-                    buf.Append( "min: 0, max: 100," );
+                    buf.Append( "min: 0, max: 101, endOnTick: false," );
                     buf.Append( "allowDecimals: false,showLastLabel: true," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}," );
                     AxisSet |= AxisType.Humidity;
@@ -845,7 +864,7 @@ namespace CumulusUtils
 
         bool SumFunctionGenerated = false;
 
-        void GenerateSeriesVariables( StringBuilder buf, List<AllVarInfo> AllVars )
+        private void GenerateSeriesVariables( StringBuilder buf, List<AllVarInfo> AllVars )
         {
             Sup.LogTraceVerboseMessage( $"Compiler - Creating Runtime Series Variables" );
 
@@ -859,7 +878,7 @@ namespace CumulusUtils
             buf.AppendLine( "" );
         }
 
-        void GenerateSumFunction( StringBuilder buf )
+        private void GenerateSumFunction( StringBuilder buf )
         {
             // https://stackoverflow.com/questions/1230233/how-to-find-the-sum-of-an-array-of-numbers
 
@@ -1018,7 +1037,7 @@ namespace CumulusUtils
         #endregion
 
         #region Additional generating functions
-        List<AllVarInfo> CheckAllVariablesInThisSetOfCharts( List<ChartDef> theseCharts )
+        private List<AllVarInfo> CheckAllVariablesInThisSetOfCharts( List<ChartDef> theseCharts )
         {
             List<AllVarInfo> AllVars = new List<AllVarInfo>();
             AllVarInfo tmpVarInfo = new AllVarInfo();

@@ -381,7 +381,7 @@ namespace CumulusUtils
         private string CreateMonthPartofLineForDay( int thisYear, int thisMonth, int thisDay )
         {
             DiaryValue thisValue;
-            float? SnowDepth, Snow24h;
+            float? snowDepth, snow24h;
             string StrSnowDepth = "", StrSnow24h = "", thisLine = "";
 
             try
@@ -390,18 +390,18 @@ namespace CumulusUtils
                                     .Where( x => x.ThisDate.Month == thisMonth )
                                     .Where( x => x.ThisDate.Day == thisDay ).First();
 
-                SnowDepth = thisValue.snowDepth;
-                Snow24h = thisValue.snow24h;  // See https://cumulus.hosiene.co.uk/viewtopic.php?p=188423#p188423
+                snowDepth = thisValue.snowDepth;
+                snow24h = thisValue.snow24h;  // See https://cumulus.hosiene.co.uk/viewtopic.php?p=188423#p188423
 
                 if ( Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ) // cm
                 {
-                    StrSnowDepth = $"{( ( SnowDepth is null ) ? "---" : SnowDepth ):F1}";
-                    StrSnow24h = $"{( Snow24h is null ? "---" : Snow24h ):F1}";
+                    StrSnowDepth = $"{( ( snowDepth is null ) ? "---" : snowDepth ):F1}";
+                    StrSnow24h = $"{( snow24h is null ? "---" : snow24h ):F1}";
                 }
                 else
                 {
-                    StrSnowDepth = $"{( ( SnowDepth is null ) ? "---" : SnowDepth ):F2}";
-                    StrSnow24h = $"{( Snow24h is null ? "---" : Snow24h ):F2}";
+                    StrSnowDepth = $"{( ( snowDepth is null ) ? "---" : snowDepth ):F2}";
+                    StrSnow24h = $"{( snow24h is null ? "---" : snow24h ):F2}";
                 }
 
                 thisLine += CString( StrSnow24h, FieldWidth / 2 ) + CString( StrSnowDepth, FieldWidth / 2 );

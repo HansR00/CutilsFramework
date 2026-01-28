@@ -249,12 +249,13 @@ namespace CumulusUtils
                             }
                             else
                             {
-                                // No Range specification so: use default : Recent
+                                //No Range specification so: use default : Recent
                                 PlotvarAxis = PlotvarAxisRECENT;
                                 PlotvarTypes = PlotvarTypesRECENT;
                                 PlotvarKeyword = PlotvarKeywordRECENT;
                                 Datafiles = DatafilesRECENT;
                                 PlotvarUnits = PlotvarUnitsRECENT;
+
                                 thisPlotvar.PlotvarRange = PlotvarRangeType.Recent;
                             }
 

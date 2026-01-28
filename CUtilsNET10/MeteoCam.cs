@@ -11,6 +11,7 @@ namespace CumulusUtils
     class MeteoCam( CuSupport s )
     {
         readonly CuSupport Sup = s;
+        readonly string WantToSeeLines = s.GetUtilsIniValue( "MeteoCam", "WantToSeeLines", "WTPHR" ).ToUpper();
 
         #region Constructor
         public void GenerateMeteoCam()
@@ -55,6 +56,7 @@ namespace CumulusUtils
         private string MeteoCamManual()
         {
             StringBuilder sb = new StringBuilder();
+            // 
 
             Sup.LogTraceInfoMessage( $"MeteoCam CamType : Manual" );
 
@@ -86,12 +88,14 @@ namespace CumulusUtils
             sb.AppendLine( "function RadioViewerChange() {" );
             sb.AppendLine( "  if ($('input[name=\"viewer\"]:checked').val() == 'Image') {" );
             sb.AppendLine( "    $('#videoPlayer').hide();" );
+            sb.AppendLine( "    $('.text-block').show();" );
             sb.AppendLine( "    $('#imageViewer').show();" );
 
             sb.AppendLine( "    $('#videoPlayer')[0].pause();" );
-            sb.AppendLine( "    DoWebCam = true;" );
+            sb.AppendLine( "    DoWebCam = true; " );
             sb.AppendLine( "  } else {" );
             sb.AppendLine( "    $('#videoPlayer').show();" );
+            sb.AppendLine( "    $('.text-block').hide();" );
             sb.AppendLine( "    $('#imageViewer').hide();" );
             sb.AppendLine( "    $('#timelapses').change();" );
             sb.AppendLine( "    DoWebCam = false;" );
@@ -101,11 +105,11 @@ namespace CumulusUtils
             sb.AppendLine( "function UpdateWebCam(newAngle, beaufort, temp, baro, humidity, rain) {" );
             sb.AppendLine( $"  $('#imageViewer').attr('src', " +
                 $"'{Sup.GetUtilsIniValue( "MeteoCam", "MeteoCamDir", "." )}/{Sup.GetUtilsIniValue( "MeteoCam", "MeteoCamName", "meteocam.jpg" )}' + '?v=' + Math.random() );" );
-            sb.AppendLine( "  $('#TT1').html(beaufort);" );
-            sb.AppendLine( "  $('#TT2').html(temp);" );
-            sb.AppendLine( "  $('#TT3').html(baro);" );
-            sb.AppendLine( "  $('#TT4').html(humidity);" );
-            sb.AppendLine( "  $('#TT5').html(rain);" );
+            if ( WantToSeeLines.Contains( 'W' ) ) sb.AppendLine( "  $('#TT1').html(beaufort);" );
+            if ( WantToSeeLines.Contains( 'T' ) ) sb.AppendLine( "  $('#TT2').html(temp);" );
+            if ( WantToSeeLines.Contains( 'P' ) ) sb.AppendLine( "  $('#TT3').html(baro);" );
+            if ( WantToSeeLines.Contains( 'H' ) ) sb.AppendLine( "  $('#TT4').html(humidity);" );
+            if ( WantToSeeLines.Contains( 'R' ) ) sb.AppendLine( "  $('#TT5').html(rain);" );
             sb.AppendLine( "}" );
             sb.AppendLine( "</script>" );
 
@@ -126,11 +130,10 @@ namespace CumulusUtils
             sb.AppendLine( "  color: white;" );
             sb.AppendLine( "}" );
             sb.AppendLine( ".text-block {" );
-            //sb.AppendLine( "  background-color: black;" );
             sb.AppendLine( "  background: transparent;" );
             sb.AppendLine( "  position: absolute;" );
             sb.AppendLine( $"  font-size: {Sup.GetUtilsIniValue( "MeteoCam", "FontSize", "24" )}px;" );
-            sb.AppendLine( $"  font-weigt: {Sup.GetUtilsIniValue( "MeteoCam", "FontWeight", "bold" )};" );
+            sb.AppendLine( $"  font-weight: {Sup.GetUtilsIniValue( "MeteoCam", "FontWeight", "bold" )};" );
             sb.AppendLine( $"  bottom: {Sup.GetUtilsIniValue( "MeteoCam", "BottomOffset", "150" )}px;" );
             sb.AppendLine( $"  {Sup.GetUtilsIniValue( "MeteoCam", "BlockLeftOrRight", "left" )}: {Sup.GetUtilsIniValue( "MeteoCam", "BorderOffset", "50" )}px;" );
             sb.AppendLine( $"  text-align:{Sup.GetUtilsIniValue( "MeteoCam", "TextAlign", "left" )};" );
@@ -153,11 +156,11 @@ namespace CumulusUtils
             sb.AppendLine( "  <image id='imageViewer' style='width:100%; height:75vh;'>" );
 
             sb.AppendLine( "  <div class='text-block'>" );
-            sb.AppendLine( $"{Sup.GetCUstringValue( "MeteoCam", "WindInBf", "Wind", true )}: <span id='TT1'></span> Bf<br/>" );
-            sb.AppendLine( $"{Sup.GetCUstringValue( "MeteoCam", "Temperature", "Temperature", true )}: <span id='TT2'></span> {Sup.StationTemp.Text()}<br/>" );
-            sb.AppendLine( $"{Sup.GetCUstringValue( "MeteoCam", "Barometer", "Barometer", true )}: <span id='TT3'></span> {Sup.StationPressure.Text()}<br/>" );
-            sb.AppendLine( $"{Sup.GetCUstringValue( "MeteoCam", "Humidity", "Humidity", true )}: <span id='TT4'></span> %<br/>" );
-            sb.AppendLine( $"{Sup.GetCUstringValue( "MeteoCam", "Rain", "Rain", true )}: <span id ='TT5'></span> {Sup.StationRain.Text()}" );
+            if ( WantToSeeLines.Contains( 'W' ) ) sb.AppendLine( $"{Sup.GetCUstringValue( "MeteoCam", "WindInBf", "Wind", true )}: <span id='TT1'></span> Bf<br/>" );
+            if ( WantToSeeLines.Contains( 'T' ) ) sb.AppendLine( $"{Sup.GetCUstringValue( "MeteoCam", "Temperature", "Temperature", true )}: <span id='TT2'></span> {Sup.StationTemp.Text()}<br/>" );
+            if ( WantToSeeLines.Contains( 'P' ) ) sb.AppendLine( $"{Sup.GetCUstringValue( "MeteoCam", "Pressure", "Pressure", true )}: <span id='TT3'></span> {Sup.StationPressure.Text()}<br/>" );
+            if ( WantToSeeLines.Contains( 'H' ) ) sb.AppendLine( $"{Sup.GetCUstringValue( "MeteoCam", "Humidity", "Humidity", true )}: <span id='TT4'></span> %<br/>" );
+            if ( WantToSeeLines.Contains( 'R' ) ) sb.AppendLine( $"{Sup.GetCUstringValue( "MeteoCam", "Rain", "Rain", true )}: <span id ='TT5'></span> {Sup.StationRain.Text()}" );
             sb.AppendLine( "  </div>" );
 
             sb.AppendLine( "  <video id='videoPlayer' width='100%' height='100%' autoplay muted controls>" );
@@ -216,11 +219,11 @@ namespace CumulusUtils
             sb.AppendLine( "}" );
             sb.AppendLine( "function UpdateWebCam(newAngle, beaufort, temp, baro, humidity, rain) {" );
             sb.AppendLine( $"  loadWebcamURL();" );
-            sb.AppendLine( "  $('#TT1').html(beaufort);" );
-            sb.AppendLine( "  $('#TT2').html(temp);" );
-            sb.AppendLine( "  $('#TT3').html(baro);" );
-            sb.AppendLine( "  $('#TT4').html(humidity);" );
-            sb.AppendLine( "  $('#TT5').html(rain);" );
+            if ( WantToSeeLines.Contains( 'W' ) ) sb.AppendLine( "  $('#TT1').html(beaufort);" );
+            if ( WantToSeeLines.Contains( 'T' ) ) sb.AppendLine( "  $('#TT2').html(temp);" );
+            if ( WantToSeeLines.Contains( 'P' ) ) sb.AppendLine( "  $('#TT3').html(baro);" );
+            if ( WantToSeeLines.Contains( 'H' ) ) sb.AppendLine( "  $('#TT4').html(humidity);" );
+            if ( WantToSeeLines.Contains( 'R' ) ) sb.AppendLine( "  $('#TT5').html(rain);" );
             sb.AppendLine( "}" );
             sb.AppendLine( "</script>" );
             sb.AppendLine( "" );
@@ -238,7 +241,6 @@ namespace CumulusUtils
             sb.AppendLine( "  color: white;" );
             sb.AppendLine( "}" );
             sb.AppendLine( ".text-block {" );
-            //sb.AppendLine( "  background-color: black;" );
             sb.AppendLine( "  background: transparent;" );
             sb.AppendLine( "  position: absolute;" );
             sb.AppendLine( $"  font-size: {Sup.GetUtilsIniValue( "MeteoCam", "FontSize", "24" )}px;" );
@@ -253,11 +255,11 @@ namespace CumulusUtils
             sb.AppendLine( "<div class='container'>" );
             sb.AppendLine( "  <image id='imageViewer' style='width:100%; height:75vh;'>" );
             sb.AppendLine( "  <div class='text-block'>" );
-            sb.AppendLine( $"{Sup.GetCUstringValue( "MeteoCam", "WindInBf", "Wind", true )}: <span id='TT1'></span> Bf<br/>" );
-            sb.AppendLine( $"{Sup.GetCUstringValue( "MeteoCam", "Temperature", "Temperature", true )}: <span id='TT2'></span> {Sup.StationTemp.Text()}<br/>" );
-            sb.AppendLine( $"{Sup.GetCUstringValue( "MeteoCam", "Barometer", "Barometer", true )}: <span id='TT3'></span> {Sup.StationPressure.Text()}<br/>" );
-            sb.AppendLine( $"{Sup.GetCUstringValue( "MeteoCam", "Humidity", "Humidity", true )}: <span id='TT4'></span> %<br/>" );
-            sb.AppendLine( $"{Sup.GetCUstringValue( "MeteoCam", "Rain", "Rain", true )}: <span id ='TT5'></span> {Sup.StationRain.Text()}" );
+            if ( WantToSeeLines.Contains( 'W' ) ) sb.AppendLine( $"{Sup.GetCUstringValue( "MeteoCam", "WindInBf", "Wind", true )}: <span id='TT1'></span> Bf<br/>" );
+            if ( WantToSeeLines.Contains( 'T' ) ) sb.AppendLine( $"{Sup.GetCUstringValue( "MeteoCam", "Temperature", "Temperature", true )}: <span id='TT2'></span> {Sup.StationTemp.Text()}<br/>" );
+            if ( WantToSeeLines.Contains( 'P' ) ) sb.AppendLine( $"{Sup.GetCUstringValue( "MeteoCam", "Pressure", "Pressure", true )}: <span id='TT3'></span> {Sup.StationPressure.Text()}<br/>" );
+            if ( WantToSeeLines.Contains( 'H' ) ) sb.AppendLine( $"{Sup.GetCUstringValue( "MeteoCam", "Humidity", "Humidity", true )}: <span id='TT4'></span> %<br/>" );
+            if ( WantToSeeLines.Contains( 'R' ) ) sb.AppendLine( $"{Sup.GetCUstringValue( "MeteoCam", "Rain", "Rain", true )}: <span id ='TT5'></span> {Sup.StationRain.Text()}" );
             sb.AppendLine( "  </div>" );
 
             sb.AppendLine( "  </div>" ); // container

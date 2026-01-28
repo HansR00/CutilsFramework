@@ -46,7 +46,7 @@ namespace CumulusUtils
                 return val * 1.8 + 32;
         }
 
-        public static string Format( float value ) => $"{value:F1}";
+        public static int NrOfDecimals => 1;
     }
 
     public class Wind
@@ -55,11 +55,11 @@ namespace CumulusUtils
 
         readonly double[,] ConversionFactors =
         {
-      { 1.0,     2.23694, 3.6,     1.94384 } ,  // m/s to mph, km/h, kts
-      { 0.44704, 1.0,     1.60934, 0.868976} ,  // mph to m/s, km/h, kts
-      { 0.277778,0.621371,1.0,     0.539957} ,  // kmh to m/s, mph, kts
-      { 0.514444,1.15078, 1.852,   1.0}         // kts to m/s, mph, km/h
-    };
+          { 1.0,     2.23694, 3.6,     1.94384 } ,  // m/s to mph, km/h, kts
+          { 0.44704, 1.0,     1.60934, 0.868976} ,  // mph to m/s, km/h, kts
+          { 0.277778,0.621371,1.0,     0.539957} ,  // kmh to m/s, mph, kts
+          { 0.514444,1.15078, 1.852,   1.0}         // kts to m/s, mph, km/h
+        };
 
         public readonly WindDim Dim;
 
@@ -72,8 +72,7 @@ namespace CumulusUtils
         {
             return val * ConversionFactors[ (int) from, (int) to ];
         }
-
-        public static string Format( float value ) => $"{value:F1}";
+        public static int NrOfDecimals => 1;
     }
 
     public class Distance( DistanceDim d )
@@ -99,7 +98,7 @@ namespace CumulusUtils
             return val * ConversionFactors[ (int) from, (int) to ];
         }
 
-        public static string Format( float value ) => $"{value:F1}";
+        public static int NrOfDecimals => 1;
     }
 
     public class Rain( RainDim w )
@@ -108,9 +107,9 @@ namespace CumulusUtils
 
         readonly double[,] ConversionFactors =
         {
-      { 1.0,  0.0393701 } ,  // mm to in
-      { 25.4, 1.0 }          // in to mm
-    };
+            { 1.0,  0.0393701 } ,  // mm to in
+            { 25.4, 1.0 }          // in to mm
+        };
 
         public readonly RainDim Dim = w;
 
@@ -122,10 +121,10 @@ namespace CumulusUtils
             return val * ConversionFactors[ (int) from, (int) to ];
         }
 
-        public string Format( float value )
+        public int NrOfDecimals()
         {
-            if ( Dim == RainDim.inch ) return $"{value:F2}";
-            else return $"{value:F1}";
+            if ( Dim == RainDim.inch ) return 2;
+            else return 1;
         }
     }
 
@@ -135,10 +134,10 @@ namespace CumulusUtils
 
         readonly double[,] ConversionFactors =
         {
-      { 1.0,     1.0,     0.02953 } ,   // mb to hPa, inHg
-      { 1.0,     1.0,     0.02953 } ,   // hPa to mb, inHg
-      { 33.8639, 33.8639, 1.0 }         // inHg to mb, hPa
-    };
+          { 1.0,     1.0,     0.02953 } ,   // mb to hPa, inHg
+          { 1.0,     1.0,     0.02953 } ,   // hPa to mb, inHg
+          { 33.8639, 33.8639, 1.0 }         // inHg to mb, hPa
+        };
 
         public readonly PressureDim Dim = p;
 
@@ -150,10 +149,10 @@ namespace CumulusUtils
             return val * ConversionFactors[ (int) from, (int) to ];
         }
 
-        public string Format( float value )
+        public int NrOfDecimals()
         {
-            if ( Dim == PressureDim.inchHg ) return $"{value:F2}";
-            else return $"{value:F1}";
+            if ( Dim == PressureDim.inchHg ) return 2;
+            else return 0;
         }
     }
 
@@ -178,7 +177,7 @@ namespace CumulusUtils
             return val * ConversionFactors[ (int) from, (int) to ];
         }
 
-        public static string Format( float value ) => $"{value:F1}";
+        public static int NrOfDecimals => 1;
     }
 
     public class CO2conc

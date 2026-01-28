@@ -149,11 +149,12 @@ namespace CumulusUtils
             minTemp = thisList.Select( x => x.MinTemp ).Min();
             maxRain = thisList.Select( x => x.TotalRainThisDay ).Max();
 
-            period = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "PeriodMovingAverage", "180" ), CUtils.Inv );
+            period = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "PeriodMovingAverage", "365" ), CUtils.Inv );
 
-            if ( period == 365 && DateTime.IsLeapYear( DateTime.Now.Year ) )
-                if ( period > 366 ) period = 366;
-                else if ( period > 365 ) period = 365;
+            if ( period >= 365 )
+                if ( DateTime.IsLeapYear( DateTime.Now.Year ) ) period = 366;
+                else period = 365;
+            // else period remains as is defined by the user
 
 
             maxNrOfSeriesVisibleInGraph = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "MaxNrOfSeriesVisibileInGraph", "2" ), CUtils.Inv );

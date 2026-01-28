@@ -3,6 +3,7 @@
  *
  */
 
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -80,15 +81,15 @@ namespace CumulusUtils
                 if ( i == 1 )
                 {
                     thisBuffer.AppendLine( $"      {{ 'name': '{Sup.GetCUstringValue( "Graphs", "ZeroWind", "Zero Wind", true )} ' + ZeroWind + ' %'}}," );
-                    thisBuffer.AppendLine( $"      {{ 'name': '&lt; {Wind.Format( i * SpeedForRoseInterval )} {Sup.StationWind.Text()}', 'data': data{i} }}," );
+                    thisBuffer.AppendLine( $"      {{ 'name': '&lt; {i * SpeedForRoseInterval:F}{Wind.NrOfDecimals} {Sup.StationWind.Text()}', 'data': data{i} }}," );
                 }
                 else if ( i == NrOfWindforceClasses )
                 {
-                    thisBuffer.AppendLine( $"      {{ 'name': '&gt; {Wind.Format( ( NrOfWindforceClasses - 1 ) * SpeedForRoseInterval )} {Sup.StationWind.Text()}', 'data': data{i} }}," );
+                    thisBuffer.AppendLine( $"      {{ 'name': '&gt; {( NrOfWindforceClasses - 1 ) * SpeedForRoseInterval:F}{Wind.NrOfDecimals} {Sup.StationWind.Text()}', 'data': data{i} }}," );
                 }
                 else
                 {
-                    thisBuffer.AppendLine( $"      {{ 'name': '{Wind.Format( ( i - 1 ) * SpeedForRoseInterval )} - {Wind.Format( i * SpeedForRoseInterval )} {Sup.StationWind.Text()}', 'data': data{i} }}," );
+                    thisBuffer.AppendLine( $"      {{ 'name': '{( i - 1 ) * SpeedForRoseInterval:F}{Wind.NrOfDecimals} - {i * SpeedForRoseInterval:F}{Wind.NrOfDecimals} {Sup.StationWind.Text()}', 'data': data{i} }}," );
                 }
             }
             thisBuffer.AppendLine( "          ]" );
@@ -180,6 +181,7 @@ namespace CumulusUtils
                         {
                             float m = ( j * CompassSector - HalfCompassSector ) < 0 ? 360 - HalfCompassSector : j * CompassSector - HalfCompassSector;
                             float n = ( j * CompassSector + HalfCompassSector ) > 360 ? j * CompassSector + HalfCompassSector - 360 : j * CompassSector + HalfCompassSector;
+
                             if ( j == 0 )
                             {
                                 if ( tmpWindforceList.First().UseAverageBearing )

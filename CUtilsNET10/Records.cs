@@ -406,84 +406,84 @@ namespace CumulusUtils
                     tmp = ( now.Subtract( YearRecords[ j ][ (int) MeasurementRecords.Tmax ].TimeMaxTemp ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                     of.WriteLine( $"<tr>" );
                     of.WriteLine( $"<td {tmp}>{Sup.GetCUstringValue( "Records", "Tmax", "T<sub>max</sub>", false )} ({Sup.StationTemp.Text()})</td>" );
-                    of.WriteLine( $"<td {tmp}>{Temp.Format( YearRecords[ j ][ (int) MeasurementRecords.Tmax ].MaxTemp )}</td>" +
+                    of.WriteLine( $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Tmax ].MaxTemp.ToString( $"F{Temp.NrOfDecimals}" ) }</td>" +
                         $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Tmax ].TimeMaxTemp.ToString( "g", CUtils.ThisCulture )}</td>" );
                     of.WriteLine( "</tr>" );
 
                     tmp = ( now.Subtract( YearRecords[ j ][ (int) MeasurementRecords.Tmin ].TimeMinTemp ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                     of.WriteLine( $"<tr>" );
                     of.WriteLine( $"<td {tmp}>{Sup.GetCUstringValue( "Records", "Tmin", "T<sub>min</sub>", false )} ({Sup.StationTemp.Text()})</td>" );
-                    of.WriteLine( $"<td {tmp}>{Temp.Format( YearRecords[ j ][ (int) MeasurementRecords.Tmin ].MinTemp )}</td>" +
+                    of.WriteLine( $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Tmin ].MinTemp.ToString( $"F{Temp.NrOfDecimals}" )}</td>" +
                         $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Tmin ].TimeMinTemp.ToString( "g", CUtils.ThisCulture )}</td>" );
                     of.WriteLine( "</tr>" );
 
                     tmp = ( now.Subtract( YearRecords[ j ][ (int) MeasurementRecords.Rhour ].TimeHighHourlyRain ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                     of.WriteLine( $"<tr>" );
                     of.WriteLine( $"<td {tmp}>{Sup.GetCUstringValue( "Records", "Rhour", "T<sub>min</sub>", false )} ({Sup.StationRain.Text()})</td>" );
-                    of.WriteLine( $"<td {tmp}>{Sup.StationRain.Format( YearRecords[ j ][ (int) MeasurementRecords.Rhour ].HighHourlyRain )}</td>" +
+                    of.WriteLine( $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Rhour ].HighHourlyRain.ToString( $"F{Sup.StationRain.NrOfDecimals()}" )}</td>" +
                         $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Rhour ].TimeHighHourlyRain.ToString( "g", CUtils.ThisCulture )}</td>" );
                     of.WriteLine( "</tr>" );
 
                     tmp = ( now.Subtract( YearRecords[ j ][ (int) MeasurementRecords.Rday ].ThisDate ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                     of.WriteLine( $"<tr>" );
                     of.WriteLine( $"<td {tmp}>{Sup.GetCUstringValue( "Records", "Rday", "R<sub>day</sub>", false )} ({Sup.StationRain.Text()})</td>" );
-                    of.WriteLine( $"<td {tmp}>{Sup.StationRain.Format( YearRecords[ j ][ (int) MeasurementRecords.Rday ].TotalRainThisDay )}</td>" +
+                    of.WriteLine( $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Rday ].TotalRainThisDay.ToString( $"F{Sup.StationRain.NrOfDecimals()}" )}</td>" +
                         $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Rday ].ThisDate.ToString( "d", CUtils.ThisCulture )}</td>" );
                     of.WriteLine( "</tr>" );
 
                     tmp = ( now.Subtract( YearRecords[ j ][ (int) MeasurementRecords.Rmonth ].ThisDate ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                     of.WriteLine( $"<tr>" );
                     of.WriteLine( $"<td {tmp}>{Sup.GetCUstringValue( "Records", "Rmonth", "R<sub>month</sub>", false )} ({Sup.StationRain.Text()})</td>" );
-                    of.WriteLine( $"<td {tmp}>{Sup.StationRain.Format( YearRecords[ j ][ (int) MeasurementRecords.Rmonth ].MonthlyRain )}</td>" +
+                    of.WriteLine( $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Rmonth ].MonthlyRain.ToString( $"F{Sup.StationRain.NrOfDecimals()}" )}</td>" +
                         $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Rmonth ].ThisDate.ToString( "MMM yyyy", CUtils.ThisCulture )}</td>" );
                     of.WriteLine( "</tr>" );
 
                     tmp = ( now.Subtract( YearRecords[ j ][ (int) MeasurementRecords.Ryear ].ThisDate ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                     of.WriteLine( $"<tr>" );
                     of.WriteLine( $"<td {tmp}>{Sup.GetCUstringValue( "Records", "Ryear", "R<sub>year</sub>", false )} ({Sup.StationRain.Text()})</td>" );
-                    of.WriteLine( $"<td {tmp}>{Sup.StationRain.Format( YearRecords[ j ][ (int) MeasurementRecords.Ryear ].YearToDateRain )}</td>" +
+                    of.WriteLine( $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Ryear ].YearToDateRain.ToString( $"F{Sup.StationRain.NrOfDecimals()}" )}</td>" +
                         $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Ryear ].ThisDate.ToString( "MMM yyyy", CUtils.ThisCulture )}</td>" );
                     of.WriteLine( "</tr>" );
 
                     tmp = ( now.Subtract( YearRecords[ j ][ (int) MeasurementRecords.Rrate ].TimeMaxRainRate ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                     of.WriteLine( $"<tr>" );
                     of.WriteLine( $"<td {tmp}>{Sup.GetCUstringValue( "Records", "Rrate", "R<sub>rate</sub>", false )} ({Sup.StationRain.Text()}{Sup.PerHour})</td>" );
-                    of.WriteLine( $"<td {tmp}>{Sup.StationRain.Format( YearRecords[ j ][ (int) MeasurementRecords.Rrate ].MaxRainRate )}</td>" +
+                    of.WriteLine( $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Rrate ].MaxRainRate.ToString( $"F{Sup.StationRain.NrOfDecimals()}" )}</td>" +
                         $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Rrate ].TimeMaxRainRate.ToString( "g", CUtils.ThisCulture )}</td>" );
                     of.WriteLine( "</tr>" );
 
                     tmp = ( now.Subtract( YearRecords[ j ][ (int) MeasurementRecords.Waverage ].TimeHighAverageWindSpeed ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                     of.WriteLine( $"<tr>" );
                     of.WriteLine( $"<td {tmp}>{Sup.GetCUstringValue( "Records", "Waverage", "W<sub>average</sub>", false )} ({Sup.StationWind.Text()})</td>" );
-                    of.WriteLine( $"<td {tmp}>{Wind.Format( YearRecords[ j ][ (int) MeasurementRecords.Waverage ].HighAverageWindSpeed )}</td>" +
+                    of.WriteLine( $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Waverage ].HighAverageWindSpeed.ToString( $"F{Wind.NrOfDecimals}" )}</td>" +
                         $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Waverage ].TimeHighAverageWindSpeed.ToString( "g", CUtils.ThisCulture )}</td>" );
                     of.WriteLine( "</tr>" );
 
                     tmp = ( now.Subtract( YearRecords[ j ][ (int) MeasurementRecords.Wgust ].TimeHighWindGust ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                     of.WriteLine( $"<tr>" );
                     of.WriteLine( $"<td {tmp}>{Sup.GetCUstringValue( "Records", "Wgust", "W<sub>gust</sub>", false )} ({Sup.StationWind.Text()})</td>" );
-                    of.WriteLine( $"<td {tmp}>{Wind.Format( YearRecords[ j ][ (int) MeasurementRecords.Wgust ].HighWindGust )}</td>" +
+                    of.WriteLine( $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Wgust ].HighWindGust.ToString( $"F{Wind.NrOfDecimals}" )}</td>" +
                         $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Wgust ].TimeHighWindGust.ToString( "g", CUtils.ThisCulture )}</td>" );
                     of.WriteLine( "</tr>" );
 
                     tmp = ( now.Subtract( YearRecords[ j ][ (int) MeasurementRecords.Wrun ].ThisDate ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                     of.WriteLine( $"<tr>" );
                     of.WriteLine( $"<td {tmp}>{Sup.GetCUstringValue( "Records", "Wrun", "W<sub>run</sub>", false )} ({Sup.StationDistance.Text()})</td>" );
-                    of.WriteLine( $"<td {tmp}>{Distance.Format( YearRecords[ j ][ (int) MeasurementRecords.Wrun ].TotalWindRun )}</td>" +
+                    of.WriteLine( $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Wrun ].TotalWindRun.ToString( $"F{Distance.NrOfDecimals}" )}</td>" +
                         $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Wrun ].ThisDate.ToString( "d", CUtils.ThisCulture )}</td>" );
                     of.WriteLine( "</tr>" );
 
                     tmp = ( now.Subtract( YearRecords[ j ][ (int) MeasurementRecords.Phigh ].TimeMaxBarometer ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                     of.WriteLine( $"<tr>" );
                     of.WriteLine( $"<td {tmp}>{Sup.GetCUstringValue( "Records", "Phigh", "P<sub>high</sub>", false )} ({Sup.StationPressure.Text()})</td>" );
-                    of.WriteLine( $"<td {tmp}>{Sup.StationPressure.Format( YearRecords[ j ][ (int) MeasurementRecords.Phigh ].MaxBarometer )}</td>" +
+                    of.WriteLine( $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Phigh ].MaxBarometer.ToString( $"F{Sup.StationPressure.NrOfDecimals()}" )}</td>" +
                         $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Phigh ].TimeMaxBarometer.ToString( "g", CUtils.ThisCulture )}</td>" );
                     of.WriteLine( "</tr>" );
 
                     tmp = ( now.Subtract( YearRecords[ j ][ (int) MeasurementRecords.Plow ].TimeMinBarometer ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                     of.WriteLine( $"<tr>" );
                     of.WriteLine( $"<td {tmp}>{Sup.GetCUstringValue( "Records", "Plow", "P<sub>low</sub>", false )} ({Sup.StationPressure.Text()})</td>" );
-                    of.WriteLine( $"<td {tmp}>{Sup.StationPressure.Format( YearRecords[ j ][ (int) MeasurementRecords.Plow ].MinBarometer )}</td>" +
+                    of.WriteLine( $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Plow ].MinBarometer.ToString( $"F{Sup.StationPressure.NrOfDecimals()}" )}</td>" +
                         $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Plow ].TimeMinBarometer.ToString( "g", CUtils.ThisCulture )}</td>" );
                     of.WriteLine( "</tr>" );
 
@@ -524,84 +524,84 @@ namespace CumulusUtils
                             tmp = ( now.Subtract( MonthlyRecords[ i ][ (int) MeasurementRecords.Tmax ].TimeMaxTemp ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                             of.WriteLine( $"<tr>" );
                             of.WriteLine( $"<td {tmp}>{Sup.GetCUstringValue( "Records", "Tmax", "T<sub>max</sub>", false )} ({Sup.StationTemp.Text()})</td>" );
-                            of.WriteLine( $"<td {tmp}>{Temp.Format( MonthlyRecords[ i ][ (int) MeasurementRecords.Tmax ].MaxTemp )}</td>" +
+                            of.WriteLine( $"<td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Tmax ].MaxTemp.ToString( $"F{Temp.NrOfDecimals}" ) }</td>" +
                                 $"<td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Tmax ].TimeMaxTemp.ToString( "g", CUtils.ThisCulture )}</td>" );
                             of.WriteLine( "</tr>" );
 
                             tmp = ( now.Subtract( MonthlyRecords[ i ][ (int) MeasurementRecords.Tmin ].TimeMinTemp ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                             of.WriteLine( $"<tr>" );
                             of.WriteLine( $"<td {tmp}>{Sup.GetCUstringValue( "Records", "Tmin", "T<sub>min</sub>", false )} ({Sup.StationTemp.Text()})</td>" );
-                            of.WriteLine( $"<td {tmp}>{Temp.Format( MonthlyRecords[ i ][ (int) MeasurementRecords.Tmin ].MinTemp )}</td>" +
+                            of.WriteLine( $"<td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Tmin ].MinTemp.ToString( $"F{Temp.NrOfDecimals}" )}</td>" +
                                 $"<td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Tmin ].TimeMinTemp.ToString( "g", CUtils.ThisCulture )}</td>" );
                             of.WriteLine( "</tr>" );
 
                             tmp = ( now.Subtract( MonthlyRecords[ i ][ (int) MeasurementRecords.Rhour ].TimeHighHourlyRain ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                             of.WriteLine( $"<tr>" );
                             of.WriteLine( $"<td {tmp}>{Sup.GetCUstringValue( "Records", "Rhour", "R<sub>hour</sub>", false )} ({Sup.StationRain.Text()})</td>" );
-                            of.WriteLine( $"<td {tmp}>{Sup.StationRain.Format( MonthlyRecords[ i ][ (int) MeasurementRecords.Rhour ].HighHourlyRain )}</td>" +
+                            of.WriteLine( $"<td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Rhour ].HighHourlyRain.ToString( $"F{Sup.StationRain.NrOfDecimals()}" )}</td>" +
                                 $"<td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Rhour ].TimeHighHourlyRain.ToString( "g", CUtils.ThisCulture )}</td>" );
                             of.WriteLine( "</tr>" );
 
                             tmp = ( now.Subtract( MonthlyRecords[ i ][ (int) MeasurementRecords.Rday ].ThisDate ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                             of.WriteLine( $"<tr>" );
                             of.WriteLine( $"<td {tmp}>{Sup.GetCUstringValue( "Records", "Rday", "R<sub>day</sub>", false )} ({Sup.StationRain.Text()})</td>" );
-                            of.WriteLine( $"<td {tmp}>{Sup.StationRain.Format( MonthlyRecords[ i ][ (int) MeasurementRecords.Rday ].TotalRainThisDay )}</td>" +
+                            of.WriteLine( $"<td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Rday ].TotalRainThisDay.ToString( $"F{Sup.StationRain.NrOfDecimals()}" )}</td>" +
                                 $"<td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Rday ].ThisDate.ToString( "d", CUtils.ThisCulture )}</td>" );
                             of.WriteLine( "</tr>" );
 
                             tmp = ( now.Subtract( MonthlyRecords[ i ][ (int) MeasurementRecords.Rmonth ].ThisDate ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                             of.WriteLine( $"<tr>" );
                             of.WriteLine( $"<td {tmp}>{Sup.GetCUstringValue( "Records", "Rmonth", "R<sub>month</sub>", false )} ({Sup.StationRain.Text()})</td>" );
-                            of.WriteLine( $"<td {tmp}>{Sup.StationRain.Format( MonthlyRecords[ i ][ (int) MeasurementRecords.Rmonth ].MonthlyRain )}</td>" +
+                            of.WriteLine( $"<td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Rmonth ].MonthlyRain.ToString( $"F{Sup.StationRain.NrOfDecimals()}" )}</td>" +
                                 $"<td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Rmonth ].ThisDate.ToString( "MMM yyyy", CUtils.ThisCulture )}</td>" );
                             of.WriteLine( "</tr>" );
 
                             tmp = ( now.Subtract( MonthlyRecords[ i ][ (int) MeasurementRecords.Ryear ].ThisDate ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                             of.WriteLine( $"<tr>" );
                             of.WriteLine( $"<td {tmp}>{Sup.GetCUstringValue( "Records", "Ryear", "R<sub>year</sub>", false )} ({Sup.StationRain.Text()})</td>" );
-                            of.WriteLine( $"<td {tmp}>{Sup.StationRain.Format( MonthlyRecords[ i ][ (int) MeasurementRecords.Ryear ].YearToDateRain )}</td>" +
+                            of.WriteLine( $"<td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Ryear ].YearToDateRain.ToString( $"F{Sup.StationRain.NrOfDecimals()}" )}</td>" +
                                 $"<td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Ryear ].ThisDate.ToString( "MMM yyyy", CUtils.ThisCulture )}</td>" );
                             of.WriteLine( "</tr>" );
 
                             tmp = ( now.Subtract( MonthlyRecords[ i ][ (int) MeasurementRecords.Rrate ].TimeMaxRainRate ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                             of.WriteLine( $"<tr>" );
                             of.WriteLine( $"<td {tmp}>{Sup.GetCUstringValue( "Records", "Rrate", "R<sub>rate</sub>", false )} ({Sup.StationRain.Text()}{Sup.PerHour})</td>" );
-                            of.WriteLine( $"<td {tmp}>{Sup.StationRain.Format( MonthlyRecords[ i ][ (int) MeasurementRecords.Rrate ].MaxRainRate )}</td>" +
+                            of.WriteLine( $"<td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Rrate ].MaxRainRate.ToString( $"F{Sup.StationRain.NrOfDecimals()}" )}</td>" +
                                 $"<td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Rrate ].TimeMaxRainRate.ToString( "g", CUtils.ThisCulture )}</td>" );
                             of.WriteLine( "</tr>" );
 
                             tmp = ( now.Subtract( MonthlyRecords[ i ][ (int) MeasurementRecords.Waverage ].TimeHighAverageWindSpeed ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                             of.WriteLine( $"<tr>" );
                             of.WriteLine( $"<td {tmp}>{Sup.GetCUstringValue( "Records", "Waverage", "W<sub>average</sub>", false )} ({Sup.StationWind.Text()})</td>" );
-                            of.WriteLine( $"<td {tmp}>{Wind.Format( MonthlyRecords[ i ][ (int) MeasurementRecords.Waverage ].HighAverageWindSpeed )}</td>" +
+                            of.WriteLine( $"<td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Waverage ].HighAverageWindSpeed.ToString( $"F{Wind.NrOfDecimals}" )}</td>" +
                                 $"<td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Waverage ].TimeHighAverageWindSpeed.ToString( "g", CUtils.ThisCulture )}</td>" );
                             of.WriteLine( "</tr>" );
 
                             tmp = ( now.Subtract( MonthlyRecords[ i ][ (int) MeasurementRecords.Wgust ].TimeHighWindGust ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                             of.WriteLine( $"<tr>" );
                             of.WriteLine( $"<td {tmp}>{Sup.GetCUstringValue( "Records", "Wgust", "W<sub>gust</sub>", false )} ({Sup.StationWind.Text()})</td>" );
-                            of.WriteLine( $"<td {tmp}>{Sup.StationRain.Format( MonthlyRecords[ i ][ (int) MeasurementRecords.Wgust ].HighWindGust )}</td>" +
+                            of.WriteLine( $"<td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Wgust ].HighWindGust.ToString( $"F{Wind.NrOfDecimals}" )}</td>" +
                                 $"<td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Wgust ].TimeHighWindGust.ToString( "g", CUtils.ThisCulture )}</td>" );
                             of.WriteLine( "</tr>" );
 
                             tmp = ( now.Subtract( MonthlyRecords[ i ][ (int) MeasurementRecords.Wrun ].ThisDate ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                             of.WriteLine( $"<tr>" );
                             of.WriteLine( $"<td {tmp}>{Sup.GetCUstringValue( "Records", "Wrun", "W<sub>run</sub>", false )} ({Sup.StationDistance.Text()})</td>" );
-                            of.WriteLine( $"<td {tmp}>{Distance.Format( MonthlyRecords[ i ][ (int) MeasurementRecords.Wrun ].TotalWindRun )}</td>" +
+                            of.WriteLine( $"<td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Wrun ].TotalWindRun.ToString( $"F{Distance.NrOfDecimals}" )}</td>" +
                                 $"<td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Wrun ].ThisDate.ToString( "d", CUtils.ThisCulture )}</td>" );
                             of.WriteLine( "</tr>" );
 
                             tmp = ( now.Subtract( MonthlyRecords[ i ][ (int) MeasurementRecords.Phigh ].TimeMaxBarometer ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                             of.WriteLine( $"<tr>" );
                             of.WriteLine( $"<td {tmp}>{Sup.GetCUstringValue( "Records", "Phigh", "P<sub>high</sub>", false )} ({Sup.StationPressure.Text()})</td>" );
-                            of.WriteLine( $"<td {tmp}>{Sup.StationPressure.Format( MonthlyRecords[ i ][ (int) MeasurementRecords.Phigh ].MaxBarometer )}</td>" +
+                            of.WriteLine( $"<td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Phigh ].MaxBarometer.ToString( $"F{Sup.StationPressure.NrOfDecimals()}" )}</td>" +
                                 $"<td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Phigh ].TimeMaxBarometer.ToString( "g", CUtils.ThisCulture )}</td>" );
                             of.WriteLine( "</tr>" );
 
                             tmp = ( now.Subtract( MonthlyRecords[ i ][ (int) MeasurementRecords.Plow ].TimeMinBarometer ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                             of.WriteLine( $"<tr>" );
                             of.WriteLine( $"<td {tmp}>{Sup.GetCUstringValue( "Records", "Plow", "P<sub>low</sub>", false )} ({Sup.StationPressure.Text()})</td>" );
-                            of.WriteLine( $"<td {tmp}>{Sup.StationPressure.Format( MonthlyRecords[ i ][ (int) MeasurementRecords.Plow ].MinBarometer )}</td>" +
+                            of.WriteLine( $"<td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Plow ].MinBarometer.ToString( $"F{Sup.StationPressure.NrOfDecimals()}" )}</td>" +
                                 $"<td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Plow ].TimeMinBarometer.ToString( "g", CUtils.ThisCulture )}</td>" );
                             of.WriteLine( "</tr>" );
 

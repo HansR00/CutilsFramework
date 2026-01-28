@@ -2,7 +2,14 @@
   "profiles": {
     "CUtilsNET10": {
       "commandName": "Project",
-      "commandLineArgs": "UserAskedData",
+      "commandLineArgs": "records",
+      "workingDirectory": "C:\\Users\\hansr\\Documents\\GitHub\\CutilsFramework\\CUtilsNET10\\bin\\Debug\\net10.0",
+      "nativeDebugging": false,
+      "hotReloadEnabled": true
+    },
+    "Profile 1": {
+      "commandName": "Project",
+      "commandLineArgs": "compileonly",
       "workingDirectory": "C:\\Users\\hansr\\Documents\\GitHub\\CutilsFramework\\CUtilsNET10\\bin\\Debug\\net10.0",
       "nativeDebugging": false,
       "hotReloadEnabled": true

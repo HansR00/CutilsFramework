@@ -1215,9 +1215,10 @@ namespace CumulusUtils
                 Sup.StationDistance.Text(),
                 "hr",
                 Sup.StationRain.Text(),
-                "hr"
+                "hr",
 
-                //450
+                Sup.StationTemp.Text(),              //450
+                Sup.StationTemp.Text()
             };
 
             TagAxis = new AxisType[]
@@ -1720,7 +1721,8 @@ namespace CumulusUtils
                 AxisType.Rain,
                 AxisType.Hours,
 
-                //450
+                AxisType.Temp,              //450
+                AxisType.Temp
             };
 
             if ( Tagname.Length != TagUnit.Length )
@@ -2213,8 +2215,8 @@ namespace CumulusUtils
             "RecentFeelsLike",
             "RecentHumidex",
             "snowdepth",
-            "mone",                         // deprecated snowlying
-            "snow24hr",                     // deprecated snowfalling => snow24h
+            "none",                         // deprecated snowlying
+            "snow24h",                      // deprecated snowfalling => snow24h
             "Tbeaufortnumber",
             "RecentApparent",
             "RecentIndoorTemp",
@@ -2284,8 +2286,10 @@ namespace CumulusUtils
             "MonthAvgTotalWindRun",
             "MonthAvgTotalSunhours",
             "MonthAvgTotalET",
-            "MonthAvgTotalChillHrs"
+            "MonthAvgTotalChillHrs",
 
+            "BlackGlobeTemp",                //450
+            "WetBulbGlobeTemp"
         };
 
     }

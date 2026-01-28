@@ -21,7 +21,7 @@ namespace CumulusUtils
     public class CuSupport : IDisposable
     {
         // Is it a version number beta shown at users?
-        private const string beta = "beta3 .NET 10";
+        private const string beta = ".NET 10";
 
         #region declarations
         public Wind StationWind { get; set; }
@@ -434,7 +434,7 @@ namespace CumulusUtils
         {
             StringBuilder sb = new StringBuilder();
 
-            string SpecificHighchartsVersion = GetUtilsIniValue( "General", "UseSpecificHighchartsVersion", "" );
+            string SpecificHighchartsVersion = GetUtilsIniValue( "General", "UseSpecificHighchartsVersion", "12.3" );
             bool UseHighchartsBoostModule = GetUtilsIniValue( "Graphs", "UseHighchartsBoostModule", "true" ).Equals( "true", CUtils.Cmp );
 
             if ( !string.IsNullOrEmpty( SpecificHighchartsVersion ) )

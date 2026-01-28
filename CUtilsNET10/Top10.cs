@@ -561,12 +561,12 @@ namespace CumulusUtils
                             {
                                 case (int) Top10Types.maxTemp:
                                     timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].TimeMaxTemp.ToString( "g", CUtils.ThisCulture )}" );
-                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Temp.Format( Top10List[ i + k ][ j ].MaxTemp )}</b></td>" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Top10List[ i + k ][ j ].MaxTemp.ToString($"F{Temp.NrOfDecimals}")}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.minTemp:
                                     timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].TimeMinTemp.ToString( "g", CUtils.ThisCulture )}" );
-                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Temp.Format( Top10List[ i + k ][ j ].MinTemp )}</b></td>" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Top10List[ i + k ][ j ].MinTemp.ToString( $"F{Temp.NrOfDecimals}" )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.minHumidity:
@@ -576,42 +576,42 @@ namespace CumulusUtils
 
                                 case (int) Top10Types.highPressure:
                                     timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].TimeMaxBarometer.ToString( "g", CUtils.ThisCulture )}" );
-                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Sup.StationPressure.Format( Top10List[ i + k ][ j ].MaxBarometer )}</b></td>" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Top10List[ i + k ][ j ].MaxBarometer.ToString( $"F{Sup.StationPressure.NrOfDecimals()}" )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.lowPressure:
                                     timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].TimeMinBarometer.ToString( "g", CUtils.ThisCulture )}" );
-                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Sup.StationPressure.Format( Top10List[ i + k ][ j ].MinBarometer )}</b></td>" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Top10List[ i + k ][ j ].MinBarometer.ToString( $"F{Sup.StationPressure.NrOfDecimals()}" )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.highWind:
                                     timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].TimeHighAverageWindSpeed.ToString( "g", CUtils.ThisCulture )}" );
-                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Wind.Format( Top10List[ i + k ][ j ].HighAverageWindSpeed )}</b></td>" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Top10List[ i + k ][ j ].HighAverageWindSpeed.ToString( $"F{Wind.NrOfDecimals}" )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.highGust:
                                     timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].TimeHighWindGust.ToString( "g", CUtils.ThisCulture )}" );
-                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Wind.Format( Top10List[ i + k ][ j ].HighWindGust )}</b></td>" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Top10List[ i + k ][ j ].HighWindGust.ToString( $"F{Wind.NrOfDecimals}" )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.totalWindrun:
                                     timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].ThisDate.ToString( "d", CUtils.ThisCulture )}" );
-                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Distance.Format( Top10List[ i + k ][ j ].TotalWindRun )}</b></td>" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Top10List[ i + k ][ j ].TotalWindRun.ToString( $"F{Distance.NrOfDecimals}" )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.highRainRate:
                                     timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].TimeMaxRainRate.ToString( "g", CUtils.ThisCulture )}" );
-                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Sup.StationRain.Format( Top10List[ i + k ][ j ].MaxRainRate )}</b></td>" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Top10List[ i + k ][ j ].MaxRainRate.ToString( $"F{Sup.StationRain.NrOfDecimals()}" )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.highHourlyRain:
                                     timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].TimeHighHourlyRain.ToString( "g", CUtils.ThisCulture )}" );
-                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Sup.StationRain.Format( Top10List[ i + k ][ j ].HighHourlyRain )}</b></td>" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Top10List[ i + k ][ j ].HighHourlyRain.ToString( $"F{Sup.StationRain.NrOfDecimals()}" )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.highDailyRain:
                                     timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].ThisDate.ToString( "d", CUtils.ThisCulture )}" );
-                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Sup.StationRain.Format( Top10List[ i + k ][ j ].TotalRainThisDay )}</b></td>" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Top10List[ i + k ][ j ].TotalRainThisDay.ToString( $"F{Sup.StationRain.NrOfDecimals()}" )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.highestMonthlyRain:
@@ -619,7 +619,7 @@ namespace CumulusUtils
                                     if ( j < MonthlyRainNrOfMonths )
                                     {
                                         timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].ThisDate.ToString( "MMM yyyy", CUtils.ThisCulture )}" );
-                                        of.WriteLine( $"<td {buf}>{timebuf} : <b>{Sup.StationRain.Format( Top10List[ i + k ][ j ].MonthlyRain )}</b></td>" );
+                                        of.WriteLine( $"<td {buf}>{timebuf} : <b>{Top10List[ i + k ][ j ].MonthlyRain.ToString( $"F{Sup.StationRain.NrOfDecimals()}" )}</b></td>" );
                                     }
                                     else
                                     {
