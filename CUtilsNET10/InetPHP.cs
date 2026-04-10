@@ -10,6 +10,7 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CumulusUtils
@@ -46,6 +47,7 @@ namespace CumulusUtils
              * 
              */
 
+            // Should I use the DefaultRequestHeaders (and create the collection first)
             phpUploadHttpClient = new HttpClient( /* clientHandler, true */ );
 
             return;
@@ -117,6 +119,13 @@ namespace CumulusUtils
                 {
                     var unixTs = CuSupport.DateTimeToUnixUTC( DateTime.Now ).ToString();
                     var signature = GetSHA256Hash( PhpSecret, unixTs + remotefile + data );
+
+                    //CmxIPC does:
+                    //var header = new System.Net.Http.Headers.ProductHeaderValue( "CumulusMX", $"{Version}.{Build}" );
+                    //var userAgent = new System.Net.Http.Headers.ProductInfoHeaderValue( header );
+
+                    //phpUploadHttpClient.DefaultRequestHeaders.UserAgent.Add( userAgent );
+                    //End CMX
 
                     // disable expect 100 - PHP doesn't support it
                     request.Headers.ExpectContinue = false;
@@ -223,5 +232,28 @@ namespace CumulusUtils
             }
             return BitConverter.ToString( hashValue ).Replace( "-", string.Empty ).ToLower();
         }
+
+
+        //// limit to 3 concurrent uploads
+        //SemaphoreSlim uploadCountLimit = new SemaphoreSlim( 3, 3 );
+
+        //foreach (var upload in uploads)
+        //{
+        //    // wait for semaphore
+        //    await uploadCountLimit.WaitAsync( Program.ExitSystemToken);
+
+        //    Task.Run(async () =>
+        //    {
+        //        try
+        //        {
+        //            // do upload
+        //        }
+        //        finally
+        //        {
+        //            // release semaphore
+        //            uploadCountLimit.Release();
+        //        }
+        //    }, Program.ExitSystemToken);
+        //}
     } // Class InetPhp
 }

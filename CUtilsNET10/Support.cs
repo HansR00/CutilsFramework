@@ -274,8 +274,9 @@ namespace CumulusUtils
                 // This will not be often and many so I take the performance risk to create the IPC object locally and use 
                 CmxIPC thisIPC = new CmxIPC( this, CUtils.Isup );
 
-                // Prevent having to make this method async by using AsyncTask
-                tmp = thisIPC.ReplaceWebtagsGet( tmp );
+                Task<string> AsyncTask = thisIPC.ReplaceWebtagsPostAsync( tmp );
+                AsyncTask.Wait();
+                tmp = AsyncTask.Result;
             }
 
             LogTraceVerboseMessage( DateTime.Now + $" GetUtilsIniValue {key} / {tmp}" );

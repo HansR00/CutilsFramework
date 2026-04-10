@@ -315,7 +315,8 @@ CumulusUtils stands on the shoulders of the following (but is unrelated to):<br/
 <li><a href='https://github.com/mcrossley/SteelSeries-Weather-Gauges'>Gauges by Mark Crossley (modified)</a> - License: GNU GPL V 2.0;<br/>
 <li><a href='https://github.com/mcrossley/SteelSeries-Weather-Gauges'>Steelseries by Gerrit Grunwald & Mark Crossley</a> - License: GNU GPL V 2.0;<br/>
 <li><a href='https://www.rgraph.net/'>RGraph</a> - License: MIT;<br/>
-<li><a href='https://www.highcharts.com/'>HighCharts</a> - License: The personal non-commercial Highcharts <a href='https://shop.highcharts.com/contact/personal'>License</a>; </li>
+<li><a href='https://www.highcharts.com/'>HighCharts</a> - License: The personal non-commercial Highcharts <a href='https://shop.highcharts.com/contact/personal'>License</a>; </br>
+    Please read <a href='https://cumulus.hosiene.co.uk/viewtopic.php?t=24025'>this post</a> on the forum and read the EULA.</li>
 <li><a href='https://github.com/jquery/jquery'>jQuery</a> - License: MIT;</li>
 <li><a href='https://github.com/d3/d3'>d3</a> - License: BSD 3-Clause 'New' or 'Revised' License;</li>
 <li><a href='https://github.com/mourner'>suncalc</a> - License: BSD 2-Clause 'Simplified' License.</li>
@@ -323,8 +324,6 @@ CumulusUtils stands on the shoulders of the following (but is unrelated to):<br/
 <li><a href='https://www.yourweather.co.uk'>Yourweather.co.uk</a> - License: <a href='https://creativecommons.org/licenses/by-sa/4.0/deed.en'>Attribution-ShareAlike 4.0 International</a> License (used for predictions);</li>
 <li><a href='https://getbootstrap.com/'>Bootstrap</a> - License: <a href='https://github.com/twbs/bootstrap/blob/v4.4.1/LICENSE'>MIT</a>;</li>
 </ul>
-
-Please don't forget to get your own Personal <a href='https://shop.highcharts.com/contact/personal'>License</a> with Highcharts. <br>
 <br><br>
 If I forgot anybody or anything or made the wrong interpretation or reference, please let me know and I will correct. You can contact me at the <a href='https://cumulus.hosiene.co.uk/viewforum.php?f=44'>Cumulus Support Forum</a>, user: HansR" +
               "  </div>" +
@@ -693,7 +692,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                   "        <p>" +
                   $"          <span>{Sup.GetCUstringValue( "Website", "Sunrise", "Sunrise", false )}: @&nbsp;</span><span id='CUsunrise'></span><br/>" +
                   $"          <span>{Sup.GetCUstringValue( "Website", "Sunset", "Sunset", false )}: @&nbsp;</span><span id='CUsunset'></span><br/>" +
-                  $"          <span>{Sup.GetCUstringValue( "Website", "DayLength", "Day length", false )}: @&nbsp;</span><span id='CUdaylength'></span>" +
+                  $"          <span>{Sup.GetCUstringValue( "Website", "DayLength", "Day length", false )}: &nbsp;</span><span id='CUdaylength'></span>" +
                   "        </p>";
                     break;
 

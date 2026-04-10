@@ -116,7 +116,6 @@ namespace CumulusUtils
             int i, j, startValue;
 
             StructFWI localFWI = new StructFWI();
-            //CultureInfo provider = CultureInfo.CurrentCulture;
             string separator = CUtils.ThisCulture.TextInfo.ListSeparator;
 
             string csvFilename = "pwsFWIanalyse.csv";
@@ -966,10 +965,12 @@ namespace CumulusUtils
                 Dayfile tmpDayfile = new Dayfile( Sup );
                 DayfileValue ThisValue = new DayfileValue();
 
+                string latitude = $"{Sup.GetCumulusIniValue( "Station", "Latitude", "" )}0000";  // make sure the string is long enough
+                string longitude = $"{Sup.GetCumulusIniValue( "Station", "Longitude", "" )}0000";
 
                 string thisURL = $"https://api.open-meteo.com/v1/forecast?" +
-                    $"latitude={Sup.GetCumulusIniValue( "Station", "Latitude", "" ).Substring( 0, 5 )}&" +
-                    $"longitude={Sup.GetCumulusIniValue( "Station", "Longitude", "" ).Substring( 0, 5 )}&" +
+                    $"latitude={latitude}&" +
+                    $"longitude={longitude}&" +
                     $"daily=temperature_2m_max,rain_sum,wind_speed_10m_max,relative_humidity_2m_min&" +
                     $"timezone={Sup.GetCumulusIniValue( "Station", "TimeZone", "" )}&" +
                     $"timeformat=unixtime&" +

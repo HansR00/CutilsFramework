@@ -7,7 +7,7 @@ Mark Crossley and Gerrit Grunwald for the SteelSeries gauges
 Highcharts
 The Bootstrap framework
 jQuery
-Microsoft Corporation for Visual Studio 2015 Community Edition
+Microsoft Corporation for Visual Studio [any year] Community Edition
 
 and...
 
