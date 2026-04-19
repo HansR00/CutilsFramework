@@ -561,7 +561,7 @@ namespace CumulusUtils
                             {
                                 case (int) Top10Types.maxTemp:
                                     timebuf = string.Format( CUtils.Inv, $"{Top10List[ i + k ][ j ].TimeMaxTemp.ToString( "g", CUtils.ThisCulture )}" );
-                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Top10List[ i + k ][ j ].MaxTemp.ToString($"F{Temp.NrOfDecimals}")}</b></td>" );
+                                    of.WriteLine( $"<td {buf}>{timebuf} : <b>{Top10List[ i + k ][ j ].MaxTemp.ToString( $"F{Temp.NrOfDecimals}" )}</b></td>" );
                                     break;
 
                                 case (int) Top10Types.minTemp:

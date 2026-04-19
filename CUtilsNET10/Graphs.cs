@@ -310,36 +310,33 @@ namespace CumulusUtils
                     if ( GraphDailyRain )
                     {
                         GenDailyRainGraphData( ThisList, thisBuffer );
-                        thisBuffer.AppendLine( ActivateChartInfo( chartId: "DailyRain" ) );
+                        thisBuffer.AppendLine( Sup.ActivateChartInfo( chartId: "DailyRain" ) );
                     }
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
-                    thisBuffer.AppendLine( GenerateChartInfoModal( chartId: "DailyRain", Title: Sup.GetCUstringValue( "Graphs", "DRTitle", "Daily Rain", true ) ) );
-
+                    thisBuffer.AppendLine( Sup.GenerateChartInfoModal( chartId: "DailyRain", Title: Sup.GetCUstringValue( "Graphs", "DRTitle", "Daily Rain", true ) ) );
                     thisBuffer.AppendLine( "<script>" );
                     thisBuffer.AppendLine( $"function graph{GraphNr++}()" );
                     thisBuffer.AppendLine( "{" );
                     if ( GraphMonthlyRain )
                     {
                         GenMonthlyRainvsNOAAGraphData( ThisList, thisBuffer );
-                        thisBuffer.AppendLine( ActivateChartInfo( chartId: "MonthlyRain" ) );
+                        thisBuffer.AppendLine( Sup.ActivateChartInfo( chartId: "MonthlyRain" ) );
                     }
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
-                    thisBuffer.AppendLine( GenerateChartInfoModal( chartId: "MonthlyRain", Title: Sup.GetCUstringValue( "Graphs", "MRTitle", "Daily Rain", true ) ) );
-
+                    thisBuffer.AppendLine( Sup.GenerateChartInfoModal( chartId: "MonthlyRain", Title: Sup.GetCUstringValue( "Graphs", "MRTitle", "Daily Rain", true ) ) );
                     thisBuffer.AppendLine( "<script>" );
                     thisBuffer.AppendLine( $"function graph{GraphNr++}()" );
                     thisBuffer.AppendLine( "{" );
                     if ( GraphYearRainStats )
                     {
                         GenerateYearRainStatistics( ThisList, thisBuffer );
-                        thisBuffer.AppendLine( ActivateChartInfo( chartId: "YearlyRainStats" ) );
+                        thisBuffer.AppendLine( Sup.ActivateChartInfo( chartId: "YearlyRainStats" ) );
                     }
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
-                    thisBuffer.AppendLine( GenerateChartInfoModal( chartId: "YearlyRainStats", Title: Sup.GetCUstringValue( "Graphs", "YRSTitle", "Daily Rain", true ) ) );
-
+                    thisBuffer.AppendLine( Sup.GenerateChartInfoModal( chartId: "YearlyRainStats", Title: Sup.GetCUstringValue( "Graphs", "YRSTitle", "Daily Rain", true ) ) );
                     // GenerateYearMonthTempStatistics counts as one graph so GraphNr will not be incremented
                     // Only when the whole series has been generated, so after the for-loop
                     for ( int thisMonth = 1; thisMonth <= 12; thisMonth++ )
@@ -350,12 +347,12 @@ namespace CumulusUtils
                         if ( GraphYearMonthRainStats )
                         {
                             GenerateYearMonthRainStatistics( ThisList, thisMonth, thisBuffer );
-                            thisBuffer.AppendLine( ActivateChartInfo( chartId: "YearlyMonthlyRainStats" ) );
+                            thisBuffer.AppendLine( Sup.ActivateChartInfo( chartId: "YearlyMonthlyRainStats" ) );
                         }
                         thisBuffer.AppendLine( "}" );
                         thisBuffer.AppendLine( "</script>" );
                     }
-                    thisBuffer.AppendLine( GenerateChartInfoModal( chartId: "YearlyMonthlyRainStats", Title: Sup.GetCUstringValue( "Graphs", "YMRSTitle", "Daily Rain", true ) ) );
+                    thisBuffer.AppendLine( Sup.GenerateChartInfoModal( chartId: "YearlyMonthlyRainStats", Title: Sup.GetCUstringValue( "Graphs", "YMRSTitle", "Daily Rain", true ) ) );
 
                     GraphNr++;
 
@@ -365,12 +362,11 @@ namespace CumulusUtils
                     if ( GraphRAINvsEVT )
                     {
                         GenDailyRAINvsEVT( ThisList, thisBuffer );
-                        thisBuffer.AppendLine( ActivateChartInfo( chartId: "RAINvsEVT" ) );
+                        thisBuffer.AppendLine( Sup.ActivateChartInfo( chartId: "RAINvsEVT" ) );
                     }
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
-                    thisBuffer.AppendLine( GenerateChartInfoModal( chartId: "RAINvsEVT", Title: Sup.GetCUstringValue( "Graphs", "RAINvsEVTTitle", "RAIN vs EVT", true ) ) );
-
+                    thisBuffer.AppendLine( Sup.GenerateChartInfoModal( chartId: "RAINvsEVT", Title: Sup.GetCUstringValue( "Graphs", "RAINvsEVTTitle", "RAIN vs EVT", true ) ) ); GraphNr++;
                     thisBuffer.AppendLine( "<br/>" );
                     thisBuffer.AppendLine( "</div>" ); // #report
 
@@ -516,24 +512,22 @@ namespace CumulusUtils
                     if ( GraphMonthlyTemperature )
                     {
                         GenMonthlyTempvsNOAAGraphData( ThisList, thisBuffer );
-                        thisBuffer.AppendLine( ActivateChartInfo( chartId: "MonthlyTemp" ) );
+                        thisBuffer.AppendLine( Sup.ActivateChartInfo( chartId: "MonthlyTemp" ) );
                     }
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
-                    thisBuffer.AppendLine( GenerateChartInfoModal( chartId: "MonthlyTemp", Title: Sup.GetCUstringValue( "Graphs", "MTTitle", "Monthly Average Temperature", true ) ) );
-
+                    thisBuffer.AppendLine( Sup.GenerateChartInfoModal( chartId: "MonthlyTemp", Title: Sup.GetCUstringValue( "Graphs", "MTTitle", "Monthly Average Temperature", true ) ) );
                     thisBuffer.AppendLine( "<script>" );
                     thisBuffer.AppendLine( $"function graph{GraphNr++}()" );
                     thisBuffer.AppendLine( "{" );
                     if ( GraphYearTempStats )
                     {
                         GenerateYearTempStatistics( ThisList, thisBuffer );
-                        thisBuffer.AppendLine( ActivateChartInfo( chartId: "YearlyTempStats" ) );
+                        thisBuffer.AppendLine( Sup.ActivateChartInfo( chartId: "YearlyTempStats" ) );
                     }
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
-                    thisBuffer.AppendLine( GenerateChartInfoModal( chartId: "YearlyTempStats", Title: Sup.GetCUstringValue( "Graphs", "YTSTitle", "Year Temperature Statistics", true ) ) );
-
+                    thisBuffer.AppendLine( Sup.GenerateChartInfoModal( chartId: "YearlyTempStats", Title: Sup.GetCUstringValue( "Graphs", "YTSTitle", "Year Temperature Statistics", true ) ) );
                     // GenerateYearMonthTempStatistics counts as one graph so GraphNr will not be incremented
                     // Only when the whole series has been generated, so after the for-loop
                     for ( int thisMonth = 1; thisMonth <= 12; thisMonth++ )
@@ -544,12 +538,12 @@ namespace CumulusUtils
                         if ( GraphYearMonthTempStats )
                         {
                             GenerateYearMonthTempStatistics( ThisList, thisMonth, thisBuffer );
-                            thisBuffer.AppendLine( ActivateChartInfo( chartId: "YearlyMonthlyTempStats" ) );
+                            thisBuffer.AppendLine( Sup.ActivateChartInfo( chartId: "YearlyMonthlyTempStats" ) );
                         }
                         thisBuffer.AppendLine( "}" );
                         thisBuffer.AppendLine( "</script>" );
                     }
-                    thisBuffer.AppendLine( GenerateChartInfoModal( chartId: "YearlyMonthlyTempStats", Title: Sup.GetCUstringValue( "Graphs", "YMTSTitle", "Year Temperature Statistics for", true ) ) );
+                    thisBuffer.AppendLine( Sup.GenerateChartInfoModal( chartId: "YearlyMonthlyTempStats", Title: Sup.GetCUstringValue( "Graphs", "YMTSTitle", "Year Temperature Statistics for", true ) ) );
 
                     GraphNr++;
 
@@ -559,24 +553,22 @@ namespace CumulusUtils
                     if ( GraphWarmerDays )
                     {
                         GenStackedWarmDaysGraphData( ThisList, thisBuffer );
-                        thisBuffer.AppendLine( ActivateChartInfo( chartId: "WarmerDays" ) );
+                        thisBuffer.AppendLine( Sup.ActivateChartInfo( chartId: "WarmerDays" ) );
                     }
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
-                    thisBuffer.AppendLine( GenerateChartInfoModal( chartId: "WarmerDays", Title: Sup.GetCUstringValue( "Graphs", "WDTitle", "Warmer Days", true ) ) );
-
+                    thisBuffer.AppendLine( Sup.GenerateChartInfoModal( chartId: "WarmerDays", Title: Sup.GetCUstringValue( "Graphs", "WDTitle", "Warmer Days", true ) ) );
                     thisBuffer.AppendLine( "<script>" );
                     thisBuffer.AppendLine( $"function graph{GraphNr++}()" );
                     thisBuffer.AppendLine( "{" );
                     if ( GraphFrostDays )
                     {
                         GenStackedFrostDaysGraphData( ThisList, thisBuffer );
-                        thisBuffer.AppendLine( ActivateChartInfo( chartId: "FrostDays" ) );
+                        thisBuffer.AppendLine( Sup.ActivateChartInfo( chartId: "FrostDays" ) );
                     }
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
-                    thisBuffer.AppendLine( GenerateChartInfoModal( chartId: "FrostDays", Title: Sup.GetCUstringValue( "Graphs", "FrostDaysTitle", "Frost and Ice Days", true ) ) );
-
+                    thisBuffer.AppendLine( Sup.GenerateChartInfoModal( chartId: "FrostDays", Title: Sup.GetCUstringValue( "Graphs", "FrostDaysTitle", "Frost and Ice Days", true ) ) );
                     thisBuffer.AppendLine( "<script>" );
 
                     if ( SplitHeatmapPages )
@@ -612,12 +604,11 @@ namespace CumulusUtils
                     if ( GraphHeatmap )
                     {
                         GenerateHeatMap( ThisList, thisBuffer );
-                        thisBuffer.AppendLine( ActivateChartInfo( chartId: "HeatMap" ) );
+                        thisBuffer.AppendLine( Sup.ActivateChartInfo( chartId: "HeatMap" ) );
                     }
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
-                    thisBuffer.AppendLine( GenerateChartInfoModal( chartId: "HeatMap", Title: Sup.GetCUstringValue( "Graphs", "HMTitle", "Heat Map", true ) ) );
-
+                    thisBuffer.AppendLine( Sup.GenerateChartInfoModal( chartId: "HeatMap", Title: Sup.GetCUstringValue( "Graphs", "HMTitle", "Heat Map", true ) ) );
                     thisBuffer.AppendLine( "<br/>" );
                     thisBuffer.AppendLine( "</div>" ); // #report
 
@@ -775,12 +766,11 @@ namespace CumulusUtils
                         Sup.LogDebugMessage( $"GenerateWindrunStatistics: Starting" );         // Write only once
 
                         GenerateWindrunStatistics( ThisList, thisBuffer, 0 );
-                        thisBuffer.AppendLine( ActivateChartInfo( chartId: "WindRun" ) );
+                        thisBuffer.AppendLine( Sup.ActivateChartInfo( chartId: "WindRun" ) );
                     }
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
-                    thisBuffer.AppendLine( GenerateChartInfoModal( chartId: "WindRun", Title: Sup.GetCUstringValue( "Graphs", "WindRunTitle", "Wind Run", true ) ) );
-
+                    thisBuffer.AppendLine( Sup.GenerateChartInfoModal( chartId: "WindRun", Title: Sup.GetCUstringValue( "Graphs", "WindRunTitle", "Wind Run", true ) ) );
                     for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
                     {
                         thisBuffer.AppendLine( "<script>" );
@@ -789,7 +779,7 @@ namespace CumulusUtils
                         if ( GraphWindrun )
                         {
                             GenerateWindrunStatistics( ThisList, thisBuffer, i );
-                            thisBuffer.AppendLine( ActivateChartInfo( chartId: "WindRun" ) );
+                            thisBuffer.AppendLine( Sup.ActivateChartInfo( chartId: "WindRun" ) );
                         }
                         thisBuffer.AppendLine( "}" );
                         thisBuffer.AppendLine( "</script>" );
@@ -929,12 +919,11 @@ namespace CumulusUtils
                     if ( GraphSolarHours )
                     {
                         GenerateYearSolarHoursStatistics( thisBuffer );
-                        thisBuffer.AppendLine( ActivateChartInfo( chartId: "YearlySolarHRSstats" ) );
+                        thisBuffer.AppendLine( Sup.ActivateChartInfo( chartId: "YearlySolarHRSstats" ) );
                     }
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
-                    thisBuffer.AppendLine( GenerateChartInfoModal( chartId: "YearlySolarHRSstats", Title: Sup.GetCUstringValue( "Graphs", "YSHSTitle", "Solar Hours Statistics per year", true ) ) );
-
+                    thisBuffer.AppendLine( Sup.GenerateChartInfoModal( chartId: "YearlySolarHRSstats", Title: Sup.GetCUstringValue( "Graphs", "YSHSTitle", "Solar Hours Statistics per year", true ) ) );
                     for ( int thisMonth = 1; thisMonth <= 12; thisMonth++ )
                     {
                         thisBuffer.AppendLine( "<script>" );
@@ -943,12 +932,12 @@ namespace CumulusUtils
                         if ( GraphYearMonthSolarHoursStats )
                         {
                             GenerateYearMonthSolarHoursStatistics( thisMonth, thisBuffer );
-                            thisBuffer.AppendLine( ActivateChartInfo( chartId: "YearlyMonthlySolarHRSstats" ) );
+                            thisBuffer.AppendLine( Sup.ActivateChartInfo( chartId: "YearlyMonthlySolarHRSstats" ) );
                         }
                         thisBuffer.AppendLine( "}" );
                         thisBuffer.AppendLine( "</script>" );
                     }
-                    thisBuffer.AppendLine( GenerateChartInfoModal( chartId: "YearlyMonthlySolarHRSstats", Title: Sup.GetCUstringValue( "Graphs", "YMSHSTitle", "Yearly Solar Hours Statistics per month for", true ) ) );
+                    thisBuffer.AppendLine( Sup.GenerateChartInfoModal( chartId: "YearlyMonthlySolarHRSstats", Title: Sup.GetCUstringValue( "Graphs", "YMSHSTitle", "Yearly Solar Hours Statistics per month for", true ) ) );
 
                     GraphNr++;
 
@@ -958,12 +947,11 @@ namespace CumulusUtils
                     if ( GraphSolarEnergy )
                     {
                         GenerateYearSolarEnergyStatistics( thisBuffer );
-                        thisBuffer.AppendLine( ActivateChartInfo( chartId: "YearlyInsolationStats" ) );
+                        thisBuffer.AppendLine( Sup.ActivateChartInfo( chartId: "YearlyInsolationStats" ) );
                     }
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
-                    thisBuffer.AppendLine( GenerateChartInfoModal( chartId: "YearlyInsolationStats", Title: Sup.GetCUstringValue( "Graphs", "YSESTitle", "Insolation Statistics per year", true ) ) );
-
+                    thisBuffer.AppendLine( Sup.GenerateChartInfoModal( chartId: "YearlyInsolationStats", Title: Sup.GetCUstringValue( "Graphs", "YSESTitle", "Insolation Statistics per year", true ) ) );
                     for ( int thisMonth = 1; thisMonth <= 12; thisMonth++ )
                     {
                         thisBuffer.AppendLine( "<script>" );
@@ -972,12 +960,12 @@ namespace CumulusUtils
                         if ( GraphYearMonthSolarEnergyStats )
                         {
                             GenerateYearMonthSolarEnergyStatistics( thisMonth, thisBuffer );
-                            thisBuffer.AppendLine( ActivateChartInfo( chartId: "YearlyMonthlyInsolationStats" ) );
+                            thisBuffer.AppendLine( Sup.ActivateChartInfo( chartId: "YearlyMonthlyInsolationStats" ) );
                         }
                         thisBuffer.AppendLine( "}" );
                         thisBuffer.AppendLine( "</script>" );
                     }
-                    thisBuffer.AppendLine( GenerateChartInfoModal( chartId: "YearlyMonthlyInsolationStats", Title: Sup.GetCUstringValue( "Graphs", "YMSESTitle", "Monthly Insolation Statistics per year for", true ) ) );
+                    thisBuffer.AppendLine( Sup.GenerateChartInfoModal( chartId: "YearlyMonthlyInsolationStats", Title: Sup.GetCUstringValue( "Graphs", "YMSESTitle", "Monthly Insolation Statistics per year for", true ) ) );
 
                     thisBuffer.AppendLine( "<br/>" );
                     thisBuffer.AppendLine( "</div>" );  // of the #report style
@@ -1104,72 +1092,66 @@ namespace CumulusUtils
                     if ( GraphTempSum )
                     {
                         GenTempSum( ThisList, thisBuffer );
-                        thisBuffer.AppendLine( ActivateChartInfo( chartId: "TempSum" ) );
+                        thisBuffer.AppendLine( Sup.ActivateChartInfo( chartId: "TempSum" ) );
                     }
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
-                    thisBuffer.AppendLine( GenerateChartInfoModal( chartId: "TempSum", Title: Sup.GetCUstringValue( "Graphs", "TempSumTitle", "Temperature Sum", true ) ) );
-
+                    thisBuffer.AppendLine( Sup.GenerateChartInfoModal( chartId: "TempSum", Title: Sup.GetCUstringValue( "Graphs", "TempSumTitle", "Temperature Sum", true ) ) );
                     thisBuffer.AppendLine( "<script>" );
                     thisBuffer.AppendLine( $"function graph{GraphNr++}()" );
                     thisBuffer.AppendLine( "{" );
                     if ( GraphGrowingDegreeDays )
                     {
                         GenGrowingDegreeDays( ThisList, thisBuffer );
-                        thisBuffer.AppendLine( ActivateChartInfo( chartId: "GrowingDegreeDays" ) );
+                        thisBuffer.AppendLine( Sup.ActivateChartInfo( chartId: "GrowingDegreeDays" ) );
                     }
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
-                    thisBuffer.AppendLine( GenerateChartInfoModal( chartId: "GrowingDegreeDays", Title: Sup.GetCUstringValue( "Graphs", "GrowingDegreeDaysTitle", "Growing Degree Days", true ) ) );
-
+                    thisBuffer.AppendLine( Sup.GenerateChartInfoModal( chartId: "GrowingDegreeDays", Title: Sup.GetCUstringValue( "Graphs", "GrowingDegreeDaysTitle", "Growing Degree Days", true ) ) );
                     thisBuffer.AppendLine( "<script>" );
                     thisBuffer.AppendLine( $"function graph{GraphNr++}()" );
                     thisBuffer.AppendLine( "{" );
                     if ( GraphSeasons )
                     {
                         YearlySeasons( ThisList, thisBuffer );
-                        thisBuffer.AppendLine( ActivateChartInfo( chartId: "ThermalSeasons" ) );
+                        thisBuffer.AppendLine( Sup.ActivateChartInfo( chartId: "ThermalSeasons" ) );
                     }
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
-                    thisBuffer.AppendLine( GenerateChartInfoModal( chartId: "ThermalSeasons", Title: Sup.GetCUstringValue( "Graphs", "YearlySeasonsTitle", "Yearly Thermal Seasons", true ) ) );
-
+                    thisBuffer.AppendLine( Sup.GenerateChartInfoModal( chartId: "ThermalSeasons", Title: Sup.GetCUstringValue( "Graphs", "YearlySeasonsTitle", "Yearly Thermal Seasons", true ) ) );
                     thisBuffer.AppendLine( "<script>" );
                     thisBuffer.AppendLine( $"function graph{GraphNr++}()" );
                     thisBuffer.AppendLine( "{" );
                     if ( GraphDailyEVT )
                     {
                         GenDailyEVTGraphData( ThisList, thisBuffer );
-                        thisBuffer.AppendLine( ActivateChartInfo( chartId: "DailyEVT" ) );
+                        thisBuffer.AppendLine( Sup.ActivateChartInfo( chartId: "DailyEVT" ) );
                     }
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
-                    thisBuffer.AppendLine( GenerateChartInfoModal( chartId: "DailyEVT", Title: Sup.GetCUstringValue( "Graphs", "EVTTitle", "Daily EVT", true ) ) );
-
+                    thisBuffer.AppendLine( Sup.GenerateChartInfoModal( chartId: "DailyEVT", Title: Sup.GetCUstringValue( "Graphs", "EVTTitle", "Daily EVT", true ) ) );
                     thisBuffer.AppendLine( "<script>" );
                     thisBuffer.AppendLine( $"function graph{GraphNr++}()" );
                     thisBuffer.AppendLine( "{" );
                     if ( GraphMonthlyEVT )
                     {
                         GenMonthlyEVTGraphData( ThisList, thisBuffer );
-                        thisBuffer.AppendLine( ActivateChartInfo( chartId: "MonthlyEVT" ) );
+                        thisBuffer.AppendLine( Sup.ActivateChartInfo( chartId: "MonthlyEVT" ) );
                     }
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
-                    thisBuffer.AppendLine( GenerateChartInfoModal( chartId: "MonthlyEVT", Title: Sup.GetCUstringValue( "Graphs", "MEVTTitle", "Monthly EVT", true ) ) );
-
+                    thisBuffer.AppendLine( Sup.GenerateChartInfoModal( chartId: "MonthlyEVT", Title: Sup.GetCUstringValue( "Graphs", "MEVTTitle", "Monthly EVT", true ) ) );
                     thisBuffer.AppendLine( "<script>" );
                     thisBuffer.AppendLine( $"function graph{GraphNr++}()" );
                     thisBuffer.AppendLine( "{" );
                     if ( GraphAverageClash )
                     {
                         GenerateClashOfAverages( ThisList, thisBuffer );
-                        thisBuffer.AppendLine( ActivateChartInfo( chartId: "ClashOfAverages" ) );
+                        thisBuffer.AppendLine( Sup.ActivateChartInfo( chartId: "ClashOfAverages" ) );
                     }
                     thisBuffer.AppendLine( "}" );
                     thisBuffer.AppendLine( "</script>" );
-                    thisBuffer.AppendLine( GenerateChartInfoModal( chartId: "ClashOfAverages", Title: Sup.GetCUstringValue( "Graphs", "ClashOfAverages", "Clash of Averages", true ) ) );
-
+                    thisBuffer.AppendLine( Sup.GenerateChartInfoModal( chartId: "ClashOfAverages", Title: Sup.GetCUstringValue( "Graphs", "ClashOfAverages", "Clash of Averages", true ) ) );
                     thisBuffer.AppendLine( "<br/>" );
                     thisBuffer.AppendLine( "</div>" ); // #report
 
@@ -1180,88 +1162,6 @@ namespace CumulusUtils
 #endif
                 } // Using MiscGraphsOutputFile
             } // Misc Graphs
-
-            #endregion
-
-            #region ChartInfoFuncs
-
-            string ActivateChartInfo( string chartId )
-            {
-                chartId = "HT_" + chartId;
-
-                if ( string.IsNullOrEmpty( CUtils.ChartHelp.GetHelpText( chartId ) ) )
-                {
-                    return ""; // No helptext present so do nothing
-                }
-
-                StringBuilder tmp = new StringBuilder();
-
-                string Info = $"{Sup.GetCUstringValue( "General", "Info", "Info", true )}";
-
-                // See: https://stackoverflow.com/a/79749908/11931424
-
-                tmp.AppendLine( "chart.update({" );
-                tmp.AppendLine( "  chart:{events:{render() {const chart = this; if ( !chart.exporting.group ){return;}const { x, y, width } = chart.exporting.group.getBBox();" );
-
-                tmp.AppendLine( "  if ( !this.customText ){" ); // Create a customText if it doesn't exist
-                tmp.AppendLine( $"    this.customText = this.renderer.text( '{Info}', x - width - 15, y + 15 )" );
-                tmp.AppendLine( "      .add()" +
-                    ".css({ color: this.title && this.title.styles ? this.title.styles.color : '#333', cursor: 'pointer' })" +
-                    $".on('click', () => $('#{chartId}').modal( 'show') );" );
-                tmp.AppendLine( "  } else {" ); // Update the label position on render event (i.e on window resize)
-                tmp.AppendLine( "    this.customText.attr({x: x - width - 15, y: y + 15}); } } } } });" );
-
-                return tmp.ToString();
-            }
-
-            string GenerateChartInfoModal( string chartId, string Title )
-            {
-                chartId = "HT_" + chartId;
-
-                if ( string.IsNullOrEmpty( CUtils.ChartHelp.GetHelpText( chartId ) ) )
-                {
-                    return ""; // No helptext present so do nothing
-                }
-
-                StringBuilder tmp = new StringBuilder();
-
-                if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes )
-                {
-                    // Use the jQuery modal, by setting the DoLibraryIncludes to false the user has control whether or not to use the 
-                    // supplied includes or do it all by her/himself
-                    tmp.AppendLine(
-                        $"<div class='modal' id='{chartId}' style='font-family: Verdana, Geneva, Tahoma, sans-serif;font-size: 120%;'>" +
-                        "      <div>" +
-                        $"        <h5 class='modal-title'>{Title}</h5>" +
-                        "      </div>" +
-                        "      <div style='text-align: left;'>" +
-                        $"        {CUtils.ChartHelp.GetHelpText( chartId )}" +
-                        "      </div>" +
-                        "</div>" );
-                }
-                else
-                {
-                    // Use the bootstrap modal --- tabindex='-1' 
-                    tmp.AppendLine( $"<div class='modal fade' id='{chartId}' role='dialog' aria-hidden='true'>" +
-                    "  <div class='modal-dialog modal-dialog-centered modal-dialog modal-lg' role='document'>" +
-                    "    <div class='modal-content'>" +
-                    "      <div class='modal-header'>" +
-                    $"        <h5 class='modal-title'>{Title}</h5>" +
-                    "        <button type='button' class='close' data-bs-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>" +
-                    "      </div>" +
-                    "      <div class='modal-body text-start'>" +
-                    $"       {CUtils.ChartHelp.GetHelpText( chartId )}" +
-                    "      </div>" +
-                    "      <div class='modal-footer'>" +
-                    $"       <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>{Sup.GetCUstringValue( "Website", "Close", "Close", false )}</button>" +
-                    "      </div>" +
-                    "    </div>" +
-                    "  </div>" +
-                    "</div>" );
-                }
-
-                return tmp.ToString();
-            }
 
             #endregion
 

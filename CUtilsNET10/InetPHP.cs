@@ -8,9 +8,9 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace CumulusUtils
@@ -29,6 +29,7 @@ namespace CumulusUtils
 
         public InetPHP( CuSupport s )
         {
+            string tmp;
             Sup = s;
 
             PhpUrl = Sup.GetCumulusIniValue( "FTP site", "PHP-URL", "" );
@@ -50,6 +51,14 @@ namespace CumulusUtils
             // Should I use the DefaultRequestHeaders (and create the collection first)
             phpUploadHttpClient = new HttpClient( /* clientHandler, true */ );
 
+            tmp = CuSupport.UnformattedVersion();
+            tmp = tmp.Substring( 0, tmp.IndexOf( ' ' ) );
+            ProductHeaderValue header = new ProductHeaderValue( "CumulusUtils", $"{tmp}" );
+            ProductInfoHeaderValue userAgent = new ProductInfoHeaderValue( header );
+
+            phpUploadHttpClient.DefaultRequestHeaders.UserAgent.Add( userAgent );
+            phpUploadHttpClient.DefaultRequestHeaders.Referrer = new Uri( "https://cumulus.hosiene.co.uk/viewforum.php?f=44" );
+
             return;
         }
 
@@ -61,7 +70,7 @@ namespace CumulusUtils
             {
                 try
                 {
-                    Sup.LogDebugMessage( $"Testing PHP upload compression on {PhpUrl}" );
+                    Sup.LogDebugMessage( $"PhpInit: Testing PHP upload compression on {PhpUrl}" );
 
                     request.Headers.Add( "Accept", "text/html" );
                     request.Headers.Add( "Accept-Encoding", "gzip, deflate" + ( PhpUseBrotli ? ", br" : "" ) );
@@ -72,8 +81,8 @@ namespace CumulusUtils
 
                     PhpCompression = encoding.Count == 0 ? "none" : encoding.First();
 
-                    if ( PhpCompression == "none" ) Sup.LogTraceInfoMessage( "PHP upload does not support compression" );
-                    else Sup.LogTraceInfoMessage( $"PHP upload supports {PhpCompression} compression" );
+                    if ( PhpCompression == "none" ) Sup.LogTraceInfoMessage( "PhpInit: PHP upload does not support compression" );
+                    else Sup.LogTraceInfoMessage( $"PhpInit: PHP upload supports {PhpCompression} compression" );
 
                     return true;
                 }
@@ -94,8 +103,6 @@ namespace CumulusUtils
             string data = null;
             string ext;
 
-            Sup.LogTraceInfoMessage( $"PHP Upload: starting {localfile}" );
-
             if ( string.IsNullOrEmpty( localfile ) )
                 Sup.LogTraceWarningMessage( $"InetPhp: The data string is empty, ignoring this upload" );
             else
@@ -108,7 +115,7 @@ namespace CumulusUtils
                 if ( ext == ".json" && !CUtils.DoingUserAskedData ) incremental = false;
                 else incremental = ext == ".json" && !( fi.Name.Contains( "ALL", CUtils.Cmp ) || fi.Name.Contains( "DAILY", CUtils.Cmp ) );
 
-                Sup.LogTraceInfoMessage( $"Incremental = {incremental}; filename = {fi.Name}; ext = {ext}; HoursInGraph = {CUtils.HoursInGraph}" );
+                Sup.LogTraceVerboseMessage( $"InetPhp: Incremental = {incremental}; filename = {fi.Name}; ext = {ext}; HoursInGraph = {CUtils.HoursInGraph}" );
             }
 
             try
@@ -119,13 +126,6 @@ namespace CumulusUtils
                 {
                     var unixTs = CuSupport.DateTimeToUnixUTC( DateTime.Now ).ToString();
                     var signature = GetSHA256Hash( PhpSecret, unixTs + remotefile + data );
-
-                    //CmxIPC does:
-                    //var header = new System.Net.Http.Headers.ProductHeaderValue( "CumulusMX", $"{Version}.{Build}" );
-                    //var userAgent = new System.Net.Http.Headers.ProductInfoHeaderValue( header );
-
-                    //phpUploadHttpClient.DefaultRequestHeaders.UserAgent.Add( userAgent );
-                    //End CMX
 
                     // disable expect 100 - PHP doesn't support it
                     request.Headers.ExpectContinue = false;
@@ -195,14 +195,13 @@ namespace CumulusUtils
                     Sup.LogTraceInfoMessage( $"InetPhp: {remotefile}: Response code = {(int) response.StatusCode}: {response.StatusCode}" );
 
                     var responseBodyAsText = await response.Content.ReadAsStringAsync();
-                    Sup.LogTraceInfoMessage( $"InetPhp: {remotefile}: Response text follows:\n{responseBodyAsText}" );
+                    Sup.LogTraceVerboseMessage( $"InetPhp: {remotefile}: Response text follows:\n{responseBodyAsText}" );
 
                     return response.StatusCode == HttpStatusCode.OK;
                 }
             }
             catch ( Exception ex )
             {
-
                 Sup.LogTraceInfoMessage( $"InetPhp: Error - {ex.Message}" );
 
                 if ( ex.InnerException is not null )
@@ -214,7 +213,6 @@ namespace CumulusUtils
 
             }
         } // Upload
-
 
         public static string GetSHA256Hash( string key, string data )
         {
@@ -233,27 +231,5 @@ namespace CumulusUtils
             return BitConverter.ToString( hashValue ).Replace( "-", string.Empty ).ToLower();
         }
 
-
-        //// limit to 3 concurrent uploads
-        //SemaphoreSlim uploadCountLimit = new SemaphoreSlim( 3, 3 );
-
-        //foreach (var upload in uploads)
-        //{
-        //    // wait for semaphore
-        //    await uploadCountLimit.WaitAsync( Program.ExitSystemToken);
-
-        //    Task.Run(async () =>
-        //    {
-        //        try
-        //        {
-        //            // do upload
-        //        }
-        //        finally
-        //        {
-        //            // release semaphore
-        //            uploadCountLimit.Release();
-        //        }
-        //    }, Program.ExitSystemToken);
-        //}
     } // Class InetPhp
 }

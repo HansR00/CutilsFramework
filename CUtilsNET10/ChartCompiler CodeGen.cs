@@ -686,7 +686,7 @@ namespace CumulusUtils
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Rain", "Rain", true )} ({thisPlotvar.Unit})'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
-                    buf.Append( $"endOnTick: false, softMax: {( Sup.StationRain.NrOfDecimals() == 2 ? "0.04" : "1")},min: 0,showLastLabel: true," );
+                    buf.Append( $"endOnTick: false, softMax: {( Sup.StationRain.NrOfDecimals() == 2 ? "0.04" : "1" )},min: 0,showLastLabel: true," );
 
                     if ( Sup.StationRain.NrOfDecimals() == 2 ) buf.Append( "allowDecimals: true," );
                     else buf.Append( "allowDecimals: false," );

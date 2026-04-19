@@ -342,6 +342,88 @@ namespace CumulusUtils
 
         #endregion
 
+        #region ChartInfoFuncs
+
+        public string ActivateChartInfo( string chartId )
+        {
+            chartId = "HT_" + chartId;
+
+            if ( string.IsNullOrEmpty( CUtils.ChartHelp.GetHelpText( chartId ) ) )
+            {
+                return ""; // No helptext present so do nothing
+            }
+
+            StringBuilder tmp = new StringBuilder();
+
+            string Info = $"{GetCUstringValue( "General", "Info", "Info", true )}";
+
+            // See: https://stackoverflow.com/a/79749908/11931424
+
+            tmp.AppendLine( "chart.update({" );
+            tmp.AppendLine( "  chart:{events:{render() {const chart = this; if ( !chart.exporting.group ){return;}const { x, y, width } = chart.exporting.group.getBBox();" );
+
+            tmp.AppendLine( "  if ( !this.customText ){" ); // Create a customText if it doesn't exist
+            tmp.AppendLine( $"    this.customText = this.renderer.text( '{Info}', x - width - 15, y + 15 )" );
+            tmp.AppendLine( "      .add()" +
+                ".css({ color: this.title && this.title.styles ? this.title.styles.color : '#333', cursor: 'pointer' })" +
+                $".on('click', () => $('#{chartId}').modal( 'show') );" );
+            tmp.AppendLine( "  } else {" ); // Update the label position on render event (i.e on window resize)
+            tmp.AppendLine( "    this.customText.attr({x: x - width - 15, y: y + 15}); } } } } });" );
+
+            return tmp.ToString();
+        }
+
+        public string GenerateChartInfoModal( string chartId, string Title )
+        {
+            chartId = "HT_" + chartId;
+
+            if ( string.IsNullOrEmpty( CUtils.ChartHelp.GetHelpText( chartId ) ) )
+            {
+                return ""; // No helptext present so do nothing
+            }
+
+            StringBuilder tmp = new StringBuilder();
+
+            if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes )
+            {
+                // Use the jQuery modal, by setting the DoLibraryIncludes to false the user has control whether or not to use the 
+                // supplied includes or do it all by her/himself
+                tmp.AppendLine(
+                    $"<div class='modal' id='{chartId}' style='font-family: Verdana, Geneva, Tahoma, sans-serif;font-size: 120%;'>" +
+                    "      <div>" +
+                    $"        <h5 class='modal-title'>{Title}</h5>" +
+                    "      </div>" +
+                    "      <div style='text-align: left;'>" +
+                    $"        {CUtils.ChartHelp.GetHelpText( chartId )}" +
+                    "      </div>" +
+                    "</div>" );
+            }
+            else
+            {
+                // Use the bootstrap modal --- tabindex='-1' 
+                tmp.AppendLine( $"<div class='modal fade' id='{chartId}' role='dialog' aria-hidden='true'>" +
+                "  <div class='modal-dialog modal-dialog-centered modal-dialog modal-lg' role='document'>" +
+                "    <div class='modal-content'>" +
+                "      <div class='modal-header'>" +
+                $"        <h5 class='modal-title'>{Title}</h5>" +
+                "        <button type='button' class='close' data-bs-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>" +
+                "      </div>" +
+                "      <div class='modal-body text-start'>" +
+                $"       {CUtils.ChartHelp.GetHelpText( chartId )}" +
+                "      </div>" +
+                "      <div class='modal-footer'>" +
+                $"       <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>{GetCUstringValue( "Website", "Close", "Close", false )}</button>" +
+                "      </div>" +
+                "    </div>" +
+                "  </div>" +
+                "</div>" );
+            }
+
+            return tmp.ToString();
+        }
+
+        #endregion
+
         #region Methods Utilities
 
         // Replace white space with either nothing (empty replacement string) or with whatever you want (mostly single space)

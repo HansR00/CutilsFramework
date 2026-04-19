@@ -236,7 +236,7 @@ namespace CumulusUtils
                                   ? "style=\"color: Red\""
                                   : "";
                                 of.WriteLine( $"<td class=\"reportttl\"><table class=\"CUtable\">" );
-                                of.WriteLine( $"<tr><td {HighlightFormat}>{thisEntry.MaxTemp.ToString( $"F{Temp.NrOfDecimals}")} ({thisEntry.ThisDate.Year})</td></tr>" );
+                                of.WriteLine( $"<tr><td {HighlightFormat}>{thisEntry.MaxTemp.ToString( $"F{Temp.NrOfDecimals}" )} ({thisEntry.ThisDate.Year})</td></tr>" );
 
                                 // Do LowHighTemp
                                 tmp = DayList.Select( x => x.MaxTemp ).Min();
@@ -298,7 +298,7 @@ namespace CumulusUtils
                                 HighlightFormat = CUtils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CUtils.StartOfObservations.AddYears( 1 )
                                   ? "style=\"color: DeepSkyBlue\""
                                   : "";
-                                of.WriteLine( $"<td class=\"reportttl\" {HighlightFormat}>{thisEntry.TotalRainThisDay.ToString( $"F{Sup.StationRain.NrOfDecimals()}") } ({thisEntry.ThisDate.Year})</td>" );
+                                of.WriteLine( $"<td class=\"reportttl\" {HighlightFormat}>{thisEntry.TotalRainThisDay.ToString( $"F{Sup.StationRain.NrOfDecimals()}" )} ({thisEntry.ThisDate.Year})</td>" );
 
                                 tmp = DayList.Select( x => x.MonthlyRain ).Max();
                                 thisEntry = DayList.Where( x => x.MonthlyRain == tmp ).First();
@@ -340,7 +340,7 @@ namespace CumulusUtils
                                 HighlightFormat = CUtils.StartOfObservations < now.Date.AddYears( -1 ) && thisEntry.ThisDate > now.Date.AddYears( -1 ) && thisEntry.ThisDate > CUtils.StartOfObservations.AddYears( 1 )
                                   ? "style=\"color: MediumSeaGreen\""
                                   : "";
-                                of.WriteLine( $"<td class=\"reportttl\" {HighlightFormat}>{thisEntry.HighAverageWindSpeed.ToString( $"F{Wind.NrOfDecimals}" ) } ({thisEntry.ThisDate.Year})</td>" );
+                                of.WriteLine( $"<td class=\"reportttl\" {HighlightFormat}>{thisEntry.HighAverageWindSpeed.ToString( $"F{Wind.NrOfDecimals}" )} ({thisEntry.ThisDate.Year})</td>" );
 
                                 tmp = DayList.Select( x => x.HighWindGust ).Max();
                                 thisEntry = DayList.Where( x => x.HighWindGust == tmp ).First();

@@ -406,7 +406,7 @@ namespace CumulusUtils
                     tmp = ( now.Subtract( YearRecords[ j ][ (int) MeasurementRecords.Tmax ].TimeMaxTemp ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                     of.WriteLine( $"<tr>" );
                     of.WriteLine( $"<td {tmp}>{Sup.GetCUstringValue( "Records", "Tmax", "T<sub>max</sub>", false )} ({Sup.StationTemp.Text()})</td>" );
-                    of.WriteLine( $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Tmax ].MaxTemp.ToString( $"F{Temp.NrOfDecimals}" ) }</td>" +
+                    of.WriteLine( $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Tmax ].MaxTemp.ToString( $"F{Temp.NrOfDecimals}" )}</td>" +
                         $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Tmax ].TimeMaxTemp.ToString( "g", CUtils.ThisCulture )}</td>" );
                     of.WriteLine( "</tr>" );
 
@@ -524,7 +524,7 @@ namespace CumulusUtils
                             tmp = ( now.Subtract( MonthlyRecords[ i ][ (int) MeasurementRecords.Tmax ].TimeMaxTemp ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                             of.WriteLine( $"<tr>" );
                             of.WriteLine( $"<td {tmp}>{Sup.GetCUstringValue( "Records", "Tmax", "T<sub>max</sub>", false )} ({Sup.StationTemp.Text()})</td>" );
-                            of.WriteLine( $"<td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Tmax ].MaxTemp.ToString( $"F{Temp.NrOfDecimals}" ) }</td>" +
+                            of.WriteLine( $"<td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Tmax ].MaxTemp.ToString( $"F{Temp.NrOfDecimals}" )}</td>" +
                                 $"<td {tmp}>{MonthlyRecords[ i ][ (int) MeasurementRecords.Tmax ].TimeMaxTemp.ToString( "g", CUtils.ThisCulture )}</td>" );
                             of.WriteLine( "</tr>" );
 

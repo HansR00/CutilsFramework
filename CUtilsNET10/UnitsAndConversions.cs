@@ -40,10 +40,10 @@ namespace CumulusUtils
                 else
                     return ( val - 32 ) / 1.8;
             else // Dim must be celsius
-              if ( to == TempDim.celsius )
-                return val;
-            else
-                return val * 1.8 + 32;
+                if ( to == TempDim.celsius )
+                    return val;
+                else
+                    return val * 1.8 + 32;
         }
 
         public static int NrOfDecimals => 1;

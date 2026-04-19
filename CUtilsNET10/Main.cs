@@ -1087,7 +1087,7 @@ namespace CumulusUtils
                     DoCUlib = true;            // this is implicit for website so if user sets it undo tha
                     DoDiary = true;
 
-                    break;
+                    //break;
                 }
                 else
                 {

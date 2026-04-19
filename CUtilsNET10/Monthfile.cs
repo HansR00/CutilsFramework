@@ -89,7 +89,7 @@ namespace CumulusUtils
 
             for ( int i = 0; i < MonthfileList.Length; i++ )
             {
-                if ( MonthfileList[ i ].Contains( "alltimelog" ) || MonthfileList[ i ].Contains( "AirLink" ) )
+                if ( MonthfileList[ i ].Contains( "alltimelog" ) || MonthfileList[ i ].Contains( "AirLink" ) || MonthfileList[ i ].Contains( "SnowLog" ) )
                 {
                     var foos = new List<string>( MonthfileList );
                     foos.RemoveAt( i-- );

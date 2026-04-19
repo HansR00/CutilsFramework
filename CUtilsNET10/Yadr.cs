@@ -351,8 +351,8 @@ namespace CumulusUtils
                             }
                             else
                             {
-                                sb.Append( $"<td {GetTempColourFormat( currentItem.MaxTemp )}>{currentItem.MaxTemp.ToString($"F{Temp.NrOfDecimals}")}</td>" );
-                                sb.Append( $"<td {GetTempColourFormat( currentItem.MinTemp )}>{currentItem.MinTemp.ToString($"F{Temp.NrOfDecimals}")}</td>" );
+                                sb.Append( $"<td {GetTempColourFormat( currentItem.MaxTemp )}>{currentItem.MaxTemp.ToString( $"F{Temp.NrOfDecimals}" )}</td>" );
+                                sb.Append( $"<td {GetTempColourFormat( currentItem.MinTemp )}>{currentItem.MinTemp.ToString( $"F{Temp.NrOfDecimals}" )}</td>" );
                             }
                         }// for loop over months
 
@@ -521,7 +521,7 @@ namespace CumulusUtils
                             }
                             else
                             {
-                                sb.Append( $"<td {GetRainColourFormat( currentItem.TotalRainThisDay )}>{currentItem.TotalRainThisDay.ToString($"F{Sup.StationRain.NrOfDecimals()}")}</td>" );
+                                sb.Append( $"<td {GetRainColourFormat( currentItem.TotalRainThisDay )}>{currentItem.TotalRainThisDay.ToString( $"F{Sup.StationRain.NrOfDecimals()}" )}</td>" );
                             }
                         }// for loop over months
 
@@ -625,11 +625,11 @@ namespace CumulusUtils
                                 sb.Append( $"<td {GetRainColourFormat( RainRanges[ i ] )}>{RainRanges[ i - 1 ]:F0} - {RainRanges[ i ]:F0}</td>" );
                         else
                             if ( i == 0 )
-                            sb.Append( $"<td {GetRainColourFormat( RainRanges[ i ] / 2 )}>&lt;&nbsp;{RainRanges[ i ]:F2}</td>" );
-                        else if ( i == 12 )
-                            sb.Append( $"<td {GetRainColourFormat( RainRanges[ i ] )}>{RainRanges[ i - 1 ]:F2}&gt;</td>" );
-                        else
-                            sb.Append( $"<td {GetRainColourFormat( RainRanges[ i ] )}>{RainRanges[ i - 1 ]:F2} - {RainRanges[ i ]:F2}</td>" );
+                                sb.Append( $"<td {GetRainColourFormat( RainRanges[ i ] / 2 )}>&lt;&nbsp;{RainRanges[ i ]:F2}</td>" );
+                            else if ( i == 12 )
+                                sb.Append( $"<td {GetRainColourFormat( RainRanges[ i ] )}>{RainRanges[ i - 1 ]:F2}&gt;</td>" );
+                            else
+                                sb.Append( $"<td {GetRainColourFormat( RainRanges[ i ] )}>{RainRanges[ i - 1 ]:F2} - {RainRanges[ i ]:F2}</td>" );
                     }
 
                     sb.Append( $"</tr>" );
@@ -1016,7 +1016,7 @@ namespace CumulusUtils
                             else
                             {
                                 // float tmp = (currentItem.MaxBarometer + currentItem.MinBarometer) / 2;
-                                sb.Append( $"<td  {GetPressColourFormat( currentItem.MaxBarometer )}>{currentItem.MaxBarometer.ToString( $"F{Sup.StationPressure.NrOfDecimals()}")}</td>" );
+                                sb.Append( $"<td  {GetPressColourFormat( currentItem.MaxBarometer )}>{currentItem.MaxBarometer.ToString( $"F{Sup.StationPressure.NrOfDecimals()}" )}</td>" );
                             }
                         }// for loop over months
 

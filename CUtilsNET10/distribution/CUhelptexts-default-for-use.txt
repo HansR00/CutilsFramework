@@ -62,3 +62,8 @@ Another interesting article on the subject is below. <sup>[2]</sup><br/>
  [2]: <a href=https://rmets.onlinelibrary.wiley.com/doi/full/10.1002/joc.6528 target='_blank'>Sampling frequency of climate data for the determination of daily temperature and daily temperature extrema</a><br/> 
 <br/>
 (this is a copy of the <a href=https://www.cumuluswiki.org/a/Charts_-_Misc_charts#Clash_of_Averages  target='_blank'>Wiki entry</a>)<br/> "
+
+HT_Forecast = " This chart shows the CUtils standard Forecast. It is based on the Open Meteo data from the ECMWF IFS HRES 9km model. It is a bit too much to explain but the following websites should help you further:<br/>
+<br/>
+1 - Open Meteo <a href=https://open-meteo.com/en/docs>API description</a><br/>
+2 - <a href=https://www.ecmwf.int/>ECWMF main site</a><br/> "

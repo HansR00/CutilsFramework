@@ -1,5 +1,7 @@
 ﻿/*
  * InetSupport - Part of CumulusUtils
+ * 
+ * Contains the code for all protocols which makes it a bit messy.
  *
  */
 
@@ -10,6 +12,7 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Authentication;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentFTP;
 using FluentFTP.Exceptions;
@@ -19,7 +22,6 @@ using Renci.SshNet.Common;
 namespace CumulusUtils
 {
     enum FtpProtocols { FTP, FTPS, SFTP, PHP }  // Defined 1,2,3 inn CumulusMX and as such stored in the Cumulus.ini!!
-
     public class InetSupport : IDisposable
     {
         readonly CuSupport Sup;
@@ -37,7 +39,11 @@ namespace CumulusUtils
         readonly string SshftpPskFile;
 
         SftpClient clientRenci;
+
         readonly InetPHP clientPhp;
+        readonly SemaphoreSlim uploadSemaphore;
+        readonly int delayMilliSeconds;
+        readonly int MaxUploadThreads;
 
         bool FTPvalid;                         // Indication whether a connection could be made and filetransfer is possible.
 
@@ -205,8 +211,23 @@ namespace CumulusUtils
             }
             else if ( ProtocolUsed == FtpProtocols.PHP )
             {
+                string tmp;
+
                 clientPhp = new InetPHP( Sup );
                 FTPvalid = false; // Init needs to be done. Because of async needs to be done in Upload first time
+
+                // Use CMX default nr of threads else take the specific configured CUtils value
+                //
+                tmp = Sup.GetUtilsIniValue( "FTP site", "MaxConcurrentUploads", "" );
+
+                if ( string.IsNullOrEmpty( tmp ) ) MaxUploadThreads = Convert.ToInt32( Sup.GetCumulusIniValue( "FTP site", "MaxConcurrentUploads", "" ) );
+                else MaxUploadThreads = Convert.ToInt32( tmp );
+
+                delayMilliSeconds = Convert.ToInt32( Sup.GetUtilsIniValue( "FTP site", "delayMilliSeconds", "0" ) );
+
+                Sup.LogTraceInfoMessage( $"Upload PHP: MaxUploadThreads = {MaxUploadThreads} / delayMilliSeconds = {delayMilliSeconds}" );
+
+                uploadSemaphore = new SemaphoreSlim( MaxUploadThreads, MaxUploadThreads );
             }
             else
             {
@@ -223,14 +244,6 @@ namespace CumulusUtils
 
         public async Task<bool> UploadFileAsync( string remotefile, string localfile )
         {
-            // On Async FTP: https://social.msdn.microsoft.com/Forums/vstudio/en-US/994fa6e8-e345-4d10-97e6-e540bec0cb76/what-is-asynchronous-ftp?forum=csharpgeneral
-            //     Read the first answer, I understand async FTP does not really have large effects and is only really important with UI interaction.
-            //     So I leave this as is (and also all FTPs in the project)
-
-            // With V7 and the upgrade of FluentFtp I doubt it still is Async but I leave the call named 'UploadFileAsync'
-            // Only the actual 'clientFluentFTP.UploadFile' has changed and no longer has async in the name
-
-            // Immediately return if something was wrong at contructor time
             if ( !FTPvalid && ProtocolUsed == FtpProtocols.PHP )
             {
                 FTPvalid = await clientPhp.PhpInit();
@@ -378,28 +391,42 @@ namespace CumulusUtils
 
                     Sup.LogTraceInfoMessage( $"SFTP UploadFile: Done" );
 
-                } // if else on basis of protocol
+                }
                 else if ( ProtocolUsed == FtpProtocols.PHP )
                 {
-                    // We can't use the CMX Upload directory definition as that is used for the signature files FTP
-                    string requestname;
+                    string requestname = !string.IsNullOrEmpty( CumulusUtilsDir ) ? $"{CumulusUtilsDir}/{remotefile}" : remotefile;
 
-                    if ( !string.IsNullOrEmpty( CumulusUtilsDir ) )
-                        requestname = $"{CumulusUtilsDir}/{remotefile}";
-                    else
-                        requestname = remotefile;
+                    // There are two methods to adjust to the system:
+                    //   1) the number of concurrent uploads
+                    //   2) the delay between retries and after successful upload to give the server some time to breathe
+                    // The semaphore will take care of the concurrent uploads and the delay will be applied after each upload (successful or not) 
+                    //
 
-                    Sup.LogTraceInfoMessage( $"Upload File values: localfile: {localfile}" );
-                    Sup.LogTraceInfoMessage( $"Upload File values: remotefile: {requestname}" );
+                    await uploadSemaphore.WaitAsync();
 
-                    if ( !await clientPhp.UploadAsync( localfile: localfile, remotefile: requestname ) )
+                    try
                     {
-                        // The send apparently failed so return false
-                        Sup.LogTraceInfoMessage( $"PHP UploadFile: Failed" );
-                        return false;
-                    }
+                        int retryCount = 0;
 
-                    Sup.LogTraceInfoMessage( $"PHP UploadFile: Success" );
+                        while ( !await clientPhp.UploadAsync( localfile: localfile, remotefile: requestname ) )
+                        {
+                            if ( ++retryCount > 1 ) return false; // Avoid infinite loop in case of a problem
+
+                            Sup.LogTraceInfoMessage( $"PHP UploadFile: Failed for {localfile}, Delaying 1 second..." );
+
+                            await Task.Delay( 1000 ); // Fix this to 1 second to give the server some time to breathe and to avoid flooding the server with requestsin case of a problem.
+                                                      // The delay after success will be applied as well but that one if configurable to avoid issues with err 429
+                        }
+
+                        Sup.LogTraceInfoMessage( $"PHP UploadFile: Success for {localfile}, pausing {delayMilliSeconds} millisecond...\n" );
+                        await Task.Delay( delayMilliSeconds );
+
+                        return true;
+                    }
+                    finally
+                    {
+                        uploadSemaphore.Release();
+                    }
                 }
             }
             else // Upload == false

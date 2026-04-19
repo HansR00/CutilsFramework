@@ -6,101 +6,30 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace CumulusUtils
 {
-    public struct StructPrediction
-    {
-        public string Icon { get; set; }
-        public float MinTemp { get; set; }
-        public float MaxTemp { get; set; }
-        public int WindIcon { get; set; }
-        public string WindText { get; set; }
-        public int WeatherIcon { get; set; }
-        public string WeatherText { get; set; }
-        public string Day { get; set; }
-    }
-
     public class WeatherForecasts( CuSupport s, InetSupport i )
     {
         private readonly CuSupport Sup = s;
         private readonly InetSupport Isup = i;
-
-        readonly StructPrediction[] PredictionList = new StructPrediction[ 7 ];
 
         public async Task GenerateForecasts()
         {
             string ForecastSystem;
 
             // Make sure the parameters exist in one run, otherwise the user has to run, define and run again
-            ForecastSystem = Sup.GetUtilsIniValue( "Forecasts", "ForecastSystem", "SpotWx" );
+            ForecastSystem = Sup.GetUtilsIniValue( "Forecasts", "ForecastSystem", "CUtils" );
 
-            //if ( ForecastSystem.Equals( "Yourweather", CUtils.Cmp ) )
-            //{
-            //    string YourWeatherPredictionURL = Sup.GetUtilsIniValue( "Forecasts", "SevenDayPredictionURL", "" );
-
-            //    // IF no PRediction URL set, then no prediction possible
-            //    if ( string.IsNullOrEmpty( YourWeatherPredictionURL ) )
-            //    {
-            //        Sup.LogTraceErrorMessage( "Prediction : No URL in Prediction ini section." );
-            //        Sup.LogTraceErrorMessage( "Prediction : Impossible to continue, exiting procedure." );
-            //        return;
-            //    }
-
-            //    string XMLresult = await Isup.GetUrlDataAsync( new Uri( YourWeatherPredictionURL ) );
-
-            //    if ( CreateSevenDayPrediction( XMLresult ) )
-            //    {
-            //        Sup.LogTraceInfoMessage( "Prediction : Read the predicition XML, now generating the  table." );
-
-            //        // OK, Generate the HTML table straightforward from the structs
-            //        using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.ForecastOutputFilename}", false, Encoding.UTF8 ) )
-            //        {
-            //            of.WriteLine( "<style>" );
-            //            of.WriteLine( "#report{font-family: arial;text-align: center;border-radius: 15px;border-spacing: 0;border: 1px solid #b0b0b0;}" );
-            //            of.WriteLine( "#report .CUtable{border-radius: 15px; text-align: center; border-collapse: collapse; border-spacing: 0; width: 100%; max-width: 1000px; margin: auto;}" );
-            //            of.WriteLine( "#report th{text-align: left; border: 0px solid #b0b0b0; background-color: #d0d0d0; padding: 0px;}" );
-            //            of.WriteLine( "#report td{text-align: left; border: 0px solid #b0b0b0; background-color: #f0f0f0; padding: 0px;}" );
-            //            of.WriteLine( "</style>" );
-
-            //            of.WriteLine( "<div id='report'>" );
-
-            //            //string Title = Sup.GetUtilsIniValue( "Forecasts", "SevenDayPredictionURL", "" );
-            //            string Title = Sup.GetCUstringValue( "Forecasts", "Title", "Seven Day Prediction", false );
-            //            of.WriteLine( $"<h2>{Title}</h2>" );
-
-            //            of.WriteLine( "<table class=CUtable><tbody>" );
-            //            of.WriteLine( $"<tr style='border-bottom: 1px'><th>{Sup.GetCUstringValue( "Forecasts", "Day", "Day", false )}</th>" +
-            //              $"<th></th><th></th><th>{Sup.GetCUstringValue( "Forecasts", "Forecast", "Forecast", false )}</th>" +
-            //              $"<th></th><th>{Sup.GetCUstringValue( "Forecasts", "Wind", "Wind", false )}</th></tr>" );
-
-            //            for ( int i = 0; i < 7; i++ )
-            //            {
-            //                StructPrediction tmp = PredictionList[ i ];
-
-            //                of.WriteLine( $"<tr><td>{tmp.Day}</td>" +
-            //                  $"<td text-align:center;><img src='CUicons/weather/{tmp.WeatherIcon}.png' alt='{tmp.WeatherIcon}.png'/></td>" +
-            //                  $"<td style='text-align: center; font-size: 80%;padding: 0px 10px'><div style='color: red'>{tmp.MaxTemp}</div><div style='color: blue'>{tmp.MinTemp}</div></td>" +
-            //                  $"<td>{tmp.WeatherText}</td>" +
-            //                  $"<td><img src='CUicons/wind/{tmp.WindIcon}.png' alt='{tmp.WindIcon}.png'/></td>" +
-            //                  $"<td>{tmp.WindText}</td></tr>" );
-            //            }
-            //            of.WriteLine( "</tbody></table>" );
-            //            of.WriteLine( "<p style='font-size: 80%;padding-top: 20px !important'>" +
-            //                $"{Sup.GetCUstringValue( "Forecasts", "Footer1", "Forecast API by", false )} " +
-            //                $"<a href='https://www.yourweather.co.uk/'>yourweather.co.uk</a>" +
-            //                $" {Sup.GetCUstringValue( "Forecasts", "Footer2", "on the basis of", false )} " +
-            //                $"<a href='https://www.ecmwf.int/'>ECMWF</a>.</div>" );
-            //        }
-            //    }
-            //}
-            //else 
-
-            if ( ForecastSystem.Equals( "Norway", CUtils.Cmp ) )
+            if ( ForecastSystem.Equals( "CUtils", CUtils.Cmp ) )
+            {
+                bool retval = await GetOpenMeteoPredictionAsync();
+            }
+            else if ( ForecastSystem.Equals( "Norway", CUtils.Cmp ) )
             {
                 // https://developer.yr.no/
                 //
@@ -171,83 +100,301 @@ namespace CumulusUtils
             return;
         }
 
-        private bool CreateSevenDayPrediction( string XMLresult )
+        public class WeatherResponse
         {
-            bool retval = false;
+            [JsonPropertyName( "latitude" )]
+            public double Latitude { get; set; }
 
-            if ( !string.IsNullOrEmpty( XMLresult ) )
+            [JsonPropertyName( "longitude" )]
+            public double Longitude { get; set; }
+
+            [JsonPropertyName( "generationtime_ms" )]
+            public double GenerationTimeMs { get; set; }
+
+            [JsonPropertyName( "utc_offset_seconds" )]
+            public int UtcOffsetSeconds { get; set; }
+
+            [JsonPropertyName( "timezone" )]
+            public string Timezone { get; set; }
+
+            [JsonPropertyName( "timezone_abbreviation" )]
+            public string TimezoneAbbreviation { get; set; }
+
+            [JsonPropertyName( "elevation" )]
+            public double Elevation { get; set; }
+
+            [JsonPropertyName( "hourly_units" )]
+            public HourlyUnits HourlyUnits { get; set; }
+
+            [JsonPropertyName( "hourly" )]
+            public HourlyData Hourly { get; set; }
+        }
+
+        public class HourlyUnits
+        {
+            public long Time { get; set; }
+            public string Temperature_2m { get; set; }
+            public string Precipitation { get; set; }
+            public string Pressure_Msl { get; set; }
+            public string Wind_Speed_10m { get; set; }
+            public string Wind_Gusts_10m { get; set; }
+        }
+
+        public class HourlyData
+        {
+            [JsonPropertyName( "time" )]
+            public List<long> Time { get; set; }
+
+            [JsonPropertyName( "temperature_2m" )]
+            public List<double> Temperature2m { get; set; }
+
+            [JsonPropertyName( "precipitation" )]
+            public List<double> Precipitation { get; set; }
+
+            [JsonPropertyName( "pressure_msl" )]
+            public List<double> PressureMsl { get; set; }
+
+            [JsonPropertyName( "wind_speed_10m" )]
+            public List<double> WindSpeed10m { get; set; }
+
+            [JsonPropertyName( "wind_gusts_10m" )]
+            public List<double> WindGusts10m { get; set; }
+        }
+
+        private async Task<bool> GetOpenMeteoPredictionAsync()
+        {
+            // This is necessary for the use of the units the users has set in Cumulus
+            // The order is the same as in the UnitsAndConversions but the wording of the units in the URL is different.
+            // values are added to the list in the units the user has chosen
+            string[] TempUnitForOpenMeteo = new string[] { "celsius", "fahrenheit" };
+            string[] WindUnitForOpenMeteo = new string[] { "ms", "mph", "kmh", "kn" };
+            string[] RainUnitForOpenMeteo = new string[] { "mm", "inch" };
+
+            WeatherResponse data;
+            HourlyData hourlyData;
+            HourlyUnits hourlyUnits;
+
+            try
             {
-                XElement localWeather = XElement.Parse( XMLresult );
+                string latitude = $"{Sup.GetCumulusIniValue( "Station", "Latitude", "" )}0000";  // make sure the string is long enough
+                string longitude = $"{Sup.GetCumulusIniValue( "Station", "Longitude", "" )}0000";
 
-                IEnumerable<XElement> vars = from desc in localWeather.Descendants( "var" ) select desc;
+                string thisURL = $"https://api.open-meteo.com/v1/forecast?" +
+                    $"latitude={latitude}&" +
+                    $"longitude={longitude}&" +
+                    $"hourly=temperature_2m,precipitation,pressure_msl,wind_speed_10m,wind_gusts_10m&" +
+                    $"models=ecmwf_ifs&" +
+                    $"timezone={Sup.GetCumulusIniValue( "Station", "TimeZone", "" )}&" +
+                    $"timeformat=unixtime&" +
+                    $"start_date={DateTime.Today:yyyy-MM-dd}&end_date={DateTime.Today.AddDays( 10 ):yyyy-MM-dd}&" +
+                    $"wind_speed_unit={WindUnitForOpenMeteo[ (int) Sup.StationWind.Dim ]}&" +
+                    $"temperature_unit={TempUnitForOpenMeteo[ (int) Sup.StationTemp.Dim ]}&" +
+                    $"precipitation_unit={RainUnitForOpenMeteo[ (int) Sup.StationRain.Dim ]}";
 
-                // Create the list of preditions, to be filled in the next loop
+                string JSONresult = await Isup.GetUrlDataAsync( new Uri( thisURL ) );
+                Sup.LogTraceInfoMessage( $"GetOpenMeteoPrediction: JSONresult: {JSONresult} " );
 
-                foreach ( XElement thisvar in vars ) // loop over the items in  the prediction
+                data = JsonSerializer.Deserialize<WeatherResponse>( JSONresult );
+                hourlyData = data.Hourly;
+                hourlyUnits = data.HourlyUnits;
+            }
+            catch ( Exception e )
+            {
+                Sup.LogTraceErrorMessage( $"Open Meteo AddPrediction: {e.Message}" );
+                return false;
+            }
+
+            // Write the forecast HTML file
+            using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.ForecastOutputFilename}", false, Encoding.UTF8 ) )
+            {
+                of.WriteLine( "<!-- " );
+                of.WriteLine( $"This file is generated as part of CumulusUtils - {DateTime.Now} " );
+                of.WriteLine( "This header must not be removed and the user must comply to the GNU General Public License" );
+                of.WriteLine( "See also License conditions of CumulusUtils at https://meteo-wagenborgen.nl/ " );
+                of.WriteLine( "-->" );
+
+                of.WriteLine( "<style>" );
+                of.WriteLine( "#report{" );
+                of.WriteLine( "  font-family: arial;" );
+                of.WriteLine( "  border-radius: 15px;" );
+                of.WriteLine( "  border-spacing: 0;" );
+                of.WriteLine( "  border: 1px solid #b0b0b0;" );
+                of.WriteLine( "}" );
+                of.WriteLine( ".buttonFat {border-radius: 4px; margin-right:10px; margin-left:10px; }" );
+                of.WriteLine( "</style>" );
+                of.WriteLine( "<div id='report'>" );
+                of.WriteLine( "<br/>" );
+                of.WriteLine( "<div id='chartcontainer' style='min-height: 650px; margin-top: 10px; margin-bottom: 10px;'></div>" );
+                of.WriteLine( "<br/>" );
+                of.WriteLine( "<input type='button' class='buttonFat' id='Switch' value='Switch' >" );
+                of.WriteLine( "<br/>" );
+                of.WriteLine( "</div>" );
+                of.WriteLine( "<script>" );
+
+                of.Write( "var timeseries = [" );
+                int length = hourlyData.Time.Count;
+                for ( int n = 0; n < length; n++ )
                 {
-                    int sequence, FcastType;
-
-                    Sup.LogTraceVerboseMessage( $"Prediction The data: {thisvar}" );
-
-                    // As the names are in the language chosen, we must do the order inn which they appear and trust
-                    // that order will never change !!
-
-                    IEnumerable<XElement> forecasts = from desc in thisvar.Descendants( "forecast" ) select desc;
-                    FcastType = Convert.ToInt32( thisvar.Element( "icon" ).Value, CUtils.Inv );
-
-                    switch ( FcastType )
-                    {
-                        case 4: // MinTemp
-                            foreach ( XElement forecast in forecasts )
-                            {
-                                sequence = Convert.ToInt32( forecast.Attribute( "data_sequence" ).Value, CUtils.Inv );
-                                PredictionList[ sequence - 1 ].MinTemp = Convert.ToSingle( forecast.Attribute( "value" ).Value, CUtils.Inv );
-                            }
-                            break;
-
-                        case 5: // MaxTemp
-                            foreach ( XElement forecast in forecasts )
-                            {
-                                sequence = Convert.ToInt32( forecast.Attribute( "data_sequence" ).Value, CUtils.Inv );
-                                PredictionList[ sequence - 1 ].MaxTemp = Convert.ToSingle( forecast.Attribute( "value" ).Value, CUtils.Inv );
-                            }
-                            break;
-
-                        case 9: // Wind
-                            foreach ( XElement forecast in forecasts )
-                            {
-                                sequence = Convert.ToInt32( forecast.Attribute( "data_sequence" ).Value, CUtils.Inv );
-                                PredictionList[ sequence - 1 ].WindIcon = Convert.ToInt32( forecast.Attribute( "idB" ).Value, CUtils.Inv );
-                                PredictionList[ sequence - 1 ].WindText = forecast.Attribute( "valueB" ).Value;
-                            }
-                            break;
-
-                        case 10: // Weer
-                            foreach ( XElement forecast in forecasts )
-                            {
-                                sequence = Convert.ToInt32( forecast.Attribute( "data_sequence" ).Value, CUtils.Inv );
-                                PredictionList[ sequence - 1 ].WeatherIcon = Convert.ToInt32( forecast.Attribute( "id2" ).Value, CUtils.Inv );
-                                PredictionList[ sequence - 1 ].WeatherText = forecast.Attribute( "value2" ).Value;
-                            }
-                            break;
-
-                        case 15: // Name of the Day
-                            foreach ( XElement forecast in forecasts )
-                            {
-                                sequence = Convert.ToInt32( forecast.Attribute( "data_sequence" ).Value, CUtils.Inv );
-                                PredictionList[ sequence - 1 ].Day = forecast.Attribute( "value" ).Value;
-                            }
-                            break;
-                    }
+                    if ( n == length - 1 ) of.Write( $" {hourlyData.Time[ n ].ToString( "F0", CUtils.Inv )}" );
+                    else of.Write( $" {hourlyData.Time[ n ].ToString( "F0", CUtils.Inv )}, " );
                 }
 
-                retval = true; //success, we have a go for prediction.
+                of.WriteLine( "];" );
+
+                of.Write( "var tempseries = [" );
+                int tempLength = hourlyData.Temperature2m.Count;
+                for ( int n = 0; n < tempLength; n++ )
+                {
+                    if ( n == tempLength - 1 ) of.Write( $" {hourlyData.Temperature2m[ n ].ToString( "F1", CUtils.Inv )}" );
+                    else of.Write( $" {hourlyData.Temperature2m[ n ].ToString( "F1", CUtils.Inv )}, " );
+                }
+                of.WriteLine( "];" );
+
+                of.Write( "var rainseries = [" );
+                int rainLength = hourlyData.Precipitation.Count;
+
+                for ( int n = 0; n < rainLength; n++ )
+                {
+                    if ( n == rainLength - 1 ) of.Write( $" {hourlyData.Precipitation[ n ].ToString( "F1", CUtils.Inv )}" );
+                    else of.Write( $" {hourlyData.Precipitation[ n ].ToString( "F1", CUtils.Inv )}, " );
+                }
+                of.WriteLine( "];" );
+
+                of.Write( "var pressureseries = [" );
+                int pressureLength = hourlyData.PressureMsl.Count;
+                for ( int n = 0; n < pressureLength; n++ )
+                {
+                    if ( n == pressureLength - 1 ) of.Write( $" {hourlyData.PressureMsl[ n ].ToString( "F1", CUtils.Inv )}" );
+                    else of.Write( $" {hourlyData.PressureMsl[ n ].ToString( "F1", CUtils.Inv )}, " );
+                }
+                of.WriteLine( "];" );
+
+                of.Write( "var windspeedseries = [" );
+                int windSpeedLength = hourlyData.WindSpeed10m.Count;
+                for ( int n = 0; n < windSpeedLength; n++ )
+                {
+                    if ( n == windSpeedLength - 1 ) of.Write( $" {hourlyData.WindSpeed10m[ n ].ToString( "F1", CUtils.Inv )}" );
+                    else of.Write( $" {hourlyData.WindSpeed10m[ n ].ToString( "F1", CUtils.Inv )}, " );
+                }
+                of.WriteLine( "];" );
+
+                of.Write( "var windgustseries = [" );
+                int windGustLength = hourlyData.WindGusts10m.Count;
+                for ( int n = 0; n < windGustLength; n++ )
+                {
+                    if ( n == windGustLength - 1 ) of.Write( $" {hourlyData.WindGusts10m[ n ].ToString( "F1", CUtils.Inv )}" );
+                    else of.Write( $" {hourlyData.WindGusts10m[ n ].ToString( "F1", CUtils.Inv )}, " );
+                }
+                of.WriteLine( "];" );
+
+                of.WriteLine( "function chartTPR() {" );
+                of.WriteLine( "chart = Highcharts.chart('chartcontainer', {" );
+                of.WriteLine( "  chart: {" );
+                of.WriteLine( "       type: 'line'," );
+                of.WriteLine( "        zoomType: 'x'" );
+                of.WriteLine( "    }," );
+                of.WriteLine( "    title: {" );
+                of.WriteLine( $"        text: '{Sup.GetStringsIniValue( "Forecast", "OpenMeteoTitle", "Open Meteo Forecast" )} - ECMWF IFS HRES 9km'" );
+                of.WriteLine( "    }," );
+                of.WriteLine( "    xAxis: {" ); of.WriteLine( "        type: 'datetime'," );
+                of.WriteLine( $"        title: {{ text: '{Sup.GetStringsIniValue( "Forecasts", "OpenMeteoXaxisTitle", "Date and Time" )}' }}" );
+                of.WriteLine( "    }," );
+                of.WriteLine( "    yAxis: [{ " );
+                of.WriteLine( $"        title: {{ text: '{Sup.GetStringsIniValue( "Forecasts", "OpenMeteoTempYaxisTitle", "Temperature" )} ({Sup.StationTemp.Text()})' }}," );
+                of.WriteLine( "    }, {" );
+                of.WriteLine( $"        title: {{ text: '{Sup.GetStringsIniValue( "Forecasts", "OpenMeteoPrecipYaxisTitle", "Precipitation" )} ({Sup.StationRain.Text()})' }}," );
+                of.WriteLine( "        opposite: true" );
+                of.WriteLine( "    }, {" );
+                of.WriteLine( $"        title: {{ text: '{Sup.GetStringsIniValue( "Forecasts", "OpenMeteoPressureYaxisTitle", "Pressure" )} ({Sup.StationPressure.Text()})'}}," );
+                of.WriteLine( "        opposite: true" );
+                of.WriteLine( "    }]," );
+                of.WriteLine( "    tooltip: {" );
+                of.WriteLine( "        shared: true," );
+                of.WriteLine( "        xDateFormat: '%A, %b %e, %H:%M'" );
+                of.WriteLine( "    }," );
+                of.WriteLine( "    series: [{" );
+                of.WriteLine( $"        name: '{Sup.GetStringsIniValue( "Forecasts", "OpenMeteoTempYaxisTitle", "Temperature" )}'," );
+                of.WriteLine( "        data: parseWeatherData(timeseries, tempseries)," );
+                of.WriteLine( "        color: 'blue'," );
+                of.WriteLine( "        softMax: 1.0," );
+                of.WriteLine( $"        tooltip: {{ valueSuffix: ' {Sup.StationTemp.Text()}' }}" );
+                of.WriteLine( "    }, {" );
+                of.WriteLine( $"        name: '{Sup.GetStringsIniValue( "Forecasts", "OpenMeteoPrecipYaxisTitle", "Precipitation" )}'," );
+                of.WriteLine( "        type: 'column'," );
+                of.WriteLine( "        yAxis: 1," );
+                of.WriteLine( "        data: parseWeatherData(timeseries, rainseries)," );
+                of.WriteLine( "        color: 'green'," );
+                of.WriteLine( "        softMax: 1.0," );
+                of.WriteLine( $"        tooltip: {{ valueSuffix: ' {Sup.StationRain.Text()}' }}" );
+                of.WriteLine( "    }, {" );
+                of.WriteLine( $"        name: '{Sup.GetStringsIniValue( "Forecasts", "OpenMeteoPressureYaxisTitle", "Pressure" )}'," );
+                of.WriteLine( "        yAxis: 2," );
+                of.WriteLine( "        data: parseWeatherData(timeseries, pressureseries)," );
+                of.WriteLine( "        color: 'red'," );
+                of.WriteLine( $"        tooltip: {{ valueSuffix: ' {Sup.StationPressure.Text()}' }}," );
+                of.WriteLine( "    }]" );
+                of.WriteLine( "});" );
+                of.WriteLine( Sup.ActivateChartInfo( "Forecast" ) );
+                of.WriteLine( "}" );
+
+                of.WriteLine( "function chartWind() {" );
+                of.WriteLine( "chart = Highcharts.chart('chartcontainer', {" );
+                of.WriteLine( "  chart: {" );
+                of.WriteLine( "       type: 'line'," );
+                //of.WriteLine( "        zoomType: 'x'" );
+                of.WriteLine( "    }," );
+                of.WriteLine( "    title: {" );
+                of.WriteLine( $"        text: '{Sup.GetStringsIniValue( "Forecast", "OpenMeteoTitle", "Open Meteo Forecast" )} - ECMWF IFS HRES 9km'" );
+                of.WriteLine( "    }," );
+                of.WriteLine( "    xAxis: {" ); of.WriteLine( "        type: 'datetime'," );
+                of.WriteLine( $"        title: {{ text: '{Sup.GetStringsIniValue( "Forecasts", "OpenMeteoXaxisTitle", "Date and Time" )}' }}" );
+                of.WriteLine( "    }," );
+                of.WriteLine( "    yAxis: [{ " );
+                of.WriteLine( $"        title: {{ text: '{Sup.GetStringsIniValue( "Forecasts", "OpenMeteoWindYaxisTitle", "Wind" )} ({Sup.StationWind.Text()})' }}," );
+                of.WriteLine( "        softMax: Math.max(...windgustseries)," );
+                of.WriteLine( "    }, {" );
+                of.WriteLine( $"        title: {{ text: '{Sup.GetStringsIniValue( "Forecasts", "OpenMeteoGustYaxisTitle", "Gust" )} ({Sup.StationWind.Text()})' }}," );
+                of.WriteLine( "        linkedTo: 0," );
+                of.WriteLine( "        opposite: true" );
+                of.WriteLine( "    }]," );
+                of.WriteLine( "    tooltip: {" );
+                of.WriteLine( "        shared: true," );
+                of.WriteLine( "        xDateFormat: '%A, %b %e, %H:%M'" );
+                of.WriteLine( "    }," );
+                of.WriteLine( "    series: [{" );
+                of.WriteLine( $"        name: '{Sup.GetStringsIniValue( "Forecasts", "OpenMeteoWindYaxisTitle", "Wind" )}'," );
+                of.WriteLine( "        data: parseWeatherData(timeseries, windspeedseries)," );
+                of.WriteLine( $"        tooltip: {{ valueSuffix: ' {Sup.StationWind.Text()}' }}" );
+                of.WriteLine( "    }, {" );
+                of.WriteLine( $"        name: '{Sup.GetStringsIniValue( "Forecasts", "OpenMeteoGustYaxisTitle", "Gust" )}'," );
+                of.WriteLine( "        yAxis: 1," );
+                of.WriteLine( "        data: parseWeatherData(timeseries, windgustseries)," );
+                of.WriteLine( $"        tooltip: {{ valueSuffix: ' {Sup.StationWind.Text()}' }}," );
+                of.WriteLine( "    }]" );
+                of.WriteLine( "});" );
+                of.WriteLine( Sup.ActivateChartInfo( "Forecast" ) );
+                of.WriteLine( "}" );
+
+                of.WriteLine( "// Helper functie om de JSON data om te zetten naar Highcharts formaat [tijd, waarde]" );
+                of.WriteLine( "function parseWeatherData(timeArray, valueArray) {" );
+                of.WriteLine( "    return timeArray.map((t, index) => [t * 1000, valueArray[index]]);" );
+                of.WriteLine( "}" );
+                of.WriteLine( "" );
+
+                of.WriteLine( "$( function() {" );
+                of.WriteLine( "  $( '#Switch' ).click( function() {" );
+                of.WriteLine( "    if (switchButton) {switchButton = false; chartTPR();} else {switchButton = true; chartWind(); }" );
+                of.WriteLine( "  });" );
+                of.WriteLine( "});" );
+                of.WriteLine( "console.log('Forecast loaded...');" );
+                of.WriteLine( "switchButton = false;" );
+                of.WriteLine( "chartTPR();" );
+
+                of.WriteLine( "</script>" );
+                of.WriteLine( Sup.GenerateChartInfoModal( chartId: "Forecast", Title: Sup.GetCUstringValue( "Forecast", "Title", "Forecast", true ) ) );
+                of.WriteLine( "" );
             }
-            // else no data, return, no prediction can be made; retval default is false
-
-            Sup.LogTraceInfoMessage( $" XML AddPrediction - retval = {retval}" );
-
-            return retval;
+            return true;
         }
 
     }
