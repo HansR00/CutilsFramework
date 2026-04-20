@@ -273,7 +273,7 @@
         /**
         * This accommodates multi-line text
         */
-        if (typeof(text) == 'string' && text.match(/"); of.WriteLine( "/)) {
+        if (typeof(text) == 'string' && text.match(/\r\n/)) {
 
             var dimensions = RGraph.MeasureText('M', args[11], font, size);
 
@@ -281,7 +281,7 @@
             * Measure the text (width and height)
             */
 
-            var arr = text.split('"); of.WriteLine( "');
+            var arr = text.split('\r\n');
 
             /**
             * Adjust the Y position
@@ -2895,7 +2895,7 @@
             var div = __rgraph_measuretext_cache__['text-div'];
         }
 
-        div.innerHTML = text.replace(/"); of.WriteLine( "/g, '<br />');
+        div.innerHTML = text.replace(/\r\n/g, '<br />');
         div.style.fontFamily = font;
         div.style.fontWeight = bold ? 'bold' : 'normal';
         div.style.fontSize = size + 'pt';
