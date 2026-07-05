@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -33,7 +34,7 @@ namespace CumulusUtils
         public ExternalExtraSensorslog( CuSupport s, string SensorName )
         {
             Sup = s;
-            Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog constructor: Using fixed path: | data/ |; file: | *log.txt" );
+            Sup.LogMessage( $"ExternalExtraSensorslog constructor: Using fixed path: | data/ |; file: | *log.txt", TraceLevel.Info );
 
             ThisSensorName = SensorName;
             IgnoreDataErrors = Sup.GetUtilsIniValue( "General", "IgnoreDataErrors", "true" ).Equals( "true", CUtils.Cmp );
@@ -44,14 +45,14 @@ namespace CumulusUtils
             if ( ExternalExtraSensorslogList.Length >= 0 && Sup.GetUtilsIniValue( "ExtraSensors", "CleanupExtraSensorslog", "false" ).Equals( "true", CUtils.Cmp ) )
             {
                 // We keep two month of data, the rest can be discarded
-                Sup.LogTraceInfoMessage( $"ExternalExtraSensors constructor: Cleaning up Extra Sensors Logfiles..." );
+                Sup.LogMessage( $"ExternalExtraSensors constructor: Cleaning up Extra Sensors Logfiles...", TraceLevel.Info );
 
                 foreach ( string thisFile in ExternalExtraSensorslogList )
                 {
                     if ( CUtils.RunStarted.Month - File.GetLastWriteTime( thisFile ).Month > 2 )
                     {
                         try { File.Delete( thisFile ); }
-                        catch { Sup.LogTraceInfoMessage( $"ExternalExtraSensors constructor: Can't clean up / delete {thisFile}" ); }
+                        catch { Sup.LogMessage( $"ExternalExtraSensors constructor: Can't clean up / delete {thisFile}", TraceLevel.Info ); }
                     }
                 }
             }
@@ -68,13 +69,13 @@ namespace CumulusUtils
 
             // Get the list of values starting datetime to Now - period by user definition GraphHours in section Graphs in Cumulus.ini
             //
-            Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog: starting" );
+            Sup.LogMessage( $"ExternalExtraSensorslog: starting", TraceLevel.Info );
 
             string Filename;
 
             Sup.SetStartAndEndForData( out DateTime timeStart, out DateTime timeEnd );
 
-            Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog: timeStart = {timeStart}; timeEnd = {timeEnd}" );
+            Sup.LogMessage( $"ExternalExtraSensorslog: timeStart = {timeStart}; timeEnd = {timeEnd}", TraceLevel.Info );
 
             ExternalExtraSensorslogValue tmp;
             ExternalExtraSensorsValuesList = new List<ExternalExtraSensorslogValue>();
@@ -82,11 +83,11 @@ namespace CumulusUtils
             Filename = $"data/{ThisSensorName}{timeStart:yyyy}{timeStart:MM}.txt";
             if ( !File.Exists( Filename ) )
             {
-                Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog: Require {Filename} to start but it does not exist, aborting ExternalExtraSensorsLog" );
+                Sup.LogMessage( $"ExternalExtraSensorslog: Require {Filename} to start but it does not exist, aborting ExternalExtraSensorsLog", TraceLevel.Info );
                 return ExternalExtraSensorsValuesList;
             }
 
-            Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog: Require {Filename} to start" );
+            Sup.LogMessage( $"ExternalExtraSensorslog: Require {Filename} to start", TraceLevel.Info );
 
             while ( !PeriodComplete )
             {
@@ -129,14 +130,14 @@ namespace CumulusUtils
                         //handle exception
                         if ( ErrorCount < MaxErrors )
                         {
-                            Sup.LogTraceErrorMessage( $"{m} fail: {e.Message}" );
-                            Sup.LogTraceErrorMessage( $"{m}: line is: {line}" );
+                            Sup.LogMessage( $"{m} fail: {e.Message}", TraceLevel.Error );
+                            Sup.LogMessage( $"{m}: line is: {line}", TraceLevel.Error );
                         }
 
                         if ( IgnoreDataErrors )
                         {
                             if ( ErrorCount < MaxErrors )
-                                Sup.LogTraceErrorMessage( $"{m} : Continuing to read data" );
+                                Sup.LogMessage( $"{m} : Continuing to read data", TraceLevel.Info );
                         }
                         else throw;
                     }
@@ -146,7 +147,7 @@ namespace CumulusUtils
 
                 if ( ExternalExtraSensorsValuesList.Last().ThisDate >= timeEnd || NextFileTried )
                 {
-                    Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog: Finished reading the log at {ExternalExtraSensorsValuesList.Last().ThisDate}" );
+                    Sup.LogMessage( $"ExternalExtraSensorslog: Finished reading the log at {ExternalExtraSensorsValuesList.Last().ThisDate}", TraceLevel.Info );
                     PeriodComplete = true;
                 }
                 else
@@ -154,18 +155,18 @@ namespace CumulusUtils
                     NextFileTried = true;
 
                     Filename = $"data/{ThisSensorName}{timeEnd:yyyy}{timeEnd:MM}.txt";  // Take care of a period passing month boundary
-                    Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog: Require the  next logfile: {Filename}" );
+                    Sup.LogMessage( $"ExternalExtraSensorslog: Require the  next logfile: {Filename}", TraceLevel.Info );
 
                     if ( !File.Exists( Filename ) )
                     {
-                        Sup.LogTraceErrorMessage( $"ExternalExtraSensorslog: Require {Filename} to continue but it does not exist, aborting ExternalExtraSensorsLog" );
+                        Sup.LogMessage( $"ExternalExtraSensorslog: Require {Filename} to continue but it does not exist, aborting ExternalExtraSensorsLog", TraceLevel.Error );
                         PeriodComplete = true;
                     }
                 }
             }
 
-            Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog: MainExtraSensorsValuesList created: {ExternalExtraSensorsValuesList.Count} records." );
-            Sup.LogTraceInfoMessage( $"ExternalExtraSensorslog: End" );
+            Sup.LogMessage( $"ExternalExtraSensorslog: MainExtraSensorsValuesList created: {ExternalExtraSensorsValuesList.Count} records.", TraceLevel.Info );
+            Sup.LogMessage( $"ExternalExtraSensorslog: End", TraceLevel.Info );
 
             return ExternalExtraSensorsValuesList;
         } // End ExtraSensorsLogs
@@ -173,7 +174,7 @@ namespace CumulusUtils
 
         ~ExternalExtraSensorslog()
         {
-            Sup.LogTraceVerboseMessage( "ExternalExtraSensorslog destructor: Closing file and ending program" );
+            Sup.LogMessage( "ExternalExtraSensorslog destructor: Closing file and ending program", TraceLevel.Info );
             Dispose( false );
         }
 

@@ -30,9 +30,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+
 
 namespace CumulusUtils
 {
@@ -240,7 +242,7 @@ namespace CumulusUtils
                 AjaxJavascript.AppendLine( "}" );
             }
 
-            Sup.LogTraceInfoMessage( $"Compiler - CodeGen: {filename} Written the Ajax calls" );
+            Sup.LogMessage( $"Compiler - CodeGen: {filename} Written the Ajax calls", TraceLevel.Info );
 
             foreach ( ChartDef thisChart in theseCharts )
             {
@@ -378,7 +380,7 @@ namespace CumulusUtils
                 TheCharts.AppendLine( "  chart.redraw();});" );
                 TheCharts.AppendLine( "}" );
 
-                Sup.LogTraceInfoMessage( $"Compiler - CodeGen: {filename} Written the Chart {thisChart.Id}" );
+                Sup.LogMessage( $"Compiler - CodeGen: {filename} Written the Chart {thisChart.Id}", TraceLevel.Info );
 
                 // Rewrite below for the create series
                 AddSeriesJavascript.AppendLine( $"function {thisChart.Id}AddSeries(thisChart){{" );
@@ -447,7 +449,7 @@ namespace CumulusUtils
                         }
                         else
                         {
-                            Sup.LogTraceErrorMessage( $"Compiler - CodeGen: Using Function without Plotvariable - NOT Supported in {thisChart.Id}/{thisPlotvar.Keyword}" );
+                            Sup.LogMessage( $"Compiler - CodeGen: Using Function without Plotvariable - NOT Supported in {thisChart.Id}/{thisPlotvar.Keyword}", TraceLevel.Warning );
                         }
                     }
 
@@ -501,7 +503,7 @@ namespace CumulusUtils
                     AddSeriesJavascript.AppendLine( $"    tooltip:{{valueDecimals: {NrOfDecimals}, valueSuffix: ' {thisPlotvar.Unit}'}}" );
                     AddSeriesJavascript.AppendLine( "   }, false);" );
 
-                    Sup.LogTraceInfoMessage( $"Compiler - CodeGen: {filename} Written the Series {thisPlotvar.Keyword}" );
+                    Sup.LogMessage( $"Compiler - CodeGen: {filename} Written the Series {thisPlotvar.Keyword}", TraceLevel.Info );
 
                 } // Loop over all plotvars within the chart
 
@@ -529,7 +531,7 @@ namespace CumulusUtils
                 first = false;
             } // Loop over all charts
 
-            Sup.LogTraceInfoMessage( $"Compiler - CodeGen: {filename} Written the AddSeries Calls" );
+            Sup.LogMessage( $"Compiler - CodeGen: {filename} Written the AddSeries Calls", TraceLevel.Info );
 
             MenuJavascript.AppendLine( "{" );
             if ( filename.Equals( Sup.CustomLogsCharts ) )
@@ -619,7 +621,7 @@ namespace CumulusUtils
                 of.WriteLine( CuSupport.StringRemoveWhiteSpace( Html.ToString(), " " ) );
 #endif
 
-                Sup.LogTraceInfoMessage( $"Compiler - CodeGen: {filename} Finished" );
+                Sup.LogMessage( $"Compiler - CodeGen: {filename} Finished", TraceLevel.Info );
             } // using output file
         } // End Function GenerateUserDefinedCharts
 
@@ -647,7 +649,7 @@ namespace CumulusUtils
                     else LastSoilMoistureUnitUsed = thisPlotvar.Unit; // remember the unit for which the axis is made
                 }
 
-                Sup.LogTraceInfoMessage( $"Compiler - Creating Axis {thisPlotvar.Axis} on {thisPlotvar.PlotVar} on {thisChart.Id} " );
+                Sup.LogMessage( $"Compiler - Creating Axis {thisPlotvar.Axis} on {thisPlotvar.PlotVar} on {thisChart.Id} ", TraceLevel.Info );
 
                 opposite = !opposite;
                 buf.Append( "  chart.addAxis({" );
@@ -842,7 +844,7 @@ namespace CumulusUtils
             //
             if ( thisChart.Axis.CountFlags() == 1 )
             {
-                Sup.LogTraceInfoMessage( $"Compiler - Single Axis on {thisChart.Id}, creating opposite axis " );
+                Sup.LogMessage( $"Compiler - Single Axis on {thisChart.Id}, creating opposite axis ", TraceLevel.Info );
 
                 buf.Append( "  chart.addAxis({linkedTo: 1, gridLineWidth: 0, minorGridLineWidth:0," );
 
@@ -866,7 +868,7 @@ namespace CumulusUtils
 
         private void GenerateSeriesVariables( StringBuilder buf, List<AllVarInfo> AllVars )
         {
-            Sup.LogTraceVerboseMessage( $"Compiler - Creating Runtime Series Variables" );
+            Sup.LogMessage( $"Compiler - Creating Runtime Series Variables", TraceLevel.Verbose );
 
             // Even if we don't need these we just generate this to make life easier: we do not have to search for it
             buf.AppendLine( $"var WindBarbData = [];" );
@@ -882,7 +884,7 @@ namespace CumulusUtils
         {
             // https://stackoverflow.com/questions/1230233/how-to-find-the-sum-of-an-array-of-numbers
 
-            Sup.LogTraceVerboseMessage( $"Compiler - Creating Runtime Sum function" );
+            Sup.LogMessage( $"Compiler - Creating Runtime Sum function", TraceLevel.Verbose );
 
             if ( SumFunctionGenerated )
                 return;
@@ -915,7 +917,7 @@ namespace CumulusUtils
 
             if ( thisList?.Any() != true )
             {
-                Sup.LogTraceInfoMessage( $"Generating UserAskedData: Nothing to do" );
+                Sup.LogMessage( $"Generating UserAskedData: Nothing to do", TraceLevel.Info );
                 return DateTime.Now;
             }
 
@@ -926,7 +928,7 @@ namespace CumulusUtils
             // This is also shared with the UserAskedData JSON creation -> it has become a shared function for start and endtime related to the intervals.
             //
             Sup.SetStartAndEndForData( out DateTime timeStart, out DateTime timeEnd );
-            Sup.LogTraceInfoMessage( $"GenerateUserAskedData: timeStart = {timeStart}; timeEnd = {timeEnd}" );
+            Sup.LogMessage( $"GenerateUserAskedData: timeStart = {timeStart}; timeEnd = {timeEnd}", TraceLevel.Info );
 
             StringBuilder Recent = new StringBuilder( "{" );
             StringBuilder Daily = new StringBuilder( "{" );
@@ -942,29 +944,29 @@ namespace CumulusUtils
 
             _ = DateTime.TryParse( Sup.GetUtilsIniValue( "Compiler", "DoneToday", $"{DateTime.Now.AddDays( -1 ):s}" ), out DateTime DoneToday );
 
-            Sup.LogTraceInfoMessage( $"Generate UserAskedData: DoneToday = {DoneToday}." );
+            Sup.LogMessage( $"Generate UserAskedData: DoneToday = {DoneToday}.", TraceLevel.Info );
 
             bool DoDailyAndAll = !Sup.DateIsToday( DoneToday );
 
             if ( DoDailyAndAll )
             {
-                Sup.LogTraceInfoMessage( $"Generate UserAskedData: Must generate the ALL Range." );
+                Sup.LogMessage( $"Generate UserAskedData: Must generate the ALL Range.", TraceLevel.Info );
                 Sup.SetUtilsIniValue( "Compiler", "DoneToday", $"{DateTime.Now:s}" );
             }
             else
-                Sup.LogTraceInfoMessage( $"Generate UserAskedData: Must NOT generate the ALL Range." );
+                Sup.LogMessage( $"Generate UserAskedData: Must NOT generate the ALL Range.", TraceLevel.Info );
 
             foreach ( ChartDef thisChart in thisList )
             {
-                Sup.LogTraceInfoMessage( $"Generate UserAskedData - Loop over Chart: {thisChart.Id})" );
+                Sup.LogMessage( $"Generate UserAskedData - Loop over Chart: {thisChart.Id})", TraceLevel.Info );
                 foreach ( Plotvar thisVar in thisChart.PlotVars )
                 {
-                    Sup.LogTraceInfoMessage( $"Generate UserAskedData - Testing {thisVar.PlotVar} into {thisVar.Datafile} (Range is {thisVar.PlotvarRange})" );
+                    Sup.LogMessage( $"Generate UserAskedData - Testing {thisVar.PlotVar} into {thisVar.Datafile} (Range is {thisVar.PlotvarRange})", TraceLevel.Info );
                     if ( thisVar.Datafile.StartsWith( "CUserdata" ) )
                     {
                         // This is one to generate. Write out this variable. 
                         // NOTE: there can be more variables in this file so the writing is always append
-                        Sup.LogTraceInfoMessage( $"Generate UserAskedData - generating {thisVar.PlotVar} into {thisVar.Datafile} (Range is {thisVar.PlotvarRange})" );
+                        Sup.LogMessage( $"Generate UserAskedData - generating {thisVar.PlotVar} into {thisVar.Datafile} (Range is {thisVar.PlotvarRange})", TraceLevel.Info );
                         switch ( thisVar.PlotvarRange )
                         {
                             case PlotvarRangeType.Extra:
@@ -1002,7 +1004,7 @@ namespace CumulusUtils
                                 break;
 
                             default:
-                                Sup.LogTraceErrorMessage( "Generate UserAskedData - Switch default is an internal error! Must be set while parsing the charts)" );
+                                Sup.LogMessage( "Generate UserAskedData - Switch default is an internal error! Must be set while parsing the charts)", TraceLevel.Error );
                                 break;
                         }
                     } // else: data must come from CMX
@@ -1067,7 +1069,7 @@ namespace CumulusUtils
                         tmpVarInfo.Datafile = p.Datafile;
                         AllVars.Add( tmpVarInfo );
 
-                        Sup.LogTraceInfoMessage( $"CeckAllVariablesInThisSetOfCharts: Keyword: {tmpVarInfo.KeywordName}; Plotvar: {tmpVarInfo.TypeName}; Datafile: {tmpVarInfo.Datafile}" );
+                        Sup.LogMessage( $"CeckAllVariablesInThisSetOfCharts: Keyword: {tmpVarInfo.KeywordName}; Plotvar: {tmpVarInfo.TypeName}; Datafile: {tmpVarInfo.Datafile}", TraceLevel.Verbose );
                     }
                     else
                         found = false;
@@ -1081,27 +1083,27 @@ namespace CumulusUtils
                     {
                         if ( p.GraphType == "columnrange" )
                         {
-                            Sup.LogTraceInfoMessage( $"CeckAllVariablesInThisSetOfCharts: ColumnRange var {p.Keyword}" );
+                            Sup.LogMessage( $"CeckAllVariablesInThisSetOfCharts: ColumnRange var {p.Keyword}", TraceLevel.Verbose );
                             string pvSuffix = p.PlotVar[ 3.. ];
 
                             tmpVarInfo.Datafile = p.Datafile;
                             tmpVarInfo.KeywordName = $"min{pvSuffix}";
                             tmpVarInfo.TypeName = $"min{pvSuffix}";
                             AllVars.Add( tmpVarInfo );
-                            Sup.LogTraceInfoMessage( $"CeckAllVariablesInThisSetOfCharts: Keyword: {tmpVarInfo.KeywordName}; Plotvar: {tmpVarInfo.TypeName}; Datafile: {tmpVarInfo.Datafile}" );
+                            Sup.LogMessage( $"CeckAllVariablesInThisSetOfCharts: Keyword: {tmpVarInfo.KeywordName}; Plotvar: {tmpVarInfo.TypeName}; Datafile: {tmpVarInfo.Datafile}", TraceLevel.Verbose );
 
                             tmpVarInfo.Datafile = p.Datafile;
                             tmpVarInfo.KeywordName = $"max{pvSuffix}";
                             tmpVarInfo.TypeName = $"max{pvSuffix}";
                             AllVars.Add( tmpVarInfo );
-                            Sup.LogTraceInfoMessage( $"CeckAllVariablesInThisSetOfCharts: Keyword: {tmpVarInfo.KeywordName}; Plotvar: {tmpVarInfo.TypeName}; Datafile: {tmpVarInfo.Datafile}" );
+                            Sup.LogMessage( $"CeckAllVariablesInThisSetOfCharts: Keyword: {tmpVarInfo.KeywordName}; Plotvar: {tmpVarInfo.TypeName}; Datafile: {tmpVarInfo.Datafile}", TraceLevel.Verbose );
                         }
                         else
                             continue;
                     }
                     else
                     {
-                        Sup.LogTraceInfoMessage( $"CeckAllVariablesInThisSetOfCharts: Equation var {p.Keyword}" );
+                        Sup.LogMessage( $"CeckAllVariablesInThisSetOfCharts: Equation var {p.Keyword}", TraceLevel.Verbose );
                         // In case of an equation with its own var name some info needs to be set for codegen to function correctly
                         //
                         if ( p.PlotvarRange == PlotvarRangeType.All || p.PlotvarRange == PlotvarRangeType.Daily )
@@ -1124,7 +1126,7 @@ namespace CumulusUtils
                         }
                         else
                         {
-                            Sup.LogTraceInfoMessage( $"Error PlovarRangeType for {p.Keyword}: {p.PlotvarRange}" );
+                            Sup.LogMessage( $"Error PlovarRangeType for {p.Keyword}: {p.PlotvarRange}", TraceLevel.Error );
                             return null;
                         }
 
@@ -1155,7 +1157,7 @@ namespace CumulusUtils
                                 else
                                     found = false;
 
-                                Sup.LogTraceInfoMessage( $"CeckAllVariablesInThisSetOfCharts (found: {found}): Keyword: {tmpVarInfo.KeywordName}; Plotvar: {tmpVarInfo.TypeName}; Datafile: {tmpVarInfo.Datafile}" );
+                                Sup.LogMessage( $"CeckAllVariablesInThisSetOfCharts (found: {found}): Keyword: {tmpVarInfo.KeywordName}; Plotvar: {tmpVarInfo.TypeName}; Datafile: {tmpVarInfo.Datafile}", TraceLevel.Verbose );
 
                                 p.EqAllVarList.Add( tmpVarInfo );
                             }

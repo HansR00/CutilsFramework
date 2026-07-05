@@ -155,9 +155,9 @@ namespace CumulusUtils
             catch ( Exception e ) when ( e is CultureNotFoundException )
             {
                 LogDebugMessage( $" Invalid Locale : {Locale}" );
-                LogTraceErrorMessage( $" Invalid Culture : {e.Message}" );
-                LogTraceErrorMessage( $" Invalid Culture for the system : {Locale}" );
-                LogTraceWarningMessage( $" Using English GB locale : en-GB" );
+                LogMessage( $" Invalid Culture : {e.Message}", TraceLevel.Error );
+                LogMessage( $" Invalid Culture for the system : {Locale}", TraceLevel.Error );
+                LogMessage( $" Using English GB locale : en-GB", TraceLevel.Warning );
                 Locale = "en-GB";
                 Language = "EN";
                 Country = "GB";
@@ -208,8 +208,6 @@ namespace CumulusUtils
                     str.AppendLine( "  }," );
 
                     // Now set the time and timezone defs
-
-                    //str.AppendLine( $"time:{{useUTC: false, timezone: '{GetCumulusIniValue( "Station", "TimeZone", "" )}'}}" );
                     str.AppendLine( $"time:{{timezone: '{GetCumulusIniValue( "Station", "TimeZone", "" )}'}}" );
 
                     str.AppendLine( "};" );
@@ -224,7 +222,7 @@ namespace CumulusUtils
 
             if ( !File.Exists( $"CUstrings{Language}.ini" ) )
             {
-                LogTraceWarningMessage( $" No CUstrings{Language}.ini found." );
+                LogMessage( $" No CUstrings{Language}.ini found.", TraceLevel.Warning );
 
                 StreamWriter of = new StreamWriter( $"CUstrings{Language}.ini" );
                 of.Dispose();
@@ -233,17 +231,16 @@ namespace CumulusUtils
             CUstringIni = new IniFile( $"CUstrings{Language}.ini", this );
 
             PerHour = GetCUstringValue( "General", "PerHour", "/hr", false );
+            StationWind = new Wind( (WindDim) Convert.ToInt32( GetCumulusIniValue( "Station", "WindUnit", "2" ) ), this );             // default does not count: comes from CMX, for me km/h
+            StationPressure = new Pressure( (PressureDim) Convert.ToInt32( GetCumulusIniValue( "Station", "PressureUnit", "1" ) ) );   // default does not count: comes from CMX, for me hPa
+            StationRain = new Rain( (RainDim) Convert.ToInt32( GetCumulusIniValue( "Station", "RainUnit", "0" ) ) );                   // default does not count: comes from CMX, for me mm
+            StationTemp = new Temp( (TempDim) Convert.ToInt32( GetCumulusIniValue( "Station", "TempUnit", "0" ) ) );                   // default does not count: comes from CMX, for me C
 
-            StationWind = new Wind( (WindDim) Ini.GetValue( "Station", "WindUnit", 2 ), this );             // default does not count: comes from CMX, for me km/h
-            StationPressure = new Pressure( (PressureDim) Ini.GetValue( "Station", "PressureUnit", 1 ) );   // default does not count: comes from CMX, for me hPa
-            StationRain = new Rain( (RainDim) Ini.GetValue( "Station", "RainUnit", 0 ) );                   // default does not count: comes from CMX, for me mm
-            StationTemp = new Temp( (TempDim) Ini.GetValue( "Station", "TempUnit", 0 ) );                   // default does not count: comes from CMX, for me C
-
-            int tmpDim = Ini.GetValue( "Station", "WindUnit", 2 ) == 0 ? 2 : Ini.GetValue( "Station", "WindUnit", 2 );
+            int tmpDim = Convert.ToInt32( GetCumulusIniValue( "Station", "WindUnit", "2" ) );
             StationDistance = new Distance( (DistanceDim) tmpDim );                                         // CMX does not know Distance(unit) but Wind can be misused for this
 
-            StationHeight = new Height( (HeightDim) Ini.GetValue( "Station", "CloudBaseInFeet", 0 ) );      // We use the CloudBaseInFeet param of CMX as default.
-                                                                                                            // We'll see later if that needs modification
+            StationHeight = new Height( (HeightDim) Convert.ToInt32( GetCumulusIniValue( "Station", "CloudBaseInFeet", "0" ) ) );      // We use the CloudBaseInFeet param of CMX as default.
+                                                                                                                                       // We'll see later if that needs modification
 
             LogDebugMessage( $" CumulusUtils version: {UnformattedVersion()}" );
             LogDebugMessage( $" CuSupport constructor : Unit Wind (m/s, mph, km/h, kts): {StationWind.Text()}" );
@@ -279,7 +276,7 @@ namespace CumulusUtils
                 tmp = AsyncTask.Result;
             }
 
-            LogTraceVerboseMessage( DateTime.Now + $" GetUtilsIniValue {key} / {tmp}" );
+            LogMessage( DateTime.Now + $" GetUtilsIniValue {key} / {tmp}", TraceLevel.Verbose );
 
             return ( tmp );
         }
@@ -302,14 +299,15 @@ namespace CumulusUtils
                 tmp = string.Join( @"\'", temp );
             }
 
-            LogTraceVerboseMessage( DateTime.Now + $" GetCUstringValue {key} / {tmp}" );
+            LogMessage( DateTime.Now + $" GetCUstringValue {key} / {tmp}", TraceLevel.Verbose );
 
             return ( tmp );
         }
 
         public void SetCUstringValue( string section, string key, string def ) => CUstringIni.SetValue( section, key, def );
 
-        private void EndMyIniFile() { if ( MyIni is not null ) { MyIni.Flush(); MyIni.Refresh(); } if ( CUstringIni is not null ) { CUstringIni.Flush(); CUstringIni.Refresh(); } }
+        //private void EndMyIniFile() { if ( MyIni is not null ) { MyIni.Flush(); MyIni.Refresh(); } if ( CUstringIni is not null ) { CUstringIni.Flush(); CUstringIni.Refresh(); } }
+        private static void EndMyIniFile() { }
 
         #endregion
 
@@ -564,8 +562,8 @@ namespace CumulusUtils
 
             TimeSpan thisSpan = DateTime.Now - thisDate;
 
-            LogTraceInfoMessage( $"DateIsToday for thisDate: {thisDate} | thisDate.DayOfYear: {thisDate.DayOfYear} versus Now.DayOfYear: {DateTime.Now.DayOfYear})" );
-            LogTraceInfoMessage( $"DateIsToday: thisSpan: {thisSpan} | thisSpan.TotalDays = {thisSpan.TotalDays}" );
+            LogMessage( $"DateIsToday for thisDate: {thisDate} | thisDate.DayOfYear: {thisDate.DayOfYear} versus Now.DayOfYear: {DateTime.Now.DayOfYear})", TraceLevel.Info );
+            LogMessage( $"DateIsToday: thisSpan: {thisSpan} | thisSpan.TotalDays = {thisSpan.TotalDays}", TraceLevel.Info );
 
             if ( thisSpan.TotalDays > 1 ) retval = false;
             else retval = true;
@@ -618,7 +616,7 @@ namespace CumulusUtils
             NormalMessageToConsole = GetUtilsIniValue( "General", "NormalMessageToConsole", "true" ).Equals( "true", CUtils.Cmp );
             string thisTrace = GetUtilsIniValue( "General", "TraceInfoLevel", "Info" );     // Verbose, Information, Warning, Error, Off
 
-            LogTraceInfoMessage( $"Initial {CUTraceSwitch} => Error: {CUTraceSwitch.TraceError}, Warning: {CUTraceSwitch.TraceWarning}, Info: {CUTraceSwitch.TraceInfo}, Verbose: {CUTraceSwitch.TraceInfo}" );
+            LogMessage( $"Initial {CUTraceSwitch} => Error: {CUTraceSwitch.TraceError}, Warning: {CUTraceSwitch.TraceWarning}, Info: {CUTraceSwitch.TraceInfo}, Verbose: {CUTraceSwitch.TraceVerbose}" );
 
             try
             {
@@ -626,8 +624,8 @@ namespace CumulusUtils
             }
             catch ( Exception e ) when ( e is ArgumentException || e is ArgumentNullException )
             {
-                LogTraceErrorMessage( $"Initial: Exception parsing the TraceLevel - {e.Message}" );
-                LogTraceErrorMessage( $"Initial: Setting level to Warning." );
+                LogMessage( $"Initial: Exception parsing the TraceLevel - {e.Message}", TraceLevel.Error );
+                LogMessage( $"Initial: Setting level to Warning.", TraceLevel.Warning );
                 CUTraceSwitch.Level = TraceLevel.Warning;
             }
 
@@ -638,13 +636,13 @@ namespace CumulusUtils
                 Trace.AutoFlush = true;
             }
 
-            LogTraceInfoMessage( $"According to Inifile {thisTrace} => Error: {CUTraceSwitch.TraceError}, Warning: {CUTraceSwitch.TraceWarning}, Info: {CUTraceSwitch.TraceInfo}, Verbose: {CUTraceSwitch.TraceVerbose}, " );
+            LogMessage( $"According to Inifile {thisTrace} => Error: {CUTraceSwitch.TraceError}, Warning: {CUTraceSwitch.TraceWarning}, Info: {CUTraceSwitch.TraceInfo}, Verbose: {CUTraceSwitch.TraceVerbose}, ", TraceLevel.Info );
 
             if ( Environment.OSVersion.Platform.Equals( PlatformID.Unix ) )
             {
                 // Shut up the default listener
                 LogDebugMessage( "CumulusUtils Initial: Shutting down the default listener" );
-                LogTraceInfoMessage( "CumulusUtils Initial: Shutting down the default listener" );
+                LogMessage( "CumulusUtils Initial: Shutting down the default listener", TraceLevel.Info );
                 Trace.Listeners.RemoveAt( 0 );
             }
         }
@@ -655,10 +653,24 @@ namespace CumulusUtils
             if ( LoggingOn ) Debug.WriteLine( DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + message );
         }
 
-        public void LogTraceErrorMessage( string message ) => Trace.WriteLineIf( CUTraceSwitch.TraceError, DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + "❌ Error :" + message );
-        public void LogTraceWarningMessage( string message ) => Trace.WriteLineIf( CUTraceSwitch.TraceWarning, DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + "Warning :" + message );
-        public void LogTraceInfoMessage( string message ) => Trace.WriteLineIf( CUTraceSwitch.TraceInfo, DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + "Information :" + message );
-        public void LogTraceVerboseMessage( string message ) => Trace.WriteLineIf( CUTraceSwitch.TraceVerbose, DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + "Verbose :" + message );
+        //if (CUTraceSwitch.Level != TraceLevel.Off && level <= CUTraceSwitch.Level );
+        public void LogMessage( string message, TraceLevel level = TraceLevel.Info )
+        {
+            // Check if the current switch level allows this message level
+            if ( CUTraceSwitch.Level >= level )
+            {
+                string prefix = level switch
+                {
+                    TraceLevel.Error => "❌ Error :",
+                    TraceLevel.Warning => "Warning :",
+                    TraceLevel.Info => "Information :",
+                    TraceLevel.Verbose => "Verbose :",
+                    _ => ""
+                };
+
+                Trace.WriteLine( DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + prefix + message );
+            }
+        }
 
         #endregion
 
@@ -708,27 +720,27 @@ namespace CumulusUtils
 
                     if ( string.IsNullOrEmpty( FTPfilename ) )
                     {
-                        LogTraceWarningMessage( $"CheckPackageAndCopy: File (IsNullOrEmpty) can't be copied. Cancelling operation." );
-                        LogTraceWarningMessage( "CheckPackageAndCopy: Website not created/updated. Website may not be [fully] operational" );
-                        LogTraceWarningMessage( "CheckPackageAndCopy: NOTE: This has no influence on the operation of Cumulus itself." );
+                        LogMessage( $"CheckPackageAndCopy: File (IsNullOrEmpty) can't be copied. Cancelling operation.", TraceLevel.Warning );
+                        LogMessage( "CheckPackageAndCopy: Website not created/updated. Website may not be [fully] operational", TraceLevel.Warning );
+                        LogMessage( "CheckPackageAndCopy: NOTE: This has no influence on the operation of Cumulus itself.", TraceLevel.Warning );
 
                         return false;
                     }
                     else
                     {
                         if ( await CUtils.Isup.UploadFileAsync( FTPfilename, filename ) )
-                            LogTraceInfoMessage( $"CheckPackageAndCopy: Uploaded {filename} to {FTPfilename}" );
+                            LogMessage( $"CheckPackageAndCopy: Uploaded {filename} to {FTPfilename}", TraceLevel.Info );
                         else
                         {
-                            LogTraceErrorMessage( $"CheckPackageAndCopy: Upload of {filename} to {FTPfilename} failed." );
+                            LogMessage( $"CheckPackageAndCopy: Upload of {filename} to {FTPfilename} failed.", TraceLevel.Error );
                             return false;
                         }
                     }
                 }
                 else // File does  not exist
                 {
-                    LogTraceInfoMessage( $"CheckPackageAndCopy: File {filename} is missing." );
-                    LogTraceInfoMessage( "CheckPackageAndCopy: Website may not be [fully] operational but file may still exist from previous installation." );
+                    LogMessage( $"CheckPackageAndCopy: File {filename} is missing.", TraceLevel.Info );
+                    LogMessage( "CheckPackageAndCopy: Website may not be [fully] operational but file may still exist from previous installation.", TraceLevel.Info );
                 }
             }
 
@@ -754,6 +766,17 @@ namespace CumulusUtils
                 // TODO: set large fields to null.
                 EndMyIniFile();
                 //Console.WriteLine( "After EndMyIniFile" );
+
+                MyIni.CheckAndCleanUp();
+                SetUtilsIniValue( "General", "ParamCleanUp", "true" ); // make sure it works for the language as well
+                CUstringIni.CheckAndCleanUp();
+
+                // Reset to false so the user has explicitely to enable (=true) it again 
+                SetUtilsIniValue( "General", "ParamCleanUp", "false" );
+                CUstringIni.SaveToFile();
+                MyIni.SaveToFile();
+
+                // Nothing to do with  the CMX and the CMX Strings and the all time records
 
                 string filenameCopy = "copy_Cumulus.ini";
                 if ( File.Exists( filenameCopy ) )

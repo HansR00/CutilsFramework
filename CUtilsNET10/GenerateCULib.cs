@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -42,7 +43,6 @@ namespace CumulusUtils
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}cumulusutils.js", false, Encoding.UTF8 ) )
             {
-                TimeZoneInfo TZ;
                 int DST = 0;
 
                 Sup.LogDebugMessage( $"Generating CUlib starting" );
@@ -51,7 +51,7 @@ namespace CumulusUtils
 
                 tz = Sup.GetCumulusIniValue( "Station", "TimeZone", "" );
 
-                if ( TimeZoneInfo.TryFindSystemTimeZoneById( tz, out TZ ) )
+                if ( TimeZoneInfo.TryFindSystemTimeZoneById( tz, out TimeZoneInfo TZ ) )
                 {
                     Sup.LogDebugMessage( $"TimeZone Id:           {TZ.Id} " );
                     Sup.LogDebugMessage( $"TimeZone StandardName: {TZ.StandardName} " );
@@ -854,40 +854,40 @@ namespace CumulusUtils
                 // Now, do all checks on the individual steelseries parameters which are used 
                 // This is a tiresome process, adding a parameter is awkward. Unfortunately, no check are made in the gauges or steelseries software
                 //
-                Sup.LogTraceInfoMessage( $"cumulusutils.js generation: Checking gauges parameters" );
+                Sup.LogMessage( $"cumulusutils.js generation: Checking gauges parameters", TraceLevel.Info );
 
                 string ShowIndoorTempHum = Sup.GetUtilsIniValue( "Website", "ShowInsideMeasurements", "false" ).ToLowerInvariant();
                 if ( !ShowIndoorTempHum.Equals( "true" ) && !ShowIndoorTempHum.Equals( "false" ) )
                 {
-                    Sup.LogTraceErrorMessage( $"cumulusutils.js generation: Parameter value did not pass : ShowInsideMeasurements" );
+                    Sup.LogMessage( $"cumulusutils.js generation: Parameter value did not pass : ShowInsideMeasurements", TraceLevel.Error );
                     ShowIndoorTempHum = "false";
                 }
 
                 string ShowUVStr = Sup.GetUtilsIniValue( "Website", "ShowUV", "true" ).ToLowerInvariant();
                 if ( !ShowUVStr.Equals( "true" ) && !ShowUVStr.Equals( "false" ) )
                 {
-                    Sup.LogTraceErrorMessage( $"cumulusutils.js generation: Parameter value did not pass : ShowUV" );
+                    Sup.LogMessage( $"cumulusutils.js generation: Parameter value did not pass : ShowUV", TraceLevel.Error );
                     ShowUVStr = "true";
                 }
 
                 string ShowSolarStr = Sup.GetUtilsIniValue( "Website", "ShowSolar", "true" ).ToLowerInvariant();
                 if ( !ShowSolarStr.Equals( "true" ) && !ShowSolarStr.Equals( "false" ) )
                 {
-                    Sup.LogTraceErrorMessage( $"cumulusutils.js generation: Parameter value did not pass : ShowSolar" );
+                    Sup.LogMessage( $"cumulusutils.js generation: Parameter value did not pass : ShowSolar", TraceLevel.Error );
                     ShowSolarStr = "true";
                 }
 
                 string rainUseSectionColours = Sup.GetUtilsIniValue( "Website", "SteelseriesRainUseSectionColours", "false" ).ToLowerInvariant();
                 if ( !rainUseSectionColours.Equals( "true" ) && !rainUseSectionColours.Equals( "false" ) )
                 {
-                    Sup.LogTraceErrorMessage( $"cumulusutils.js generation: Parameter value did not pass : SteelseriesRainUseSectionColours" );
+                    Sup.LogMessage( $"cumulusutils.js generation: Parameter value did not pass : SteelseriesRainUseSectionColours", TraceLevel.Error );
                     rainUseSectionColours = "false";
                 }
 
                 string rainUseGradientColours = Sup.GetUtilsIniValue( "Website", "SteelseriesRainUseGradientColours", "true" ).ToLowerInvariant();
                 if ( !rainUseGradientColours.Equals( "true" ) && !rainUseGradientColours.Equals( "false" ) )
                 {
-                    Sup.LogTraceErrorMessage( $"cumulusutils.js generation: Parameter value did not pass : SteelseriesRainUseGradientColours" );
+                    Sup.LogMessage( $"cumulusutils.js generation: Parameter value did not pass : SteelseriesRainUseGradientColours", TraceLevel.Error );
                     rainUseGradientColours = "true";
                 }
 
@@ -910,7 +910,7 @@ namespace CumulusUtils
                 }
                 if ( !found )
                 {
-                    Sup.LogTraceErrorMessage( $"cumulusutils.js generation: Parameter value did not pass : SteelseriesDirAvgPointertype" );
+                    Sup.LogMessage( $"cumulusutils.js generation: Parameter value did not pass : SteelseriesDirAvgPointertype", TraceLevel.Error );
                     SteelseriesDirAvgPointertype = "TYPE3";
                 }
 
@@ -922,7 +922,7 @@ namespace CumulusUtils
                 }
                 if ( !found )
                 {
-                    Sup.LogTraceErrorMessage( $"cumulusutils.js generation: Parameter value did not pass : SteelseriesDirAvgPointerColour" );
+                    Sup.LogMessage( $"cumulusutils.js generation: Parameter value did not pass : SteelseriesDirAvgPointerColour", TraceLevel.Error );
                     steelseriesdirAvgPointerColour = "BLUE";
                 }
 
@@ -934,7 +934,7 @@ namespace CumulusUtils
                 }
                 if ( !found )
                 {
-                    Sup.LogTraceErrorMessage( $"cumulusutils.js generation: Parameter value did not pass : SteelseriesFramedesign" );
+                    Sup.LogMessage( $"cumulusutils.js generation: Parameter value did not pass : SteelseriesFramedesign", TraceLevel.Error );
                     SteelseriesFramedesign = "SHINY_METAL";
                 }
 
@@ -946,7 +946,7 @@ namespace CumulusUtils
                 }
                 if ( !found )
                 {
-                    Sup.LogTraceErrorMessage( $"cumulusutils.js generation: Parameter value did not pass : SteelseriesBackgroundColor" );
+                    Sup.LogMessage( $"cumulusutils.js generation: Parameter value did not pass : SteelseriesBackgroundColor", TraceLevel.Error );
                     SteelseriesBackgroundColor = "BROWN";
                 }
 
@@ -958,7 +958,7 @@ namespace CumulusUtils
                 }
                 if ( !found )
                 {
-                    Sup.LogTraceErrorMessage( $"cumulusutils.js generation: Parameter value did not pass : SteelseriesPointerColour" );
+                    Sup.LogMessage( $"cumulusutils.js generation: Parameter value did not pass : SteelseriesPointerColour", TraceLevel.Error );
                     SteelseriesPointerColour = "RED";
                 }
 
@@ -970,7 +970,7 @@ namespace CumulusUtils
                 }
                 if ( !found )
                 {
-                    Sup.LogTraceErrorMessage( $"cumulusutils.js generation: Parameter value did not pass : SteelseriesPointerType" );
+                    Sup.LogMessage( $"cumulusutils.js generation: Parameter value did not pass : SteelseriesPointerType", TraceLevel.Error );
                     SteelseriesPointerType = "TYPE3";
                 }
 
@@ -982,7 +982,7 @@ namespace CumulusUtils
                 }
                 if ( !found )
                 {
-                    Sup.LogTraceErrorMessage( $"cumulusutils.js generation: Parameter value did not pass : SteelseriesLcdColour" );
+                    Sup.LogMessage( $"cumulusutils.js generation: Parameter value did not pass : SteelseriesLcdColour", TraceLevel.Error );
                     SteelseriesLcdColour = "ORANGE";
                 }
 
@@ -994,7 +994,7 @@ namespace CumulusUtils
                 }
                 if ( !found )
                 {
-                    Sup.LogTraceErrorMessage( $"cumulusutils.js generation: Parameter value did not pass : SteelseriesForegroundType" );
+                    Sup.LogMessage( $"cumulusutils.js generation: Parameter value did not pass : SteelseriesForegroundType", TraceLevel.Error );
                     SteelseriesForegroundType = "TYPE1";
                 }
 
@@ -1006,7 +1006,7 @@ namespace CumulusUtils
                 }
                 if ( !found )
                 {
-                    Sup.LogTraceErrorMessage( $"cumulusutils.js generation: Parameter value did not pass : SteelseriesKnobType" );
+                    Sup.LogMessage( $"cumulusutils.js generation: Parameter value did not pass : SteelseriesKnobType", TraceLevel.Error );
                     SteelseriesKnobType = "STANDARD_KNOB";
                 }
 
@@ -1018,7 +1018,7 @@ namespace CumulusUtils
                 }
                 if ( !found )
                 {
-                    Sup.LogTraceErrorMessage( $"cumulusutils.js generation: Parameter value did not pass : SteelseriesKnobStyle" );
+                    Sup.LogMessage( $"cumulusutils.js generation: Parameter value did not pass : SteelseriesKnobStyle", TraceLevel.Error );
                     SteelseriesKnobStyle = "SILVER";
                 }
 
@@ -1099,7 +1099,7 @@ namespace CumulusUtils
         {
             StringBuilder Buf = new StringBuilder();
 
-            Sup.LogTraceInfoMessage( $"GenerateStatisticsCode: StatisticsType is '{StatisticsType}'; Event is '{Event}'" );
+            Sup.LogMessage( $"GenerateStatisticsCode: StatisticsType is '{StatisticsType}'; Event is '{Event}'", TraceLevel.Info );
 
             if ( StatisticsType.Equals( "Google" ) )
             {
@@ -1113,12 +1113,12 @@ namespace CumulusUtils
             {
                 if ( Event )
                 {
-                    Sup.LogTraceWarningMessage( $"GenerateStatisticsCode: No Matomo events implemented yet" );
+                    Sup.LogMessage( $"GenerateStatisticsCode: No Matomo events implemented yet", TraceLevel.Warning );
                 }
             }
             else
             {
-                Sup.LogTraceErrorMessage( $"GenerateStatisticsCode: StatisticsType '{StatisticsType}' is unknown, nothing generated" );
+                Sup.LogMessage( $"GenerateStatisticsCode: StatisticsType '{StatisticsType}' is unknown, nothing generated", TraceLevel.Error );
             }
 
             return Buf.ToString();

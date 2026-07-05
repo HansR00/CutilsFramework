@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace CumulusUtils
 {
@@ -26,7 +27,7 @@ namespace CumulusUtils
 
                 if ( string.IsNullOrEmpty( thisEq.Equation ) )
                 {
-                    Sup.LogTraceErrorMessage( $"Parsing User Charts: Error in Equation {thisEq.Id}" );
+                    Sup.LogMessage( $"Parsing User Charts: Error in Equation {thisEq.Id}", TraceLevel.Error );
                     return false;
                 }
                 else
@@ -49,8 +50,8 @@ namespace CumulusUtils
                 if ( !Equationblock )
                     if ( Array.Exists( PlotvarKeyword, word => word.Equals( Id, CUtils.Cmp ) ) )
                     {
-                        Sup.LogTraceInfoMessage( $"Parsing User Charts: Invalid Plotvariable Name for Eval function" );
-                        Sup.LogTraceInfoMessage( $"Parsing User Charts: Plotvariable Name may not be reserved Keyword: {Id}" );
+                        Sup.LogMessage( $"Parsing User Charts: Invalid Plotvariable Name for Eval function", TraceLevel.Error );
+                        Sup.LogMessage( $"Parsing User Charts: Plotvariable Name may not be reserved Keyword: {Id}", TraceLevel.Error );
                         return null;
                     }
 
@@ -72,7 +73,7 @@ namespace CumulusUtils
 
                         rawExp = PrepareRawExpression( rawExpression );
 
-                        Sup.LogTraceInfoMessage( $"Parsing User Charts: Evaluating Expression '{rawExpression}'." );
+                        Sup.LogMessage( $"Parsing User Charts: Evaluating Expression '{rawExpression}'.", TraceLevel.Info );
 
                         bool EquationSubstitution = false;
                         tmp = Expression( Exp: rawExp.ToArray(), EquationSubstitution: ref EquationSubstitution, CommaPermitted: false );
@@ -90,19 +91,19 @@ namespace CumulusUtils
                     }
                     else
                     {
-                        Sup.LogTraceErrorMessage( $"Parsing User Charts: No closing ']' found in Expression in '{Id}'." );
+                        Sup.LogMessage( $"Parsing User Charts: No closing ']' found in Expression in '{Id}'.", TraceLevel.Error );
                         return null;
                     }
                 }
                 else
                 {
-                    Sup.LogTraceErrorMessage( $"Parsing User Charts: No opening [ found in Eval in '{Id}'." );
+                    Sup.LogMessage( $"Parsing User Charts: No opening [ found in Eval in '{Id}'.", TraceLevel.Error );
                     return null;
                 }
             }
             else
             {
-                Sup.LogTraceErrorMessage( $"Parsing User Charts: No EVAL found for a EQUATION statement' for {Id} when required'" );
+                Sup.LogMessage( $"Parsing User Charts: No EVAL found for a EQUATION statement' for {Id} when required'", TraceLevel.Error );
                 return null;
             }
         } // ParseSingleEval
@@ -121,7 +122,7 @@ namespace CumulusUtils
             string tmp = "", tmp1;
             int i = 0;
 
-            Sup.LogTraceVerboseMessage( "Expression Start" );
+            Sup.LogMessage( "Expression Start", TraceLevel.Verbose );
 
             try
             {
@@ -133,7 +134,7 @@ namespace CumulusUtils
                     {
                         if ( Exp[ i ] == "," && !CommaPermitted )
                         {
-                            Sup.LogTraceErrorMessage( $"ParseExpression : Comma is not permitted at this position " );
+                            Sup.LogMessage( $"ParseExpression : Comma is not permitted at this position ", TraceLevel.Error );
                             return null;
                         }
 
@@ -146,20 +147,20 @@ namespace CumulusUtils
                             tmp += tmp1;
                         else
                         {
-                            Sup.LogTraceErrorMessage( $"ParseExpression : Error in Expression, operator expected " );
+                            Sup.LogMessage( $"ParseExpression : Error in Expression, operator expected ", TraceLevel.Error );
                             return null;
                         }
                     }
                 }
                 else if ( i < Exp.Length - 1 )
                 {
-                    Sup.LogTraceErrorMessage( $"ParseExpression : Error in Expression" );
+                    Sup.LogMessage( $"ParseExpression : Error in Expression", TraceLevel.Error );
                     return null;
                 }
             } // End Try
             catch ( Exception e ) when ( e is IndexOutOfRangeException )
             {
-                Sup.LogTraceErrorMessage( $"ParseExpression : Error in Expression, Most likely forgot a matching bracket '(' or ')' or an operator " );
+                Sup.LogMessage( $"ParseExpression : Error in Expression, Most likely forgot a matching bracket '(' or ')' or an operator ", TraceLevel.Error );
                 return null;
             }
 
@@ -170,7 +171,7 @@ namespace CumulusUtils
         {
             string tmp = "", tmpTerm = "";
 
-            Sup.LogTraceVerboseMessage( "Term Start" );
+            Sup.LogMessage( "Term Start", TraceLevel.Verbose );
 
             try
             {
@@ -208,7 +209,7 @@ namespace CumulusUtils
                             tmp += "(" + tmpTerm + ")";
                         else
                         {
-                            Sup.LogTraceErrorMessage( $"Term : Error in Term in pos {i}" );
+                            Sup.LogMessage( $"Term : Error in Term in pos {i}", TraceLevel.Error );
                             return null;
                         }
                     }
@@ -250,13 +251,13 @@ namespace CumulusUtils
                                     tmp += "(" + tmpTerm + ")";
                                 else
                                 {
-                                    Sup.LogTraceErrorMessage( $"Term : Error in Term in pos {i}" );
+                                    Sup.LogMessage( $"Term : Error in Term in pos {i}", TraceLevel.Error );
                                     return null;
                                 }
                             }
                             else
                             {
-                                Sup.LogTraceErrorMessage( $"Term : Error in Function in pos {tmp}" );
+                                Sup.LogMessage( $"Term : Error in Function in pos {tmp}", TraceLevel.Error );
                                 return null;
                             }
                         }
@@ -287,7 +288,7 @@ namespace CumulusUtils
 
                                     if ( !EqExists )
                                     {
-                                        Sup.LogTraceErrorMessage( $"Term : {tmpWord} is neither an existing Plotvariable nor a predefined equation." );
+                                        Sup.LogMessage( $"Term : {tmpWord} is neither an existing Plotvariable nor a predefined equation.", TraceLevel.Error );
                                         return null;
                                     }
                                 }
@@ -305,7 +306,7 @@ namespace CumulusUtils
                         tmp += Exp[ i ];
 
                         try { nmbr = Convert.ToDouble( tmp, CUtils.Inv ); }
-                        catch ( Exception e ) { Sup.LogTraceErrorMessage( $"Term : Error in Expression, not a number {tmp} ({e.Message})" ); return null; }
+                        catch ( Exception e ) { Sup.LogMessage( $"Term : Error in Expression, not a number {tmp} ({e.Message})", TraceLevel.Error ); return null; }
                     }
                     else
                         break;  // Can only be an operator, anything else is an error
@@ -316,7 +317,7 @@ namespace CumulusUtils
             catch ( Exception e ) when ( e is IndexOutOfRangeException )
             {
                 // To prevent extensive error handling we let Exceptions occur, fail and continue
-                Sup.LogTraceErrorMessage( $"Term : Error in Expression {Exp}, Most likely forgot a matching bracket '(' or ')' " );
+                Sup.LogMessage( $"Term : Error in Expression {Exp}, Most likely forgot a matching bracket '(' or ')' ", TraceLevel.Error );
                 return null;
             }
         } // Term

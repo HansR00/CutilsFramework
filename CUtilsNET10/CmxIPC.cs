@@ -4,6 +4,7 @@
  */
 
 using System;
+using System.Diagnostics;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -11,8 +12,8 @@ namespace CumulusUtils
 {
     public class InfoFromCMX
     {
-        public string version { get; set; } = string.Empty;
-        public string build { get; set; } = string.Empty;
+        public string Version { get; set; } = string.Empty;
+        public string Build { get; set; } = string.Empty;
         public string ProgramUpTime { get; set; } = string.Empty;
         public string NewBuildAvailable { get; set; } = string.Empty;  // gives 0 or 1
         public string NewBuildNumber { get; set; } = string.Empty;  // gives 0 or 1
@@ -55,17 +56,17 @@ namespace CumulusUtils
                 else
                     thisInfo = JsonSerializer.Deserialize<InfoFromCMX>( JSONstring );
 
-                Sup.LogTraceVerboseMessage( $"GetCMXInfo API : version: {thisInfo.version}" );
-                Sup.LogTraceVerboseMessage( $"GetCMXInfo API : build: {thisInfo.build}" );
-                Sup.LogTraceVerboseMessage( $"GetCMXInfo API : ProgramUpTime: {thisInfo.ProgramUpTime}" );
-                Sup.LogTraceVerboseMessage( $"GetCMXInfo API : NewBuildAvailable: {thisInfo.NewBuildAvailable}" );
-                Sup.LogTraceVerboseMessage( $"GetCMXInfo API : NewBuildNumber: {thisInfo.NewBuildNumber}" );
-                Sup.LogTraceVerboseMessage( $"GetCMXInfo API : CpuCount: {thisInfo.CpuCount}" );
-                Sup.LogTraceVerboseMessage( $"GetCMXInfo API : CpuTemp: {thisInfo.CPUTemp}" );
+                Sup.LogMessage( $"GetCMXInfo API : Version: {thisInfo.Version}", TraceLevel.Info );
+                Sup.LogMessage( $"GetCMXInfo API : Build: {thisInfo.Build}", TraceLevel.Info );
+                Sup.LogMessage( $"GetCMXInfo API : ProgramUpTime: {thisInfo.ProgramUpTime}", TraceLevel.Info );
+                Sup.LogMessage( $"GetCMXInfo API : NewBuildAvailable: {thisInfo.NewBuildAvailable}", TraceLevel.Info );
+                Sup.LogMessage( $"GetCMXInfo API : NewBuildNumber: {thisInfo.NewBuildNumber}", TraceLevel.Info );
+                Sup.LogMessage( $"GetCMXInfo API : CpuCount: {thisInfo.CpuCount}", TraceLevel.Info );
+                Sup.LogMessage( $"GetCMXInfo API : CpuTemp: {thisInfo.CPUTemp}", TraceLevel.Info );
             }
             catch ( Exception ex )
             {
-                Sup.LogTraceErrorMessage( $"GetCMXInfo API : Exception on fetching or deserializing JSON: {ex.Message}" );
+                Sup.LogMessage( $"GetCMXInfo API : Exception on fetching or deserializing JSON: {ex.Message}", TraceLevel.Error );
                 thisInfo = new InfoFromCMX();
             }
 
@@ -160,7 +161,7 @@ namespace CumulusUtils
             string Webtag = "";
             string retval = "";
 
-            Sup.LogTraceInfoMessage( $"ReplaceWebtag start: {thisString}" );
+            Sup.LogMessage( $"ReplaceWebtag start: {thisString}", TraceLevel.Info );
 
             if ( string.IsNullOrEmpty( thisString ) ) return "";
 
@@ -176,7 +177,7 @@ namespace CumulusUtils
 
                     if ( j == thisString.Length )
                     {
-                        Sup.LogTraceVerboseMessage( $"ReplaceWebtag: Illegal  syntax : '{thisString}'" );
+                        Sup.LogMessage( $"ReplaceWebtag: Illegal  syntax : '{thisString}'", TraceLevel.Error );
                         break;
                     }
 
@@ -202,7 +203,7 @@ namespace CumulusUtils
         {
             string retval;
 
-            Sup.LogTraceInfoMessage( $"ReplaceWebtagsPostAsync start:" );
+            Sup.LogMessage( $"ReplaceWebtagsPostAsync start:", TraceLevel.Info );
 
             string MultipleWebtagURL = $"{CmxBaseURL}/api/tags/process.txt";
             retval = await Isup.PostUrlDataAsync( new Uri( MultipleWebtagURL ), content );

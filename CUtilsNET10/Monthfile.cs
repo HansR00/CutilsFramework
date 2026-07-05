@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace CumulusUtils
@@ -97,7 +98,7 @@ namespace CumulusUtils
                 }
             }
 
-            enumFieldTypeNames = Enum.GetNames( typeof( MonthfileFieldName ) );
+            enumFieldTypeNames = Enum.GetNames<MonthfileFieldName>();
             IgnoreDataErrors = Sup.GetUtilsIniValue( "General", "IgnoreDataErrors", "true" ).Equals( "true", CUtils.Cmp );
             MaxErrors = Convert.ToInt32( Sup.GetUtilsIniValue( "General", "MaxErrors", "10" ), CUtils.Inv );
 
@@ -128,7 +129,7 @@ namespace CumulusUtils
                     if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );  // Possible leftovers
                     File.Copy( file, filenameCopy );
 
-                    Sup.LogTraceInfoMessage( $"ReadMonthlyLogs: reading {file}" );
+                    Sup.LogMessage( $"ReadMonthlyLogs: reading {file}", TraceLevel.Info );
 
                     string[] allLines = File.ReadAllLines( filenameCopy );
                     File.Delete( filenameCopy );
@@ -145,7 +146,7 @@ namespace CumulusUtils
                             {
                                 if ( ( (MonthfileValue) tmp ).ThisDate < prevDate )
                                 {
-                                    Sup.LogTraceInfoMessage( $"ReadMonthlyLogs reading {file}: DateTime is less than prev Date: {prevDate}" );
+                                    Sup.LogMessage( $"ReadMonthlyLogs reading {file}: DateTime is less than prev Date: {prevDate}", TraceLevel.Info );
                                 }
 
                                 prevDate = ( (MonthfileValue) tmp ).ThisDate;
@@ -153,7 +154,7 @@ namespace CumulusUtils
                         }
                         catch
                         {
-                            Sup.LogTraceErrorMessage( $"ReadMonthlyLogs: Error in {file} : {line}" );
+                            Sup.LogMessage( $"ReadMonthlyLogs: Error in {file} : {line}", TraceLevel.Error );
                             break;
                         }
                     }
@@ -166,10 +167,10 @@ namespace CumulusUtils
             // Adjust for RecordsBeganDate
             //
             int i = MainMonthList.RemoveAll( p => p.ThisDate < CUtils.StartOfObservations );
-            Sup.LogTraceInfoMessage( $"Monthfile : RecordsBeganDate used: {CUtils.StartOfObservations}, Number of entries removed from list: {i}" );
+            Sup.LogMessage( $"Monthfile : RecordsBeganDate used: {CUtils.StartOfObservations}, Number of entries removed from list: {i}", TraceLevel.Info );
 
-            Sup.LogTraceInfoMessage( $"ReadMonthlyLogs: MainMonthList created/fetched: {MainMonthList.Count} records." );
-            Sup.LogTraceInfoMessage( $"ReadMonthlyLogs: End" );
+            Sup.LogMessage( $"ReadMonthlyLogs: MainMonthList created/fetched: {MainMonthList.Count} records.", TraceLevel.Info );
+            Sup.LogMessage( $"ReadMonthlyLogs: End", TraceLevel.Info );
 
             return MainMonthList;
         } // End ReadMonthlyLogs
@@ -194,7 +195,7 @@ namespace CumulusUtils
                 if ( File.Exists( filenameCopy ) ) File.Delete( filenameCopy );
                 File.Copy( "data/" + file, filenameCopy );
 
-                Sup.LogTraceInfoMessage( $"ReadPartialMonthlyLogs: reading {file}" );
+                Sup.LogMessage( $"ReadPartialMonthlyLogs: reading {file}", TraceLevel.Info );
 
                 string[] allLines = File.ReadAllLines( filenameCopy );
                 File.Delete( filenameCopy );
@@ -209,12 +210,12 @@ namespace CumulusUtils
                     }
                     catch
                     {
-                        Sup.LogTraceErrorMessage( $"ReadPartialMonthlyLogs: Error in {file} : {line}" );
+                        Sup.LogMessage( $"ReadPartialMonthlyLogs: Error in {file} : {line}", TraceLevel.Error );
                     }
                 } // End Using the Monthly Log to Read
             } // Loop over all files in FilesToRead
 
-            Sup.LogTraceInfoMessage( $"ReadMonthlyLogs: End" );
+            Sup.LogMessage( $"ReadMonthlyLogs: End", TraceLevel.Info );
 
 
             // Adjust for RecordsBeganDate
@@ -222,7 +223,7 @@ namespace CumulusUtils
             if ( Start < CUtils.StartOfObservations )
             {
                 int i = thisList.RemoveAll( p => p.ThisDate < CUtils.StartOfObservations );
-                Sup.LogTraceInfoMessage( $"Monthfile : RecordsBeganDate used: {CUtils.StartOfObservations}, Number of entries removed from list: {i}" );
+                Sup.LogMessage( $"Monthfile : RecordsBeganDate used: {CUtils.StartOfObservations}, Number of entries removed from list: {i}", TraceLevel.Info );
             }
 
             return thisList;
@@ -301,9 +302,9 @@ namespace CumulusUtils
                 //handle exception
                 if ( ErrorCount <= MaxErrors )
                 {
-                    Sup.LogTraceErrorMessage( $"{m} fail: {e.Message}" );
-                    Sup.LogTraceErrorMessage( $"{m}: in field nr {FieldInUse} ({enumFieldTypeNames[ FieldInUse ]})" );
-                    Sup.LogTraceErrorMessage( $"{m}: line is: {line} in File: {file}" );
+                    Sup.LogMessage( $"{m} fail: {e.Message}", TraceLevel.Error );
+                    Sup.LogMessage( $"{m}: in field nr {FieldInUse} ({enumFieldTypeNames[ FieldInUse ]})", TraceLevel.Error );
+                    Sup.LogMessage( $"{m}: line is: {line} in File: {file}", TraceLevel.Error );
 
                     Console.WriteLine( $"{m} fail: {e.Message}" );
                     Console.WriteLine( $"{m}: in field nr {FieldInUse} ({enumFieldTypeNames[ FieldInUse ]})" );
@@ -311,7 +312,7 @@ namespace CumulusUtils
 
                     if ( String.IsNullOrEmpty( lineSplit[ FieldInUse ] ) )
                     {
-                        Sup.LogTraceErrorMessage( $"{m}: Field {enumFieldTypeNames[ FieldInUse ]} is Empty" );
+                        Sup.LogMessage( $"{m}: Field {enumFieldTypeNames[ FieldInUse ]} is Empty", TraceLevel.Error );
                     }
                 }
 
@@ -319,7 +320,7 @@ namespace CumulusUtils
                 {
                     ThisValue.Valid = false;
                     if ( ErrorCount <= MaxErrors )
-                        Sup.LogTraceInfoMessage( "Monthfile.SetValues : Continuing to read data" );
+                        Sup.LogMessage( "Monthfile.SetValues : Continuing to read data", TraceLevel.Info );
                 }
                 else throw;
 
@@ -333,16 +334,16 @@ namespace CumulusUtils
 
                 if ( ErrorCount <= MaxErrors )
                 {
-                    Sup.LogTraceErrorMessage( $"{m} fail: {e.Message}" );
-                    Sup.LogTraceErrorMessage( $"{m}: in field nr {FieldInUse} does  not exist in this file" );
-                    Sup.LogTraceErrorMessage( $"{m}: line is: {line} in File: {file}" );
+                    Sup.LogMessage( $"{m} fail: {e.Message}", TraceLevel.Error );
+                    Sup.LogMessage( $"{m}: in field nr {FieldInUse} does  not exist in this file", TraceLevel.Error );
+                    Sup.LogMessage( $"{m}: line is: {line} in File: {file}", TraceLevel.Error );
                 }
 
                 if ( IgnoreDataErrors )
                 {
                     ThisValue.Valid = false;
                     if ( ErrorCount <= MaxErrors )
-                        Sup.LogTraceInfoMessage( "Monthfile.SetValues : Continuing to read data" );
+                        Sup.LogMessage( "Monthfile.SetValues : Continuing to read data", TraceLevel.Info );
                 }
                 else throw;
 
@@ -352,7 +353,7 @@ namespace CumulusUtils
 
         ~Monthfile()
         {
-            Sup.LogTraceInfoMessage( "Monthfile destructor: Closing file and ending program" );
+            Sup.LogMessage( "Monthfile destructor: Closing file and ending program", TraceLevel.Info );
             this.Dispose( false );
         }
 

@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -38,7 +39,7 @@ namespace CumulusUtils
 
             Sup = s;
 
-            Sup.LogTraceInfoMessage( "CustomLogs constructor: starting" );
+            Sup.LogMessage( "CustomLogs constructor: starting", TraceLevel.Info );
 
             Excluded = Sup.GetUtilsIniValue( "CustomLogs", "ExcludedCustomLogs", "" );
             if ( Excluded.Length > 0 ) ExcludedCustomLogs = Excluded.Split( GlobConst.CommaSeparator );
@@ -110,7 +111,7 @@ namespace CumulusUtils
 
                     if ( !string.IsNullOrEmpty( tmp ) )
                     {
-                        Sup.LogTraceInfoMessage( $"Constructor CustomLogs: handling Custom log {thisLog.Name} - Webtag {tmp}" );
+                        Sup.LogMessage( $"Constructor CustomLogs: handling Custom log {thisLog.Name} - Webtag {tmp}", TraceLevel.Info );
 
                         thisLog.TagsRaw.Add( tmp );
 
@@ -120,7 +121,7 @@ namespace CumulusUtils
                         {
                             if ( !WebTags.IsValidWebtag( tmp2 ) )
                             {
-                                Sup.LogTraceWarningMessage( $"Constructor CustomLogs: Not a valid Webtag {tmp2} used in Custom log {thisLog.Name}" );
+                                Sup.LogMessage( $"Constructor CustomLogs: Not a valid Webtag {tmp2} used in Custom log {thisLog.Name}", TraceLevel.Warning );
                                 thisLog.TagsRaw.Remove( tmp );
                             }
                             else
@@ -128,7 +129,7 @@ namespace CumulusUtils
                         }
                         else
                         {
-                            Sup.LogTraceErrorMessage( $"Constructor CustomLogs: Serious error while getting the WebTagNames" );
+                            Sup.LogMessage( $"Constructor CustomLogs: Serious error while getting the WebTagNames", TraceLevel.Error );
                             break;
                         }
                     }
@@ -138,7 +139,7 @@ namespace CumulusUtils
                 TotalNrOfWebtags += thisLog.TagsRaw.Count;
             }
 
-            Sup.LogTraceInfoMessage( "Custom Logs constructor: stop" );
+            Sup.LogMessage( "Custom Logs constructor: stop", TraceLevel.Info );
 
             return;
         }
@@ -156,7 +157,7 @@ namespace CumulusUtils
 
             GenerateCustomLogsDataJson( NonIncremental: true );
 
-            Sup.LogTraceInfoMessage( "DoCustomLogs - Stop" );
+            Sup.LogMessage( "DoCustomLogs - Stop", TraceLevel.Info );
 
             return;
         }
@@ -169,7 +170,7 @@ namespace CumulusUtils
         {
             StringBuilder sb = new StringBuilder();
 
-            Sup.LogDebugMessage( $"GenerateCustomLogsModule: Generating the Module Javascript code..." );
+            Sup.LogMessage( $"GenerateCustomLogsModule: Generating the Module Javascript code...", TraceLevel.Info );
 
             sb.AppendLine( $"{CuSupport.GenjQueryIncludestring()}" );
 
@@ -312,7 +313,7 @@ namespace CumulusUtils
         {
             StringBuilder sb = new StringBuilder();
 
-            Sup.LogDebugMessage( $"GenerateCustomLogsRealtime: Writing the CustomLogs realtime file for the actual valid tags found" );
+            Sup.LogMessage( $"GenerateCustomLogsRealtime: Writing the CustomLogs realtime file for the actual valid tags found", TraceLevel.Info );
 
             foreach ( CustomLog tmp in CustomLogsList )
             {
@@ -322,7 +323,7 @@ namespace CumulusUtils
                 }
             }
 
-            Sup.LogTraceInfoMessage( $"GenerateCustomLogsRealtime: {sb}" );
+            Sup.LogMessage( $"GenerateCustomLogsRealtime: {sb}", TraceLevel.Info );
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.CustomLogsRealtimeFilename}", false, Encoding.UTF8 ) )
             {
@@ -344,16 +345,16 @@ namespace CumulusUtils
             string[] CutilsChartsIn;
             List<string> CutilsChartsMods;
 
-            Sup.LogDebugMessage( $"GenerateCustomLogCharts: Generating the CustomLogs Charts CDL code into {Sup.PathUtils}{Sup.CutilsChartsDef}..." );
+            Sup.LogMessage( $"GenerateCustomLogCharts: Generating the CustomLogs Charts CDL code into {Sup.PathUtils}{Sup.CutilsChartsDef}...", TraceLevel.Info );
 
             if ( !File.Exists( $"{Sup.PathUtils}{Sup.CutilsChartsDef}" ) )
             {
-                Sup.LogTraceErrorMessage( $"GenerateCustomLogsCharts: No {Sup.PathUtils}{Sup.CutilsChartsDef} present, can't modify" );
-                Sup.LogTraceErrorMessage( $"GenerateCustomLogsharts: Please move {Sup.CutilsChartsDef} from distribution to ${Sup.PathUtils}" );
+                Sup.LogMessage( $"GenerateCustomLogsCharts: No {Sup.PathUtils}{Sup.CutilsChartsDef} present, can't modify", TraceLevel.Info );
+                Sup.LogMessage( $"GenerateCustomLogsharts: Please move {Sup.CutilsChartsDef} from distribution to ${Sup.PathUtils}", TraceLevel.Info );
                 return;
             }
 
-            Sup.LogTraceInfoMessage( $"GenerateCustomLogsCharts: Testing UserModificationCustomLogsCharts: {Sup.GetUtilsIniValue( "CustomLogs", "UserModificationCustomLogsCharts", "false" )}" );
+            Sup.LogMessage( $"GenerateCustomLogsCharts: Testing UserModificationCustomLogsCharts: {Sup.GetUtilsIniValue( "CustomLogs", "UserModificationCustomLogsCharts", "false" )}", TraceLevel.Info );
 
             if ( Sup.GetUtilsIniValue( "CustomLogs", "UserModificationCustomLogsCharts", "false" ).Equals( "true", CUtils.Cmp ) ) return;
 
@@ -404,7 +405,7 @@ namespace CumulusUtils
                 CutilsChartsMods.Add( "" );
             }
 
-            Sup.LogTraceInfoMessage( "GenerateCustomLogsCharts: Writing the CutilsCharts.def" );
+            Sup.LogMessage( "GenerateCustomLogsCharts: Writing the CutilsCharts.def", TraceLevel.Info );
             File.WriteAllLines( $"{Sup.PathUtils}{Sup.CutilsChartsDef}", CutilsChartsMods, Encoding.UTF8 );
 
             return;
@@ -435,11 +436,11 @@ namespace CumulusUtils
             else
                 _ = DateTime.TryParse( Sup.GetUtilsIniValue( "CustomLogs", "DoneToday", $"{DateTime.Now.AddDays( -1 ):d}" ), out DoneToday );
 
-            Sup.LogTraceInfoMessage( $"CustomLogs GenerateCustomLogsDataJson: timeStart = {timeStart}; timeEnd = {timeEnd}" );
+            Sup.LogMessage( $"CustomLogs GenerateCustomLogsDataJson: timeStart = {timeStart}; timeEnd = {timeEnd}", TraceLevel.Info );
 
             // Required for separate DAILY JSON files which need only be sent once per day
             DoDailyAsWell = DoneToday < DateTime.Today;
-            Sup.LogTraceInfoMessage( $"CustomLogs GenerateCustomLogsDataJson: DoneToday = {DoneToday}... DoDailyAsWell = {DoDailyAsWell}" );
+            Sup.LogMessage( $"CustomLogs GenerateCustomLogsDataJson: DoneToday = {DoneToday}... DoDailyAsWell = {DoDailyAsWell}", TraceLevel.Info );
 
             // Purpose is to create the JSON for the CustomLogs data and offering the possibility to do only that to accomodate the fact that
             // CMX does not (and probably will never) generate that JSON like it generates the temperature JSON for graphing.
@@ -541,7 +542,7 @@ namespace CumulusUtils
 
         private List<CustomLogValue> ReadRecentCustomLog( CustomLog thisLog, DateTime Start, DateTime End )
         {
-            Sup.LogTraceInfoMessage( $"CustomLogs ReadRecentCustomLog: {thisLog.Name}" );
+            Sup.LogMessage( $"CustomLogs ReadRecentCustomLog: {thisLog.Name}", TraceLevel.Info );
 
             bool PeriodComplete = false, NextFileTried = false;
             bool WarningWritten = false;
@@ -561,7 +562,7 @@ namespace CumulusUtils
                 fullFilename = "data/" + thisLog.Name + FilenamePostFix;
                 copyFilename = "data/copy_" + thisLog.Name + FilenamePostFix;
 
-                Sup.LogTraceInfoMessage( $"CustomLogs ReadRecentCustomLog: {fullFilename} - Start: {Start} ; End: {End} ;" );
+                Sup.LogMessage( $"CustomLogs ReadRecentCustomLog: {fullFilename} - Start: {Start} ; End: {End} ;", TraceLevel.Info );
 
                 if ( File.Exists( copyFilename ) ) File.Delete( copyFilename );
                 File.Copy( fullFilename, copyFilename );
@@ -584,8 +585,8 @@ namespace CumulusUtils
                     {
                         if ( !WarningWritten )
                         {
-                            Sup.LogTraceWarningMessage( $"CustomLogs : There are more/less webtags than values in the log {fullFilename}" );
-                            Sup.LogTraceWarningMessage( $"CustomLogs : The chart may not be what you want, please correct the content of the datafile. Continuing..." );
+                            Sup.LogMessage( $"CustomLogs : There are more/less webtags than values in the log {fullFilename}", TraceLevel.Info );
+                            Sup.LogMessage( $"CustomLogs : The chart may not be what you want, please correct the content of the datafile. Continuing...", TraceLevel.Info );
                             WarningWritten = true;
                         }
                     }
@@ -597,7 +598,7 @@ namespace CumulusUtils
                             try { tmp.Value.Add( Convert.ToDouble( thisValue, CUtils.Inv ) ); }
                             catch
                             {
-                                Sup.LogTraceWarningMessage( $"CustomLogs ReadRecentCustomLog for {thisLog.Name}: Field Invalid value: {thisValue}, continuing" );
+                                Sup.LogMessage( $"CustomLogs ReadRecentCustomLog for {thisLog.Name}: Field Invalid value: {thisValue}, continuing", TraceLevel.Info );
                                 tmp.Value.Add( null );
                             }
                         }
@@ -608,12 +609,12 @@ namespace CumulusUtils
                     thisList.Add( tmp );
                 }
 
-                Sup.LogTraceInfoMessage( $"CustomLogs ReadRecentCustomLog: Deciding: tmp.Date: {tmp.Date} ; End: {End} ; thisList.Last: {thisList.Last().Date}" );
+                Sup.LogMessage( $"CustomLogs ReadRecentCustomLog: Deciding: tmp.Date: {tmp.Date} ; End: {End} ; thisList.Last: {thisList.Last().Date}", TraceLevel.Info );
 
                 // handle a possible file boundary crossing
                 if ( tmp.Date >= End || NextFileTried )
                 {
-                    Sup.LogTraceInfoMessage( $"CustomLogs ReadRecentCustomLog: Finished reading the log at {tmp.Date}" );
+                    Sup.LogMessage( $"CustomLogs ReadRecentCustomLog: Finished reading the log at {tmp.Date}", TraceLevel.Info );
                     PeriodComplete = true;
                 }
                 else
@@ -622,17 +623,17 @@ namespace CumulusUtils
 
                     FilenamePostFix = Start.Date.AddMonths( 1 ).ToString( "-yyyyMM" ) + ".txt";
                     fullFilename = $"data/{thisLog.Name}{FilenamePostFix}";
-                    Sup.LogTraceInfoMessage( $"CustomLogs ReadRecentCustomLog: Require the  next logfile: {fullFilename}" );
+                    Sup.LogMessage( $"CustomLogs ReadRecentCustomLog: Require the  next logfile: {fullFilename}", TraceLevel.Info );
 
                     if ( !File.Exists( fullFilename ) )
                     {
                         if ( CUtils.FTPIntervalInMinutes % Frequencies[ thisLog.Frequency ] != 0 )
                         {
-                            Sup.LogTraceWarningMessage( $"CustomLogs ReadRecentCustomLog {thisLog.Name}: Log Frequency {thisLog.Frequency} Min. is larger or not In Sync with Internet Interval of {CUtils.FTPIntervalInMinutes} Min." );
-                            Sup.LogTraceWarningMessage( $"CustomLogs ReadRecentCustomLog: {fullFilename} does not exist and most likely is not required." );
+                            Sup.LogMessage( $"CustomLogs ReadRecentCustomLog {thisLog.Name}: Log Frequency {thisLog.Frequency} Min. is larger or not In Sync with Internet Interval of {CUtils.FTPIntervalInMinutes} Min.", TraceLevel.Info );
+                            Sup.LogMessage( $"CustomLogs ReadRecentCustomLog: {fullFilename} does not exist and most likely is not required.", TraceLevel.Info );
                         }
                         else
-                            Sup.LogTraceErrorMessage( $"CustomLogs ReadRecentCustomLog: Require {fullFilename} to continue but it does not exist, continuing with next CustomsLog" );
+                            Sup.LogMessage( $"CustomLogs ReadRecentCustomLog: Require {fullFilename} to continue but it does not exist, continuing with next CustomsLog", TraceLevel.Info );
 
                         PeriodComplete = true;
                     }
@@ -656,7 +657,7 @@ namespace CumulusUtils
             string fullFilename = "data/" + thisLog.Name + FilenamePostFix;
             string copyFilename = "data/copy_" + thisLog.Name + FilenamePostFix;
 
-            Sup.LogTraceInfoMessage( $"CustomLogs ReadDailyLog: {fullFilename}" );
+            Sup.LogMessage( $"CustomLogs ReadDailyLog: {fullFilename}", TraceLevel.Info );
 
             if ( File.Exists( copyFilename ) ) File.Delete( copyFilename );
             File.Copy( fullFilename, copyFilename );
@@ -677,9 +678,9 @@ namespace CumulusUtils
                 {
                     if ( !LogWarningWritten )
                     {
-                        Sup.LogTraceWarningMessage( $"CustomLogs : There are more/less webtags than values in the log {thisLog.Name} " +
-                            $"=> defined: {thisLog.TagNames.Count} and found {ValuesAsTextArray.Length}" );
-                        Sup.LogTraceWarningMessage( $"CustomLogs : The chart may not be what you want, please correct the content of the datafile. Continuing..." );
+                        Sup.LogMessage( $"CustomLogs : There are more/less webtags than values in the log {thisLog.Name} " +
+                            $"=> defined: {thisLog.TagNames.Count} and found {ValuesAsTextArray.Length}", TraceLevel.Warning );
+                        Sup.LogMessage( $"CustomLogs : The chart may not be what you want, please correct the content of the datafile. Continuing...", TraceLevel.Info );
                         LogWarningWritten = true;
                     }
                 }
@@ -691,7 +692,7 @@ namespace CumulusUtils
                         try { tmp.Value.Add( Convert.ToDouble( thisValue, CUtils.Inv ) ); }
                         catch
                         {
-                            Sup.LogTraceWarningMessage( $"CustomLogs ReadDailyCustomLog for {thisLog.Name}: Field Invalid value: {thisValue} , continuing" );
+                            Sup.LogMessage( $"CustomLogs ReadDailyCustomLog for {thisLog.Name}: Field Invalid value: {thisValue} , continuing", TraceLevel.Info );
                             tmp.Value.Add( null );
                         }
                     }
@@ -1727,28 +1728,28 @@ namespace CumulusUtils
 
             if ( Tagname.Length != TagUnit.Length )
             {
-                Sup.LogTraceErrorMessage( $"CustomLogs WebtagInfo constructor: number of defined Webtag Units ({TagUnit.Length}) != number of Webtags ({Tagname.Length}). Exiting" );
+                Sup.LogMessage( $"CustomLogs WebtagInfo constructor: number of defined Webtag Units ({TagUnit.Length}) != number of Webtags ({Tagname.Length}). Exiting", TraceLevel.Error );
                 Environment.Exit( 0 );
             }
 
             if ( TagUnit.Length != TagAxis.Length )
             {
-                Sup.LogTraceErrorMessage( $"CustomLogs WebtagInfo constructor: number of defined Webtag Axis ({TagAxis.Length}) != number of Webtags ({Tagname.Length}). Exiting" );
+                Sup.LogMessage( $"CustomLogs WebtagInfo constructor: number of defined Webtag Axis ({TagAxis.Length}) != number of Webtags ({Tagname.Length}). Exiting", TraceLevel.Error );
                 Environment.Exit( 0 );
             }
 
-            Sup.LogTraceInfoMessage( $"CustomLogs WebtagInfo constructor: number of defined Webtag Units: {TagUnit.Length}, everything OK. " );
+            Sup.LogMessage( $"CustomLogs WebtagInfo constructor: number of defined Webtag Units: {TagUnit.Length}, everything OK. ", TraceLevel.Info );
 
             if ( !CUtils.DoWebsite && Sup.LoggingOn && Sup.CUTraceSwitch.Level == System.Diagnostics.TraceLevel.Verbose )
             {
-                Sup.LogTraceVerboseMessage( $"CustomLogs WebtagInfo Verbose info:" );
+                Sup.LogMessage( $"CustomLogs WebtagInfo Verbose info:", TraceLevel.Info );
 
                 for ( int i = 0; i < Tagname.Length; i++ )
                 {
-                    Sup.LogTraceVerboseMessage( $"    {Tagname[ i ]} => unit {TagUnit[ i ]} => axis {TagAxis[ i ]}" );
+                    Sup.LogMessage( $"    {Tagname[ i ]} => unit {TagUnit[ i ]} => axis {TagAxis[ i ]}", TraceLevel.Info );
                 }
 
-                Environment.Exit( 0 );
+                // Environment.Exit( 0 );
             }
 
             return;

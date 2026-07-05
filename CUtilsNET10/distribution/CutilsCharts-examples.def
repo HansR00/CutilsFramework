@@ -7,6 +7,7 @@
 ; Author:      Hans Rottier <hans.rottier@gmail.com>
 ; Project:     CumulusUtils meteo-wagenborgen.nl
 ; Date:        04-08-2021
+; Mod:         04-05-2026 => Mod in Equation for WetBulbTemp for placement of brackets...
 ;
 
 Equations
@@ -32,8 +33,7 @@ Equations
   AppTemp Eval [ Temperature + 0.33 * Avp - 0.7 * WindSpeed / 3.6 - 4.0 ]
 
 ; WetbulbTemperature in degr Celsius
-  WetBulbTemp Eval [ 0.00066 * Pressure * Temperature + 4098 * Psat2008 / (Pow( Dewpoint + 237.7, 2) * Dewpoint) / (0.00066 * Pressure + 4098 * Psat2008 / Pow(Dewpoint + 237.7, 2)) ]
-
+  WetBulbTemp Eval [ (0.00066 * Pressure * Temperature + (4098 * Psat2008 / Pow( Dewpoint + 237.7, 2)) * Dewpoint) / (0.00066 * Pressure + 4098 * Psat2008 / Pow(Dewpoint + 237.7, 2))) ]
 
 Chart Overzicht Title Overzicht van de huidige weerstatus ConnectsTo 2 4 15 20
   PLOT Temperature Colour #058DC7 zindex 90

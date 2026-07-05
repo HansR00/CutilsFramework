@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.Json;
@@ -27,7 +28,7 @@ namespace CumulusUtils
 
             if ( ForecastSystem.Equals( "CUtils", CUtils.Cmp ) )
             {
-                bool retval = await GetOpenMeteoPredictionAsync();
+                _ = await GetOpenMeteoPredictionAsync();
             }
             else if ( ForecastSystem.Equals( "Norway", CUtils.Cmp ) )
             {
@@ -38,8 +39,8 @@ namespace CumulusUtils
                 // IF no PRediction URL set, then no prediction possible
                 if ( string.IsNullOrEmpty( NorwayPredictionURL ) )
                 {
-                    Sup.LogTraceErrorMessage( "Prediction : No URL in Prediction ini section." );
-                    Sup.LogTraceErrorMessage( "Prediction : Impossible to continue, exiting procedure." );
+                    Sup.LogMessage( "Prediction : No URL in Prediction ini section.", TraceLevel.Error );
+                    Sup.LogMessage( "Prediction : Impossible to continue, exiting procedure.", TraceLevel.Error );
                     return;
                 }
 
@@ -57,8 +58,8 @@ namespace CumulusUtils
                 // IF no PRediction URL set, then no prediction possible
                 if ( string.IsNullOrEmpty( WxsimPredictionURL ) )
                 {
-                    Sup.LogTraceErrorMessage( "Forecasts : No URL in Prediction ini section." );
-                    Sup.LogTraceErrorMessage( "Prediction : Impossible to continue, exiting procedure." );
+                    Sup.LogMessage( "Forecasts : No URL in Prediction ini section.", TraceLevel.Error );
+                    Sup.LogMessage( "Prediction : Impossible to continue, exiting procedure.", TraceLevel.Error );
                     return;
                 }
 
@@ -93,8 +94,8 @@ namespace CumulusUtils
             }
             else
             {
-                Sup.LogTraceErrorMessage( $"Prediction : Illegal Forecast system defined - {ForecastSystem}." );
-                Sup.LogTraceErrorMessage( "Prediction : Impossible to continue, exiting procedure." );
+                Sup.LogMessage( $"Prediction : Illegal Forecast system defined - {ForecastSystem}.", TraceLevel.Error );
+                Sup.LogMessage( "Prediction : Impossible to continue, exiting procedure.", TraceLevel.Error );
             }
 
             return;
@@ -184,15 +185,18 @@ namespace CumulusUtils
                     $"longitude={longitude}&" +
                     $"hourly=temperature_2m,precipitation,pressure_msl,wind_speed_10m,wind_gusts_10m&" +
                     $"models=ecmwf_ifs&" +
+                    $"start_date={DateTime.Today:yyyy-MM-dd}&end_date={DateTime.Today.AddDays( 10 ):yyyy-MM-dd}&" +
                     $"timezone={Sup.GetCumulusIniValue( "Station", "TimeZone", "" )}&" +
                     $"timeformat=unixtime&" +
-                    $"start_date={DateTime.Today:yyyy-MM-dd}&end_date={DateTime.Today.AddDays( 10 ):yyyy-MM-dd}&" +
                     $"wind_speed_unit={WindUnitForOpenMeteo[ (int) Sup.StationWind.Dim ]}&" +
                     $"temperature_unit={TempUnitForOpenMeteo[ (int) Sup.StationTemp.Dim ]}&" +
                     $"precipitation_unit={RainUnitForOpenMeteo[ (int) Sup.StationRain.Dim ]}";
 
+                Sup.LogMessage( "GetOpenMeteoPredictionAsync thisURL: " + thisURL, TraceLevel.Info );
+
                 string JSONresult = await Isup.GetUrlDataAsync( new Uri( thisURL ) );
-                Sup.LogTraceInfoMessage( $"GetOpenMeteoPrediction: JSONresult: {JSONresult} " );
+                
+                Sup.LogMessage( $"GetOpenMeteoPrediction: JSONresult: {JSONresult} ", TraceLevel.Info );
 
                 data = JsonSerializer.Deserialize<WeatherResponse>( JSONresult );
                 hourlyData = data.Hourly;
@@ -200,7 +204,7 @@ namespace CumulusUtils
             }
             catch ( Exception e )
             {
-                Sup.LogTraceErrorMessage( $"Open Meteo AddPrediction: {e.Message}" );
+                Sup.LogMessage( $"Open Meteo AddPrediction: {e.Message}", TraceLevel.Error );
                 return false;
             }
 
@@ -396,6 +400,5 @@ namespace CumulusUtils
             }
             return true;
         }
-
     }
 }

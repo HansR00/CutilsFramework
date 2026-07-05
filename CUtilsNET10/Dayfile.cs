@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 
@@ -135,7 +136,8 @@ namespace CumulusUtils
                 Environment.Exit( 0 );
             }
 
-            enumFieldTypeNames = Enum.GetNames( typeof( FieldName ) );
+            //enumFieldTypeNames = Enum.GetNames( typeof( FieldName ) );
+            enumFieldTypeNames = Enum.GetNames<FieldName>();
             IgnoreDataErrors = Sup.GetUtilsIniValue( "General", "IgnoreDataErrors", "true" ).Equals( "true", CUtils.Cmp );
 
             return;
@@ -159,7 +161,7 @@ namespace CumulusUtils
                 }
             }
 
-            Sup.LogTraceInfoMessage( $"CumulusUtils : Read dayfile.txt succesfully - {tmpMainlist.Count} records" );
+            Sup.LogMessage( $"CumulusUtils : Read dayfile.txt succesfully - {tmpMainlist.Count} records", TraceLevel.Info );
 
             return tmpMainlist;
         }
@@ -296,26 +298,26 @@ namespace CumulusUtils
                 const string m = "DayfileValue.SetValues";
 
                 //handle exception
-                Sup.LogTraceErrorMessage( $"{m} fail: " + e.Message );
-                Sup.LogTraceErrorMessage( $"{m}: in field nr {FieldInUse} ({enumFieldTypeNames[ FieldInUse ]})" );
-                Sup.LogTraceErrorMessage( $"{m}: line is: {line}" );
+                Sup.LogMessage( $"{m} fail: " + e.Message, TraceLevel.Error );
+                Sup.LogMessage( $"{m}: in field nr {FieldInUse} ({enumFieldTypeNames[ FieldInUse ]})", TraceLevel.Error );
+                Sup.LogMessage( $"{m}: line is: {line}", TraceLevel.Error );
 
                 Console.WriteLine( $"{m} fail: " + e.Message );
                 Console.WriteLine( $"{m}: in field nr {FieldInUse} ({enumFieldTypeNames[ FieldInUse ]})" );
 
                 if ( String.IsNullOrEmpty( lineSplit[ FieldInUse ] ) )
                 {
-                    Sup.LogTraceErrorMessage( $"{m}: Field {enumFieldTypeNames[ FieldInUse ]} is Empty" );
+                    Sup.LogMessage( $"{m}: Field {enumFieldTypeNames[ FieldInUse ]} is Empty", TraceLevel.Error );
                 }
 
                 if ( IgnoreDataErrors )
                 {
                     ThisValue.Valid = false;
-                    Sup.LogTraceErrorMessage( "DayfileValue.SetValues : Continuing to read data" );
+                    Sup.LogMessage( "DayfileValue.SetValues : Continuing to read data", TraceLevel.Error );
                 }
                 else
                 {
-                    Sup.LogTraceErrorMessage( "DayfileValue.SetValues : data error - not continuing to read data." );
+                    Sup.LogMessage( "DayfileValue.SetValues : data error - not continuing to read data.", TraceLevel.Error );
                     throw;
                 }
             }
@@ -323,18 +325,18 @@ namespace CumulusUtils
             {
                 const string m = "DayfileValue.SetValues";
 
-                Sup.LogTraceErrorMessage( $"{m} fail: " + e.Message );
-                Sup.LogTraceErrorMessage( $"{m}: in field nr {FieldInUse} does  not exist in this file {filename}" );
-                Sup.LogTraceErrorMessage( $"{m}: line is: '{line}')" );
+                Sup.LogMessage( $"{m} fail: " + e.Message, TraceLevel.Error );
+                Sup.LogMessage( $"{m}: in field nr {FieldInUse} does  not exist in this file {filename}", TraceLevel.Error );
+                Sup.LogMessage( $"{m}: line is: '{line}')", TraceLevel.Error );
 
                 if ( IgnoreDataErrors )
                 {
                     ThisValue.Valid = false;
-                    Sup.LogTraceErrorMessage( "DayfileValue.SetValues : Continuing to read data" );
+                    Sup.LogMessage( "DayfileValue.SetValues : Continuing to read data", TraceLevel.Error );
                 }
                 else
                 {
-                    Sup.LogTraceErrorMessage( "DayfileValue.SetValues : data error - not continuing to read data." );
+                    Sup.LogMessage( "DayfileValue.SetValues : data error - not continuing to read data.", TraceLevel.Error );
                     throw;
                 }
             }
@@ -378,7 +380,7 @@ namespace CumulusUtils
 
         ~Dayfile()
         {
-            Sup.LogTraceInfoMessage( "Dayfile destructor: Closing file and ending program" );
+            Sup.LogMessage( "Dayfile destructor: Closing file and ending program", TraceLevel.Info );
             Dispose( false );
         }
 

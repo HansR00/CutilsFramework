@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.3.11206.111 d18.3
+VisualStudioVersion = 18.3.11206.111
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CUtilsNET10", "CUtilsNET10.csproj", "{5E8295E1-16B3-BCBF-C102-5D6C2253F356}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ListParameters", "..\ListParameters\ListParameters.csproj", "{80652EE3-931D-4F1F-89BF-9564A87FE449}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{5E8295E1-16B3-BCBF-C102-5D6C2253F356}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E8295E1-16B3-BCBF-C102-5D6C2253F356}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E8295E1-16B3-BCBF-C102-5D6C2253F356}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80652EE3-931D-4F1F-89BF-9564A87FE449}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80652EE3-931D-4F1F-89BF-9564A87FE449}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80652EE3-931D-4F1F-89BF-9564A87FE449}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80652EE3-931D-4F1F-89BF-9564A87FE449}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

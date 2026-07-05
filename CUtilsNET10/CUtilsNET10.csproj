@@ -41,8 +41,7 @@
     <Optimize>False</Optimize>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>
-    </StartupObject>
+    <StartupObject></StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <NoWin32Manifest>true</NoWin32Manifest>
@@ -51,10 +50,11 @@
     <Product>CumulusUtils</Product>
     <Copyright></Copyright>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <AssemblyVersion>8.3.0</AssemblyVersion>
+    <AssemblyVersion>8.3.1</AssemblyVersion>
     <FileVersion>1.0.0</FileVersion>
     <PackAsTool>True</PackAsTool>
     <RepositoryUrl></RepositoryUrl>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
   </PropertyGroup>
   <ItemGroup>
     <Reference Update="System.Drawing">
@@ -75,8 +75,8 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FluentFTP" Version="54.0.2" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.5" />
+    <PackageReference Include="FluentFTP" Version="54.2.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.9" />
     <PackageReference Include="SSH.NET">
       <Version>2025.1.0</Version>
     </PackageReference>

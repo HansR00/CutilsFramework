@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -220,7 +221,7 @@ namespace CumulusUtils
                         iniResult = iniResult.Replace( ',', '.' );
                     NOAARainNorm[ i - 1 ] = (float) Convert.ToDouble( iniResult, CUtils.Inv );
 
-                    Sup.LogTraceInfoMessage( $" Normal values: {iniKeyName} -> {NOAARainNorm[ i - 1 ].ToString( "F1", CUtils.Inv )}" );
+                    Sup.LogMessage( $" Normal values: {iniKeyName} -> {NOAARainNorm[ i - 1 ].ToString( "F1", CUtils.Inv )}", TraceLevel.Info );
                 }
             }
 
@@ -251,7 +252,7 @@ namespace CumulusUtils
                     else
                         NOAARainStationAv[ i - 1 ] = -1;
 
-                    Sup.LogTraceInfoMessage( $" Station Average values: {m[ i - 1 ]} -> {NOAARainNorm[ i - 1 ].ToString( "F1", CUtils.Inv )}" );
+                    Sup.LogMessage( $" Station Average values: {m[ i - 1 ]} -> {NOAARainNorm[ i - 1 ].ToString( "F1", CUtils.Inv )}", TraceLevel.Info );
                 }
             }
 
@@ -441,7 +442,7 @@ namespace CumulusUtils
 
                 if ( yearlist.Count == 0 ) continue;
 
-                Sup.LogTraceInfoMessage( $"Generating Year Rain Statistics, doing year {i}" );
+                Sup.LogMessage( $"Generating Year Rain Statistics, doing year {i}", TraceLevel.Info );
 
                 years.Add( i );
                 average.Add( yearlist.Select( x => x.TotalRainThisDay ).Average() );
@@ -594,7 +595,7 @@ namespace CumulusUtils
             {
                 List<DayfileValue> yearmonthlist = Thislist.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == thisMonth ).ToList();
 
-                Sup.LogTraceVerboseMessage( $"Generating Year Month Rain Statistics, doing year {i} and month {thisMonth}" );
+                Sup.LogMessage( $"Generating Year Month Rain Statistics, doing year {i} and month {thisMonth}", TraceLevel.Verbose );
 
                 if ( yearmonthlist.Any() )
                 {

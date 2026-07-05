@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -65,7 +66,7 @@ namespace CumulusUtils
 
             int thisYear = YearMin - 1;
 
-            Sup.LogTraceInfoMessage( "Generate Yearly Records" );
+            Sup.LogMessage( "Generate Yearly Records", TraceLevel.Info );
 
             // Remember the indexcounters always need to be one higher becauze the alltime arrays are before it 
             for ( int count = 0; count <= NrOfYears; count++ )
@@ -86,8 +87,8 @@ namespace CumulusUtils
 
                 if ( !yearlist.Any() ) continue;
 
-                if ( count == 0 ) Sup.LogTraceInfoMessage( $"Generate Records for AllTime" );
-                else Sup.LogTraceInfoMessage( $"Generate Records for {thisYear}" );
+                if ( count == 0 ) Sup.LogMessage( $"Generate Records for AllTime", TraceLevel.Info );
+                else Sup.LogMessage( $"Generate Records for {thisYear}", TraceLevel.Info );
 
                 tmp = yearlist.Max( y => y.MaxTemp );
                 RecordsArray[ (int) MeasurementRecords.Tmax ] = yearlist.Where( x => x.MaxTemp == tmp ).First(); //Thislist.Max(x => x.MaxTemp);
@@ -121,7 +122,7 @@ namespace CumulusUtils
                         if ( RecordsArray[ i ].ThisDate.Date == Yesterday.Date )
                         {
                             CUtils.ThriftyRecordsDirty = true;
-                            Sup.LogTraceInfoMessage( $"Generate Records: CUtils.ThriftyRecordsDirty {CUtils.ThriftyRecordsDirty} detected on {RecordsArray[ i ].ThisDate}" );
+                            Sup.LogMessage( $"Generate Records: CUtils.ThriftyRecordsDirty {CUtils.ThriftyRecordsDirty} detected on {RecordsArray[ i ].ThisDate}", TraceLevel.Info );
 
                             break;
                         }
@@ -138,8 +139,8 @@ namespace CumulusUtils
 
                     if ( !monthlist.Any() ) continue;
 
-                    if ( count == 0 ) Sup.LogTraceInfoMessage( $"Generate Records for AllTime/month: {i + 1}" );
-                    else Sup.LogTraceInfoMessage( $"Generate Records for {thisYear}/month: {i + 1}" );
+                    if ( count == 0 ) Sup.LogMessage( $"Generate Records for AllTime/month: {i + 1}", TraceLevel.Info );
+                    else Sup.LogMessage( $"Generate Records for {thisYear}/month: {i + 1}", TraceLevel.Info );
 
                     if ( monthlist.Any() )
                     {
@@ -175,7 +176,7 @@ namespace CumulusUtils
                                 if ( RecordsArray[ j ].ThisDate.Date == Yesterday.Date )
                                 {
                                     CUtils.ThriftyRecordsDirty = true;
-                                    Sup.LogTraceInfoMessage( $"Generate Records: CUtils.ThriftyRecordsDirty {CUtils.ThriftyRecordsDirty} detected on {RecordsArray[ j ].ThisDate}" );
+                                    Sup.LogMessage( $"Generate Records: CUtils.ThriftyRecordsDirty {CUtils.ThriftyRecordsDirty} detected on {RecordsArray[ j ].ThisDate}", TraceLevel.Info );
 
                                     break; // We have a record on yesterday so we need to generate and upload!
                                 }
@@ -419,7 +420,7 @@ namespace CumulusUtils
 
                     tmp = ( now.Subtract( YearRecords[ j ][ (int) MeasurementRecords.Rhour ].TimeHighHourlyRain ).Days < 30 ) ? $"style='color:{RecordsTxtAccentColor}'" : "";
                     of.WriteLine( $"<tr>" );
-                    of.WriteLine( $"<td {tmp}>{Sup.GetCUstringValue( "Records", "Rhour", "T<sub>min</sub>", false )} ({Sup.StationRain.Text()})</td>" );
+                    of.WriteLine( $"<td {tmp}>{Sup.GetCUstringValue( "Records", "Rhour", "R<sub>hour</sub>", false )} ({Sup.StationRain.Text()})</td>" );
                     of.WriteLine( $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Rhour ].HighHourlyRain.ToString( $"F{Sup.StationRain.NrOfDecimals()}" )}</td>" +
                         $"<td {tmp}>{YearRecords[ j ][ (int) MeasurementRecords.Rhour ].TimeHighHourlyRain.ToString( "g", CUtils.ThisCulture )}</td>" );
                     of.WriteLine( "</tr>" );

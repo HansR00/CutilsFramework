@@ -32,13 +32,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 
 #if TIMING
-using System.Diagnostics;
 #endif
 
 namespace CumulusUtils
@@ -81,7 +81,7 @@ namespace CumulusUtils
             {
                 List<DaySolarValues> yearlist = DailySolarValuesList.Where( x => x.ThisDate.Year == i ).ToList();
 
-                Sup.LogTraceInfoMessage( $"Generating Year Solar Hours Statistics, doing year {i}" );
+                Sup.LogMessage( $"Generating Year Solar Hours Statistics, doing year {i}", TraceLevel.Info );
 
                 if ( yearlist.Any() )
                 {
@@ -408,7 +408,7 @@ namespace CumulusUtils
             {
                 List<DaySolarValues> yearlist = DailySolarValuesList.Where( x => x.ThisDate.Year == i ).ToList();
 
-                Sup.LogTraceInfoMessage( $"Generating Year Solar Energy Statistics, doing year {i}" );
+                Sup.LogMessage( $"Generating Year Solar Energy Statistics, doing year {i}", TraceLevel.Info );
 
                 if ( yearlist.Any() )
                 {
@@ -722,7 +722,7 @@ namespace CumulusUtils
         #region CreateListsFromMonthlyLogs ONCE
         void CreateListsFromMonthlyLogs( List<MonthfileValue> MonthfileList )
         {
-            Sup.LogTraceInfoMessage( $"Solar Graphs - CreateListsFromMonthlyLogs start" );
+            Sup.LogMessage( $"Solar Graphs - CreateListsFromMonthlyLogs start", TraceLevel.Info );
 
 #if TIMING
             Stopwatch watch = Stopwatch.StartNew();
@@ -742,8 +742,8 @@ namespace CumulusUtils
             int IntervalInMinutes = CUtils.PossibleIntervals[ Convert.ToInt32( Sup.GetCumulusIniValue( "Station", "DataLogInterval", "" ), CUtils.Inv ) ];
             float SunThreshold = Convert.ToSingle( Sup.GetCumulusIniValue( "Solar", "SunThreshold", "" ), CUtils.Inv ) / 100;
 
-            Sup.LogTraceInfoMessage( $"Solar Graphs - CreateListsFromMonthlyLogs DataLogInterval = {IntervalInMinutes}" );
-            Sup.LogTraceInfoMessage( $"Solar Graphs - CreateListsFromMonthlyLogs SunThreshold = {SunThreshold}" );
+            Sup.LogMessage( $"Solar Graphs - CreateListsFromMonthlyLogs DataLogInterval = {IntervalInMinutes}", TraceLevel.Info );
+            Sup.LogMessage( $"Solar Graphs - CreateListsFromMonthlyLogs SunThreshold = {SunThreshold}", TraceLevel.Info );
 
             for ( DateTime currentDate = startdate; currentDate <= enddate; currentDate = currentDate.AddDays( 1 ) )
             {
@@ -763,14 +763,15 @@ namespace CumulusUtils
 
                         if ( IntervalInMinutes > 30 )  // PossibleIntervals[PossibleIntervals.Length - 1]
                         {
-                            Sup.LogTraceVerboseMessage( $"Solar Graphs - DataLogInterval change or data gap too large = {IntervalInMinutes}" );
-                            Sup.LogTraceVerboseMessage( $"Solar Graphs - DataLogInterval change Skip record" );
+                            Sup.LogMessage( $"Solar Graphs - DataLogInterval change or data gap too large = {IntervalInMinutes}", TraceLevel.Info );
+                            Sup.LogMessage( $"Solar Graphs - DataLogInterval change Skip record", TraceLevel.Info );
                             IntervalInMinutes = OldIntervalInMinutes; //reset the value and try again
                             continue;  // If more than 30 minutes, then skip this data
                         }
                         else if ( IntervalInMinutes != OldIntervalInMinutes )
                         {
-                            Sup.LogTraceVerboseMessage( $"Interval change at entry: {entry.ThisDate} (next entry({nextIndex}): {DayList[ nextIndex ].ThisDate}) - Old: {OldIntervalInMinutes} New: {IntervalInMinutes}" );
+                            Sup.LogMessage( $"Interval change at entry: {entry.ThisDate} (next entry({nextIndex}): " +
+                                $"{DayList[ nextIndex ].ThisDate}) - Old: {OldIntervalInMinutes} New: {IntervalInMinutes}", TraceLevel.Info );
                         }
                     }
 
@@ -792,7 +793,7 @@ namespace CumulusUtils
 
 #if TIMING
             watch.Stop();
-            Sup.LogTraceInfoMessage( $"Solar Graphs: Timing of CreateListsFromMonthlyLogs = {watch.ElapsedMilliseconds} ms" );
+            Sup.LogMessage( $"Solar Graphs: Timing of CreateListsFromMonthlyLogs = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
 #endif
 
             // Do the daily output in a CSV when asked for
@@ -829,7 +830,7 @@ namespace CumulusUtils
                             $"{tmp.SolarHours.ToString( "F1", CUtils.ThisCulture )}" );
                     }
 
-                    Sup.LogTraceInfoMessage( "Writing CSV DailySolarEnergy : Done" );
+                    Sup.LogMessage( "Writing CSV DailySolarEnergy : Done", TraceLevel.Info );
                 }
             }
 

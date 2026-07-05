@@ -1,13 +1,20 @@
 ﻿/*
  * Website - Part of CumulusUtils
  * 
+ * See: for ToDo text colour versus background
+ * https://share.google/aimode/FGaJ59ZZj6EWS2DW6<br/>
+ * https://share.google/aimode/26tjM863IJwN57eFB<br/>
+ * https://share.google/aimode/1MY5084M1FzPpvOHv<br/>
+ * 
  */
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+
 
 namespace CumulusUtils
 {
@@ -139,12 +146,12 @@ namespace CumulusUtils
             {
                 string allText = File.ReadAllText( $"{Sup.PathUtils}{Sup.CutilsHeadDef}" );
 
-                Sup.LogTraceInfoMessage( $"{allText}/>" );
+                Sup.LogMessage( $"{allText}/>", TraceLevel.Info );
                 indexFile.Append( allText );
             }
             else
             {
-                Sup.LogDebugMessage( $"CutilsHead.def does not exist, Using default <Meta> strings." );
+                Sup.LogMessage( $"CutilsHead.def does not exist, Using default <Meta> strings.", TraceLevel.Info );
 
                 indexFile.Append(
                   "<meta name=\"description\" content=\"CumulusMX Website, part of CumulusUtils\"/>" +
@@ -473,7 +480,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
               "    <td style='width: 35%;text-align: left; font-size: smaller'>" +
               $"       {CuSupport.FormattedVersion()}<br/>" +
                "       Powered by <a href='https://cumulus.hosiene.co.uk/index.php'>Cumulus[MX]</a>&nbsp;" +
-              $"           <span id=programVersion>&nbsp;{thisCMXInfo.version}&nbsp;(build:&nbsp;{thisCMXInfo.build})</span>" +
+              $"           <span id=programVersion>&nbsp;{thisCMXInfo.Version}&nbsp;(build:&nbsp;{thisCMXInfo.Build})</span>" +
               $"             &nbsp;{( NewVersionAvailable ? "[New version available:&nbsp;build: " + thisCMXInfo.NewBuildNumber + "]" : "" )}<br/>" +
                "         See further under <a data-bs-toggle='modal' href='#CUabout'>About</a> / <a data-bs-toggle='modal' href='#CUlicense'>Licenses</a>.</td>" +
               $"   <td style='width:30%;text-align: center; font-size: smaller'>{Sup.GetUtilsIniValue( "Website", "FooterCenterText", "" )}</td>" +
@@ -555,21 +562,21 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                         c.GenerateUserDefinedCharts( thisDef.TheseCharts, thisDef.Filename, i++ );
 
                         // and Upload
-                        Sup.LogTraceInfoMessage( $"Uploading = {thisDef.Filename}" );
+                        Sup.LogMessage( $"Uploading = {thisDef.Filename}", TraceLevel.Info );
                         _ = await Isup.UploadFileAsync( $"{thisDef.Filename}", $"{Sup.PathUtils}{thisDef.Filename}" );
                     }
                 }
                 else
                 {
                     Sup.LogDebugMessage( $"Errors in Charts definition. See logfile, please correct and run again." );
-                    Sup.LogTraceErrorMessage( $"No new cumuluscharts.txt is generated and the old one remains in place!" );
+                    Sup.LogMessage( $"No new cumuluscharts.txt is generated and the old one remains in place!", TraceLevel.Info );
                 }
             } // End generating the cumuluscharts.txt as a result of CutilsCharts.def file
             else
             {
                 Sup.LogDebugMessage( $"{Sup.PathUtils}{Sup.CutilsChartsDef} does not exist. No fall back exists from version 8 and up!" );
                 Sup.LogDebugMessage( $"{Sup.PathUtils}{Sup.CutilsChartsDef} Please create CutilsCharts.def" );
-                Sup.LogTraceErrorMessage( $"{Sup.PathUtils}{Sup.CutilsChartsDef} Exiting here" );
+                Sup.LogMessage( $"{Sup.PathUtils}{Sup.CutilsChartsDef} Exiting here", TraceLevel.Error );
 
                 Environment.Exit( 0 );
             }
@@ -592,8 +599,8 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
             }
             catch ( Exception e ) when ( e is ArgumentException || e is ArgumentNullException )
             {
-                Sup.LogTraceErrorMessage( $"GeneratePanelCode: Exception parsing the thisPanel {thisPanel} - {e.Message}" );
-                Sup.LogTraceErrorMessage( $"GeneratePanelCode: Leaving the Panel empty!" );
+                Sup.LogMessage( $"GeneratePanelCode: Exception parsing the thisPanel {thisPanel} - {e.Message}", TraceLevel.Error );
+                Sup.LogMessage( $"GeneratePanelCode: Leaving the Panel empty!", TraceLevel.Error );
                 localPanel = DashboardPanels.Empty;
             }
 
@@ -829,7 +836,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     break;
 
                 default:
-                    Sup.LogTraceErrorMessage( $"GeneratePanelCode: Illegal default Panel Code - Exiting CumulusUtils." );
+                    Sup.LogMessage( $"GeneratePanelCode: Illegal default Panel Code - Exiting CumulusUtils.", TraceLevel.Error );
                     Environment.Exit( -1 );
                     break;
             }
@@ -896,7 +903,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 {
                     thisKeyword = Keywords[ i ];
 
-                    Sup.LogTraceInfoMessage( $"Website Menu generator: Generating menu {thisKeyword} on main level" );
+                    Sup.LogMessage( $"Website Menu generator: Generating menu {thisKeyword} on main level", TraceLevel.Info );
 
                     switch ( thisKeyword )
                     {
@@ -968,10 +975,10 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
                 WriteMenuEnd( tmpMenu );
 
-                if ( !Keywords[ Keywords.Length - 1 ].Equals( "About", CUtils.Cmp ) || !Keywords[ 0 ].Equals( "Home", CUtils.Cmp ) )
+                if ( !Keywords[ ^1 ].Equals( "About", CUtils.Cmp ) || !Keywords[ 0 ].Equals( "Home", CUtils.Cmp ) )
                 {
-                    Sup.LogTraceErrorMessage( $"Website Menu generator: 'Home' not first or 'About' not last Top Menu item." );
-                    Sup.LogTraceErrorMessage( $"Website Menu generator: Using default menu." );
+                    Sup.LogMessage( $"Website Menu generator: 'Home' not first or 'About' not last Top Menu item.", TraceLevel.Error );
+                    Sup.LogMessage( $"Website Menu generator: Using default menu.", TraceLevel.Error );
 
                     WriteDefaultMenu();
                 }
@@ -981,8 +988,8 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                     {
                         if ( CompulsoryItemsPresent[ (int) thisItem ] != true )
                         {
-                            Sup.LogTraceErrorMessage( $"Website Menu generator: Missing compulsory item {thisItem}." );
-                            Sup.LogTraceErrorMessage( $"Website Menu generator: Missing compulsory items: Using default menu." );
+                            Sup.LogMessage( $"Website Menu generator: Missing compulsory item {thisItem}.", TraceLevel.Error );
+                            Sup.LogMessage( $"Website Menu generator: Missing compulsory items: Using default menu.", TraceLevel.Error );
 
                             WriteDefaultMenu();
 
@@ -1002,7 +1009,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                 WriteDefaultMenu();
             }
 
-            Sup.LogTraceInfoMessage( $"Website Menu generator: Menu generation finished." );
+            Sup.LogMessage( $"Website Menu generator: Menu generation finished.", TraceLevel.Info );
 
             return tmpMenu.ToString();
 
@@ -1011,7 +1018,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
 
             void WriteDefaultMenu()
             {
-                Sup.LogTraceWarningMessage( $"Website Menu generator: using default menu" );
+                Sup.LogMessage( $"Website Menu generator: using default menu", TraceLevel.Info );
 
                 tmpMenu.Clear();
 
@@ -1082,7 +1089,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                         }
                         catch ( Exception )
                         {
-                            Sup.LogTraceErrorMessage( $"Website Menu generator: Error generating {ItemName}" );
+                            Sup.LogMessage( $"Website Menu generator: Error generating {ItemName}", TraceLevel.Error );
                         }
                     }
 
@@ -1091,7 +1098,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                         string WidthStyleString = "";
 
                         // Write out what we have found
-                        Sup.LogTraceInfoMessage( $"Website Menu generator: Generating {ItemName}" );
+                        Sup.LogMessage( $"Website Menu generator: Generating {ItemName}", TraceLevel.Info );
 
                         if ( ItemNameIsURL ) { ItemNameURL = $"<img src={ItemName}>"; ItemNameIsURL = false; }
                         else
@@ -1115,7 +1122,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                                 using ( StreamWriter sw = new StreamWriter( $"{Sup.PathUtils}{MenuFile}" ) )
                                     sw.WriteLine( $"<iframe src='{Destination}' frameborder='0' style='border: 0; width:100%; height: 75vh;'></iframe>" );
 
-                                Sup.LogTraceInfoMessage( $"Website Menu generator: Created Iframe file {MenuFile}" );
+                                Sup.LogMessage( $"Website Menu generator: Created Iframe file {MenuFile}", TraceLevel.Info );
 
                                 //Isup.UploadFile( $"{MenuFile}", $"{Sup.PathUtils}{MenuFile}" );
                                 thisMenuFileList.Add( MenuFile );
@@ -1131,7 +1138,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                                 using ( StreamWriter sw = new StreamWriter( $"{Sup.PathUtils}{MenuFile}" ) )
                                     sw.WriteLine( $"<image src='{Destination}' style='width:100%; height:100%; border:0;'>" );
 
-                                Sup.LogTraceInfoMessage( $"Website Menu generator: Created Image-link file {MenuFile}" );
+                                Sup.LogMessage( $"Website Menu generator: Created Image-link file {MenuFile}", TraceLevel.Info );
                                 thisMenuFileList.Add( MenuFile );
 
                                 s.AppendLine( $"<li class='nav-link' onclick=\"LoadUtilsReport('{MenuFile}');\" {WidthStyleString}>{ItemNameURL}</li>" );
@@ -1142,13 +1149,13 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
                                 break;
 
                             default:
-                                Sup.LogTraceErrorMessage( $"Website Menu generator: Illegal UserItem, can't generate..." );
+                                Sup.LogMessage( $"Website Menu generator: Illegal UserItem, can't generate...", TraceLevel.Error );
                                 break;
                         }
                     }
                     else
                     {
-                        Sup.LogTraceErrorMessage( $"Website Menu generator: Error generating {ItemName} - EndItem not found" );
+                        Sup.LogMessage( $"Website Menu generator: Error generating {ItemName} - EndItem not found", TraceLevel.Error );
                     }
                 }
 
@@ -1351,7 +1358,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
         {
             StringBuilder Buf = new StringBuilder();
 
-            Sup.LogTraceInfoMessage( $"GenerateStatisticsCode: StatisticsType is '{StatisticsType}'; Event is '{Event}'" );
+            Sup.LogMessage( $"GenerateStatisticsCode: StatisticsType is '{StatisticsType}'; Event is '{Event}'", TraceLevel.Info );
 
             if ( StatisticsType.Equals( "Google" ) )
             {
@@ -1402,7 +1409,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
             {
                 if ( Event )
                 {
-                    Sup.LogTraceWarningMessage( $"GenerateStatisticsCode: No Matomo events implemented yet" );
+                    Sup.LogMessage( $"GenerateStatisticsCode: No Matomo events implemented yet", TraceLevel.Warning );
                 }
                 else
                 {
@@ -1425,7 +1432,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
             }
             else
             {
-                Sup.LogTraceErrorMessage( $"GenerateStatisticsCode: StatisticsType '{StatisticsType}' is unknown, nothing generated" );
+                Sup.LogMessage( $"GenerateStatisticsCode: StatisticsType '{StatisticsType}' is unknown, nothing generated", TraceLevel.Info );
             }
 
             return Buf.ToString();

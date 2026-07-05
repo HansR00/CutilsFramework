@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -95,20 +96,20 @@ namespace CumulusUtils
 
                     clientFluentFTP.Connect();
 
-                    Sup.LogTraceInfoMessage( "InetSupport: FTP Setup (After connect):" );
-                    Sup.LogDebugMessage( "InetSupport: Plain Old FTP activated." );
-                    Sup.LogTraceInfoMessage( $"InetSupport: FTP Server: {clientFluentFTP.ServerType} on {clientFluentFTP.ServerOS}" );
+                    Sup.LogMessage( "InetSupport: FTP Setup (After connect):", TraceLevel.Info );
+                    Sup.LogMessage( "InetSupport: Plain Old FTP activated.", TraceLevel.Info );
+                    Sup.LogMessage( $"InetSupport: FTP Server: {clientFluentFTP.ServerType} on {clientFluentFTP.ServerOS}", TraceLevel.Info );
                 }
                 catch ( Exception e ) when ( e is FtpAuthenticationException || e is FtpCommandException || e is FtpSecurityNotAvailableException )
                 {
-                    Sup.LogTraceErrorMessage( $"InetSupport: Exception on FTP connecting to {hostname}: {e.Message}" );
-                    Sup.LogTraceErrorMessage( $"InetSupport: Failed FTP connecting to {hostname}. Files will not be transferred" );
+                    Sup.LogMessage( $"InetSupport: Exception on FTP connecting to {hostname}: {e.Message}", TraceLevel.Error );
+                    Sup.LogMessage( $"InetSupport: Failed FTP connecting to {hostname}. Files will not be transferred", TraceLevel.Error );
                     FTPvalid = false;
                 }
                 catch ( Exception e )
                 {
-                    Sup.LogTraceErrorMessage( $"InetSupport: Unknown Exception on FTP connecting to {hostname}: {e.Message}" );
-                    Sup.LogTraceErrorMessage( $"InetSupport: Failed FTP connecting to {hostname}. Files will not be transferred" );
+                    Sup.LogMessage( $"InetSupport: Unknown Exception on FTP connecting to {hostname}: {e.Message}", TraceLevel.Error );
+                    Sup.LogMessage( $"InetSupport: Failed FTP connecting to {hostname}. Files will not be transferred", TraceLevel.Error );
                     FTPvalid = false;
                 }
             }
@@ -134,20 +135,20 @@ namespace CumulusUtils
 
                     clientFluentFTP.Connect();
 
-                    Sup.LogTraceInfoMessage( " InetSupport: FTPS Setup (After connect):" );
-                    Sup.LogDebugMessage( " InetSupport: FTPS activated." );
-                    Sup.LogTraceInfoMessage( $" InetSupport: FTPS Server: {clientFluentFTP.ServerType} on {clientFluentFTP.ServerOS}" );
+                    Sup.LogMessage( " InetSupport: FTPS Setup (After connect):", TraceLevel.Info );
+                    Sup.LogMessage( " InetSupport: FTPS activated.", TraceLevel.Info );
+                    Sup.LogMessage( $" InetSupport: FTPS Server: {clientFluentFTP.ServerType} on {clientFluentFTP.ServerOS}", TraceLevel.Info );
                 }
                 catch ( Exception e ) when ( e is FtpAuthenticationException || e is FtpCommandException || e is FtpSecurityNotAvailableException )
                 {
-                    Sup.LogTraceErrorMessage( $"InetSupport: Exception on FTPS connecting to {hostname}: {e.Message}" );
-                    Sup.LogTraceErrorMessage( $"InetSupport: Failed FTPS connecting to {hostname}. Files will not be transferred" );
+                    Sup.LogMessage( $"InetSupport: Exception on FTPS connecting to {hostname}: {e.Message}", TraceLevel.Error );
+                    Sup.LogMessage( $"InetSupport: Failed FTPS connecting to {hostname}. Files will not be transferred", TraceLevel.Error );
                     FTPvalid = false;
                 }
                 catch ( Exception e )
                 {
-                    Sup.LogTraceErrorMessage( $"InetSupport: Unknown Exception on FTPS connecting to {hostname}: {e.Message}" );
-                    Sup.LogTraceErrorMessage( $"InetSupport: Failed FTPS connecting to {hostname}. Files will not be transferred" );
+                    Sup.LogMessage( $"InetSupport: Unknown Exception on FTPS connecting to {hostname}: {e.Message}", TraceLevel.Error );
+                    Sup.LogMessage( $"InetSupport: Failed FTPS connecting to {hostname}. Files will not be transferred", TraceLevel.Error );
                     FTPvalid = false;
                 }
             }
@@ -161,23 +162,23 @@ namespace CumulusUtils
                     if ( SshftpAuthentication == "password" )
                     {
                         connectionInfo = new ConnectionInfo( hostname, port, username, new PasswordAuthenticationMethod( username, password ) );
-                        Sup.LogTraceInfoMessage( $"InetSupport SFTP: Connecting using password authentication" );
+                        Sup.LogMessage( $"InetSupport SFTP: Connecting using password authentication", TraceLevel.Info );
                     }
                     else if ( SshftpAuthentication == "psk" )
                     {
                         pskFile = new PrivateKeyFile( SshftpPskFile );
                         connectionInfo = new ConnectionInfo( hostname, port, username, new PrivateKeyAuthenticationMethod( username, pskFile ) );
-                        Sup.LogTraceInfoMessage( $"InetSupport SFTP: Connecting using PSK authentication" );
+                        Sup.LogMessage( $"InetSupport SFTP: Connecting using PSK authentication", TraceLevel.Info );
                     }
                     else if ( SshftpAuthentication == "password_psk" )
                     {
                         pskFile = new PrivateKeyFile( SshftpPskFile );
                         connectionInfo = new ConnectionInfo( hostname, port, username, new PasswordAuthenticationMethod( username, password ), new PrivateKeyAuthenticationMethod( username, pskFile ) );
-                        Sup.LogTraceInfoMessage( $"InetSupport SFTP: Connecting using password or PSK authentication" );
+                        Sup.LogMessage( $"InetSupport SFTP: Connecting using password or PSK authentication", TraceLevel.Info );
                     }
                     else
                     {
-                        Sup.LogTraceInfoMessage( $"InetSupport SFTP: Invalid SshftpAuthentication specified [{SshftpAuthentication}]" );
+                        Sup.LogMessage( $"InetSupport SFTP: Invalid SshftpAuthentication specified [{SshftpAuthentication}]", TraceLevel.Error );
                         FTPvalid = false;
                         return;
                     }
@@ -190,22 +191,22 @@ namespace CumulusUtils
                     if ( !clientRenci.IsConnected )
                     {
                         FTPvalid = false;
-                        Sup.LogTraceInfoMessage( $"Upload SFTP: Connection error." );
+                        Sup.LogMessage( $"Upload SFTP: Connection error.", TraceLevel.Error );
                     }
 
 
-                    Sup.LogDebugMessage( $" InetSupport: SFTP activated" );
+                    Sup.LogMessage( $" InetSupport: SFTP activated", TraceLevel.Info );
                 }
                 catch ( Exception ex ) when ( ex is SshException )
                 {
-                    Sup.LogTraceErrorMessage( $"InetSupport: Error connecting SFTP - {ex.Message}" );
-                    Sup.LogTraceErrorMessage( $"InetSupport: Failed SFTP connecting to {hostname}. Files will not be transferred" );
+                    Sup.LogMessage( $"InetSupport: Error connecting SFTP - {ex.Message}", TraceLevel.Error );
+                    Sup.LogMessage( $"InetSupport: Failed SFTP connecting to {hostname}. Files will not be transferred", TraceLevel.Error );
                     FTPvalid = false;
                 }
                 catch ( Exception e )
                 {
-                    Sup.LogTraceErrorMessage( $"InetSupport: Unknown Exception on SFTP connecting to {hostname}: {e.Message}" );
-                    Sup.LogTraceErrorMessage( $"InetSupport: Failed SFTP connecting to {hostname}. Files will not be transferred" );
+                    Sup.LogMessage( $"InetSupport: Unknown Exception on SFTP connecting to {hostname}: {e.Message}", TraceLevel.Error );
+                    Sup.LogMessage( $"InetSupport: Failed SFTP connecting to {hostname}. Files will not be transferred", TraceLevel.Error );
                     FTPvalid = false;
                 }
             }
@@ -225,13 +226,13 @@ namespace CumulusUtils
 
                 delayMilliSeconds = Convert.ToInt32( Sup.GetUtilsIniValue( "FTP site", "delayMilliSeconds", "0" ) );
 
-                Sup.LogTraceInfoMessage( $"Upload PHP: MaxUploadThreads = {MaxUploadThreads} / delayMilliSeconds = {delayMilliSeconds}" );
+                Sup.LogMessage( $"Upload PHP: MaxUploadThreads = {MaxUploadThreads} / delayMilliSeconds = {delayMilliSeconds}", TraceLevel.Info );
 
                 uploadSemaphore = new SemaphoreSlim( MaxUploadThreads, MaxUploadThreads );
             }
             else
             {
-                Sup.LogTraceErrorMessage( $"InetSupport: Protocol not implemented {ProtocolUsed}. Files will not be transferred" );
+                Sup.LogMessage( $"InetSupport: Protocol not implemented {ProtocolUsed}. Files will not be transferred", TraceLevel.Error );
                 FTPvalid = false;
             }
 
@@ -251,21 +252,21 @@ namespace CumulusUtils
 
             if ( !FTPvalid )
             {
-                Sup.LogTraceErrorMessage( $"UploadFile: Nothing uploaded because of connection error." );
+                Sup.LogMessage( $"UploadFile: Nothing uploaded because of connection error.", TraceLevel.Error );
                 return false;
             }
 
             string URL = "";
             string Dir = "";
 
-            Sup.LogTraceInfoMessage( $"UploadFile: Starting {localfile} => {remotefile}" );
+            Sup.LogMessage( $"UploadFile: Starting {localfile} => {remotefile}", TraceLevel.Info );
 
             // No reason to upload if there is  no file or destination
-            if ( string.IsNullOrEmpty( remotefile ) || string.IsNullOrEmpty( localfile ) ) { Sup.LogTraceErrorMessage( $"UploadFile: Nothing uploaded either in or outfile are empty." ); return false; }
-            if ( !File.Exists( localfile ) ) { Sup.LogTraceErrorMessage( $"UploadFile: Local file {localfile} does not exist" ); return false; }
+            if ( string.IsNullOrEmpty( remotefile ) || string.IsNullOrEmpty( localfile ) ) { Sup.LogMessage( $"UploadFile: Nothing uploaded either in or outfile are empty.", TraceLevel.Error ); return false; }
+            if ( !File.Exists( localfile ) ) { Sup.LogMessage( $"UploadFile: Local file {localfile} does not exist", TraceLevel.Error ); return false; }
 
             bool Upload = Sup.GetUtilsIniValue( "FTP site", "DoUploadFTP", "false" ).Equals( "true", CUtils.Cmp );
-            if ( !Upload ) { Sup.LogTraceInfoMessage( $"UploadFile: DoUploadFTP configured false => No Upload." ); return false; }      // No reason to do the whole procedure if we don't have to upload
+            if ( !Upload ) { Sup.LogMessage( $"UploadFile: DoUploadFTP configured false => No Upload.", TraceLevel.Error ); return false; }      // No reason to do the whole procedure if we don't have to upload
 
             string CumulusURL;
             string CumulusDir = Sup.GetCumulusIniValue( "FTP site", "Directory", "" );
@@ -288,11 +289,11 @@ namespace CumulusUtils
                 {
                     string requestname = Dir + "/" + remotefile;
 
-                    Sup.LogTraceInfoMessage( $"Upload File values: URL: {CumulusURL}" );
-                    Sup.LogTraceInfoMessage( $"Upload File values: CMX Dir: {CumulusDir}" );
-                    Sup.LogTraceInfoMessage( $"Upload File values: UtilsDir: {CumulusUtilsDir}" );
-                    Sup.LogTraceInfoMessage( $"Upload File values: remotefile: {remotefile}" );
-                    Sup.LogTraceInfoMessage( $"Upload File values: requestname: {Dir}/{remotefile}" );
+                    Sup.LogMessage( $"Upload File values: URL: {CumulusURL}", TraceLevel.Info );
+                    Sup.LogMessage( $"Upload File values: CMX Dir: {CumulusDir}", TraceLevel.Info );
+                    Sup.LogMessage( $"Upload File values: UtilsDir: {CumulusUtilsDir}", TraceLevel.Info );
+                    Sup.LogMessage( $"Upload File values: remotefile: {remotefile}", TraceLevel.Info );
+                    Sup.LogMessage( $"Upload File values: requestname: {Dir}/{remotefile}", TraceLevel.Info );
 
                     try
                     {
@@ -302,28 +303,28 @@ namespace CumulusUtils
 
                         if ( flag != FtpStatus.Success )
                         {
-                            Sup.LogTraceErrorMessage( $"UploadFile Failed: status = {flag} (0 = failed)" );
+                            Sup.LogMessage( $"UploadFile Failed: status = {flag} (0 = failed)", TraceLevel.Error );
                         }
                     }
                     catch ( Exception e )
                     {
-                        Sup.LogTraceErrorMessage( $"UploadFile ERROR: General Exception: {e.Message}" );
-                        if ( e.InnerException is not null ) Sup.LogTraceErrorMessage( $"UploadFile ERROR: Inner Exception: {e.InnerException}" );
+                        Sup.LogMessage( $"UploadFile ERROR: General Exception: {e.Message}", TraceLevel.Error );
+                        if ( e.InnerException is not null ) Sup.LogMessage( $"UploadFile ERROR: Inner Exception: {e.InnerException}", TraceLevel.Error );
                         return false;
                     }
 
-                    Sup.LogTraceInfoMessage( $"FTP/FTPS UploadFile: Done" );
+                    Sup.LogMessage( $"FTP/FTPS UploadFile: Done", TraceLevel.Info );
 
                 }
                 else if ( ProtocolUsed == FtpProtocols.SFTP )
                 {
                     string requestname = Dir + "/" + remotefile;
 
-                    Sup.LogTraceInfoMessage( $"Upload File values: URL: {CumulusURL}" );
-                    Sup.LogTraceInfoMessage( $"Upload File values: CMX Dir: {CumulusDir}" );
-                    Sup.LogTraceInfoMessage( $"Upload File values: UtilsDir: {CumulusUtilsDir}" );
-                    Sup.LogTraceInfoMessage( $"Upload File values: remotefile: {remotefile}" );
-                    Sup.LogTraceInfoMessage( $"Upload File values: requestname: {Dir}/{remotefile}" );
+                    Sup.LogMessage( $"Upload File values: URL: {CumulusURL}", TraceLevel.Info );
+                    Sup.LogMessage( $"Upload File values: CMX Dir: {CumulusDir}", TraceLevel.Info );
+                    Sup.LogMessage( $"Upload File values: UtilsDir: {CumulusUtilsDir}", TraceLevel.Info );
+                    Sup.LogMessage( $"Upload File values: remotefile: {remotefile}", TraceLevel.Info );
+                    Sup.LogMessage( $"Upload File values: requestname: {Dir}/{remotefile}", TraceLevel.Info );
 
                     using ( Stream istream = new FileStream( localfile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite ) )
                     {
@@ -341,23 +342,23 @@ namespace CumulusUtils
                                 if ( SshftpAuthentication == "password" )
                                 {
                                     connectionInfo = new ConnectionInfo( hostname, port, username, new PasswordAuthenticationMethod( username, password ) );
-                                    Sup.LogTraceInfoMessage( $"InetSupport SFTP: Connecting using password authentication" );
+                                    Sup.LogMessage( $"InetSupport SFTP: Connecting using password authentication", TraceLevel.Info );
                                 }
                                 else if ( SshftpAuthentication == "psk" )
                                 {
                                     pskFile = new PrivateKeyFile( SshftpPskFile );
                                     connectionInfo = new ConnectionInfo( hostname, port, username, new PrivateKeyAuthenticationMethod( username, pskFile ) );
-                                    Sup.LogTraceInfoMessage( $"InetSupport SFTP: Connecting using PSK authentication" );
+                                    Sup.LogMessage( $"InetSupport SFTP: Connecting using PSK authentication", TraceLevel.Info );
                                 }
                                 else if ( SshftpAuthentication == "password_psk" )
                                 {
                                     pskFile = new PrivateKeyFile( SshftpPskFile );
                                     connectionInfo = new ConnectionInfo( hostname, port, username, new PasswordAuthenticationMethod( username, password ), new PrivateKeyAuthenticationMethod( username, pskFile ) );
-                                    Sup.LogTraceInfoMessage( $"InetSupport SFTP: Connecting using password or PSK authentication" );
+                                    Sup.LogMessage( $"InetSupport SFTP: Connecting using password or PSK authentication", TraceLevel.Info );
                                 }
                                 else
                                 {
-                                    Sup.LogTraceInfoMessage( $"InetSupport SFTP: Invalid SshftpAuthentication specified [{SshftpAuthentication}]" );
+                                    Sup.LogMessage( $"InetSupport SFTP: Invalid SshftpAuthentication specified [{SshftpAuthentication}]", TraceLevel.Error );
                                     FTPvalid = false;
                                     return false;
                                 }
@@ -370,12 +371,12 @@ namespace CumulusUtils
 
                                 if ( !clientRenci.IsConnected )
                                 {
-                                    Sup.LogTraceInfoMessage( $"Upload SFTP: Connection error." );
+                                    Sup.LogMessage( $"Upload SFTP: Connection error.", TraceLevel.Error );
                                     FTPvalid = false;
                                     return false;
                                 }
 
-                                Sup.LogTraceInfoMessage( $" InetSupport SFTP: Realtime SFTP connected" );
+                                Sup.LogMessage( $" InetSupport SFTP: Realtime SFTP connected", TraceLevel.Info );
 
                                 // And finally upload
                                 clientRenci.UploadFile( istream, requestname, true );
@@ -383,13 +384,13 @@ namespace CumulusUtils
                         }
                         catch ( Exception e )
                         {
-                            Sup.LogTraceErrorMessage( $"Upload SFTP: ERROR General Exception: {e.Message}" );
-                            if ( e.InnerException is not null ) Sup.LogTraceErrorMessage( $"UploadFile SFTP ERROR: Inner Exception: {e.InnerException}" );
+                            Sup.LogMessage( $"Upload SFTP: ERROR General Exception: {e.Message}", TraceLevel.Error );
+                            if ( e.InnerException is not null ) Sup.LogMessage( $"UploadFile SFTP ERROR: Inner Exception: {e.InnerException}", TraceLevel.Error );
                             return false;
                         }
                     }
 
-                    Sup.LogTraceInfoMessage( $"SFTP UploadFile: Done" );
+                    Sup.LogMessage( $"SFTP UploadFile: Done", TraceLevel.Info );
 
                 }
                 else if ( ProtocolUsed == FtpProtocols.PHP )
@@ -412,13 +413,13 @@ namespace CumulusUtils
                         {
                             if ( ++retryCount > 1 ) return false; // Avoid infinite loop in case of a problem
 
-                            Sup.LogTraceInfoMessage( $"PHP UploadFile: Failed for {localfile}, Delaying 1 second..." );
+                            Sup.LogMessage( $"PHP UploadFile: Failed for {localfile}, Delaying 1 second...", TraceLevel.Info );
 
                             await Task.Delay( 1000 ); // Fix this to 1 second to give the server some time to breathe and to avoid flooding the server with requestsin case of a problem.
                                                       // The delay after success will be applied as well but that one if configurable to avoid issues with err 429
                         }
 
-                        Sup.LogTraceInfoMessage( $"PHP UploadFile: Success for {localfile}, pausing {delayMilliSeconds} millisecond...\n" );
+                        Sup.LogMessage( $"PHP UploadFile: Success for {localfile}, pausing {delayMilliSeconds} millisecond...\n", TraceLevel.Info );
                         await Task.Delay( delayMilliSeconds );
 
                         return true;
@@ -431,7 +432,7 @@ namespace CumulusUtils
             }
             else // Upload == false
             {
-                Sup.LogTraceInfoMessage( $"UploadFile Upload=false -> No file(s) uploaded." );
+                Sup.LogMessage( $"UploadFile Upload=false -> No file(s) uploaded.", TraceLevel.Info );
                 return false;
             }
 
@@ -452,8 +453,8 @@ namespace CumulusUtils
             string CumulusDir = Sup.GetCumulusIniValue( "FTP site", "Directory", "" );
             CumulusDir += "/maps";
 
-            Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: URL: {CumulusURL}" );
-            Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: Dir: {CumulusDir}" );
+            Sup.LogMessage( $"DownloadSignatureFiles: URL: {CumulusURL}", TraceLevel.Info );
+            Sup.LogMessage( $"DownloadSignatureFiles: Dir: {CumulusDir}", TraceLevel.Info );
 
             string username = Crypto.DecryptString( Sup.GetCumulusIniValue( "FTP site", "Username", "" ), CUtils.CryptoKey );
             string password = Crypto.DecryptString( Sup.GetCumulusIniValue( "FTP site", "Password", "" ), CUtils.CryptoKey );
@@ -492,8 +493,8 @@ namespace CumulusUtils
                 }
                 catch ( Exception e )
                 {
-                    Sup.LogTraceErrorMessage( $"DownloadSignatureFiles: Exception on FTP connecting to {hostname}: {e.Message}" );
-                    Sup.LogTraceErrorMessage( $"DownloadSignatureFiles: Failed FTP connecting to {hostname}. Files will not be transferred" );
+                    Sup.LogMessage( $"DownloadSignatureFiles: Exception on FTP connecting to {hostname}: {e.Message}", TraceLevel.Error );
+                    Sup.LogMessage( $"DownloadSignatureFiles: Failed FTP connecting to {hostname}. Files will not be transferred", TraceLevel.Error );
                     return;
                 }
             }
@@ -521,8 +522,8 @@ namespace CumulusUtils
                 }
                 catch ( Exception e )
                 {
-                    Sup.LogTraceErrorMessage( $"DownloadSignatureFiles: Exception on FTPS connecting to {hostname}: {e.Message}" );
-                    Sup.LogTraceErrorMessage( $"DownloadSignatureFiles: Failed FTPS connecting to {hostname}. Files will not be transferred" );
+                    Sup.LogMessage( $"DownloadSignatureFiles: Exception on FTPS connecting to {hostname}: {e.Message}", TraceLevel.Error );
+                    Sup.LogMessage( $"DownloadSignatureFiles: Failed FTPS connecting to {hostname}. Files will not be transferred", TraceLevel.Error );
                     return;
                 }
             }
@@ -536,18 +537,18 @@ namespace CumulusUtils
                 localFluentFTP.DeleteDirectory( CumulusDir, FtpListOption.AllFiles );
                 localFluentFTP.CreateDirectory( CumulusDir, true );
 
-                Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: {remoteFiles.Count} Signature files successfully Downloaded to {localDir}" );
+                Sup.LogMessage( $"DownloadSignatureFiles: {remoteFiles.Count} Signature files successfully Downloaded to {localDir}", TraceLevel.Info );
             }
             catch ( Exception e )
             {
-                Sup.LogTraceErrorMessage( $"DownloadSignatureFiles ERROR: General Exception: {e.Message}" );
-                if ( e.InnerException is not null ) Sup.LogTraceErrorMessage( $"DownloadSignatureFiles ERROR: Inner Exception: {e.InnerException}" );
+                Sup.LogMessage( $"DownloadSignatureFiles ERROR: General Exception: {e.Message}", TraceLevel.Error );
+                if ( e.InnerException is not null ) Sup.LogMessage( $"DownloadSignatureFiles ERROR: Inner Exception: {e.InnerException}", TraceLevel.Error );
                 return;
             }
 
             localFluentFTP?.Dispose();
 
-            Sup.LogTraceInfoMessage( $"DownloadSignatureFiles: Done" );
+            Sup.LogMessage( $"DownloadSignatureFiles: Done", TraceLevel.Info );
 
             return;
         } // EndOf DownloadSignatureFiles
@@ -558,7 +559,7 @@ namespace CumulusUtils
 
         public async Task<string> GetUrlDataAsync( Uri thisURL )
         {
-            Sup.LogTraceInfoMessage( $"GetUrlData Start: URL - {thisURL} " );
+            Sup.LogMessage( $"GetUrlData Start: URL - {thisURL} ", TraceLevel.Info );
 
             // Note: I use 'using' because it is easier and it gets only called for UserReports, MAps and yourweather.co.uk so 
             //       there is no risk - I don't see a risk - of socket exhaustion
@@ -571,9 +572,9 @@ namespace CumulusUtils
                 }
                 catch ( Exception e )
                 {
-                    Sup.LogTraceErrorMessage( $"GetUrlData : Exception - {e.Message}" );
+                    Sup.LogMessage( $"GetUrlData : Exception - {e.Message}", TraceLevel.Error );
                     if ( e.InnerException is not null )
-                        Sup.LogTraceErrorMessage( $"GetUrlData: Inner Exception: {e.InnerException}" );
+                        Sup.LogMessage( $"GetUrlData: Inner Exception: {e.InnerException}", TraceLevel.Error );
                     return "";
                 }
             }
@@ -584,14 +585,14 @@ namespace CumulusUtils
         {
             string retval;
 
-            Sup.LogTraceInfoMessage( $" PostUrlData Start: {thisURL} " );
+            Sup.LogMessage( $" PostUrlData Start: {thisURL} ", TraceLevel.Info );
 
             // Note: I use 'using' because it is easier and it gets only called for UserReports so 
             //       there is no risk - I don't see a risk - of socket exhaustion
 
             using ( HttpClient PostClient = new HttpClient() )
             {
-                Sup.LogTraceInfoMessage( $"PostUrlData Calling PostAsync" );
+                Sup.LogMessage( $"PostUrlData Calling PostAsync", TraceLevel.Info );
 
                 try
                 {
@@ -602,11 +603,11 @@ namespace CumulusUtils
                             if ( response.IsSuccessStatusCode )
                             {
                                 retval = await response.Content.ReadAsStringAsync();
-                                Sup.LogTraceInfoMessage( $"PostUrlData success response : {response.StatusCode} - {response.ReasonPhrase}" );
+                                Sup.LogMessage( $"PostUrlData success response : {response.StatusCode} - {response.ReasonPhrase}", TraceLevel.Info );
                             }
                             else
                             {
-                                Sup.LogTraceErrorMessage( $"PostUrlData : Error: {response.StatusCode} - {response.ReasonPhrase}" );
+                                Sup.LogMessage( $"PostUrlData : Error: {response.StatusCode} - {response.ReasonPhrase}", TraceLevel.Error );
                                 retval = "";
                             }
                         } // End using response -> dispose
@@ -614,9 +615,9 @@ namespace CumulusUtils
                 }
                 catch ( Exception e )
                 {
-                    Sup.LogTraceErrorMessage( $"PostUrlData : Exception - {e.Message}" );
+                    Sup.LogMessage( $"PostUrlData : Exception - {e.Message}", TraceLevel.Error );
                     if ( e.InnerException is not null )
-                        Sup.LogTraceErrorMessage( $"PostUrlData: Inner Exception: {e.InnerException}" );
+                        Sup.LogMessage( $"PostUrlData: Inner Exception: {e.InnerException}", TraceLevel.Error );
                     retval = "";
                 }
             }

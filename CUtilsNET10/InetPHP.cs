@@ -4,6 +4,7 @@
  */
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -81,14 +82,14 @@ namespace CumulusUtils
 
                     PhpCompression = encoding.Count == 0 ? "none" : encoding.First();
 
-                    if ( PhpCompression == "none" ) Sup.LogTraceInfoMessage( "PhpInit: PHP upload does not support compression" );
-                    else Sup.LogTraceInfoMessage( $"PhpInit: PHP upload supports {PhpCompression} compression" );
+                    if ( PhpCompression == "none" ) Sup.LogMessage( "PhpInit: PHP upload does not support compression", TraceLevel.Info );
+                    else Sup.LogMessage( $"PhpInit: PHP upload supports {PhpCompression} compression", TraceLevel.Info );
 
                     return true;
                 }
                 catch ( Exception ex )
                 {
-                    Sup.LogTraceErrorMessage( $"PhpInit: Error - {ex.Message}" );
+                    Sup.LogMessage( $"PhpInit: Error - {ex.Message}", TraceLevel.Error );
 
                     return false;
                 }
@@ -104,7 +105,7 @@ namespace CumulusUtils
             string ext;
 
             if ( string.IsNullOrEmpty( localfile ) )
-                Sup.LogTraceWarningMessage( $"InetPhp: The data string is empty, ignoring this upload" );
+                Sup.LogMessage( $"InetPhp: The data string is empty, ignoring this upload", TraceLevel.Warning );
             else
             {
                 data = File.ReadAllText( localfile );
@@ -115,7 +116,7 @@ namespace CumulusUtils
                 if ( ext == ".json" && !CUtils.DoingUserAskedData ) incremental = false;
                 else incremental = ext == ".json" && !( fi.Name.Contains( "ALL", CUtils.Cmp ) || fi.Name.Contains( "DAILY", CUtils.Cmp ) );
 
-                Sup.LogTraceVerboseMessage( $"InetPhp: Incremental = {incremental}; filename = {fi.Name}; ext = {ext}; HoursInGraph = {CUtils.HoursInGraph}" );
+                Sup.LogMessage( $"InetPhp: Incremental = {incremental}; filename = {fi.Name}; ext = {ext}; HoursInGraph = {CUtils.HoursInGraph}", TraceLevel.Verbose );
             }
 
             try
@@ -192,21 +193,21 @@ namespace CumulusUtils
                     }
 
                     var response = await phpUploadHttpClient.SendAsync( request );
-                    Sup.LogTraceInfoMessage( $"InetPhp: {remotefile}: Response code = {(int) response.StatusCode}: {response.StatusCode}" );
+                    Sup.LogMessage( $"InetPhp: {remotefile}: Response code = {(int) response.StatusCode}: {response.StatusCode}", TraceLevel.Info );
 
                     var responseBodyAsText = await response.Content.ReadAsStringAsync();
-                    Sup.LogTraceVerboseMessage( $"InetPhp: {remotefile}: Response text follows:\n{responseBodyAsText}" );
+                    Sup.LogMessage( $"InetPhp: {remotefile}: Response text follows:\n{responseBodyAsText}", TraceLevel.Verbose );
 
                     return response.StatusCode == HttpStatusCode.OK;
                 }
             }
             catch ( Exception ex )
             {
-                Sup.LogTraceInfoMessage( $"InetPhp: Error - {ex.Message}" );
+                Sup.LogMessage( $"InetPhp: Error - {ex.Message}", TraceLevel.Error );
 
                 if ( ex.InnerException is not null )
                 {
-                    Sup.LogTraceInfoMessage( $"InetPhp: Base exception - {ex.InnerException.Message}" );
+                    Sup.LogMessage( $"InetPhp: Base exception - {ex.InnerException.Message}", TraceLevel.Info );
                 }
 
                 return false;
@@ -228,7 +229,8 @@ namespace CumulusUtils
                 // Compute the hash of the input string.
                 hashValue = hmac.ComputeHash( stream );
             }
-            return BitConverter.ToString( hashValue ).Replace( "-", string.Empty ).ToLower();
+            //return BitConverter.ToString( hashValue ).Replace( "-", string.Empty ).ToLower();
+            return Convert.ToHexStringLower( hashValue );
         }
 
     } // Class InetPhp

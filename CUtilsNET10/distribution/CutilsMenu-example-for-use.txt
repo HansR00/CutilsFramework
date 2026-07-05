@@ -11,10 +11,11 @@ Home
 Reports
 
 Graphs
-;  Item Extra Report extrasensors.txt EndItem
 
 Records
+
 Extra
+
 Misc
 
 User
@@ -29,5 +30,7 @@ NL
   Item TopoNL (Int) Internal https://topotijdreis.nl EndItem
 
 ToggleDashboard
+
 Print
+
 About

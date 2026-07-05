@@ -13,6 +13,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -41,7 +42,7 @@ namespace CumulusUtils
         {
             Sup = s;
 
-            Sup.LogTraceInfoMessage( "Diary constructor: starting" );
+            Sup.LogMessage( "Diary constructor: starting", TraceLevel.Info );
 
             if ( Sup.GetUtilsIniValue( "Diary", "Diary", "true" ).Equals( "true", CUtils.Cmp ) )
             {
@@ -49,12 +50,12 @@ namespace CumulusUtils
 
                 if ( DiaryValues is null )
                 {
-                    Sup.LogTraceInfoMessage( "Diary database: No Data" );
+                    Sup.LogMessage( "Diary database: No Data", TraceLevel.Info );
                     CUtils.HasDiaryMenu = false;
                 }
                 else
                 {
-                    Sup.LogTraceInfoMessage( $"Diary database: {DiaryValues.Count} records" );
+                    Sup.LogMessage( $"Diary database: {DiaryValues.Count} records", TraceLevel.Info );
                     CUtils.HasDiaryMenu = true;
                 }
             }
@@ -64,7 +65,7 @@ namespace CumulusUtils
                 CUtils.HasDiaryMenu = false;
             }
 
-            Sup.LogTraceInfoMessage( "Diary constructor: stop" );
+            Sup.LogMessage( "Diary constructor: stop", TraceLevel.Info );
 
             return;
         }
@@ -72,7 +73,7 @@ namespace CumulusUtils
         // This function needs to run when not thrifty
         public void GenerateDiaryDisplay()
         {
-            Sup.LogDebugMessage( "Generating Diary module - Starting" );
+            Sup.LogMessage( "Generating Diary module - Starting", TraceLevel.Info );
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.DiaryOutputFilename}", false, Encoding.UTF8 ) )
             {
@@ -270,7 +271,7 @@ namespace CumulusUtils
                 }
             } // End of the  module
 
-            Sup.LogTraceInfoMessage( "End Generating Diary" );
+            Sup.LogMessage( "End Generating Diary", TraceLevel.Info );
 
             return;
         }
@@ -284,7 +285,7 @@ namespace CumulusUtils
             float Latitude = Convert.ToSingle( Sup.GetCumulusIniValue( "Station", "Latitude", "" ), CUtils.Inv );
             bool NorthernHemisphere = Latitude >= 0;
 
-            Sup.LogTraceInfoMessage( $"Start Generating Diary data" );
+            Sup.LogMessage( $"Start Generating Diary data", TraceLevel.Info );
 
             if ( NorthernHemisphere )
             {
@@ -292,7 +293,7 @@ namespace CumulusUtils
                 {
                     //if ( CUtils.Thrifty && i < CUtils.YearMax ) continue; // Under thrifty we only generate the current winterseason
 
-                    Sup.LogTraceInfoMessage( $"Start Generating Diary data for {i}" );
+                    Sup.LogMessage( $"Start Generating Diary data for {i}", TraceLevel.Info );
 
                     GenerateDiaryForThisYear( i );
 
@@ -300,18 +301,16 @@ namespace CumulusUtils
             }
             else
             {
-                Sup.LogTraceInfoMessage( $"GenerateDiaryReport: No snow report  for the southern hemisphere has been implemented yet." );
-                Sup.LogTraceInfoMessage( $"GenerateDiaryReport: Please request when required." );
+                Sup.LogMessage( $"GenerateDiaryReport: No snow report  for the southern hemisphere has been implemented yet.", TraceLevel.Info );
+                Sup.LogMessage( $"GenerateDiaryReport: Please request when required.", TraceLevel.Info );
             }
 
-            Sup.LogTraceInfoMessage( $"Start Generating Diary data" );
+            Sup.LogMessage( $"Start Generating Diary data", TraceLevel.Info );
             return;
         }
 
         private void GenerateDiaryForThisYear( int thisYear )
         {
-            string thisLine2 = "";
-
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}Diary{thisYear}.txt", false, Encoding.UTF8 ) )
             {
                 of.WriteLine( CString( $"{thisYear}/{thisYear + 1} Seasonal snowfall in {Sup.GetCumulusIniValue( "Station", "LocName", "" )}", 15 * FieldWidth / 2 ) );
@@ -338,7 +337,7 @@ namespace CumulusUtils
 
                 for ( int thisDay = 1; thisDay <= 31; thisDay++ )
                 {
-                    thisLine2 = "";
+                    string thisLine2 = "";
 
                     thisLine2 += CreateLineForDay( thisYear, thisDay );
                     of.WriteLine( $"{thisLine2}" );
@@ -447,7 +446,7 @@ namespace CumulusUtils
 
                                 if ( tmp.snow24h is not null || tmp.snowDepth is not null ) tmpList.Add( tmp );
 
-                                Sup.LogTraceVerboseMessage( $"Value - Date: {tmp.ThisDate} Snow24h: {tmp.snow24h} SnowDepth: {tmp.snowDepth}" );
+                                Sup.LogMessage( $"Value - Date: {tmp.ThisDate} Snow24h: {tmp.snow24h} SnowDepth: {tmp.snowDepth}", TraceLevel.Verbose );
                             } // Loop over the records
                         }
                     } // using: Execute the command

@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -82,18 +83,18 @@ namespace CumulusUtils
                             foreach ( ChartDef entry in AllCharts )
                                 if ( thisChart.Id.Equals( entry.Id, CUtils.Cmp ) )
                                 {
-                                    Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : Duplicate and illegal Chart ID : '{entry.Id}'" );
+                                    Sup.LogMessage( $"Parsing User Charts Definitions : Duplicate and illegal Chart ID : '{entry.Id}'", TraceLevel.Error );
                                     return null;
                                 }
                     }
                     else
                     {
                         // Error condition
-                        Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : Unrecognised keyword '{Keywords[ --CurrPosition ]}' where Chart should be" );
+                        Sup.LogMessage( $"Parsing User Charts Definitions : Unrecognised keyword '{Keywords[ --CurrPosition ]}' where Chart should be", TraceLevel.Error );
                         return null;
                     }
 
-                    Sup.LogTraceInfoMessage( $"Parsing User Charts Definitions : Chart {thisChart.Id}'" );
+                    Sup.LogMessage( $"Parsing User Charts Definitions : Chart {thisChart.Id}'", TraceLevel.Info );
 
                     if ( Keywords[ CurrPosition++ ].Equals( "Title", CUtils.Cmp ) )
                     {
@@ -109,7 +110,7 @@ namespace CumulusUtils
                     else
                     {
                         // Error condition
-                        Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' : Missing keyword 'Title'" );
+                        Sup.LogMessage( $"Parsing User Charts '{thisChart.Id}' : Missing keyword 'Title'", TraceLevel.Error );
                         return null;
                     }
 
@@ -127,8 +128,8 @@ namespace CumulusUtils
 
                                 if ( AllOutputs.Count > 0 )
                                 {
-                                    Sup.LogTraceWarningMessage( $"Parsing User Charts '{thisChart.Id}' : Skipping illegal ConnectTo '{DasboardPanelNr}'" );
-                                    Sup.LogTraceWarningMessage( $"Parsing User Charts '{thisChart.Id}' : ConnectsTo can only be used in the first - unspecified - output" );
+                                    Sup.LogMessage( $"Parsing User Charts '{thisChart.Id}' : Skipping illegal ConnectTo '{DasboardPanelNr}'", TraceLevel.Warning );
+                                    Sup.LogMessage( $"Parsing User Charts '{thisChart.Id}' : ConnectsTo can only be used in the first - unspecified - output", TraceLevel.Warning );
                                     continue; // Only have Connects to from cumuluscharts.txt
                                 }
 
@@ -149,8 +150,8 @@ namespace CumulusUtils
                             }
                             catch ( Exception e )
                             {
-                                Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' Exception: {e.Message}" );
-                                Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' : Error around Zoom value of '{thisChart.Id}'" );
+                                Sup.LogMessage( $"Parsing User Charts '{thisChart.Id}' Exception: {e.Message}", TraceLevel.Error );
+                                Sup.LogMessage( $"Parsing User Charts '{thisChart.Id}' : Error around Zoom value of '{thisChart.Id}'", TraceLevel.Error );
                             }
                         } // End ZOOM
 
@@ -176,7 +177,7 @@ namespace CumulusUtils
                                 else
                                 {
                                     // Error condition
-                                    Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' : Missing BELOW or ABOVE Keyword after WindBarbs" );
+                                    Sup.LogMessage( $"Parsing User Charts '{thisChart.Id}' : Missing BELOW or ABOVE Keyword after WindBarbs", TraceLevel.Error );
                                     return null;
                                 }
 
@@ -190,7 +191,7 @@ namespace CumulusUtils
                             else
                             {
                                 // Error condition
-                                Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' : Missing WindBarbs Keyword" );
+                                Sup.LogMessage( $"Parsing User Charts '{thisChart.Id}' : Missing WindBarbs Keyword", TraceLevel.Error );
                                 return null;
                             }
                         }
@@ -199,7 +200,7 @@ namespace CumulusUtils
                     if ( !( Keywords[ CurrPosition ].Equals( "Plot", CUtils.Cmp ) || Keywords[ CurrPosition ].Equals( "Stats", CUtils.Cmp ) ) )
                     {
                         // Error condition
-                        Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' : Plot or Stats missing" );
+                        Sup.LogMessage( $"Parsing User Charts '{thisChart.Id}' : Plot or Stats missing", TraceLevel.Error );
                         return null;
                     }
 
@@ -301,7 +302,7 @@ namespace CumulusUtils
                             }
                             else
                             {
-                                Sup.LogTraceErrorMessage( $"Parsing User Charts: Invalid variable {Keywords[ CurrPosition ]} for statistic in chart '{thisChart.Id}'" );
+                                Sup.LogMessage( $"Parsing User Charts: Invalid variable {Keywords[ CurrPosition ]} for statistic in chart '{thisChart.Id}'", TraceLevel.Error );
                                 return null;
                             }
 
@@ -325,7 +326,7 @@ namespace CumulusUtils
                             }
                             else
                             {
-                                Sup.LogTraceErrorMessage( $"Parsing User Charts: No Statistics definition found in STATS line of '{thisChart.Id}'" );
+                                Sup.LogMessage( $"Parsing User Charts: No Statistics definition found in STATS line of '{thisChart.Id}'", TraceLevel.Error );
                                 return null;
                             }
                         }
@@ -422,7 +423,7 @@ namespace CumulusUtils
 
                                 if ( string.IsNullOrEmpty( thisPlotvar.Equation ) )
                                 {
-                                    Sup.LogTraceErrorMessage( $"Parsing User Charts: No Equation found for {thisPlotvar.Keyword}" );
+                                    Sup.LogMessage( $"Parsing User Charts: No Equation found for {thisPlotvar.Keyword}", TraceLevel.Error );
                                     return null;
                                 }
                                 else
@@ -430,8 +431,8 @@ namespace CumulusUtils
                             }
                             else if ( EquationRequired )
                             {
-                                Sup.LogTraceErrorMessage( $"Parsing User Charts: No EVAL found for a PLOT statement' for {thisPlotvar.Keyword} when required'" );
-                                Sup.LogTraceErrorMessage( $"Parsing User Charts: Equation is required because Plotvariable does not translate to valid JSON variable" );
+                                Sup.LogMessage( $"Parsing User Charts: No EVAL found for a PLOT statement' for {thisPlotvar.Keyword} when required'", TraceLevel.Error );
+                                Sup.LogMessage( $"Parsing User Charts: Equation is required because Plotvariable does not translate to valid JSON variable", TraceLevel.Error );
                                 return null;
                             }
 
@@ -473,7 +474,7 @@ namespace CumulusUtils
                                         if ( !Array.Exists( ValidColumnRangeVars, word => word.Equals( thisPlotvar.Keyword, CUtils.Cmp ) ) )
                                         {
                                             // Error condition
-                                            Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' : Invalid AS type '{Keywords[ CurrPosition ]}' for '{thisPlotvar.Keyword}'" );
+                                            Sup.LogMessage( $"Parsing User Charts '{thisChart.Id}' : Invalid AS type '{Keywords[ CurrPosition ]}' for '{thisPlotvar.Keyword}'", TraceLevel.Error );
                                             return null;
                                         }
 
@@ -482,14 +483,14 @@ namespace CumulusUtils
                                 else
                                 {
                                     // Error condition
-                                    Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' : Invalid AS linetype '{Keywords[ CurrPosition ]}'" );
+                                    Sup.LogMessage( $"Parsing User Charts '{thisChart.Id}' : Invalid AS linetype '{Keywords[ CurrPosition ]}'", TraceLevel.Error );
                                     return null;
                                 }
                             }
                             else if ( Keywords[ CurrPosition ].Equals( "As", CUtils.Cmp ) && thisPlotvar.IsStats )
                             {
-                                Sup.LogTraceWarningMessage( $"Parsing User Charts '{thisChart.Id}' : Invalid AS type '{Keywords[ CurrPosition ]}' for '{thisPlotvar.Keyword}'" );
-                                Sup.LogTraceWarningMessage( $"Parsing User Charts '{thisChart.Id}' : Cannot set a plot type for a STATS Plotvariable" );
+                                Sup.LogMessage( $"Parsing User Charts '{thisChart.Id}' : Invalid AS type '{Keywords[ CurrPosition ]}' for '{thisPlotvar.Keyword}'", TraceLevel.Error );
+                                Sup.LogMessage( $"Parsing User Charts '{thisChart.Id}' : Cannot set a plot type for a STATS Plotvariable", TraceLevel.Error );
 
                                 CurrPosition++;
                                 CurrPosition++; // Skip over ' AS [LinetypeKeyword] '
@@ -509,8 +510,8 @@ namespace CumulusUtils
                                 }
                                 catch ( Exception e )
                                 {
-                                    Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' Exception: {e.Message}" );
-                                    Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' : Error around zIndex value of '{thisPlotvar.PlotVar}'" );
+                                    Sup.LogMessage( $"Parsing User Charts '{thisChart.Id}' Exception: {e.Message}", TraceLevel.Error );
+                                    Sup.LogMessage( $"Parsing User Charts '{thisChart.Id}' : Error around zIndex value of '{thisPlotvar.PlotVar}'", TraceLevel.Error );
                                     return null;
                                 }
                             } // End OPACITY
@@ -534,8 +535,8 @@ namespace CumulusUtils
                                 }
                                 catch ( Exception e )
                                 {
-                                    Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' Exception: {e.Message}" );
-                                    Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' : Error around zIndex value of '{thisPlotvar.PlotVar}'" );
+                                    Sup.LogMessage( $"Parsing User Charts '{thisChart.Id}' Exception: {e.Message}", TraceLevel.Error );
+                                    Sup.LogMessage( $"Parsing User Charts '{thisChart.Id}' : Error around zIndex value of '{thisPlotvar.PlotVar}'", TraceLevel.Error );
                                     return null;
                                 }
                             } // End ZINDEX
@@ -551,8 +552,8 @@ namespace CumulusUtils
                                 }
                                 catch ( Exception e )
                                 {
-                                    Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' Exception: {e.Message}" );
-                                    Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' : Error around LineWidth value of '{thisPlotvar.PlotVar}'" );
+                                    Sup.LogMessage( $"Parsing User Charts '{thisChart.Id}' Exception: {e.Message}", TraceLevel.Error );
+                                    Sup.LogMessage( $"Parsing User Charts '{thisChart.Id}' : Error around LineWidth value of '{thisPlotvar.PlotVar}'", TraceLevel.Error );
                                     return null;
                                 }
                             } // End LINEWIDTH
@@ -564,8 +565,8 @@ namespace CumulusUtils
 
                                 if ( string.IsNullOrEmpty( thisPlotvar.Equation ) )
                                 {
-                                    Sup.LogTraceWarningMessage( $"Parsing User Charts '{thisChart.Id}' : AXIS specification ignored in absence of (correct) EVAL equation for {thisPlotvar.Keyword}" );
-                                    Sup.LogTraceWarningMessage( $"Parsing User Charts '{thisChart.Id}' : Axis specification only relevant for Equations, continuing..." );
+                                    Sup.LogMessage( $"Parsing User Charts '{thisChart.Id}' : AXIS specification ignored in absence of (correct) EVAL equation for {thisPlotvar.Keyword}", TraceLevel.Error );
+                                    Sup.LogMessage( $"Parsing User Charts '{thisChart.Id}' : Axis specification only relevant for Equations, continuing...", TraceLevel.Error );
                                     CurrPosition++; // this  one gets us on the next KeyWord
                                 }
                                 else
@@ -583,14 +584,14 @@ namespace CumulusUtils
                                         else
                                         {
                                             // Error condition
-                                            Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' : Invalid AXIS type '{Keywords[ CurrPosition ]}'" );
+                                            Sup.LogMessage( $"Parsing User Charts '{thisChart.Id}' : Invalid AXIS type '{Keywords[ CurrPosition ]}'", TraceLevel.Error );
                                             return null;
                                         }
                                     }
                                     catch ( Exception e )
                                     {
-                                        Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' Exception: {e.Message}" );
-                                        Sup.LogTraceErrorMessage( $"Parsing User Charts '{thisChart.Id}' : Error around AXIS spec '{thisPlotvar.PlotVar}'" );
+                                        Sup.LogMessage( $"Parsing User Charts '{thisChart.Id}' Exception: {e.Message}", TraceLevel.Error );
+                                        Sup.LogMessage( $"Parsing User Charts '{thisChart.Id}' : Error around AXIS spec '{thisPlotvar.PlotVar}'", TraceLevel.Error );
                                         return null;
                                     }
                                 }
@@ -611,7 +612,7 @@ namespace CumulusUtils
                         {
                             if ( thisPlotvar.Axis == AxisType.None )
                             {
-                                Sup.LogTraceWarningMessage( $"User Charts '{thisChart.Id}/{thisPlotvar.Keyword}': No Axis was specified or in error. Axistype is set to FREE." );
+                                Sup.LogMessage( $"User Charts '{thisChart.Id}/{thisPlotvar.Keyword}': No Axis was specified or in error. Axistype is set to FREE.", TraceLevel.Error );
 
                                 thisPlotvar.AxisId = "Free";
                                 thisPlotvar.Axis = AxisType.Free;
@@ -638,7 +639,7 @@ namespace CumulusUtils
                                 {
                                     if ( thisChart.HasInfo )
                                     {
-                                        Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : Double Info specified on '{thisChart.Id}'." );
+                                        Sup.LogMessage( $"Parsing User Charts Definitions : Double Info specified on '{thisChart.Id}'.", TraceLevel.Error );
                                         return null;
                                     }
                                     else thisChart.HasInfo = true;
@@ -658,13 +659,13 @@ namespace CumulusUtils
                                         }
                                         catch ( Exception e ) when ( e is IndexOutOfRangeException )
                                         {
-                                            Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : Info specified on '{thisChart.Id}' but no closing quote found." );
+                                            Sup.LogMessage( $"Parsing User Charts Definitions : Info specified on '{thisChart.Id}' but no closing quote found.", TraceLevel.Error );
                                             return null;
                                         }
                                     }
                                     else
                                     {
-                                        Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : Info specified on '{thisChart.Id}' but no start quote found." );
+                                        Sup.LogMessage( $"Parsing User Charts Definitions : Info specified on '{thisChart.Id}' but no start quote found.", TraceLevel.Error );
                                         return null;
                                     }
                                 }
@@ -676,7 +677,7 @@ namespace CumulusUtils
                                 {
                                     if ( OutputDone )
                                     {
-                                        Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : Double Output specified on '{thisChart.Id}'." );
+                                        Sup.LogMessage( $"Parsing User Charts Definitions : Double Output specified on '{thisChart.Id}'.", TraceLevel.Error );
                                         return null;
                                     }
                                     else OutputDone = true;
@@ -685,7 +686,7 @@ namespace CumulusUtils
 
                                     if ( AllOutputs.Count == 0 && AllCharts.Count == 0 )
                                     {
-                                        Sup.LogTraceWarningMessage( $"Parsing User Charts Definitions : Output given for first Chart '{thisChart.Id}'. Cannot specify output for first chart" );
+                                        Sup.LogMessage( $"Parsing User Charts Definitions : Output given for first Chart '{thisChart.Id}'. Cannot specify output for first chart", TraceLevel.Error );
                                     }
                                     else
                                     {
@@ -705,9 +706,9 @@ namespace CumulusUtils
                         } // try to detect EOF
                         catch ( Exception e )
                         {
-                            Sup.LogTraceErrorMessage( "Parsing User Charts Definitions : Unknown exception while reaching EOF. Incomplete Charts definition." );
-                            Sup.LogTraceErrorMessage( $"Exception found is: {e.Message}" );
-                            if ( e.InnerException is not null ) Sup.LogTraceErrorMessage( $"InnerException found is: {e.InnerException}" );
+                            Sup.LogMessage( "Parsing User Charts Definitions : Unknown exception while reaching EOF. Incomplete Charts definition.", TraceLevel.Error );
+                            Sup.LogMessage( $"Exception found is: {e.Message}", TraceLevel.Error );
+                            if ( e.InnerException is not null ) Sup.LogMessage( $"InnerException found is: {e.InnerException}", TraceLevel.Error );
                             return null;
                         }
 
@@ -716,8 +717,8 @@ namespace CumulusUtils
                     else
                     {
                         // Error condition
-                        Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : Error at EndChart of Chart '{thisChart.Id}'" );
-                        Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : After position '{Keywords[ --CurrPosition ]}'" );
+                        Sup.LogMessage( $"Parsing User Charts Definitions : Error at EndChart of Chart '{thisChart.Id}'", TraceLevel.Error );
+                        Sup.LogMessage( $"Parsing User Charts Definitions : After position '{Keywords[ --CurrPosition ]}'", TraceLevel.Error );
                         return null;
                     }
 
@@ -732,7 +733,7 @@ namespace CumulusUtils
                             {
                                 // It is OK
                             }
-                            else { Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : Illegal use of ColumnRange '{chart.Id}'/'{plotvar.Keyword}' with RECENT" ); return null; }
+                            else { Sup.LogMessage( $"Parsing User Charts Definitions : Illegal use of ColumnRange '{chart.Id}'/'{plotvar.Keyword}' with RECENT", TraceLevel.Error ); return null; }
 
                 // Check for STATS to have the same variable regularly plotted in the same chart
                 foreach ( ChartDef chart in AllCharts )
@@ -744,7 +745,7 @@ namespace CumulusUtils
                                 if ( plotvar2.PlotVar == plotvar.PlotVar && !plotvar2.IsStats ) { found = true; break; }  // The STATS plotvar is also plotted for itself in this chart
                                 else
                                     continue;
-                            if ( !found ) { Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : STATS variable '{plotvar.Keyword}' not plotted by itself in this CHART" ); return null; }
+                            if ( !found ) { Sup.LogMessage( $"Parsing User Charts Definitions : STATS variable '{plotvar.Keyword}' not plotted by itself in this CHART", TraceLevel.Error ); return null; }
                         }
 
                 // OK so set the lists and continue
@@ -755,8 +756,8 @@ namespace CumulusUtils
             }
             catch ( Exception e )
             {
-                Sup.LogTraceErrorMessage( $"Error Parsing Exception : {e.Message}" );
-                Sup.LogTraceErrorMessage( "Error Parsing Chart definitions - Defaults used." );
+                Sup.LogMessage( $"Error Parsing Exception : {e.Message}", TraceLevel.Error );
+                Sup.LogMessage( "Error Parsing Chart definitions - Defaults used.", TraceLevel.Error );
                 return null;
             }
         } // ParseChartdefinitions()

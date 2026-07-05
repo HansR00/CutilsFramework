@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -65,7 +66,7 @@ namespace CumulusUtils
             int i;
 
             Sup = s;
-            Sup.LogTraceInfoMessage( $"Main CmulusUtils: Yadr Constructor Start" );
+            Sup.LogMessage( $"Main CmulusUtils: Yadr Constructor Start", TraceLevel.Info );
 
             Windrunbase = Windrunstep = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "WindrunClassWidth", "75" ), CUtils.Inv );
             // Windrunbase = Windrunstep = 75;
@@ -310,7 +311,7 @@ namespace CumulusUtils
                 StringBuilder sb = new StringBuilder();
                 // Part I:
 
-                Sup.LogTraceInfoMessage( $"GenerateYadrTempData: Looping over years, doing year {thisYear}" );
+                Sup.LogMessage( $"GenerateYadrTempData: Looping over years, doing year {thisYear}", TraceLevel.Info );
 
                 using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}YadrTemp{thisYear}.txt", false, Encoding.UTF8 ) )
                 {
@@ -487,7 +488,7 @@ namespace CumulusUtils
                 StringBuilder sb = new StringBuilder();
                 // Part I:
 
-                Sup.LogTraceInfoMessage( $"GenerateYadrRainData: Looping over years, doing year {thisYear}" );
+                Sup.LogMessage( $"GenerateYadrRainData: Looping over years, doing year {thisYear}", TraceLevel.Info );
 
                 using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}YadrRain{thisYear}.txt", false, Encoding.UTF8 ) )
                 {
@@ -653,7 +654,7 @@ namespace CumulusUtils
                 StringBuilder sb = new StringBuilder();
                 // Part I:
 
-                Sup.LogTraceInfoMessage( $"GenerateYadrWindData: Looping over years, doing year {thisYear}" );
+                Sup.LogMessage( $"GenerateYadrWindData: Looping over years, doing year {thisYear}", TraceLevel.Info );
 
                 using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}YadrWind{thisYear}.txt", false, Encoding.UTF8 ) )
                 {
@@ -818,7 +819,7 @@ namespace CumulusUtils
                 StringBuilder sb = new StringBuilder();
                 // Part I:
 
-                Sup.LogTraceInfoMessage( $"GenerateYadrWindrunData: Looping over years, doing year {thisYear}" );
+                Sup.LogMessage( $"GenerateYadrWindrunData: Looping over years, doing year {thisYear}", TraceLevel.Info );
 
                 using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}YadrWindrun{thisYear}.txt", false, Encoding.UTF8 ) )
                 {
@@ -978,7 +979,7 @@ namespace CumulusUtils
                 StringBuilder sb = new StringBuilder();
                 // Part I:
 
-                Sup.LogTraceInfoMessage( $"GenerateYadrPressionData: Looping over years, doing year {thisYear}" );
+                Sup.LogMessage( $"GenerateYadrPressionData: Looping over years, doing year {thisYear}", TraceLevel.Info );
 
                 using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}YadrPress{thisYear}.txt", false, Encoding.UTF8 ) )
                 {
@@ -1161,7 +1162,7 @@ namespace CumulusUtils
                 StringBuilder sb = new StringBuilder();
                 // Part I:
 
-                Sup.LogTraceInfoMessage( $"GenerateYadrHumidityData: Looping over years, doing year {thisYear}" );
+                Sup.LogMessage( $"GenerateYadrHumidityData: Looping over years, doing year {thisYear}", TraceLevel.Info );
 
                 using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}YadrHum{thisYear}.txt", false, Encoding.UTF8 ) )
                 {
@@ -1345,7 +1346,7 @@ $"{Sup.GetCUstringValue( "Yadr", "LowShortText", "Lo", false )}</th>" );
             catch ( IndexOutOfRangeException e )
             {
                 // Note the extreme value but return the highest colour accent
-                Sup.LogTraceErrorMessage( $"IndexOutOfRange {e.Message}: illegal or abnormal value ({thisValue}) in Dayfile.txt" );
+                Sup.LogMessage( $"IndexOutOfRange {e.Message}: illegal or abnormal value ({thisValue}) in Dayfile.txt", TraceLevel.Error );
             }
 
             return $"class=\"levelT\" style=\"color:white;background-color:{TempColorFormat[ 12 ]}\"";
@@ -1374,7 +1375,7 @@ $"{Sup.GetCUstringValue( "Yadr", "LowShortText", "Lo", false )}</th>" );
             catch ( IndexOutOfRangeException e )
             {
                 // Note the error but return the highest colour accent
-                Sup.LogTraceErrorMessage( $"IndexOutOfRange {e.Message}: illegal or abnormal value ({thisValue}) in Dayfile.txt" );
+                Sup.LogMessage( $"IndexOutOfRange {e.Message}: illegal or abnormal value ({thisValue}) in Dayfile.txt", TraceLevel.Error );
             }
 
             // i must be 13 so we return the level_13 format
@@ -1391,7 +1392,7 @@ $"{Sup.GetCUstringValue( "Yadr", "LowShortText", "Lo", false )}</th>" );
             }
             catch ( IndexOutOfRangeException e )
             {
-                Sup.LogTraceErrorMessage( $"IndexOutOfRange {e.Message}: illegal or abnormal value ({thisValue}) in Dayfile.txt" );
+                Sup.LogMessage( $"IndexOutOfRange {e.Message}: illegal or abnormal value ({thisValue}) in Dayfile.txt", TraceLevel.Error );
             }
 
             // i must be 13 so we return the Max beaufort format
@@ -1420,7 +1421,7 @@ $"{Sup.GetCUstringValue( "Yadr", "LowShortText", "Lo", false )}</th>" );
             }
             catch ( IndexOutOfRangeException e )
             {
-                Sup.LogTraceErrorMessage( $"IndexOutOfRange for value: illegal or abnormal value ({thisValue}) in Dayfile.txt - {e.Message}" );
+                Sup.LogMessage( $"IndexOutOfRange for value: illegal or abnormal value ({thisValue}) in Dayfile.txt - {e.Message}", TraceLevel.Error );
             }
 
             // i must be 13 so we return the level_13 format
@@ -1446,7 +1447,7 @@ $"{Sup.GetCUstringValue( "Yadr", "LowShortText", "Lo", false )}</th>" );
             }
             catch ( IndexOutOfRangeException e )
             {
-                Sup.LogTraceErrorMessage( $"IndexOutOfRange for value: illegal or abnormal value ({thisValue}) in Dayfile.txt - {e.Message}" );
+                Sup.LogMessage( $"IndexOutOfRange for value: illegal or abnormal value ({thisValue}) in Dayfile.txt - {e.Message}", TraceLevel.Error );
             }
 
             // i must be 13 so we return the level_13 format
@@ -1472,7 +1473,7 @@ $"{Sup.GetCUstringValue( "Yadr", "LowShortText", "Lo", false )}</th>" );
             }
             catch ( IndexOutOfRangeException e )
             {
-                Sup.LogTraceErrorMessage( $"IndexOutOfRange for value: illegal or abnormal value ({thisValue}) in Dayfile.txt - {e.Message}" );
+                Sup.LogMessage( $"IndexOutOfRange for value: illegal or abnormal value ({thisValue}) in Dayfile.txt - {e.Message}", TraceLevel.Error );
             }
 
             return $"class=\"levelT\" style=\"color:white; background-color:{HumColorFormat[ 12 ]}\"";

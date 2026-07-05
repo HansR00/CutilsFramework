@@ -1,6 +1,11 @@
 ﻿/*
  * CumulusUtils/Main
  * 
+ * Windows based parameter change:
+ *   Questions to AI
+ *    1) Can you create an interactive program for a VS program to modify values of parameters in a textfile of the format: [sectionA] parameter1=value1
+ *    2) Yes, I need to preserve text comments (lines starting with ';') and maintain the order of the lines. Also give the user the possibility to change the order of the lines
+ *    
  */
 
 using System;
@@ -219,8 +224,8 @@ namespace CumulusUtils
                 UtilsRealTimeInterval = Convert.ToInt32( Sup.GetUtilsIniValue( "Website", "CumulusRealTimeInterval", "15" ) ); // Sorry for the confused naming
                 ConnectNulls = Sup.GetUtilsIniValue( "General", "ConnectNulls", "false" ).Equals( "true", Cmp );
 
-                PressureInInchHg = Sup.StationPressure.Dim == PressureDim.inchHg ? true : false;
-                RainInInch = Sup.StationRain.Dim == RainDim.inch ? true : false;
+                PressureInInchHg = Sup.StationPressure.Dim == PressureDim.inchHg;
+                RainInInch = Sup.StationRain.Dim == RainDim.inch;
 
                 // Now start doing things
                 CUtils p = new CUtils();
@@ -228,16 +233,16 @@ namespace CumulusUtils
             }
             catch ( ArgumentNullException ex )
             {
-                Sup.LogTraceErrorMessage( $"Exception handler ArgumentNull : |{ex.ParamName}| {ex.Message}" );
-                Sup.LogTraceErrorMessage( "Exiting - check log file" );
+                Sup.LogMessage( $"Exception handler ArgumentNull : |{ex.ParamName}| {ex.Message}", TraceLevel.Error );
+                Sup.LogMessage( "Exiting - check log file", TraceLevel.Info );
                 Environment.Exit( 0 );
             }
             catch ( Exception ex )
             {
-                Sup.LogTraceErrorMessage( $"Exception Unknown : {ex.Message}" );
-                Sup.LogTraceErrorMessage( $"Data (cont): {ex.Source}" );
-                Sup.LogTraceErrorMessage( $"Data: {ex.StackTrace}" );
-                Sup.LogTraceErrorMessage( "Exiting - check log file" );
+                Sup.LogMessage( $"Exception Unknown : {ex.Message}", TraceLevel.Error );
+                Sup.LogMessage( $"Data (cont): {ex.Source}", TraceLevel.Error );
+                Sup.LogMessage( $"Data: {ex.StackTrace}", TraceLevel.Error );
+                Sup.LogMessage( "Exiting - check log file", TraceLevel.Info );
                 Environment.Exit( 0 );
                 //throw;
             }
@@ -279,8 +284,8 @@ namespace CumulusUtils
 
             if ( DoModular && DoWebsite )
             {
-                Sup.LogTraceErrorMessage( $"CumulusUtils : Conflicting settings - DoModular is {DoModular} while running Website." );
-                Sup.LogTraceErrorMessage( $"CumulusUtils : Cannot handle this, Exiting." );
+                Sup.LogMessage( $"CumulusUtils : Conflicting settings - DoModular is {DoModular} while running Website.", TraceLevel.Error );
+                Sup.LogMessage( $"CumulusUtils : Cannot handle this, Exiting.", TraceLevel.Error );
 
                 Environment.Exit( 0 );
             }
@@ -288,8 +293,8 @@ namespace CumulusUtils
             if ( !DoPwsFWI && !DoTop10 && !DoSystemChk && !DoGraphs && !DoCreateMap && !DoYadr && !DoRecords && !DoCompileOnly && !DoUserAskedData && !DoCustomLogs &&
                 !DoNOAA && !DoDayRecords && !DoWebsite && !DoForecast && !DoUserReports && !DoStationMap && !DoMeteoCam && !DoAirLink && !DoExtraSensors && !DoCUlib && !DoDiary )
             {
-                Sup.LogTraceErrorMessage( "CumulusUtils : No Arguments, nothing to do. Exiting." );
-                Sup.LogTraceErrorMessage( "CumulusUtils : Exiting Main" );
+                Sup.LogMessage( "CumulusUtils : No Arguments, nothing to do. Exiting.", TraceLevel.Error );
+                Sup.LogMessage( "CumulusUtils : Exiting Main", TraceLevel.Error );
 
                 Console.WriteLine( "\nCumulusUtils : No Arguments nothing to do. Exiting. See Manual." );
                 Console.WriteLine( "" );
@@ -343,18 +348,18 @@ namespace CumulusUtils
                     StartOfObservations = DateTime.ParseExact( tmp, "dd/MM/yy", Inv );
 
                     int i = MainList.RemoveAll( p => p.ThisDate < StartOfObservations );
-                    Sup.LogTraceInfoMessage( $"CumulusUtils : RecordsBeganDate used: {StartOfObservations}, Number of days removed from list: {i}" );
+                    Sup.LogMessage( $"CumulusUtils : RecordsBeganDate used: {StartOfObservations}, Number of days removed from list: {i}", TraceLevel.Info );
                 }
                 catch
                 {
                     StartOfObservations = MainList.Select( x => x.ThisDate ).Min();
-                    Sup.LogTraceInfoMessage( $"CumulusUtils : RecordsBeganDate used with wrong format; using the first observation date {StartOfObservations}" );
+                    Sup.LogMessage( $"CumulusUtils : RecordsBeganDate used with wrong format; using the first observation date {StartOfObservations}", TraceLevel.Info );
                 }
             }
 
             YearMax = MainList.Select( x => x.ThisDate.Year ).Max();
             YearMin = MainList.Select( x => x.ThisDate.Year ).Min();
-            Sup.LogTraceInfoMessage( $"CumulusUtils : YearMin = {YearMin}; YearMax = {YearMax}" );
+            Sup.LogMessage( $"CumulusUtils : YearMin = {YearMin}; YearMax = {YearMax}", TraceLevel.Info );
 
             if ( DoSystemChk )
             {
@@ -369,7 +374,7 @@ namespace CumulusUtils
 
 #if TIMING
                 watch.Stop();
-                Sup.LogTraceInfoMessage( $"Timing of SysInfo generation = {watch.ElapsedMilliseconds} ms" );
+                Sup.LogMessage( $"Timing of SysInfo generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
 #endif
             }
 
@@ -384,7 +389,7 @@ namespace CumulusUtils
 
 #if TIMING
                 watch.Stop();
-                Sup.LogTraceInfoMessage( $"Timing of StationMap generation = {watch.ElapsedMilliseconds} ms" );
+                Sup.LogMessage( $"Timing of StationMap generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
 #endif
             }
 
@@ -399,7 +404,7 @@ namespace CumulusUtils
 
 #if TIMING
                 watch.Stop();
-                Sup.LogTraceInfoMessage( $"Timing of MeteoCam generation = {watch.ElapsedMilliseconds} ms" );
+                Sup.LogMessage( $"Timing of MeteoCam generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
 #endif
             }
 
@@ -414,7 +419,7 @@ namespace CumulusUtils
 
 #if TIMING
                 watch.Stop();
-                Sup.LogTraceInfoMessage( $"Timing of WeatherForecast generation = {watch.ElapsedMilliseconds} ms" );
+                Sup.LogMessage( $"Timing of WeatherForecast generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
 #endif
             }
 
@@ -432,7 +437,7 @@ namespace CumulusUtils
 
 #if TIMING
                 watch.Stop();
-                Sup.LogTraceInfoMessage( $"Timing of USerReports generation = {watch.ElapsedMilliseconds} ms" );
+                Sup.LogMessage( $"Timing of USerReports generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
 #endif
             }
 
@@ -447,7 +452,7 @@ namespace CumulusUtils
 
 #if TIMING
                 watch.Stop();
-                Sup.LogTraceInfoMessage( $"Timing of AirQuality generation = {watch.ElapsedMilliseconds} ms" );
+                Sup.LogMessage( $"Timing of AirQuality generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
 #endif
             }
 
@@ -463,7 +468,7 @@ namespace CumulusUtils
 
 #if TIMING
                 watch.Stop();
-                Sup.LogTraceInfoMessage( $"Timing of ExtraSensors generation = {watch.ElapsedMilliseconds} ms" );
+                Sup.LogMessage( $"Timing of ExtraSensors generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
 #endif
             }
 
@@ -478,7 +483,7 @@ namespace CumulusUtils
 
 #if TIMING
                 watch.Stop();
-                Sup.LogTraceInfoMessage( $"Timing of CustomLogs generation = {watch.ElapsedMilliseconds} ms" );
+                Sup.LogMessage( $"Timing of CustomLogs generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
 #endif
             }
 
@@ -504,7 +509,7 @@ namespace CumulusUtils
 
 #if TIMING
                 watch.Stop();
-                Sup.LogTraceInfoMessage( $"Timing of Diary generation = {watch.ElapsedMilliseconds} ms" );
+                Sup.LogMessage( $"Timing of Diary generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
 #endif
             }
 
@@ -526,7 +531,7 @@ namespace CumulusUtils
 
 #if TIMING
                     watch.Stop();
-                    Sup.LogTraceInfoMessage( $"Timing of pwsFWI generation = {watch.ElapsedMilliseconds} ms" );
+                    Sup.LogMessage( $"Timing of pwsFWI generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
 #endif
                 }
 
@@ -541,7 +546,7 @@ namespace CumulusUtils
 
 #if TIMING
                     watch.Stop();
-                    Sup.LogTraceInfoMessage( $"Timing of Yadr generation = {watch.ElapsedMilliseconds} ms" );
+                    Sup.LogMessage( $"Timing of Yadr generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
 #endif
                 }
 
@@ -555,7 +560,7 @@ namespace CumulusUtils
 
 #if TIMING
                     watch.Stop();
-                    Sup.LogTraceInfoMessage( $"Timing of Records generation = {watch.ElapsedMilliseconds} ms" );
+                    Sup.LogMessage( $"Timing of Records generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
 #endif
                 }
 
@@ -569,7 +574,7 @@ namespace CumulusUtils
 
 #if TIMING
                     watch.Stop();
-                    Sup.LogTraceInfoMessage( $"Timing of DayRecords generation = {watch.ElapsedMilliseconds} ms" );
+                    Sup.LogMessage( $"Timing of DayRecords generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
 #endif
                 }
 
@@ -583,7 +588,7 @@ namespace CumulusUtils
 
 #if TIMING
                     watch.Stop();
-                    Sup.LogTraceInfoMessage( $"Timing of NOAA reader generation = {watch.ElapsedMilliseconds} ms" );
+                    Sup.LogMessage( $"Timing of NOAA reader generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
 #endif
                 }
 
@@ -599,7 +604,7 @@ namespace CumulusUtils
 
 #if TIMING
                     watch.Stop();
-                    Sup.LogTraceInfoMessage( $"Timing of Graphs generation = {watch.ElapsedMilliseconds} ms" );
+                    Sup.LogMessage( $"Timing of Graphs generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
 #endif
                 }
 
@@ -618,7 +623,7 @@ namespace CumulusUtils
 
 #if TIMING
                     watch.Stop();
-                    Sup.LogTraceInfoMessage( $"Timing of Top10 generation = {watch.ElapsedMilliseconds} ms" );
+                    Sup.LogMessage( $"Timing of Top10 generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
 #endif
                 }
 
@@ -634,7 +639,7 @@ namespace CumulusUtils
 
 #if TIMING
                     watch.Stop();
-                    Sup.LogTraceInfoMessage( $"Timing of Website generation = {watch.ElapsedMilliseconds} ms" );
+                    Sup.LogMessage( $"Timing of Website generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
 #endif
                 }
 
@@ -652,7 +657,7 @@ namespace CumulusUtils
 
                     Maps fncs = new Maps( Sup );
                     retval = await fncs.MapsOn();
-                    Sup.LogTraceInfoMessage( retval );
+                    Sup.LogMessage( retval, TraceLevel.Info );
 
                     if ( DoCreateMap && File.Exists( "paMuCetaerCyaM.txt" ) )
                     {
@@ -668,7 +673,7 @@ namespace CumulusUtils
                         // MeteoWagenborgen (or any other by agreement) creates the map once per hour (or at any frequency wanted/required)
                         // All users may download that map at any time
                         //
-                        Sup.LogTraceInfoMessage( $"Fetch Map: Fetching the generated map" );
+                        Sup.LogMessage( $"Fetch Map: Fetching the generated map", TraceLevel.Info );
 
                         // Change this URL when changing map manager role
                         //
@@ -677,9 +682,9 @@ namespace CumulusUtils
                         if ( !string.IsNullOrEmpty( retval ) )
                         {
                             if ( retval.Length > 50 )
-                                Sup.LogTraceInfoMessage( $"Main: {retval.Substring( 0, 50 )}" );
+                                Sup.LogMessage( $"Main: {retval.Substring( 0, 50 )}", TraceLevel.Info );
                             else
-                                Sup.LogTraceInfoMessage( $"Main: {retval}" );
+                                Sup.LogMessage( $"Main: {retval}", TraceLevel.Info );
 
                             File.WriteAllText( $"{Sup.PathUtils}{Sup.MapsOutputFilename}", retval, Encoding.UTF8 );
 
@@ -689,7 +694,7 @@ namespace CumulusUtils
 
                             if ( !string.IsNullOrEmpty( jQueryString ) )
                             {
-                                Sup.LogTraceInfoMessage( $"Fetch Map: Adding jQuery to the downloaded map" );
+                                Sup.LogMessage( $"Fetch Map: Adding jQuery to the downloaded map", TraceLevel.Info );
 
                                 using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{tmpMap}", false, Encoding.UTF8 ) )
                                 {
@@ -710,18 +715,18 @@ namespace CumulusUtils
                                 File.Delete( $"{Sup.PathUtils}{Sup.MapsOutputFilename}" );
                                 File.Move( $"{Sup.PathUtils}{tmpMap}", $"{Sup.PathUtils}{Sup.MapsOutputFilename}" );
 
-                                Sup.LogTraceInfoMessage( $"Fetch Map: Added jQuery library to the Map." );
+                                Sup.LogMessage( $"Fetch Map: Added jQuery library to the Map.", TraceLevel.Info );
                             } // Should we include the jQuery library?
                         } // Did the map.txt download correctly?
                         else
-                            Sup.LogTraceErrorMessage( "Fetch Map from server: Fail... empty map." );
+                            Sup.LogMessage( "Fetch Map from server: Fail... empty map.", TraceLevel.Error );
                     }
 
                     fncs.Dispose();
 
 #if TIMING
                     watch.Stop();
-                    Sup.LogTraceInfoMessage( $"Timing of Map generation = {watch.ElapsedMilliseconds} ms" );
+                    Sup.LogMessage( $"Timing of Map generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
 #endif
                 }
 
@@ -729,14 +734,14 @@ namespace CumulusUtils
                 {
                     DateTime tmpTimeEnd = DateTime.Now;
 
-                    Sup.LogTraceInfoMessage( $"UserAskedData Starting..." );
+                    Sup.LogMessage( $"UserAskedData Starting...", TraceLevel.Info );
 
 #if TIMING
                     watch = Stopwatch.StartNew();
 #endif
 
                     {
-                        Sup.LogTraceInfoMessage( $"UserAskedData Doing the compiler stuff..." );
+                        Sup.LogMessage( $"UserAskedData Doing the compiler stuff...", TraceLevel.Info );
                         List<ChartDef> tmpChartsList = new List<ChartDef>();
 
                         ChartsCompiler fncs = new ChartsCompiler( Sup );
@@ -761,9 +766,9 @@ namespace CumulusUtils
                             }
                             catch ( Exception e )
                             {
-                                Sup.LogTraceInfoMessage( $"UserAskedData: Failing in GenerateUSerAskedData - i.e. Compiler data)" );
-                                Sup.LogTraceInfoMessage( $"UserAskedData: Message {e.Message})" );
-                                Sup.LogTraceInfoMessage( $"UserAskedData: Continuing" );
+                                Sup.LogMessage( $"UserAskedData: Failing in GenerateUSerAskedData - i.e. Compiler data)", TraceLevel.Error );
+                                Sup.LogMessage( $"UserAskedData: Message {e.Message})", TraceLevel.Error );
+                                Sup.LogMessage( $"UserAskedData: Continuing", TraceLevel.Info );
                             }
                         }
                         else
@@ -772,10 +777,10 @@ namespace CumulusUtils
                         }
                     }
 
-                    Sup.LogTraceInfoMessage( $"DoAirLink / AirQualitySensor  = {DoAirLink} / {HasAirLink}" );
+                    Sup.LogMessage( $"DoAirLink / AirQualitySensor  = {DoAirLink} / {HasAirLink}", TraceLevel.Info );
                     if ( HasAirLink )
                     {
-                        Sup.LogTraceInfoMessage( $"UserAskedData Doing the AirQuality stuff..." );
+                        Sup.LogMessage( $"UserAskedData Doing the AirQuality stuff...", TraceLevel.Info );
                         AirLink fncs = new AirLink( Sup );
 
                         try
@@ -784,15 +789,15 @@ namespace CumulusUtils
                         }
                         catch ( Exception e )
                         {
-                            Sup.LogTraceInfoMessage( $"UserAskedData: Failing in GenAirLinkDataJson - i.e. Airlink data)" );
-                            Sup.LogTraceInfoMessage( $"UserAskedData: Message {e.Message})" );
-                            Sup.LogTraceInfoMessage( $"UserAskedData: Continuing" );
+                            Sup.LogMessage( $"UserAskedData: Failing in GenAirLinkDataJson - i.e. Airlink data)", TraceLevel.Error );
+                            Sup.LogMessage( $"UserAskedData: Message {e.Message})", TraceLevel.Error );
+                            Sup.LogMessage( $"UserAskedData: Continuing", TraceLevel.Info );
                         }
                     }
 
                     if ( HasExtraSensors )
                     {
-                        Sup.LogTraceInfoMessage( $"UserAskedData Doing the ExtraSensor stuff..." );
+                        Sup.LogMessage( $"UserAskedData Doing the ExtraSensor stuff...", TraceLevel.Info );
                         ExtraSensors fncs = new ExtraSensors( Sup );
                         try
                         {
@@ -800,15 +805,15 @@ namespace CumulusUtils
                         }
                         catch ( Exception e )
                         {
-                            Sup.LogTraceInfoMessage( $"UserAskedData: Failing in GenerateExtraSensorDataJson - i.e. ExtraSensors (incl External) data)" );
-                            Sup.LogTraceInfoMessage( $"UserAskedData: Message - {e.Message})" );
-                            Sup.LogTraceInfoMessage( $"UserAskedData: Continuing" );
+                            Sup.LogMessage( $"UserAskedData: Failing in GenerateExtraSensorDataJson - i.e. ExtraSensors (incl External) data)", TraceLevel.Error );
+                            Sup.LogMessage( $"UserAskedData: Message - {e.Message})", TraceLevel.Error );
+                            Sup.LogMessage( $"UserAskedData: Continuing", TraceLevel.Info );
                         }
                     }
 
                     if ( HasCustomLogs )
                     {
-                        Sup.LogTraceInfoMessage( $"UserAskedData Doing the CustomLogs stuff..." );
+                        Sup.LogMessage( $"UserAskedData Doing the CustomLogs stuff...", TraceLevel.Info );
                         CustomLogs fncs = new CustomLogs( Sup );
                         try
                         {
@@ -816,9 +821,9 @@ namespace CumulusUtils
                         }
                         catch ( Exception e )
                         {
-                            Sup.LogTraceInfoMessage( $"UserAskedData: Failing in GenerateCustomLogsDataJson" );
-                            Sup.LogTraceInfoMessage( $"UserAskedData: Message - {e.Message})" );
-                            Sup.LogTraceInfoMessage( $"UserAskedData: Continuing" );
+                            Sup.LogMessage( $"UserAskedData: Failing in GenerateCustomLogsDataJson", TraceLevel.Error );
+                            Sup.LogMessage( $"UserAskedData: Message - {e.Message})", TraceLevel.Error );
+                            Sup.LogMessage( $"UserAskedData: Continuing", TraceLevel.Info );
                         }
                     }
 
@@ -827,7 +832,7 @@ namespace CumulusUtils
 
 #if TIMING
                     watch.Stop();
-                    Sup.LogTraceInfoMessage( $"Timing of UserAskedData = {watch.ElapsedMilliseconds} ms" );
+                    Sup.LogMessage( $"Timing of UserAskedData = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
 #endif
                 } // DoUserAskedData
             }
@@ -855,7 +860,7 @@ namespace CumulusUtils
                         fncs.GenerateUserDefinedCharts( thisDef.TheseCharts, thisDef.Filename, i++ );
 
                         // and Upload
-                        Sup.LogTraceInfoMessage( $"Uploading = {thisDef.Filename}" );
+                        Sup.LogMessage( $"Uploading = {thisDef.Filename}", TraceLevel.Info );
                         await Isup.UploadFileAsync( $"{thisDef.Filename}", $"{Sup.PathUtils}{thisDef.Filename}" );
                     }
                 }
@@ -866,7 +871,7 @@ namespace CumulusUtils
 
 #if TIMING
                 watch.Stop();
-                Sup.LogTraceInfoMessage( $"Timing of Compile and Generate CumulusCharts = {watch.ElapsedMilliseconds} ms" );
+                Sup.LogMessage( $"Timing of Compile and Generate CumulusCharts = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
 #endif
             }
 
@@ -876,29 +881,29 @@ namespace CumulusUtils
             if ( !Thrifty && !DoUserAskedData )
             {
                 // Always upload the package files
-                Sup.LogTraceInfoMessage( $"Uploading = The Package" );
+                Sup.LogMessage( $"Uploading = The Package", TraceLevel.Info );
                 await Sup.CheckPackageAndCopy();
             }
 
             if ( DoWebsite )
             {
-                Sup.LogTraceInfoMessage( $"Uploading = {Sup.IndexOutputFilename}" );
+                Sup.LogMessage( $"Uploading = {Sup.IndexOutputFilename}", TraceLevel.Info );
                 await Isup.UploadFileAsync( $"{Sup.IndexOutputFilename}", $"{Sup.PathUtils}{Sup.IndexOutputFilename}" );
             }
 
             if ( DoPwsFWI )
             {
-                Sup.LogTraceInfoMessage( $"Uploading = {Sup.PwsFWIOutputFilename}" );
+                Sup.LogMessage( $"Uploading = {Sup.PwsFWIOutputFilename}", TraceLevel.Info );
                 await Isup.UploadFileAsync( $"{Sup.PwsFWIOutputFilename}", $"{Sup.PathUtils}{Sup.PwsFWIOutputFilename}" );
 
-                Sup.LogTraceInfoMessage( $"Uploading = {Sup.PwsFWICurrentOutputFilename}" );
+                Sup.LogMessage( $"Uploading = {Sup.PwsFWICurrentOutputFilename}", TraceLevel.Info );
                 await Isup.UploadFileAsync( $"{Sup.PwsFWICurrentOutputFilename}", $"{Sup.PathUtils}{Sup.PwsFWICurrentOutputFilename}" );
             }
 
             if ( DoTop10 && ( !Thrifty || ThriftyTop10RecordsDirty ) )
             {
-                Sup.LogTraceInfoMessage( $"Thrifty: DoTop10 && (!Thrifty || ThriftyTop10RecordsDirty ) - " +
-                  $"{DoTop10 && ( !Thrifty || ThriftyTop10RecordsDirty )} | Uploading = {Sup.Top10OutputFilename}" );
+                Sup.LogMessage( $"Thrifty: DoTop10 && (!Thrifty || ThriftyTop10RecordsDirty ) - " +
+                  $"{DoTop10 && ( !Thrifty || ThriftyTop10RecordsDirty )} | Uploading = {Sup.Top10OutputFilename}", TraceLevel.Info );
                 await Isup.UploadFileAsync( $"{Sup.Top10OutputFilename}", $"{Sup.PathUtils}{Sup.Top10OutputFilename}" );
             }
 
@@ -906,44 +911,44 @@ namespace CumulusUtils
             { // 
                 if ( HasRainGraphMenu && ( !Thrifty || ThriftyRainGraphsDirty ) )
                 {
-                    Sup.LogTraceInfoMessage( $"Thrifty: !Thrifty || ThriftyRainGraphsDirty - {!Thrifty || ThriftyRainGraphsDirty} => Uploading = {Path.GetFileName( Sup.GraphsRainOutputFilename )}" );
+                    Sup.LogMessage( $"Thrifty: !Thrifty || ThriftyRainGraphsDirty - {!Thrifty || ThriftyRainGraphsDirty} => Uploading = {Path.GetFileName( Sup.GraphsRainOutputFilename )}", TraceLevel.Info );
                     await Isup.UploadFileAsync( Path.GetFileName( Sup.GraphsRainOutputFilename ), Sup.PathUtils + Path.GetFileName( Sup.GraphsRainOutputFilename ) );
                 }
 
                 if ( HasTempGraphMenu && ( !Thrifty || ThriftyTempGraphsDirty ) )
                 {
-                    Sup.LogTraceInfoMessage( $"Thrifty: !Thrifty || ThriftyTempGraphsDirty - {!Thrifty || ThriftyTempGraphsDirty} => Uploading = {Path.GetFileName( Sup.GraphsTempOutputFilename )}" );
+                    Sup.LogMessage( $"Thrifty: !Thrifty || ThriftyTempGraphsDirty - {!Thrifty || ThriftyTempGraphsDirty} => Uploading = {Path.GetFileName( Sup.GraphsTempOutputFilename )}", TraceLevel.Info );
                     await Isup.UploadFileAsync( Path.GetFileName( Sup.GraphsTempOutputFilename ), Sup.PathUtils + Path.GetFileName( Sup.GraphsTempOutputFilename ) );
                 }
 
                 if ( HasWindGraphMenu && ( !Thrifty || ThriftyWindGraphsDirty ) )
                 {
-                    Sup.LogTraceInfoMessage( $"Thrifty: !Thrifty || ThriftyWindGraphsDirty) - {!Thrifty || ThriftyWindGraphsDirty} => Uploading = {Path.GetFileName( Sup.GraphsWindOutputFilename )}" );
+                    Sup.LogMessage( $"Thrifty: !Thrifty || ThriftyWindGraphsDirty) - {!Thrifty || ThriftyWindGraphsDirty} => Uploading = {Path.GetFileName( Sup.GraphsWindOutputFilename )}", TraceLevel.Info );
                     await Isup.UploadFileAsync( Path.GetFileName( Sup.GraphsWindOutputFilename ), Sup.PathUtils + Path.GetFileName( Sup.GraphsWindOutputFilename ) );
                 }
 
                 if ( HasSolarGraphMenu && ( !Thrifty || ThriftySolarGraphsDirty ) )
                 {
-                    Sup.LogTraceInfoMessage( $"Thrifty: !Thrifty || ThriftySolarGraphsDirty) - {!Thrifty || ThriftySolarGraphsDirty} => Uploading = {Path.GetFileName( Sup.GraphsSolarOutputFilename )}" );
+                    Sup.LogMessage( $"Thrifty: !Thrifty || ThriftySolarGraphsDirty) - {!Thrifty || ThriftySolarGraphsDirty} => Uploading = {Path.GetFileName( Sup.GraphsSolarOutputFilename )}", TraceLevel.Info );
                     await Isup.UploadFileAsync( Path.GetFileName( Sup.GraphsSolarOutputFilename ), Sup.PathUtils + Path.GetFileName( Sup.GraphsSolarOutputFilename ) );
                 }
 
                 if ( HasMiscGraphMenu && ( !Thrifty || ThriftyMiscGraphsDirty ) )
                 {
-                    Sup.LogTraceInfoMessage( $"Thrifty: !Thrifty || ThriftyMiscGraphsDirty - {!Thrifty || ThriftyMiscGraphsDirty} => Uploading = {Path.GetFileName( Sup.GraphsMiscOutputFilename )}" );
+                    Sup.LogMessage( $"Thrifty: !Thrifty || ThriftyMiscGraphsDirty - {!Thrifty || ThriftyMiscGraphsDirty} => Uploading = {Path.GetFileName( Sup.GraphsMiscOutputFilename )}", TraceLevel.Info );
                     await Isup.UploadFileAsync( Path.GetFileName( Sup.GraphsMiscOutputFilename ), Sup.PathUtils + Path.GetFileName( Sup.GraphsMiscOutputFilename ) );
                 }
             }
 
             if ( MapParticipant || DoWebsite )
             {
-                Sup.LogTraceInfoMessage( $"Uploading = {Sup.MapsOutputFilename}" );
+                Sup.LogMessage( $"Uploading = {Sup.MapsOutputFilename}", TraceLevel.Info );
                 await Isup.UploadFileAsync( $"{Sup.MapsOutputFilename}", $"{Sup.PathUtils}{Sup.MapsOutputFilename}" );
             }
 
             if ( DoRecords && ( !Thrifty || ThriftyRecordsDirty ) )
             {
-                Sup.LogTraceInfoMessage( $"Thrifty: DoRecords && (!Thrifty || ThriftyRecordsDirty) - {DoRecords && ( !Thrifty || ThriftyRecordsDirty )} => Uploading = {Sup.RecordsOutputFilename}" );
+                Sup.LogMessage( $"Thrifty: DoRecords && (!Thrifty || ThriftyRecordsDirty) - {DoRecords && ( !Thrifty || ThriftyRecordsDirty )} => Uploading = {Sup.RecordsOutputFilename}", TraceLevel.Info );
                 await Isup.UploadFileAsync( $"{Sup.RecordsOutputFilename}", $"{Sup.PathUtils}{Sup.RecordsOutputFilename}" );
             }
 
@@ -998,7 +1003,7 @@ namespace CumulusUtils
                 {
                     string[] filelist = Directory.GetFiles( Sup.PathUtils, "Yadr*.txt" );
 
-                    Sup.LogTraceInfoMessage( $"Thrifty: {Thrifty} - YADR - Complete upload" );
+                    Sup.LogMessage( $"Thrifty: {Thrifty} - YADR - Complete upload", TraceLevel.Info );
 
                     foreach ( string file in filelist )
                     {
@@ -1016,11 +1021,11 @@ namespace CumulusUtils
 
                     if ( RunStarted.DayOfYear == 2 )
                     {
-                        Sup.LogTraceInfoMessage( $"Thrifty: {Thrifty} - YADR - Upload for 2 January" );
+                        Sup.LogMessage( $"Thrifty: {Thrifty} - YADR - Upload for 2 January", TraceLevel.Info );
                         await Isup.UploadFileAsync( Path.GetFileName( "Yadr.txt" ), Sup.PathUtils + Path.GetFileName( "Yadr.txt" ) );
                     }
 
-                    Sup.LogTraceInfoMessage( $"Thrifty: {Thrifty} - YADR - Upload for only current year {RunStarted.Year}" );
+                    Sup.LogMessage( $"Thrifty: {Thrifty} - YADR - Upload for only current year {RunStarted.Year}", TraceLevel.Info );
                     foreach ( string file in filelist )
                     {
                         await Isup.UploadFileAsync( Path.GetFileName( file ), Sup.PathUtils + Path.GetFileName( file ) );
@@ -1039,7 +1044,7 @@ namespace CumulusUtils
                 {
                     FileInfo fi = new FileInfo( file );
 
-                    Sup.LogTraceInfoMessage( $"Uploading => {fi.Name} from {Sup.PathUtils}{fi.Name}" );
+                    Sup.LogMessage( $"Uploading => {fi.Name} from {Sup.PathUtils}{fi.Name}", TraceLevel.Info );
                     if ( await Isup.UploadFileAsync( $"{fi.Name}", $"{Sup.PathUtils}{fi.Name}" ) ) fi.Delete();
                 }
             }
@@ -1049,7 +1054,7 @@ namespace CumulusUtils
 
 #if TIMING
             OverallWatch.Stop();
-            Sup.LogTraceInfoMessage( $"Overall Timing all Modules = {OverallWatch.ElapsedMilliseconds} ms" );
+            Sup.LogMessage( $"Overall Timing all Modules = {OverallWatch.ElapsedMilliseconds} ms", TraceLevel.Info );
 #endif
 
             return;

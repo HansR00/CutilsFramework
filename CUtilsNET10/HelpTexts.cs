@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -96,17 +97,17 @@ namespace CumulusUtils
                             Helptexts.Add( Key, thisText );
                             i++;
                         }
-                        else { Sup.LogTraceErrorMessage( $"HelpTexts Constructor Error near {Key}: \" expected" ); break; }
+                        else { Sup.LogMessage( $"HelpTexts Constructor Error near {Key}: \" expected", TraceLevel.Error ); break; }
                     }
                     catch ( Exception e ) when ( e is IndexOutOfRangeException )
                     {
-                        Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : Info specified on '{Key}' but no closing quote found." );
+                        Sup.LogMessage( $"Parsing User Charts Definitions : Info specified on '{Key}' but no closing quote found.", TraceLevel.Error );
                     }
                 }
-                else { Sup.LogTraceErrorMessage( $"HelpTexts Constructor Error near {Key}: '=' expected" ); break; }
+                else { Sup.LogMessage( $"HelpTexts Constructor Error near {Key}: '=' expected", TraceLevel.Error ); break; }
             } // While loop: fall through when in error or when file is exhausted
 
-            Sup.LogTraceInfoMessage( "HelpTexts Contructor: stop" );
+            Sup.LogMessage( "HelpTexts Contructor: stop", TraceLevel.Info );
 
             return;
         }
@@ -123,7 +124,7 @@ namespace CumulusUtils
             if ( Helptexts.TryGetValue( key, out string value ) ) retval = value;
             else
             {
-                Sup.LogTraceWarningMessage( $"HelpTexts unknown {key}, returning empty string" );
+                Sup.LogMessage( $"HelpTexts unknown {key}, returning empty string", TraceLevel.Warning );
                 retval = "";
             }
 

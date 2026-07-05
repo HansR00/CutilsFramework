@@ -38,6 +38,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -72,12 +73,12 @@ namespace CumulusUtils
         {
             Sup = s;
 
-            Sup.LogTraceInfoMessage( "Extra Sensors constructor: starting" );
+            Sup.LogMessage( "Extra Sensors constructor: starting", TraceLevel.Info );
 
             // After the next call ExtraSensorList contains all active Extra Sensors
             InitialiseExtraSensorList();
 
-            Sup.LogTraceInfoMessage( "Extra Sensors constructor: stop" );
+            Sup.LogMessage( "Extra Sensors constructor: stop", TraceLevel.Info );
 
             return;
         }
@@ -87,7 +88,7 @@ namespace CumulusUtils
         #region DoExtraSensors
         public void DoExtraSensors()
         {
-            Sup.LogDebugMessage( "DoExtraSensors - Starting" );
+            Sup.LogMessage( "DoExtraSensors - Starting", TraceLevel.Info );
 
             // I: create the extrasensorsrealtime.txt which has to be processed by CMX and transferred to the webroot.
             // 
@@ -95,7 +96,7 @@ namespace CumulusUtils
             GenerateExtraSensorsCharts();
             GenerateExtraSensorsModule();
 
-            Sup.LogTraceInfoMessage( "DoExtraSensors - Stop" );
+            Sup.LogMessage( "DoExtraSensors - Stop", TraceLevel.Info );
 
             return;
         }
@@ -308,7 +309,7 @@ namespace CumulusUtils
 
                         break;
                     default:
-                        Sup.LogTraceErrorMessage( $"GenerateExtraSensorsModule: At impossible Switch default assigning realtime values" );
+                        Sup.LogMessage( $"GenerateExtraSensorsModule: At impossible Switch default assigning realtime values", TraceLevel.Error );
                         break;
                 }
 
@@ -441,7 +442,7 @@ namespace CumulusUtils
                             $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td id='ajxLeafWetness{tmp.SensorIndex}'></td></tr>" );
                         break;
                     case (int) ExtraSensorType.External:
-                        Sup.LogTraceWarningMessage( $"GenerateExtraSensorsModule: External realtime not implemented." );
+                        Sup.LogMessage( $"GenerateExtraSensorsModule: External realtime not implemented.", TraceLevel.Warning );
                         break;
                     case (int) ExtraSensorType.Lightning:
                         buf.Append( $"<tr {RowColour()}><td {thisPadding()}>{Sup.GetCUstringValue( "Compiler", tmp.PlotvarType, "", false )}</td><td></td></tr>" );
@@ -450,7 +451,7 @@ namespace CumulusUtils
                         buf.Append( $"<tr {RowColour()}><td {thisPadding()}>&nbsp;&nbsp;{Sup.GetCUstringValue( "Compiler", "DistanceLastStrike", "Distance last strike", false )}</td><td id='ajxLightningDistance'></td></tr>" );
                         break;
                     default:
-                        Sup.LogTraceErrorMessage( $"GenerateExtraSensorsModule: At impossible Switch default generating the table" );
+                        Sup.LogMessage( $"GenerateExtraSensorsModule: At impossible Switch default generating the table", TraceLevel.Error );
                         break;
                 }
             }
@@ -488,16 +489,16 @@ namespace CumulusUtils
 
             List<string> CutilsChartsMods;
 
-            Sup.LogTraceInfoMessage( $"GenerateExtraSensorsCharts: Generating the ExtraSensor Charts CDL code into {Sup.PathUtils}{Sup.CutilsChartsDef}..." );
+            Sup.LogMessage( $"GenerateExtraSensorsCharts: Generating the ExtraSensor Charts CDL code into {Sup.PathUtils}{Sup.CutilsChartsDef}...", TraceLevel.Info );
 
             if ( !File.Exists( $"{Sup.PathUtils}{Sup.CutilsChartsDef}" ) )
             {
-                Sup.LogTraceErrorMessage( $"GenerateExtraSenorsCharts: No {Sup.PathUtils}{Sup.CutilsChartsDef} present, can't modify" );
-                Sup.LogTraceErrorMessage( $"GenerateExtraSenorsCharts: Please move {Sup.CutilsChartsDef} from distribution to ${Sup.PathUtils}" );
+                Sup.LogMessage( $"GenerateExtraSenorsCharts: No {Sup.PathUtils}{Sup.CutilsChartsDef} present, can't modify", TraceLevel.Error );
+                Sup.LogMessage( $"GenerateExtraSenorsCharts: Please move {Sup.CutilsChartsDef} from distribution to ${Sup.PathUtils}", TraceLevel.Error );
                 return;
             }
 
-            Sup.LogTraceInfoMessage( $"GenerateExtraSensorsCharts: Testing UserModificationExtraSensorCharts: {Sup.GetUtilsIniValue( "ExtraSensors", "UserModificationExtraSensorCharts", "false" )}" );
+            Sup.LogMessage( $"GenerateExtraSensorsCharts: Testing UserModificationExtraSensorCharts: {Sup.GetUtilsIniValue( "ExtraSensors", "UserModificationExtraSensorCharts", "false" )}", TraceLevel.Info );
             if ( Sup.GetUtilsIniValue( "ExtraSensors", "UserModificationExtraSensorCharts", "false" ).Equals( "true", CUtils.Cmp ) ) return;
 
             CutilsChartsIn = File.ReadAllLines( $"{Sup.PathUtils}{Sup.CutilsChartsDef}" );
@@ -533,7 +534,7 @@ namespace CumulusUtils
 
                 if ( ExtraSensorList[ i ].Type == ExtraSensorType.CO2 )
                 {
-                    Sup.LogTraceInfoMessage( $"GenerateExtraSensorsCharts: Adding Sensor: {ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ]}" );
+                    Sup.LogMessage( $"GenerateExtraSensorsCharts: Adding Sensor: {ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ]}", TraceLevel.Info );
 
                     CutilsChartsMods.Add( $"  Plot Extra {ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ]}" );
                     _ = Sup.GetCUstringValue( "Compiler", ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ], ExtraSensorList[ i ].Name, false );
@@ -563,7 +564,7 @@ namespace CumulusUtils
 
                     do
                     {
-                        Sup.LogTraceInfoMessage( $"GenerateExtraSensorsCharts: Adding Sensor: {ExtraSensorList[ i ].Name}" );
+                        Sup.LogMessage( $"GenerateExtraSensorsCharts: Adding Sensor: {ExtraSensorList[ i ].Name}", TraceLevel.Info );
 
                         CutilsChartsMods.Add( $"  Plot Extra {ExtraSensorList[ i ].Name}" );
                         _ = Sup.GetCUstringValue( "Compiler", ExtraSensorList[ i ].Name, ExtraSensorList[ i ].Name, false );
@@ -581,7 +582,7 @@ namespace CumulusUtils
 
                     do
                     {
-                        Sup.LogTraceInfoMessage( $"GenerateExtraSensorsCharts: Adding Sensor: {ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ]}" );
+                        Sup.LogMessage( $"GenerateExtraSensorsCharts: Adding Sensor: {ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ]}", TraceLevel.Info );
 
                         CutilsChartsMods.Add( $"  Plot Extra {ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ]}" );
                         _ = Sup.GetCUstringValue( "Compiler", ChartsCompiler.PlotvarKeywordEXTRA[ ExtraSensorList[ i ].PlotvarIndex ], ExtraSensorList[ i ].Name, false );
@@ -613,7 +614,7 @@ namespace CumulusUtils
                 CutilsChartsMods.Add( "" );
             }
 
-            Sup.LogTraceInfoMessage( $"GenerateExtraSensorsCharts: Writing the CutilsCharts.def" );
+            Sup.LogMessage( $"GenerateExtraSensorsCharts: Writing the CutilsCharts.def", TraceLevel.Info );
             File.WriteAllLines( $"{Sup.PathUtils}{Sup.CutilsChartsDef}", CutilsChartsMods, Encoding.UTF8 );
 
             return;
@@ -650,7 +651,7 @@ namespace CumulusUtils
                 {
                     List<ExternalExtraSensorslogValue> thisExternalList;
 
-                    Sup.LogTraceInfoMessage( $"Extra Sensors JSON generation for External Sensor {thisSensor.Name} " );
+                    Sup.LogMessage( $"Extra Sensors JSON generation for External Sensor {thisSensor.Name} ", TraceLevel.Info );
 
                     ExternalExtraSensorslog EEsl = new ExternalExtraSensorslog( Sup, thisSensor.Name );
                     thisExternalList = EEsl.ReadExternalExtraSensorslog();
@@ -712,7 +713,7 @@ namespace CumulusUtils
             {
                 StringBuilder sb = new StringBuilder();
 
-                Sup.LogTraceInfoMessage( $"GenerateExtraSensorsRealtime: Writing the ExtraSensors realtime file for the actual sensors found" );
+                Sup.LogMessage( $"GenerateExtraSensorsRealtime: Writing the ExtraSensors realtime file for the actual sensors found", TraceLevel.Info );
 
                 foreach ( ExtraSensor tmp in ExtraSensorList )
                 {
@@ -776,18 +777,18 @@ namespace CumulusUtils
                             sb.Append( $"<#LeafWetness{tmp.SensorIndex} rc=y> " );
                             break;
                         case (int) ExtraSensorType.External:
-                            Sup.LogTraceWarningMessage( $"DoExtraSensorsWork: No ExtraSensorsRealTime for {tmp.Name} ({tmp.Type}) - has no realtime value." );
+                            Sup.LogMessage( $"DoExtraSensorsWork: No ExtraSensorsRealTime for {tmp.Name} ({tmp.Type}) - has no realtime value.", TraceLevel.Warning );
                             break;
                         case (int) ExtraSensorType.Lightning:
                             sb.Append( $"<#LightningStrikesToday> <#LightningTime format=\"g\"> <#LightningDistance rc=y> " );
                             break;
                         default:
-                            Sup.LogTraceErrorMessage( $"DoExtraSensorsWork: Illegal ExtraSensor type {tmp.Type} - no realtime value." );
+                            Sup.LogMessage( $"DoExtraSensorsWork: Illegal ExtraSensor type {tmp.Type} - no realtime value.", TraceLevel.Error );
                             break;
                     }
                 }
 
-                Sup.LogTraceInfoMessage( $"GenerateExtraSensorsRealtime: {sb}" );
+                Sup.LogMessage( $"GenerateExtraSensorsRealtime: {sb}", TraceLevel.Info );
 
                 of.Write( sb );
             }
@@ -919,7 +920,7 @@ namespace CumulusUtils
 
             if ( ActiveSensors.Length > 1 )  // 
             {
-                Sup.LogTraceErrorMessage( $"GetActiveSensors: CO2 sensors - There can be only one! Please check configuration." );
+                Sup.LogMessage( $"GetActiveSensors: CO2 sensors - There can be only one! Please check configuration.", TraceLevel.Error );
             }
             else
             {
@@ -935,7 +936,7 @@ namespace CumulusUtils
 
                     if ( !File.Exists( Filename ) )
                     {
-                        Sup.LogTraceErrorMessage( $"CO2 sensors - No logfile...  quitting the activation of CO2 sensor." );
+                        Sup.LogMessage( $"CO2 sensors - No logfile...  quitting the activation of CO2 sensor.", TraceLevel.Error );
                         return; // Nothing to do, may not happen
                     }
 
@@ -975,11 +976,11 @@ namespace CumulusUtils
                         thisSensor = "WH45 Humidity";
                         registerSensor( thisSensor, 8, ExtraSensorType.CO2hum );
 
-                        Sup.LogTraceInfoMessage( $"GetActiveSensors: CO2 sensor is active and there is data so it is used." );
+                        Sup.LogMessage( $"GetActiveSensors: CO2 sensor is active and there is data so it is used.", TraceLevel.Info );
                     }
                     else
                     {
-                        Sup.LogTraceErrorMessage( $"GetActiveSensors: CO2 sensor is active but there is no data. Sensor is ignored." );
+                        Sup.LogMessage( $"GetActiveSensors: CO2 sensor is active but there is no data. Sensor is ignored.", TraceLevel.Error );
                     }
                     // @formatter:on
                 }
@@ -1008,10 +1009,10 @@ namespace CumulusUtils
                         registerSensor( thisExternal, 1, ExtraSensorType.External );
             }
 
-            Sup.LogTraceInfoMessage( $"InitialiseExtraSensorList: Creating ExtraSensors list Done. CUtils Continues, if any configuration errors, please correct." );
-            Sup.LogTraceInfoMessage( $"InitialiseExtraSensorList: Found the following Extra Sensors:" );
+            Sup.LogMessage( $"InitialiseExtraSensorList: Creating ExtraSensors list Done. CUtils Continues, if any configuration errors, please correct.", TraceLevel.Info );
+            Sup.LogMessage( $"InitialiseExtraSensorList: Found the following Extra Sensors:" );
             foreach ( ExtraSensor tmp in ExtraSensorList )
-                Sup.LogTraceInfoMessage( $"  {tmp.Name} of type: {tmp.Type}" );
+                Sup.LogMessage( $"  {tmp.Name} of type: {tmp.Type}", TraceLevel.Info );
 
             return;
 
@@ -1020,7 +1021,7 @@ namespace CumulusUtils
             //
             int[] GetActiveSensors( string Type )
             {
-                Sup.LogTraceInfoMessage( $"GetActiveSensors: Getting Extra Sensors for {Type}" );
+                Sup.LogMessage( $"GetActiveSensors: Getting Extra Sensors for {Type}", TraceLevel.Info );
 
                 string a = Sup.GetUtilsIniValue( "ExtraSensors", Type, "" );
                 string[] sensorsAsStrings = a.Split( GlobConst.CommaSeparator, StringSplitOptions.RemoveEmptyEntries );
@@ -1037,7 +1038,7 @@ namespace CumulusUtils
                 {
                     // reinitialise to make sure we have a correct array with all nuls
                     theseSensors = new int[ sensorsAsStrings.Length ];
-                    Sup.LogTraceErrorMessage( $"GetActiveSensors: Exception {e.Message} \n- can't configure for type = {Type}. Please check configuration." );
+                    Sup.LogMessage( $"GetActiveSensors: Exception {e.Message} \n- can't configure for type = {Type}. Please check configuration.", TraceLevel.Error );
                 }
 
                 return theseSensors;

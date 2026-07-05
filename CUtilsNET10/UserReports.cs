@@ -3,6 +3,7 @@
  *
  */
 
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,7 +38,7 @@ namespace CumulusUtils
 
             foreach ( string file in files )
             {
-                Sup.LogTraceInfoMessage( $"USerReports: Doing file {file}" );
+                Sup.LogMessage( $"USerReports: Doing file {file}", TraceLevel.Info );
 
                 // Prepare and call
                 FileContents = File.ReadAllText( file );
@@ -51,13 +52,13 @@ namespace CumulusUtils
                 // Do the CMX webtag replacement
                 ContentsWithWebtagReplacements = await thisIPC.ReplaceWebtagsPostAsync( FileContents );
 
-                Sup.LogTraceInfoMessage( $"USerReports: After the async call" );
+                Sup.LogMessage( $"USerReports: After the async call", TraceLevel.Info );
 
                 string bareFilename = file.Substring( Sup.PathUtils.Length + ReportPrefix.Length );
                 File.WriteAllText( $"{Sup.PathUtils}{bareFilename}", ContentsWithWebtagReplacements, Encoding.UTF8 );
 
                 // Always upload, they're user reports so the user wants them there
-                Sup.LogTraceInfoMessage( $"USerReports: Uploading {bareFilename}" );
+                Sup.LogMessage( $"USerReports: Uploading {bareFilename}", TraceLevel.Info );
                 await Isup.UploadFileAsync( bareFilename, Sup.PathUtils + bareFilename );
             }
 

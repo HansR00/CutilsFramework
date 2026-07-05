@@ -5,14 +5,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-
-#if TIMING
-using System.Diagnostics;
-#endif
 
 namespace CumulusUtils
 {
@@ -184,7 +181,7 @@ namespace CumulusUtils
 
             // For scatter graph
             UseHighchartsBoostModule = Sup.GetUtilsIniValue( "Graphs", "UseHighchartsBoostModule", "true" ).Equals( "true", CUtils.Cmp );
-            if ( UseHighchartsBoostModule ) Sup.LogTraceInfoMessage( "Graphx: Using Highcharts Boost Module!" );
+            if ( UseHighchartsBoostModule ) Sup.LogMessage( "Graphx: Using Highcharts Boost Module!", TraceLevel.Info );
 
             // Just the initialisation. The reading is done once when the list is asked.
             thisMonthfile = new Monthfile( Sup );
@@ -208,7 +205,7 @@ namespace CumulusUtils
                 // Rain has been detected so it is worth to update the Rain graphs
                 CUtils.ThriftyRainGraphsDirty = true;
 
-                Sup.LogTraceInfoMessage( "Graphs: Starting Rain section" );
+                Sup.LogMessage( "Graphs: Starting Rain section", TraceLevel.Info );
 
                 using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.GraphsRainOutputFilename}", false, Encoding.UTF8 ) )
                 {
@@ -387,7 +384,7 @@ namespace CumulusUtils
                 // Temp graphs are written
                 CUtils.ThriftyTempGraphsDirty = true;
 
-                Sup.LogTraceInfoMessage( "Graphs: Starting Temp section" );
+                Sup.LogMessage( "Graphs: Starting Temp section", TraceLevel.Info );
 
                 using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.GraphsTempOutputFilename}", false, Encoding.UTF8 ) )
                 {
@@ -628,7 +625,7 @@ namespace CumulusUtils
                 // Temp graphs are written
                 CUtils.ThriftyWindGraphsDirty = true;
 
-                Sup.LogTraceInfoMessage( "Graphs : Starting Wind section" );
+                Sup.LogMessage( "Graphs : Starting Wind section", TraceLevel.Info );
 
                 using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.GraphsWindOutputFilename}", false, Encoding.UTF8 ) )
                 {
@@ -692,7 +689,7 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "  </select>" );
                     thisBuffer.AppendLine( "</div>" );
 
-                    Sup.LogTraceInfoMessage( "Graphs : Starting writing HTML Style and Menu." );
+                    Sup.LogMessage( "Graphs : Starting writing HTML Style and Menu.", TraceLevel.Info );
 
                     thisBuffer.AppendLine( "<div id='report'>" );
                     thisBuffer.AppendLine( "<br/>" );
@@ -740,13 +737,13 @@ namespace CumulusUtils
 
 #if TIMING
                         watch.Stop();
-                        Sup.LogTraceInfoMessage( $"Timing of WindRose generation = {watch.ElapsedMilliseconds} ms" );
+                        Sup.LogMessage( $"Timing of WindRose generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
 #endif
                     }
                     else
                     {
                         thisBuffer.AppendLine( "}" );
-                        Sup.LogTraceWarningMessage( $"RealMain: No Windrose generation because of cumulusutils.ini value of Windrose: {Sup.GetUtilsIniValue( "Graphs", "WindRose", "true" )}" );
+                        Sup.LogMessage( $"RealMain: No Windrose generation because of cumulusutils.ini value of Windrose: {Sup.GetUtilsIniValue( "Graphs", "WindRose", "true" )}", TraceLevel.Warning );
                     }
 
                     // 1-9-2020 : Revised the whole of the Wind Graphs and the following is one of the consequences.
@@ -807,7 +804,7 @@ namespace CumulusUtils
                 CUtils.ThriftySolarGraphsDirty = true;
                 List<MonthfileValue> thisMonthList;
 
-                Sup.LogTraceInfoMessage( "Graphs : Starting Solar section" );
+                Sup.LogMessage( "Graphs : Starting Solar section", TraceLevel.Info );
 
                 // The MonthfileMainlist is created at the start of graphs
                 // Check in the Monthfile Class itself whether the list has already been created because it may have been asked
@@ -890,7 +887,7 @@ namespace CumulusUtils
                     thisBuffer.AppendLine( "</p>" );
                     thisBuffer.AppendLine( "</div>" );
 
-                    Sup.LogTraceInfoMessage( "Graphs : Starting writing HTML Style and Menu." );
+                    Sup.LogMessage( "Graphs : Starting writing HTML Style and Menu.", TraceLevel.Info );
 
                     thisBuffer.AppendLine( "<div id='report'>" );
                     thisBuffer.AppendLine( "<br/>" );
@@ -1190,7 +1187,7 @@ namespace CumulusUtils
                     NOAARainNormYearAv += (float) Convert.ToDouble( iniResult, CUtils.Inv );
                 }
 
-                Sup.LogTraceInfoMessage( $" GenerateNOAAparameters: NOAARainNormYearAv {NOAARainNormYearAv:F1}" );
+                Sup.LogMessage( $" GenerateNOAAparameters: NOAARainNormYearAv {NOAARainNormYearAv:F1}", TraceLevel.Info );
             }
 
             // Use station Average
@@ -1204,8 +1201,8 @@ namespace CumulusUtils
                 {
                     if ( ThisList.Where( x => x.ThisDate.Year == i ).Count() < 350 /* Cal.GetDaysInYear(i) */ )
                     {
-                        Sup.LogTraceInfoMessage( $" GenerateNOAAparameters : StationRainYearAv; year {i} has only {ThisList.Where( x => x.ThisDate.Year == i ).Count()} valid days i.s.o. 350" );
-                        Sup.LogTraceInfoMessage( $" GenerateNOAAparameters : Skipping year {i}" );
+                        Sup.LogMessage( $" GenerateNOAAparameters : StationRainYearAv; year {i} has only {ThisList.Where( x => x.ThisDate.Year == i ).Count()} valid days i.s.o. 350", TraceLevel.Info );
+                        Sup.LogMessage( $" GenerateNOAAparameters : Skipping year {i}", TraceLevel.Info );
                         continue; // Incomplete year - have to reset to nr of days per year 
                     }
 
@@ -1215,7 +1212,7 @@ namespace CumulusUtils
                 // Second pass to determine the average and StdDev
                 if ( tmp.Any() ) StationRainYearAv = tmp.Average();
 
-                Sup.LogTraceInfoMessage( $" GenerateNOAAparameters : StationRainYearAv {StationRainYearAv}" );
+                Sup.LogMessage( $" GenerateNOAAparameters : StationRainYearAv {StationRainYearAv}", TraceLevel.Info );
             }
 
             //  Now get the highest year rainfall ever

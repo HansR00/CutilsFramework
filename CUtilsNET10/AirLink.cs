@@ -47,6 +47,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -105,13 +106,14 @@ namespace CumulusUtils
 
             try
             {
-                Sup.LogTraceInfoMessage( $"AirLink Contructor: Parsing the country {tmp}" );
-                CountrySelected = (SupportedCountries) Enum.Parse( typeof( SupportedCountries ), tmp, true );
+                Sup.LogMessage( $"AirLink Contructor: Parsing the country {tmp}", TraceLevel.Info );
+                //CountrySelected = (SupportedCountries) Enum.Parse( typeof( SupportedCountries ), tmp, true );
+                CountrySelected = Enum.Parse<SupportedCountries>( tmp, true );
             }
             catch ( Exception e ) when ( e is ArgumentException || e is ArgumentNullException )
             {
-                Sup.LogTraceWarningMessage( $"AirLink Contructor: Exception parsing the country - {e.Message}" );
-                Sup.LogTraceWarningMessage( $"AirLink Contructor: Country not found {tmp} - defaulting to EU" );
+                Sup.LogMessage( $"AirLink Contructor: Exception parsing the country - {e.Message}", TraceLevel.Warning );
+                Sup.LogMessage( $"AirLink Contructor: Country not found {tmp} - defaulting to EU", TraceLevel.Warning );
                 CountrySelected = SupportedCountries.EU;
             }
 
@@ -138,7 +140,7 @@ namespace CumulusUtils
                 case CumulusCountries.EUCAQI:
                     if ( CountrySelected != SupportedCountries.EU )
                         WrongNormativeCountry = true;
-                    Sup.LogTraceWarningMessage( $"AirLink Contructor Warning: EUAQI or EUCAQI are both used as EUCAQI in CumulusUtils" );
+                    Sup.LogMessage( $"AirLink Contructor Warning: EUAQI or EUCAQI are both used as EUCAQI in CumulusUtils", TraceLevel.Warning );
                     break;
 
                 case CumulusCountries.AU:
@@ -163,9 +165,9 @@ namespace CumulusUtils
 
             if ( WrongNormativeCountry )
             {
-                Sup.LogTraceWarningMessage( $"AirLink Contructor: Found country {CountrySelected} against Cumulus Normatiove Country {CumulusCountrySetting}." );
-                Sup.LogTraceWarningMessage( "Settings AQI Normative Country settings for calculation in both Cumulus and CumulusUtils must match." );
-                Sup.LogTraceWarningMessage( $"Cumulusutils will continue with the existing CumulusUtils setting {CountrySelected}, values are from {CumulusCountrySetting}" );
+                Sup.LogMessage( $"AirLink Contructor: Found country {CountrySelected} against Cumulus Normatiove Country {CumulusCountrySetting}.", TraceLevel.Warning );
+                Sup.LogMessage( "Settings AQI Normative Country settings for calculation in both Cumulus and CumulusUtils must match.", TraceLevel.Warning );
+                Sup.LogMessage( $"Cumulusutils will continue with the existing CumulusUtils setting {CountrySelected}, values are from {CumulusCountrySetting}", TraceLevel.Warning );
                 Message = "<p style='color:red'>Settings for AQI Normative Country for calculation in both Cumulus and CumulusUtils should match for useful results.</p>";
             }
             else
@@ -272,7 +274,7 @@ namespace CumulusUtils
                     break;
 
                 default:
-                    Sup.LogTraceWarningMessage( "AirLink Contructor: Norm country is not supported - Not Allowed, using EU" );
+                    Sup.LogMessage( "AirLink Contructor: Norm country is not supported - Not Allowed, using EU", TraceLevel.Warning );
                     CountrySelected = SupportedCountries.EU;
                     NrOfClassesInCountry = 5;
                     Colours = new string[ 5 ] { "#79bc6a", "#bbcf4c", "#eec20b", "#f29305", "#960018" };
@@ -305,14 +307,14 @@ namespace CumulusUtils
 
             StandAloneModule = Sup.GetUtilsIniValue( "AirLink", "StandAloneModule", "false" ).Equals( "true", CUtils.Cmp );
 
-            Sup.LogTraceInfoMessage( $"WantToSeeNow = {WantToSeeNow}" );
-            Sup.LogTraceInfoMessage( $"WantToSeeNowCast = {WantToSeeNowCast}" );
-            Sup.LogTraceInfoMessage( $"WantToSee1hr = {WantToSee1hr}" );
-            Sup.LogTraceInfoMessage( $"WantToSee3hr = {WantToSee3hr}" );
-            Sup.LogTraceInfoMessage( $"WantToSee24hr = {WantToSee24hr}" );
-            Sup.LogTraceInfoMessage( $"WantToSeeWind = {WantToSeeWind}" );
+            Sup.LogMessage( $"WantToSeeNow = {WantToSeeNow}", TraceLevel.Info );
+            Sup.LogMessage( $"WantToSeeNowCast = {WantToSeeNowCast}", TraceLevel.Info );
+            Sup.LogMessage( $"WantToSee1hr = {WantToSee1hr}", TraceLevel.Info );
+            Sup.LogMessage( $"WantToSee3hr = {WantToSee3hr}", TraceLevel.Info );
+            Sup.LogMessage( $"WantToSee24hr = {WantToSee24hr}", TraceLevel.Info );
+            Sup.LogMessage( $"WantToSeeWind = {WantToSeeWind}", TraceLevel.Info );
 
-            Sup.LogTraceInfoMessage( "AirLink Contructor: stop" );
+            Sup.LogMessage( "AirLink Contructor: stop", TraceLevel.Info );
 
             return;
         }
@@ -325,7 +327,7 @@ namespace CumulusUtils
         {
             Sup.LogDebugMessage( "DoAirLink - Starting" );
 
-            Sup.LogTraceInfoMessage( $"DoAirLink - AirLinkIn : {AirLinkIn} / AirLinkOut : {AirLinkOut}" );
+            Sup.LogMessage( $"DoAirLink - AirLinkIn : {AirLinkIn} / AirLinkOut : {AirLinkOut}", TraceLevel.Info );
 
             StringBuilder of = new StringBuilder();
             StringBuilder sb = new StringBuilder();
@@ -343,7 +345,7 @@ namespace CumulusUtils
                 // Renew this file everytime?? or just when it does not exist. What if something changes?
                 if ( AirLinkIn )
                 {
-                    Sup.LogTraceInfoMessage( $"DoAirLink - Writing the AirLink realtime file - Inside" );
+                    Sup.LogMessage( $"DoAirLink - Writing the AirLink realtime file - Inside", TraceLevel.Info );
 
                     sb.Append( "<#AirLinkTempIn rc=y> <#AirLinkHumIn rc=y> " +
                     "<#AirLinkPm1In rc=y> <#AirLinkPm2p5In rc=y> <#AirLinkPm2p5_1hrIn rc=y> <#AirLinkPm2p5_3hrIn rc=y> <#AirLinkPm2p5_24hrIn rc=y> <#AirLinkPm2p5_NowcastIn rc=y> " +
@@ -355,7 +357,7 @@ namespace CumulusUtils
 
                 if ( AirLinkOut )
                 {
-                    Sup.LogTraceInfoMessage( $"DoAirLink - Writing the AirLink realtime file - Outside" );
+                    Sup.LogMessage( $"DoAirLink - Writing the AirLink realtime file - Outside", TraceLevel.Info );
 
                     // Here we need to start with a space to make sure it appends to the Inside part and can be read in the receiving javascript (the split)
                     sb.Append( "<#AirLinkTempOut rc=y> <#AirLinkHumOut rc=y> " +
@@ -1062,7 +1064,7 @@ namespace CumulusUtils
                 } // End Using the AirLink module
 
 
-            Sup.LogTraceInfoMessage( "DoAirLinkModule - End" );
+            Sup.LogMessage( "DoAirLinkModule - End", TraceLevel.Info );
         } // GenAirLinkModule
 
         #endregion
@@ -1081,7 +1083,7 @@ namespace CumulusUtils
             string VariableName;
             PropertyInfo Field;
 
-            Sup.LogTraceInfoMessage( $"Creating AirLink JSON..." );
+            Sup.LogMessage( $"Creating AirLink JSON...", TraceLevel.Info );
 
             Airlinklog All = new Airlinklog( Sup );
             thisList = All.ReadAirlinklog();
@@ -1103,7 +1105,7 @@ namespace CumulusUtils
                     {
                         if ( WantToSeeNow )
                         {
-                            Sup.LogTraceInfoMessage( $"DoAirLink adding {InOut}_pm{thisConc}{Series[ 0 ]} to JSON" );
+                            Sup.LogMessage( $"DoAirLink adding {InOut}_pm{thisConc}{Series[ 0 ]} to JSON", TraceLevel.Info );
 
                             VariableName = $"{InOut}_pm{thisConc}{Series[ 0 ]}";
                             sb.Append( $"\"{VariableName}\":[" );
@@ -1123,7 +1125,7 @@ namespace CumulusUtils
 
                         if ( WantToSee1hr )
                         {
-                            Sup.LogTraceInfoMessage( $"DoAirLink adding {InOut}_pm{thisConc}{Series[ 1 ]} to JSON" );
+                            Sup.LogMessage( $"DoAirLink adding {InOut}_pm{thisConc}{Series[ 1 ]} to JSON", TraceLevel.Info );
 
                             VariableName = $"{InOut}_pm{thisConc}{Series[ 1 ]}";
                             sb.Append( $"\"{VariableName}\":[" );
@@ -1143,7 +1145,7 @@ namespace CumulusUtils
 
                         if ( WantToSee3hr )
                         {
-                            Sup.LogTraceInfoMessage( $"DoAirLink adding {InOut}_pm{thisConc}{Series[ 2 ]} to JSON" );
+                            Sup.LogMessage( $"DoAirLink adding {InOut}_pm{thisConc}{Series[ 2 ]} to JSON", TraceLevel.Info );
 
                             VariableName = $"{InOut}_pm{thisConc}{Series[ 2 ]}";
                             sb.Append( $"\"{VariableName}\":[" );
@@ -1163,7 +1165,7 @@ namespace CumulusUtils
 
                         if ( WantToSee24hr )
                         {
-                            Sup.LogTraceInfoMessage( $"DoAirLink adding {InOut}_pm{thisConc}{Series[ 3 ]} to JSON" );
+                            Sup.LogMessage( $"DoAirLink adding {InOut}_pm{thisConc}{Series[ 3 ]} to JSON", TraceLevel.Info );
 
                             VariableName = $"{InOut}_pm{thisConc}{Series[ 3 ]}";
                             sb.Append( $"\"{VariableName}\":[" );
@@ -1183,7 +1185,7 @@ namespace CumulusUtils
 
                         if ( WantToSeeNowCast )
                         {
-                            Sup.LogTraceInfoMessage( $"DoAirLink adding {InOut}_pm{thisConc}{Series[ 4 ]} to JSON" );
+                            Sup.LogMessage( $"DoAirLink adding {InOut}_pm{thisConc}{Series[ 4 ]} to JSON", TraceLevel.Info );
 
                             VariableName = $"{InOut}_pm{thisConc}{Series[ 4 ]}";
                             sb.Append( $"\"{VariableName}\":[" );
@@ -1203,7 +1205,7 @@ namespace CumulusUtils
 
                         if ( WantToSeeWind )
                         {
-                            Sup.LogTraceInfoMessage( $"DoAirLink adding WindBarb data to JSON" );
+                            Sup.LogMessage( $"DoAirLink adding WindBarb data to JSON", TraceLevel.Info );
 
                             string jsonWindSpeed;
                             string jsonWindDir;
@@ -1218,7 +1220,7 @@ namespace CumulusUtils
                                 // Now, the wind JSONs should have the same startingtime as the AirLink data.
                                 // Fetch the wind data and winddir data as they must be combined in one json for the windbarbs
                                 //
-                                Sup.LogTraceInfoMessage( $"GenAirLinkJson - Doing Wind for {thisConc}." );
+                                Sup.LogMessage( $"GenAirLinkJson - Doing Wind for {thisConc}.", TraceLevel.Info );
 
                                 if ( CUtils.Isup.IsIncrementalAllowed() )
                                 {
@@ -1239,7 +1241,7 @@ namespace CumulusUtils
                             }
                             catch ( ArgumentException ex )
                             {
-                                Sup.LogTraceErrorMessage( $"Can't combine WindSpeed and WindDir for WindBarbs: {ex.Message}" );
+                                Sup.LogMessage( $"Can't combine WindSpeed and WindDir for WindBarbs: {ex.Message}", TraceLevel.Error );
                             }
 
                             sb.Remove( sb.Length - 1, 1 ); // remove the final accolade
@@ -1288,8 +1290,8 @@ namespace CumulusUtils
                 // If lengths differ, the Zip method will skip the extra elements in the longer list.
                 // It's safer to throw an error or handle the mismatch explicitly.
                 // throw new InvalidOperationException
-                Sup.LogTraceErrorMessage( $"CombineWindData: wspeed and bearing are not in sync.{wspeedList.Count} vs {bearingList.Count}" );
-                Sup.LogTraceInfoMessage( "The 'wspeed' and 'bearing' lists must contain the same number of data points for the Zip method to work correctly." );
+                Sup.LogMessage( $"CombineWindData: wspeed and bearing are not in sync.{wspeedList.Count} vs {bearingList.Count}", TraceLevel.Error );
+                Sup.LogMessage( "The 'wspeed' and 'bearing' lists must contain the same number of data points for the Zip method to work correctly.", TraceLevel.Info );
             }
 
             // Zip combines elements pairwise from two sequences into a single sequence.

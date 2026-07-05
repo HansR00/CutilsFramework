@@ -3,17 +3,19 @@
  *
  */
 
+using System.Diagnostics;
 using System.IO;
 using System.Text;
+
 
 namespace CumulusUtils
 {
     class MeteoCam( CuSupport s )
     {
         readonly CuSupport Sup = s;
-        readonly string WantToSeeLines = s.GetUtilsIniValue( "MeteoCam", "WantToSeeLines", "WTPHR" ).ToUpper();
+        string WantToSeeLines;
 
-        #region Constructor
+        #region GenerateMeteoCam
         public void GenerateMeteoCam()
         {
             if ( !CUtils.HasMeteoCamMenu )
@@ -22,6 +24,8 @@ namespace CumulusUtils
             }
 
             Sup.LogDebugMessage( "MeteoCam: Starting" );
+
+            WantToSeeLines = Sup.GetUtilsIniValue( "MeteoCam", "WantToSeeLines", "WTPHR" ).ToUpper();
 
             string MeteoCamType = Sup.GetUtilsIniValue( "MeteoCam", "CamType", "Manual" ).ToLower();
 
@@ -40,13 +44,13 @@ namespace CumulusUtils
                         break;
 
                     default:
-                        Sup.LogTraceInfoMessage( $"MeteoCam: CamType unknown: {MeteoCamType}" );
-                        Sup.LogTraceInfoMessage( $"MeteoCam: Nothing to do." );
+                        Sup.LogMessage( $"MeteoCam: CamType unknown: {MeteoCamType}", TraceLevel.Error );
+                        Sup.LogMessage( $"MeteoCam: Nothing to do.", TraceLevel.Error );
                         break;
                 }
             }
 
-            Sup.LogTraceInfoMessage( "MeteoCam: End" );
+            Sup.LogMessage( "MeteoCam: End", TraceLevel.Info );
 
             return;
         }
@@ -58,7 +62,7 @@ namespace CumulusUtils
             StringBuilder sb = new StringBuilder();
             // 
 
-            Sup.LogTraceInfoMessage( $"MeteoCam CamType : Manual" );
+            Sup.LogMessage( $"MeteoCam CamType : Manual", TraceLevel.Info );
 
             sb.AppendLine( "<script>" );
             sb.AppendLine( "  console.log('Meteocam starting...');" );
@@ -185,7 +189,7 @@ namespace CumulusUtils
         {
             StringBuilder sb = new StringBuilder();
 
-            Sup.LogTraceInfoMessage( $"MeteoCam CamType : EcowittHP10" );
+            Sup.LogMessage( $"MeteoCam CamType : EcowittHP10", TraceLevel.Info );
 
             // I: First generate the RealTime meteocam file
             //    Although the file is named Realtime, it is best to have this processed at the Interval frequency because the HP10 has an

@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -30,7 +31,7 @@ namespace CumulusUtils
 
         public async Task<string> MapsOn()
         {
-            Sup.LogTraceInfoMessage( "MapsOn: Starting" );
+            Sup.LogMessage( "MapsOn: Starting", TraceLevel.Info );
 
             string FileToSend = $"MapsOn-{RandomGenerator.RandomString( 10, true )}.xml";
 
@@ -49,7 +50,7 @@ namespace CumulusUtils
                     Website = "https://" + Website;
                 }
 
-                Sup.LogTraceInfoMessage( $" MapsOn: Adding Station: {Name}" );
+                Sup.LogMessage( $" MapsOn: Adding Station: {Name}", TraceLevel.Info );
 
                 if ( !string.IsNullOrEmpty( Name ) && /* !string.IsNullOrEmpty( Website ) && */ !string.IsNullOrEmpty( Latitude ) && !string.IsNullOrEmpty( Longitude ) )
                 {
@@ -70,27 +71,27 @@ namespace CumulusUtils
                     }
                     catch ( Exception e )
                     {
-                        Sup.LogTraceErrorMessage( $"MapsOn: XElement Exception: {e.Message}" );
-                        Sup.LogTraceErrorMessage( $"MapsOn failed: continuing" );
+                        Sup.LogMessage( $"MapsOn: XElement Exception: {e.Message}", TraceLevel.Error );
+                        Sup.LogMessage( $"MapsOn failed: continuing", TraceLevel.Error );
                     }
                 }
                 else
                 {
-                    Sup.LogTraceInfoMessage( "Maps->MapsOn: Not enough info for Entry!!" );
-                    Sup.LogTraceInfoMessage( $"Maps->MapsOn: Name: {Name}" );
-                    Sup.LogTraceInfoMessage( $"Maps->MapsOn: Description:{Description}" );
-                    Sup.LogTraceInfoMessage( $"Maps->MapsOn: Website: {Website}" );
-                    Sup.LogTraceInfoMessage( $"Maps->MapsOn: Latitude: {Latitude}" );
-                    Sup.LogTraceInfoMessage( $"Maps->MapsOn: Longitude: {Longitude}" );
-                    Sup.LogTraceInfoMessage( $"Maps->MapsOn: Date (UTC): {DateTime.UtcNow.ToString( "dd-MM-yyyy HH:mm", CUtils.Inv )}" );
-                    Sup.LogTraceInfoMessage( $"Maps->MapsOn: Version: {CuSupport.UnformattedVersion()}" );
+                    Sup.LogMessage( "Maps->MapsOn: Not enough info for Entry!!", TraceLevel.Info );
+                    Sup.LogMessage( $"Maps->MapsOn: Name: {Name}", TraceLevel.Info );
+                    Sup.LogMessage( $"Maps->MapsOn: Description:{Description}", TraceLevel.Info );
+                    Sup.LogMessage( $"Maps->MapsOn: Website: {Website}", TraceLevel.Info );
+                    Sup.LogMessage( $"Maps->MapsOn: Latitude: {Latitude}", TraceLevel.Info );
+                    Sup.LogMessage( $"Maps->MapsOn: Longitude: {Longitude}", TraceLevel.Info );
+                    Sup.LogMessage( $"Maps->MapsOn: Date (UTC): {DateTime.UtcNow.ToString( "dd-MM-yyyy HH:mm", CUtils.Inv )}", TraceLevel.Info );
+                    Sup.LogMessage( $"Maps->MapsOn: Version: {CuSupport.UnformattedVersion()}", TraceLevel.Info );
 
                     // An exit is made here. This is especially disturbing when operating with the website generator
                     // I do this to oblige the user to actually fill in correct data for his website (which he needs for use of CumulusUtils
                     // I do not physically check the site because it may not yet be online, but that could be a next step.
 
-                    Sup.LogTraceInfoMessage( "Maps->MapsOn: Name, Website, Latitude and Longitude are compulsory so exit here!!" );
-                    Sup.LogTraceInfoMessage( "See forum Post 'For New Users' (https://cumulus.hosiene.co.uk/viewtopic.php?f=44&t=18226)." );
+                    Sup.LogMessage( "Maps->MapsOn: Name, Website, Latitude and Longitude are compulsory so exit here!!", TraceLevel.Info );
+                    Sup.LogMessage( "See forum Post 'For New Users' (https://cumulus.hosiene.co.uk/viewtopic.php?f=44&t=18226).", TraceLevel.Info );
                     Environment.Exit( 0 );
                 }
             }
@@ -108,7 +109,7 @@ namespace CumulusUtils
                 // This converts the last date string to a DateTime, value is in DoneToday, function returns true
                 if ( DateTime.TryParse( tmp, out DoneToday ) )
                 {
-                    Sup.LogTraceInfoMessage( $"MapsOn: Before testing DoneToday after parsing: {DoneToday} " );
+                    Sup.LogMessage( $"MapsOn: Before testing DoneToday after parsing: {DoneToday} ", TraceLevel.Info );
                     DoMapsOn = !Sup.DateIsToday( DoneToday );
                 }
                 else DoMapsOn = true;
@@ -121,13 +122,13 @@ namespace CumulusUtils
 
             if ( DoMapsOn )
             {
-                Sup.LogTraceInfoMessage( $"MapsOn: Must send signature: {DoneToday:s} / Setting DoneToday to now." );
+                Sup.LogMessage( $"MapsOn: Must send signature: {DoneToday:s} / Setting DoneToday to now.", TraceLevel.Info );
                 Sup.SetUtilsIniValue( "Maps", "DoneToday", $"{DateTime.Now:s}" );
 
                 string thisContent = $"filename#{FileToSend}&";
                 thisContent += "filecontent#" + File.ReadAllText( Sup.PathUtils + FileToSend, Encoding.UTF8 );
                 retval = await CUtils.Isup.PostUrlDataAsync( new Uri( "https://meteo-wagenborgen.nl/cgi-bin/receive.pl" ), thisContent );
-                Sup.LogTraceInfoMessage( $"MapsOn : Success" );
+                Sup.LogMessage( $"MapsOn : Success", TraceLevel.Info );
             }
             else retval = $"MapsOn: Must NOT send signature, has been done already : {DoneToday:s}";
 
@@ -161,10 +162,10 @@ namespace CumulusUtils
             //    and download the contents of the remote maps directory to the utils maps directory
             //
             #region No 1
-            Sup.LogTraceInfoMessage( $"CreateMap: Starting Phase 1" );
+            Sup.LogMessage( $"CreateMap: Starting Phase 1", TraceLevel.Info );
 
             root = XElement.Load( dbName );
-            Sup.LogTraceInfoMessage( $"CreateMap: {dbName} loaded" );
+            Sup.LogMessage( $"CreateMap: {dbName} loaded", TraceLevel.Info );
 
             CUtils.Isup.DownloadSignatureFiles();
 
@@ -175,7 +176,7 @@ namespace CumulusUtils
             //    Also remove all entries with a refresh date older than 7 days
             //
             #region No 2
-            Sup.LogTraceInfoMessage( $"CreateMap: Starting Phase 2" );
+            Sup.LogMessage( $"CreateMap: Starting Phase 2", TraceLevel.Info );
 
             localFiles = Directory.GetFiles( "utils/maps", "MapsOff*.txt" );
             fileCount = 0;
@@ -204,29 +205,29 @@ namespace CumulusUtils
                         foreach ( XElement station in result )
                         {
                             // Remove all possible instances of this station
-                            Sup.LogTraceInfoMessage( $"CreateMap: Deleting station {thisName} nr {++i}" );
+                            Sup.LogMessage( $"CreateMap: Deleting station {thisName} nr {++i}", TraceLevel.Info );
                             station.Remove();
                         }
                     }
                     else
                     {
                         // Station not found so nothing to do!
-                        Sup.LogTraceWarningMessage( $" MapsOff: Station {thisName} not found in {dbName}! No removal" );
+                        Sup.LogMessage( $" MapsOff: Station {thisName} not found in {dbName}! No removal", TraceLevel.Warning );
                     }
                 }
                 catch ( Exception e ) when ( e is XmlException )
                 {
-                    Sup.LogTraceWarningMessage( $"Maps->MapsOff: Error in {thisName}" );
-                    Sup.LogTraceWarningMessage( $"Maps->MapsOff: Xml Exception {e.Message}" );
+                    Sup.LogMessage( $"Maps->MapsOff: Error in {thisName}", TraceLevel.Warning );
+                    Sup.LogMessage( $"Maps->MapsOff: Xml Exception {e.Message}", TraceLevel.Warning );
                 }
                 catch ( Exception e )
                 {
-                    Sup.LogTraceWarningMessage( $"Maps->MapsOff: General Error in {thisName}" );
-                    Sup.LogTraceWarningMessage( $"Maps->MapsOff: General Exception {e.Message}" );
+                    Sup.LogMessage( $"Maps->MapsOff: General Error in {thisName}", TraceLevel.Warning );
+                    Sup.LogMessage( $"Maps->MapsOff: General Exception {e.Message}", TraceLevel.Warning );
                 }
             }
 
-            Sup.LogTraceInfoMessage( $"CreateMap: {fileCount} MapsOff files handled for Map." );
+            Sup.LogMessage( $"CreateMap: {fileCount} MapsOff files handled for Map.", TraceLevel.Info );
 
             // Check if the station in the database is passed its date
 
@@ -249,24 +250,24 @@ namespace CumulusUtils
                 try
                 {
                     lastSeen = DateTime.ParseExact( strDate, dateFormats, CUtils.Inv, DateTimeStyles.None );
-                    Sup.LogTraceVerboseMessage( $"GenUtilsMap: ParseExact : Succesful parse Date lastSeen: {strDate} / {lastSeen}" );
+                    Sup.LogMessage( $"GenUtilsMap: ParseExact : Succesful parse Date lastSeen: {strDate} / {lastSeen}", TraceLevel.Verbose );
                 }
                 catch ( Exception e ) when ( e is FormatException || e is ArgumentNullException )
                 {
-                    Sup.LogTraceErrorMessage( $"GenUtilsMap: Cannot parse date: {strDate}" );
+                    Sup.LogMessage( $"GenUtilsMap: Cannot parse date: {strDate}", TraceLevel.Warning );
                     lastSeen = DateTime.Now;
                 }
 
                 if ( ( DateTime.Now - lastSeen ).TotalDays > AcceptedTimespan )
                 {
                     //Remove it from the list
-                    Sup.LogTraceInfoMessage( $" GenUtilsMap: Station {StationArray[ i ].Element( "Name" ).Value} removed from list, not seen for {AcceptedTimespan} days )" );
+                    Sup.LogMessage( $" GenUtilsMap: Station {StationArray[ i ].Element( "Name" ).Value} removed from list, not seen for {AcceptedTimespan} days )", TraceLevel.Info );
                     StationArray[ i ].Remove();
                     fileCount++;
                 }
             }
 
-            Sup.LogTraceInfoMessage( $"CreateMap: {fileCount} Stations removed of Map on basis  of timeout." );
+            Sup.LogMessage( $"CreateMap: {fileCount} Stations removed of Map on basis  of timeout.", TraceLevel.Info );
 
 
             #endregion
@@ -276,7 +277,7 @@ namespace CumulusUtils
             //    If the entry (name) does not exist, add the entry
             //
             #region No 3
-            Sup.LogTraceInfoMessage( $"CreateMap: Starting Phase 3" );
+            Sup.LogMessage( $"CreateMap: Starting Phase 3", TraceLevel.Info );
 
             localFiles = Directory.GetFiles( "utils/maps", "MapsOn*.xml" );
 
@@ -285,14 +286,14 @@ namespace CumulusUtils
                 string thisName;
                 XElement tmp;
 
-                Sup.LogTraceInfoMessage( $"CreateMap Phase 3: reading {thisFile}" );
+                Sup.LogMessage( $"CreateMap Phase 3: reading {thisFile}", TraceLevel.Info );
 
                 try
                 {
                     XElement thisStation = XElement.Load( thisFile );
                     thisName = thisStation.Element( "Name" ).Value;
 
-                    Sup.LogTraceInfoMessage( $"CreateMap Phase 3: using {thisStation}" );
+                    Sup.LogMessage( $"CreateMap Phase 3: using {thisStation}", TraceLevel.Info );
 
                     // Remove an existing entry (only one, if more than the old one will disappear eventually by timing out
                     tmp = root.Descendants( "Station" ).Where( x => x.Element( "Name" ).Value.Equals( thisName ) ).FirstOrDefault();
@@ -302,14 +303,14 @@ namespace CumulusUtils
                 }
                 catch ( Exception e )
                 {
-                    Sup.LogTraceErrorMessage( $"GenUtilsMap: Exception: {e.Message}" );
-                    Sup.LogTraceInfoMessage( $"GenUtilsMap: Continuing from error in file {thisFile}." );
+                    Sup.LogMessage( $"GenUtilsMap: Exception: {e.Message}", TraceLevel.Warning );
+                    Sup.LogMessage( $"GenUtilsMap: Continuing from error in file {thisFile}.", TraceLevel.Info );
                 }
 
                 File.Delete( thisFile );
             } // Foreach loop over all signature files
 
-            Sup.LogTraceInfoMessage( $"CreateMap: {localFiles.Length} MapsOn files handled for Map." );
+            Sup.LogMessage( $"CreateMap: {localFiles.Length} MapsOn files handled for Map.", TraceLevel.Info );
 
             #endregion
 
@@ -317,7 +318,7 @@ namespace CumulusUtils
             // 4* Write away the database locally in stationswithutils.xml
             //
             #region No 4
-            Sup.LogTraceInfoMessage( $"CreateMap: Starting Phase 4" );
+            Sup.LogMessage( $"CreateMap: Starting Phase 4", TraceLevel.Info );
 
             root.Save( dbName );
 
@@ -327,7 +328,7 @@ namespace CumulusUtils
             // 5* Create the map from the updated database (still in memory)
             //
             #region No 5
-            Sup.LogTraceInfoMessage( $"CreateMap: Starting Phase 5" );
+            Sup.LogMessage( $"CreateMap: Starting Phase 5", TraceLevel.Info );
 
             // Finally, all data updated and saved, we can create the map. The Map.txt file is written to the utils directory and simply uploaded to 
             // the website where all everybopdy can download it and incorporate it in their own website.
@@ -337,7 +338,7 @@ namespace CumulusUtils
                 string Name, Description, Website, Date, CUversion;
                 float Latitude, Longitude;
 
-                Sup.LogTraceInfoMessage( $"CreateMap: Creating the CumulusUtils Map" );
+                Sup.LogMessage( $"CreateMap: Creating the CumulusUtils Map", TraceLevel.Info );
 
                 // jQuery is included when the Map is downloaded in MapsOn. That is the only place where it is known if it
                 // is required to include it or not (is it a module or withing the generated website)
@@ -379,7 +380,7 @@ namespace CumulusUtils
                         Date = thisStation.Element( "Date" )?.Value ?? "-";
                         CUversion = thisStation.Element( "CUversion" )?.Value ?? "-";
 
-                        Sup.LogTraceInfoMessage( $"CreateMap: Writing Station {Name}" );
+                        Sup.LogMessage( $"CreateMap: Writing Station {Name}", TraceLevel.Info );
 
                         of.WriteLine( $"  var marker = L.marker([{Latitude.ToString( CUtils.Inv )}, {Longitude.ToString( CUtils.Inv )}]).addTo(CumulusStations);" );
 
@@ -399,8 +400,8 @@ namespace CumulusUtils
                 }
                 catch ( Exception e )
                 {
-                    Sup.LogTraceErrorMessage( $"GenUtilsMap: Exception: {e.Message}" );
-                    Sup.LogTraceInfoMessage( $"GenUtilsMap: Continuing from error, Map has been generated, none or partial Stations on Map!" );
+                    Sup.LogMessage( $"GenUtilsMap: Exception: {e.Message}", TraceLevel.Warning );
+                    Sup.LogMessage( $"GenUtilsMap: Continuing from error, Map has been generated, none or partial Stations on Map!", TraceLevel.Info );
                 }
 
                 of.WriteLine( "}" );
@@ -409,7 +410,7 @@ namespace CumulusUtils
                 of.WriteLine( $"<br/><div style ='margin-left:auto; margin-right:auto; text-align:center; font-size: 12px;'>" +
                               $"{CuSupport.FormattedVersion()} - {CuSupport.Copyright()} </div>" );
 
-                Sup.LogTraceInfoMessage( $"CreateMap: {fileCount} Stations on this Map." );
+                Sup.LogMessage( $"CreateMap: {fileCount} Stations on this Map.", TraceLevel.Info );
             }
 
             #endregion

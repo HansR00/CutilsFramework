@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace CumulusUtils
@@ -111,7 +112,7 @@ namespace CumulusUtils
         public Airlinklog( CuSupport s )
         {
             Sup = s;
-            Sup.LogTraceInfoMessage( $"Airlinklog constructor: Using fixed path: | data/ |; file: | *log.txt" );
+            Sup.LogMessage( $"Airlinklog constructor: Using fixed path: | data/ |; file: | *log.txt", TraceLevel.Info );
 
             // Get the list of Airlink logfile in the datadirectory and check what type of delimeters we have
             AirlinklogList = Directory.GetFiles( "data/", "AirLink*.txt" );
@@ -119,13 +120,14 @@ namespace CumulusUtils
             if ( AirlinklogList.Length >= 0 )
             {
                 filenameCopy = "data/" + "copy_" + Path.GetFileName( AirlinklogList[ 0 ] );
-                Sup.LogTraceInfoMessage( $"Airlinklog constructor: Using {filenameCopy}" );
+                Sup.LogMessage( $"Airlinklog constructor: Using {filenameCopy}", TraceLevel.Info );
             }
             else
                 return;
 
 
-            enumFieldTypeNames = Enum.GetNames( typeof( AirlinklogFieldName ) );
+            //enumFieldTypeNames = Enum.GetNames( typeof( AirlinklogFieldName ) );
+            enumFieldTypeNames = Enum.GetNames<AirlinklogFieldName>();
             IgnoreDataErrors = Sup.GetUtilsIniValue( "General", "IgnoreDataErrors", "true" ).Equals( "true", CUtils.Cmp );
 
             if ( AirlinklogList.Length >= 0 && Sup.GetUtilsIniValue( "AirLink", "CleanupAirlinkLogs", "false" ).Equals( "true", CUtils.Cmp ) )
@@ -136,7 +138,7 @@ namespace CumulusUtils
                     if ( CUtils.RunStarted.Month - File.GetLastWriteTime( thisFile ).Month > 2 )
                     {
                         try { File.Delete( thisFile ); }
-                        catch { Sup.LogTraceInfoMessage( $"Airlinklog constructor: Can't clean up / delete {thisFile}" ); }
+                        catch { Sup.LogMessage( $"Airlinklog constructor: Can't clean up / delete {thisFile}", TraceLevel.Error ); }
                     }
                 }
             }
@@ -158,7 +160,7 @@ namespace CumulusUtils
             string Filename;
 
             Sup.SetStartAndEndForData( out DateTime timeStart, out DateTime timeEnd );
-            Sup.LogTraceInfoMessage( $"AirLinklog: timeStart = {timeStart}; timeEnd = {timeEnd}" );
+            Sup.LogMessage( $"AirLinklog: timeStart = {timeStart}; timeEnd = {timeEnd}", TraceLevel.Info );
 
             AirlinklogValue tmp = new AirlinklogValue();
             MainAirLinkList = new List<AirlinklogValue>();
@@ -166,11 +168,11 @@ namespace CumulusUtils
             Filename = $"data/AirLink{timeStart:yyyy}{timeStart:MM}log.txt";
             if ( !File.Exists( Filename ) )
             {
-                Sup.LogTraceInfoMessage( $"AirLinklog: Require {Filename} to start but it does not exist, aborting AirLinkLog" );
+                Sup.LogMessage( $"AirLinklog: Require {Filename} to start but it does not exist, aborting AirLinkLog", TraceLevel.Error );
                 return MainAirLinkList;
             }
 
-            Sup.LogTraceInfoMessage( $"AirLinklog: Require {Filename} to start" );
+            Sup.LogMessage( $"AirLinklog: Require {Filename} to start", TraceLevel.Info );
 
             while ( !PeriodComplete )
             {
@@ -199,18 +201,18 @@ namespace CumulusUtils
                 {
                     NextFileTried = true;
                     Filename = $"data/AirLink{timeEnd:yyyy}{timeEnd:MM}log.txt";  // Take care of a period passing month boundary
-                    Sup.LogTraceInfoMessage( $"AirLinklog: Require the  next logfile: {Filename}" );
+                    Sup.LogMessage( $"AirLinklog: Require the  next logfile: {Filename}", TraceLevel.Info );
 
                     if ( !File.Exists( Filename ) )
                     {
-                        Sup.LogTraceInfoMessage( $"AirLinklog: {Filename} Does not exist so we need to stop reading" );
+                        Sup.LogMessage( $"AirLinklog: {Filename} Does not exist so we need to stop reading", TraceLevel.Error );
                         PeriodComplete = true;
                     }
                 }
             } // Loop over all files in AirlinkfileList
 
-            Sup.LogTraceInfoMessage( $"ReadAirlinklog: MainMonthList created: {MainAirLinkList.Count} records." );
-            Sup.LogTraceInfoMessage( $"ReadAirlinklog: End" );
+            Sup.LogMessage( $"ReadAirlinklog: MainMonthList created: {MainAirLinkList.Count} records.", TraceLevel.Info );
+            Sup.LogMessage( $"ReadAirlinklog: End", TraceLevel.Info );
 
             return MainAirLinkList;
         } // End ReadAirlinklog
@@ -410,8 +412,8 @@ namespace CumulusUtils
 
                     ThisValue.Valid = true;
 
-                    Sup.LogTraceVerboseMessage( "SetValues after adding the values:" );
-                    Sup.LogTraceVerboseMessage( $"SetValues after adding the values: Original Line {line}" );
+                    Sup.LogMessage( "SetValues after adding the values:", TraceLevel.Verbose );
+                    Sup.LogMessage( $"SetValues after adding the values: Original Line {line}", TraceLevel.Verbose );
                 }
             } // try
             catch ( Exception e ) when ( e is FormatException || e is OverflowException )
@@ -423,21 +425,21 @@ namespace CumulusUtils
                 //handle exception
                 if ( ErrorCount < MaxErrors )
                 {
-                    Sup.LogTraceErrorMessage( $"{m} fail: {e.Message}" );
-                    Sup.LogTraceErrorMessage( $"{m}: in field nr {FieldInUse} ({enumFieldTypeNames[ FieldInUse ]})" );
-                    Sup.LogTraceErrorMessage( $"{m}: line is: {line}" );
+                    Sup.LogMessage( $"{m} fail: {e.Message}", TraceLevel.Error );
+                    Sup.LogMessage( $"{m}: in field nr {FieldInUse} ({enumFieldTypeNames[ FieldInUse ]})", TraceLevel.Error );
+                    Sup.LogMessage( $"{m}: line is: {line}", TraceLevel.Error );
 
                     Console.WriteLine( $"{m} fail: {e.Message}" );
                     Console.WriteLine( $"{m}: in field nr {FieldInUse} ({enumFieldTypeNames[ FieldInUse ]})" );
 
                     if ( string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) )
-                        Sup.LogTraceErrorMessage( $"{m}: Field {enumFieldTypeNames[ FieldInUse ]} is Empty" );
+                        Sup.LogMessage( $"{m}: Field {enumFieldTypeNames[ FieldInUse ]} is Empty", TraceLevel.Error );
                 }
 
                 if ( IgnoreDataErrors )
                 {
                     if ( ErrorCount < MaxErrors )
-                        Sup.LogTraceErrorMessage( "AirlinklogValue.SetValues : Continuing to read data" );
+                        Sup.LogMessage( "AirlinklogValue.SetValues : Continuing to read data", TraceLevel.Info );
                 }
                 else
                     throw;
@@ -450,15 +452,15 @@ namespace CumulusUtils
 
                 if ( ErrorCount < MaxErrors )
                 {
-                    Sup.LogTraceErrorMessage( $"{m} fail: {e.Message}" );
-                    Sup.LogTraceErrorMessage( $"{m}: in field nr {FieldInUse} does  not exist in this file {filenameCopy}" );
-                    Sup.LogTraceErrorMessage( $"{m}: line is: {line}" );
+                    Sup.LogMessage( $"{m} fail: {e.Message}", TraceLevel.Error );
+                    Sup.LogMessage( $"{m}: in field nr {FieldInUse} does  not exist in this file {filenameCopy}", TraceLevel.Error );
+                    Sup.LogMessage( $"{m}: line is: {line}", TraceLevel.Error );
                 }
 
                 if ( IgnoreDataErrors )
                 {
                     if ( ErrorCount < MaxErrors )
-                        Sup.LogTraceErrorMessage( "AirlinklogValue.SetValues : Continuing to read data" );
+                        Sup.LogMessage( "AirlinklogValue.SetValues : Continuing to read data", TraceLevel.Info );
                 }
                 else
                     throw;
@@ -469,7 +471,7 @@ namespace CumulusUtils
 
         ~Airlinklog()
         {
-            Sup.LogTraceInfoMessage( "Airlinklog destructor: Closing file and ending program" );
+            Sup.LogMessage( "Airlinklog destructor: Closing file and ending program", TraceLevel.Info );
             Dispose( false );
         }
 

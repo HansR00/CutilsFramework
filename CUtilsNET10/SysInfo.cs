@@ -42,10 +42,10 @@ namespace CumulusUtils
         {
             int StationType;
 
-            Sup.LogTraceInfoMessage( "SystemStatus : starting" );
+            Sup.LogMessage( "SystemStatus : starting", TraceLevel.Info );
 
             thisInfo = await thisIPC.GetCMXInfoAsync();
-            Sup.LogDebugMessage( $"CumulusMX Version: {thisInfo.version} build {thisInfo.build}" );
+            Sup.LogDebugMessage( $"CumulusMX Version: {thisInfo.Version} build {thisInfo.Build}" );
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.SysInfoOutputFilename}", false, Encoding.UTF8 ) )
             {
@@ -55,12 +55,12 @@ namespace CumulusUtils
                 string tmp;
 
                 StationType = Convert.ToInt32( Sup.GetCumulusIniValue( "Station", "Type", "" ), CUtils.Inv );
-                Sup.LogTraceInfoMessage( $" SystemStatus: Found device {StationType} {CuSupport.StationInUse( StationType )}" );
+                Sup.LogMessage( $" SystemStatus: Found device {StationType} {CuSupport.StationInUse( StationType )}", TraceLevel.Info );
 
                 of.WriteLine( $"<div style='margin:auto; text-align:left; width:{Sup.GetUtilsIniValue( "SysInfo", "ReportWidth", "700" )}px'><pre>" );
 
                 // Just for recognition of where we are : start of Station Info
-                of.WriteLine( $"Cumulus version: {thisInfo.version} (build: {thisInfo.build})" );
+                of.WriteLine( $"Cumulus version: {thisInfo.Version} (build: {thisInfo.Build})" );
                 of.WriteLine( $"Cumulus uptime: {thisInfo.ProgramUpTime}" );
                 of.WriteLine( $"Weather station: {CuSupport.StationInUse( StationType )}" );
 
@@ -183,7 +183,7 @@ namespace CumulusUtils
         #region Doing Windows
         private void DoingWindows( StreamWriter of )
         {
-            Sup.LogTraceInfoMessage( "SystemStatus : DoingWindows Start" );
+            Sup.LogMessage( "SystemStatus : DoingWindows Start", TraceLevel.Info );
 
             string[] StringLinesToSkip = Sup.GetUtilsIniValue( "SysInfo", "SystemInfoLinesToSkip", "" ).Split( GlobConst.CommaSeparator );
             int[] LinesToSkip = new int[ StringLinesToSkip.Length ];
@@ -224,7 +224,7 @@ namespace CumulusUtils
             }
             catch ( Exception e )
             {
-                Sup.LogTraceErrorMessage( $"SystemStatus : DoingWindows Exception {e.Message}" );
+                Sup.LogMessage( $"SystemStatus : DoingWindows Exception {e.Message}", TraceLevel.Error );
 
                 of.WriteLine( "Device: Unknown - stopping here." );
             }
@@ -237,7 +237,7 @@ namespace CumulusUtils
         #region Doing Unix
         private void DoingUnix( StreamWriter of )
         {
-            Sup.LogTraceInfoMessage( "SystemStatus : DoingUnix Start" );
+            Sup.LogMessage( "SystemStatus : DoingUnix Start", TraceLevel.Info );
 
             LinuxDialects thisDialect = GetLinuxDialect();
 
@@ -260,7 +260,7 @@ namespace CumulusUtils
             }
             catch ( Exception e )
             {
-                Sup.LogTraceErrorMessage( $"System uptime: Unknown exception: {e.Message}" );
+                Sup.LogMessage( $"System uptime: Unknown exception: {e.Message}", TraceLevel.Error );
             }
 
             try
@@ -282,8 +282,8 @@ namespace CumulusUtils
             }
             catch ( Exception e )
             {
-                Sup.LogTraceErrorMessage( $"System/Processor: Unknown (exception) - {e.Message}" );
-                Sup.LogDebugMessage( "Please install lshw (apt-get install lshw)" );
+                Sup.LogMessage( $"System/Processor: Unknown (exception) - {e.Message}", TraceLevel.Error );
+                Sup.LogMessage( "Please install lshw (apt-get install lshw)", TraceLevel.Info );
             }
 
             // Linux 4.19.58-v7+ armv7l
@@ -298,7 +298,7 @@ namespace CumulusUtils
             }
             catch ( Exception e )
             {
-                Sup.LogTraceErrorMessage( $"OS: Unknown exception - {e.Message}" );
+                Sup.LogMessage( $"OS: Unknown exception - {e.Message}", TraceLevel.Error );
             }
 
             try
@@ -310,7 +310,7 @@ namespace CumulusUtils
             }
             catch ( Exception e )
             {
-                Sup.LogTraceErrorMessage( $"dotnet: Unknown, most likely it is not installed - {e.Message}" );
+                Sup.LogMessage( $"dotnet: Unknown, most likely it is not installed - {e.Message}", TraceLevel.Error );
                 throw;
             }
 
@@ -323,7 +323,7 @@ namespace CumulusUtils
             }
             catch ( Exception e )
             {
-                Sup.LogTraceErrorMessage( $"Memory: Unknown error - {e.Message}" );
+                Sup.LogMessage( $"Memory: Unknown error - {e.Message}", TraceLevel.Error );
             }
 
             try
@@ -333,7 +333,7 @@ namespace CumulusUtils
             }
             catch ( Exception e )
             {
-                Sup.LogTraceErrorMessage( $"Disk info: Unknown error - {e.Message}" );
+                Sup.LogMessage( $"Disk info: Unknown error - {e.Message}", TraceLevel.Error );
             }
 
             return;
@@ -344,7 +344,7 @@ namespace CumulusUtils
         #region Doing MacOS
         private void DoingMacOS( StreamWriter of )
         {
-            Sup.LogTraceInfoMessage( "SystemStatus : DoingMacOS Start" );
+            Sup.LogMessage( "SystemStatus : DoingMacOS Start", TraceLevel.Info );
 
             of.WriteLine( "MacOS" );
             of.WriteLine( "" );
@@ -360,7 +360,7 @@ namespace CumulusUtils
             }
             catch ( Exception e )
             {
-                Sup.LogTraceErrorMessage( $"System uptime: Unknown exception: {e.Message}" );
+                Sup.LogMessage( $"System uptime: Unknown exception: {e.Message}", TraceLevel.Error );
             }
 
             try
@@ -376,8 +376,8 @@ namespace CumulusUtils
             }
             catch ( Exception e )
             {
-                Sup.LogTraceErrorMessage( $"System/Processor: Unknown (exception) - {e.Message}" );
-                Sup.LogDebugMessage( "Please install lshw (apt-get install lshw)" );
+                Sup.LogMessage( $"System/Processor: Unknown (exception) - {e.Message}", TraceLevel.Error );
+                Sup.LogMessage( "Please install lshw (apt-get install lshw)", TraceLevel.Info );
             }
 
             // Linux 4.19.58-v7+ armv7l
@@ -393,7 +393,7 @@ namespace CumulusUtils
             }
             catch ( Exception e )
             {
-                Sup.LogTraceErrorMessage( $"OS: Unknown exception - {e.Message}" );
+                Sup.LogMessage( $"OS: Unknown exception - {e.Message}", TraceLevel.Error );
             }
 
             try
@@ -404,7 +404,7 @@ namespace CumulusUtils
             }
             catch ( Exception e )
             {
-                Sup.LogTraceErrorMessage( $"Mono: Unknown, most likely it is not installed - {e.Message}" );
+                Sup.LogMessage( $"Mono: Unknown, most likely it is not installed - {e.Message}", TraceLevel.Error );
             }
 
             try
@@ -415,7 +415,7 @@ namespace CumulusUtils
             }
             catch ( Exception e )
             {
-                Sup.LogTraceErrorMessage( $"Memory: Unknown error - {e.Message}" );
+                Sup.LogMessage( $"Memory: Unknown error - {e.Message}", TraceLevel.Error );
             }
 
             of.WriteLine( "" );
@@ -427,7 +427,7 @@ namespace CumulusUtils
             }
             catch ( Exception e )
             {
-                Sup.LogTraceErrorMessage( $"Disk info: Unknown error - {e.Message}" );
+                Sup.LogMessage( $"Disk info: Unknown error - {e.Message}", TraceLevel.Error );
             }
 
             return;
@@ -438,7 +438,7 @@ namespace CumulusUtils
         #region StartProcess
         private void StartProcess( string command, string parameters )
         {
-            Sup.LogTraceInfoMessage( "StartProcess " + command + " " + parameters );
+            Sup.LogMessage( "StartProcess " + command + " " + parameters, TraceLevel.Info );
 
             returnValues = new List<string>(); // let the other ones be handle by the GC, not good practice, but OK.
 
@@ -463,7 +463,7 @@ namespace CumulusUtils
                 if ( line != null )
                 {
                     returnValues.Add( line );
-                    Sup.LogTraceInfoMessage( "StartProcess " + command + ": output=" + line );
+                    Sup.LogMessage( "StartProcess " + command + ": output=" + line, TraceLevel.Info );
                 }
             }
 
@@ -503,14 +503,14 @@ namespace CumulusUtils
                     {
                         if ( value.Contains( "NAME=" ) )
                         {
-                            Sup.LogTraceInfoMessage( $"Found Linux NAME: {value}" );
+                            Sup.LogMessage( $"Found Linux NAME: {value}", TraceLevel.Info );
 
                             foreach ( string value2 in LinuxDialectsStr )
                             {
                                 if ( value.Contains( value2 ) ) // Check for all possibilities
                                 {
                                     thisDialect = (LinuxDialects) Enum.Parse( typeof( LinuxDialects ), value2, true ); // and make it an enum
-                                    Sup.LogTraceInfoMessage( $"Using Linux dialect: {thisDialect}" );
+                                    Sup.LogMessage( $"Using Linux dialect: {thisDialect}", TraceLevel.Info );
 
                                     break; // get out of this loop
                                 } // if
@@ -523,8 +523,8 @@ namespace CumulusUtils
             }
             catch ( Exception e )
             {
-                Sup.LogTraceErrorMessage( $"{e.Message}" );
-                Sup.LogTraceErrorMessage( $"Can't determine Linux dialect, using Raspbian" );
+                Sup.LogMessage( $"{e.Message}", TraceLevel.Error );
+                Sup.LogMessage( $"Can't determine Linux dialect, using Raspbian", TraceLevel.Info );
                 thisDialect = LinuxDialects.Raspbian;
             }
 

@@ -4,6 +4,7 @@
  */
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 
@@ -136,7 +137,7 @@ namespace CumulusUtils
                 of.WriteLine( "</script>" );
             }
 
-            Sup.LogTraceInfoMessage( " GenerateStationMap: End" );
+            Sup.LogMessage( " GenerateStationMap: End", TraceLevel.Info );
 
             return;
         }

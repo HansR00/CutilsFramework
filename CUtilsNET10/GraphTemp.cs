@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -46,7 +47,7 @@ namespace CumulusUtils
                         iniResult = iniResult.Replace( ',', '.' );
                     NOAATempNorm[ i - 1 ] = (float) Convert.ToDouble( iniResult, CUtils.Inv );
 
-                    Sup.LogTraceInfoMessage( $" Normal values: {iniKeyName} -> {NOAATempNorm[ i - 1 ].ToString( "F1", CUtils.Inv )}" );
+                    Sup.LogMessage( $" Normal values: {iniKeyName} -> {NOAATempNorm[ i - 1 ].ToString( "F1", CUtils.Inv )}", TraceLevel.Info );
                 }
             }
             else
@@ -67,13 +68,13 @@ namespace CumulusUtils
                     else
                         NOAATempStationAv[ i - 1 ] = -1;
 
-                    Sup.LogTraceInfoMessage( $" Station Average values: {m[ i - 1 ]} -> {NOAATempStationAv[ i - 1 ].ToString( "F1", CUtils.Inv )}" );
+                    Sup.LogMessage( $" Station Average values: {m[ i - 1 ]} -> {NOAATempStationAv[ i - 1 ].ToString( "F1", CUtils.Inv )}", TraceLevel.Info );
                 }
             }
             else
                 StationAverage = false;
 
-            Sup.LogTraceInfoMessage( "GenMonthlyTempvsNOAAGraphData : starting loop over DayfileValues" );
+            Sup.LogMessage( "GenMonthlyTempvsNOAAGraphData : starting loop over DayfileValues", TraceLevel.Info );
 
             for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
@@ -91,7 +92,7 @@ namespace CumulusUtils
                 }
             }
 
-            Sup.LogTraceInfoMessage( "GenMonthlyTempvsNOAAGraphData : starting Generation" );
+            Sup.LogMessage( "GenMonthlyTempvsNOAAGraphData : starting Generation", TraceLevel.Info );
 
             // Now generate the script
             thisBuffer.AppendLine( "console.log('Monthly Temp vs NOAA Chart starting.');" );
@@ -571,7 +572,8 @@ namespace CumulusUtils
             thisBuffer.AppendLine( "    [0, '#0000ff']," );
             thisBuffer.AppendLine( "    [0.2, '#4d4dff']," );
             thisBuffer.AppendLine( "    [0.5, '#fffbbc']," );
-            thisBuffer.AppendLine( "    [0.8, '#ff4d4d']," );
+            //thisBuffer.AppendLine( "    [0.8, '#ff4d4d']," );
+            thisBuffer.AppendLine( "    [0.8, '#ff6666']," );
             thisBuffer.AppendLine( "    [1, '#ff0000']" );
             thisBuffer.AppendLine( "  ]," );
 
@@ -603,7 +605,7 @@ namespace CumulusUtils
             sb.Clear();
             for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
-                Sup.LogTraceInfoMessage( $"Generating Heat Map data, doing year {i}" );
+                Sup.LogMessage( $"Generating Heat Map data, doing year {i}", TraceLevel.Info );
 
                 List<DayfileValue> yearlist = Thislist.Where( x => x.ThisDate.Year == i ).ToList();
 
@@ -639,7 +641,7 @@ namespace CumulusUtils
                 if ( yearlist.Count == 0 )
                     continue;
 
-                Sup.LogTraceInfoMessage( $"Generating Year Temp Statistics, doing year {i}" );
+                Sup.LogMessage( $"Generating Year Temp Statistics, doing year {i}", TraceLevel.Info );
 
                 years.Add( i );
                 average.Add( yearlist.Select( x => x.AverageTempThisDay ).Average() );
@@ -792,7 +794,7 @@ namespace CumulusUtils
             {
                 List<DayfileValue> yearmonthlist = Thislist.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == thisMonth ).ToList();
 
-                Sup.LogTraceVerboseMessage( $"Generating Year Month Temp Statistics, doing year {i} and month {thisMonth}" );
+                Sup.LogMessage( $"Generating Year Month Temp Statistics, doing year {i} and month {thisMonth}", TraceLevel.Info );
 
                 if ( yearmonthlist.Any() )
                 {

@@ -9,11 +9,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace CumulusUtils
@@ -82,15 +84,15 @@ namespace CumulusUtils
             Sup = s;
             Isup = i;
 
-            Sup.LogTraceInfoMessage( $"PwsFWIfuncs constructor" );
+            Sup.LogMessage( $"PwsFWIfuncs constructor", TraceLevel.Info );
 
             Analyse = Convert.ToInt32( Sup.GetUtilsIniValue( "pwsFWI", "Analyse", "30" ), CUtils.Inv );
             WarningLevel = Convert.ToInt32( Sup.GetUtilsIniValue( "pwsFWI", "WarningLevel", "5" ), CUtils.Inv );
 
             if ( WarningLevel != 5 && WarningLevel != 6 )
             {
-                Sup.LogTraceInfoMessage( $" WarningLevel for pwsFWI MUST be 5 or 6 and it is: {WarningLevel}" );
-                Sup.LogTraceInfoMessage( $" Setting default WarningLevel = 5" );
+                Sup.LogMessage( $" WarningLevel for pwsFWI MUST be 5 or 6 and it is: {WarningLevel}", TraceLevel.Info );
+                Sup.LogMessage( $" Setting default WarningLevel = 5", TraceLevel.Info );
                 WarningLevel = 5;
             }
             else if ( WarningLevel == 6 )
@@ -148,9 +150,9 @@ namespace CumulusUtils
                 // of pwsFWI calculation. Afterwards, they must be deleted from the list.
             }
 
-            Sup.LogTraceInfoMessage( $" PwsFWIfuncs BeteljuiceFormat = {BeteljuiceFormat}" );
-            Sup.LogTraceInfoMessage( $" PwsFWIfuncs USerFireImage = {UseFireImage}" );
-            Sup.LogTraceInfoMessage( $" PwsFWIfuncs DoPrediction = {DoPrediction}" );
+            Sup.LogMessage( $" PwsFWIfuncs BeteljuiceFormat = {BeteljuiceFormat}", TraceLevel.Info );
+            Sup.LogMessage( $" PwsFWIfuncs USerFireImage = {UseFireImage}", TraceLevel.Info );
+            Sup.LogMessage( $" PwsFWIfuncs DoPrediction = {DoPrediction}", TraceLevel.Info );
 
             // Initialising done, start the whole sequence
             // Always open this file, otherwise unassigned variable occurs at compiletime
@@ -163,7 +165,7 @@ namespace CumulusUtils
                 if ( Analyse > DaysRequiredForHTML )
                 {
                     Sup.LogDebugMessage( "calculatePwsFWI : ANALYSE is ON" );
-                    Sup.LogTraceInfoMessage( "calculatePwsFWI : Opening ANALYSIS output" );
+                    Sup.LogMessage( "calculatePwsFWI : Opening ANALYSIS output", TraceLevel.Info );
 
                     if ( Analyse > ThisList.Count )
                         startValue = 0;
@@ -182,7 +184,7 @@ namespace CumulusUtils
 
                 // N = NrOfSmoothingDays + 1; Sum of all numbers up to N = (N * (1 + N)) / 2; (so: 1+2+3+4=10)
 
-                Sup.LogTraceVerboseMessage( $"calculatePwsFWI : i={startValue} to LineCount={ThisList.Count}" );
+                Sup.LogMessage( $"calculatePwsFWI : i={startValue} to LineCount={ThisList.Count}", TraceLevel.Verbose );
 
 
                 for ( i = startValue; i < ThisList.Count; i++ )
@@ -263,7 +265,7 @@ namespace CumulusUtils
                         localFWI.SmoothedFWI /= NrOfSmoothingDays;
                     }
 
-                    Sup.LogTraceVerboseMessage( "calculatePwsFWI : SmoothedFWI before DryPeriod addition i: " + i + " smoothedFWI:" + localFWI.SmoothedFWI );
+                    Sup.LogMessage( "calculatePwsFWI : SmoothedFWI before DryPeriod addition i: " + i + " smoothedFWI:" + localFWI.SmoothedFWI, TraceLevel.Verbose );
 
                     // 17/09/2019: New item in the pwsFWI: length of drought. Have to think about the weight
                     localFWI.DryPeriod = ThisList[ i ].DryPeriod;
@@ -272,17 +274,17 @@ namespace CumulusUtils
                     // Testing, testing, 123...
                     // localFWI.SmoothedFWI = i*10;
 
-                    Sup.LogTraceVerboseMessage( "calculatePwsFWI : SmoothedFWI after DryPeriod addition i: " + i +
+                    Sup.LogMessage( "calculatePwsFWI : SmoothedFWI after DryPeriod addition i: " + i +
                                                  " DryPeriod: " + ThisList[ i ] +
-                                                 " smoothedFWI:" + localFWI.SmoothedFWI );
+                                                 " smoothedFWI:" + localFWI.SmoothedFWI, TraceLevel.Verbose );
 
-                    Sup.LogTraceVerboseMessage( $"calculatePwsFWI : creating Listentry FWI for i={i}" );
+                    Sup.LogMessage( $"calculatePwsFWI : creating Listentry FWI for i={i}", TraceLevel.Verbose );
 
                     FWIlist.Add( localFWI );
 
-                    Sup.LogTraceInfoMessage( $"   {localFWI.Date:d}; {localFWI.T:F1}; {localFWI.Wind:F1}; {localFWI.Rain:F1}; " +
+                    Sup.LogMessage( $"   {localFWI.Date:d}; {localFWI.T:F1}; {localFWI.Wind:F1}; {localFWI.Rain:F1}; " +
                                         $"{localFWI.RH:F2}; {localFWI.Psat:F2}; {localFWI.VPD:F2}; " +
-                                        $"{localFWI.dayFWI:F2}; {localFWI.DryPeriod:F0}; {localFWI.SmoothedFWI:F2}" );
+                                        $"{localFWI.dayFWI:F2}; {localFWI.DryPeriod:F0}; {localFWI.SmoothedFWI:F2}", TraceLevel.Info );
 
                     if ( Analyse > DaysRequiredForHTML )
                     {
@@ -303,7 +305,7 @@ namespace CumulusUtils
                     {
                         // The prediction could not be removed correctly so stop the program as the next usage of the dayfile-list
                         // carries errors.
-                        Sup.LogTraceErrorMessage( "calculatePwsFWI : Error removing the prediction!" );
+                        Sup.LogMessage( "calculatePwsFWI : Error removing the prediction!", TraceLevel.Error );
                     }
                 }
             } // End using of (Analysis file)
@@ -311,7 +313,7 @@ namespace CumulusUtils
             if ( Analyse <= DaysRequiredForHTML )
             {
                 // No analysis so delete the file
-                Sup.LogTraceInfoMessage( "calculatePwsFWI : Deleting empty ANALYSIS csv file" );
+                Sup.LogMessage( "calculatePwsFWI : Deleting empty ANALYSIS csv file", TraceLevel.Info );
                 File.Delete( $"{Sup.PathUtils}{csvFilename}" );
             }
 
@@ -326,8 +328,8 @@ namespace CumulusUtils
             int IndexOfCurrent, i;
             DngrLevel fmtindex;
 
-            Sup.LogTraceInfoMessage( "HTMLexportPwsFWI : starting" );
-            Sup.LogTraceInfoMessage( "HTMLexportPwsFWI : starting pwsFWIcurrent" );
+            Sup.LogMessage( "HTMLexportPwsFWI : starting", TraceLevel.Info );
+            Sup.LogMessage( "HTMLexportPwsFWI : starting pwsFWIcurrent", TraceLevel.Info );
 
             //
             // First do the current value for Frontpage or elsewhere single use
@@ -369,7 +371,7 @@ namespace CumulusUtils
 
             // Now start the main output pwsFWI.txt
             //
-            Sup.LogTraceInfoMessage( "HTMLexportPwsFWI : starting pwsFWI.txt" );
+            Sup.LogMessage( "HTMLexportPwsFWI : starting pwsFWI.txt", TraceLevel.Info );
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.PwsFWIOutputFilename}", false, Encoding.UTF8 ) )
             {
@@ -406,7 +408,7 @@ namespace CumulusUtils
 
                 if ( BeteljuiceFormat )
                 {
-                    Sup.LogTraceInfoMessage( "HTMLexportPwsFWI : Using Beteljuice format" );
+                    Sup.LogMessage( "HTMLexportPwsFWI : Using Beteljuice format", TraceLevel.Info );
 
                     InjectBeteljuiceStyle( of, 1 );
                     InjectBeteljuiceStyle( of, FWIlist[ IndexOfCurrent ].SmoothedFWI );
@@ -415,7 +417,7 @@ namespace CumulusUtils
                 }
                 else // no beteljuices, so: Standard
                 {
-                    Sup.LogTraceInfoMessage( "HTMLexportPwsFWI : Using Standard format" );
+                    Sup.LogMessage( "HTMLexportPwsFWI : Using Standard format", TraceLevel.Info );
 
                     string tmp = Sup.GetCUstringValue( "pwsFWI", "Low", "Low", false );
 
@@ -916,40 +918,53 @@ namespace CumulusUtils
 
         private class DailyUnits
         {
-            public string time { get; set; }
-            public string temperature_2m_max { get; set; }
-            public string rain_sum { get; set; }
-            public string wind_speed_10m_max { get; set; }
-            public string relative_humidity_2m_min { get; set; }
+            [JsonPropertyName( "time" )]
+            public string Time { get; set; }
+            [JsonPropertyName( "temperature_2m_max" )]
+            public string Temperature_2m_max { get; set; }
+            [JsonPropertyName( "rain_sum" )]
+            public string Rain_sum { get; set; }
+            [JsonPropertyName( "wind_speed_10m_max" )]
+            public string Wind_speed_10m_max { get; set; }
+            [JsonPropertyName( "relative_humidity_2m_min" )]
+            public string Relative_humidity_2m_min { get; set; }
         }
 
         private class Daily
         {
-            // The lists hold the actual daily data.
-            public List<long> time { get; set; }
-            public List<double> temperature_2m_max { get; set; }
-            public List<double> rain_sum { get; set; }
-            public List<double> wind_speed_10m_max { get; set; }
-            public List<int> relative_humidity_2m_min { get; set; }
+            [JsonPropertyName( "time" )]
+            public List<long> Time { get; set; }
+            [JsonPropertyName( "temperature_2m_max" )]
+            public List<double> Temperature_2m_max { get; set; }
+            [JsonPropertyName( "rain_sum" )]
+            public List<double> Rain_sum { get; set; }
+            [JsonPropertyName( "wind_speed_10m_max" )]
+            public List<double> Wind_speed_10m_max { get; set; }
+            [JsonPropertyName( "relative_humidity_2m_min" )]
+            public List<int> Relative_humidity_2m_min { get; set; }
         }
 
         private class WeatherData
         {
-            public double latitude { get; set; }
-            public double longitude { get; set; }
-            public double generationtime_ms { get; set; }
-            public int utc_offset_seconds { get; set; }
-            public string timezone { get; set; }
-            public string timezone_abbreviation { get; set; }
-            public double elevation { get; set; }
-
-            // This property will hold the units object
-            public DailyUnits daily_units { get; set; }
-
-            // This is the property you want to access
-            public Daily daily { get; set; }
+            [JsonPropertyName( "latitude" )]
+            public double Latitude { get; set; }
+            [JsonPropertyName( "longitude" )]
+            public double Longitude { get; set; }
+            [JsonPropertyName( "generationtime_ms" )]
+            public double Generationtime_ms { get; set; }
+            [JsonPropertyName( "utc_offset_seconds" )]
+            public int Utc_offset_seconds { get; set; }
+            [JsonPropertyName( "timezone" )]
+            public string Timezone { get; set; }
+            [JsonPropertyName( "timezone_abbreviation" )]
+            public string Timezone_abbreviation { get; set; }
+            [JsonPropertyName( "elevation" )]
+            public double Elevation { get; set; }
+            [JsonPropertyName( "daily_units" )]
+            public DailyUnits Daily_units { get; set; }
+            [JsonPropertyName( "daily" )]
+            public Daily Daily { get; set; }
         }
-
         private async Task<bool> AddOpenMeteoPrediction( List<DayfileValue> ThisList )
         {
             // This is necessary for the use of the units the users has set in Cumulus
@@ -978,20 +993,22 @@ namespace CumulusUtils
                     $"temperature_unit={TempUnitForOpenMeteo[ (int) Sup.StationTemp.Dim ]}&" +
                     $"precipitation_unit={RainUnitForOpenMeteo[ (int) Sup.StationRain.Dim ]}";
 
+                Sup.LogMessage( "GetOpenMeteoPredictionAsync thisURL: " + thisURL, TraceLevel.Info );
+
                 string JSONresult = await Isup.GetUrlDataAsync( new Uri( thisURL ) );
-                Sup.LogTraceInfoMessage( $"JSONresult: {JSONresult} " );
+                Sup.LogMessage( $"JSONresult: {JSONresult} ", TraceLevel.Info );
 
                 WeatherData data = JsonSerializer.Deserialize<WeatherData>( JSONresult );
-                Daily dailyData = data.daily;
-                DailyUnits dailyUnits = data.daily_units;
+                Daily dailyData = data.Daily;
+                DailyUnits dailyUnits = data.Daily_units;
 
                 // Now you can work with the lists:
 
-                List<long> times = dailyData.time;
-                List<double> maxTemps = dailyData.temperature_2m_max;
-                List<double> rainSums = dailyData.rain_sum;
-                List<double> windSpeeds = dailyData.wind_speed_10m_max;
-                List<int> RHs = dailyData.relative_humidity_2m_min;
+                List<long> times = dailyData.Time;
+                List<double> maxTemps = dailyData.Temperature_2m_max;
+                List<double> rainSums = dailyData.Rain_sum;
+                List<double> windSpeeds = dailyData.Wind_speed_10m_max;
+                List<int> RHs = dailyData.Relative_humidity_2m_min;
 
                 for ( int i = 0; i < 5; i++ ) // 5 days prediction
                 {
@@ -1001,12 +1018,12 @@ namespace CumulusUtils
                     ThisValue.TotalRainThisDay = (float) rainSums[ i ];
                     ThisValue.LowHumidity = RHs[ i ];
 
-                    Sup.LogTraceInfoMessage( "Open Meteo AddPrediction - The data:" );
-                    Sup.LogTraceInfoMessage( $"ThisValue date: {ThisValue.ThisDate:d}" );
-                    Sup.LogTraceInfoMessage( $"ThisValue MaxTemp: {ThisValue.MaxTemp:F1}" );
-                    Sup.LogTraceInfoMessage( $"ThisValue LowHumidity: {ThisValue.LowHumidity:F1}" );
-                    Sup.LogTraceInfoMessage( $"ThisValue High Av. Windspeed: {ThisValue.HighAverageWindSpeed:F1}" );
-                    Sup.LogTraceInfoMessage( $"ThisValue Rain This Day: {ThisValue.TotalRainThisDay:F1}" );
+                    Sup.LogMessage( "Open Meteo AddPrediction - The data:", TraceLevel.Info );
+                    Sup.LogMessage( $"ThisValue date: {ThisValue.ThisDate:d}", TraceLevel.Info );
+                    Sup.LogMessage( $"ThisValue MaxTemp: {ThisValue.MaxTemp:F1}", TraceLevel.Info );
+                    Sup.LogMessage( $"ThisValue LowHumidity: {ThisValue.LowHumidity:F1}", TraceLevel.Info );
+                    Sup.LogMessage( $"ThisValue High Av. Windspeed: {ThisValue.HighAverageWindSpeed:F1}", TraceLevel.Info );
+                    Sup.LogMessage( $"ThisValue Rain This Day: {ThisValue.TotalRainThisDay:F1}", TraceLevel.Info );
 
                     // The actual carry over from the history is done in SetExtraValues
                     //
@@ -1022,7 +1039,7 @@ namespace CumulusUtils
             }
             catch ( Exception e )
             {
-                Sup.LogTraceErrorMessage( $"Open Meteo AddPrediction: {e.Message}" );
+                Sup.LogMessage( $"Open Meteo AddPrediction: {e.Message}", TraceLevel.Error );
                 throw;
             }
 

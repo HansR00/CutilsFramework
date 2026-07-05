@@ -1,0 +1,42 @@
+﻿=== Ongebruikte parameters in: cumulusutils.ini ===
+[General] UseSQL
+[General] ParamCleanUp
+[Graphs] EVTvsRAIN
+[FTP site] FtpLog
+[Website] SteelseriesTempThresholdValue
+[Website] SteelseriesLedVisible
+[Thrifty] MapsPeriod
+
+=== Ongebruikte parameters in: CUstringsNL.ini ===
+[Records] AllTime
+[Records] RecordsAllTime
+[Graphs] YRSStdDev
+[Graphs] YTSStdDev
+[Graphs] SolarHoursMenuText
+[Graphs] SolarEnergyMenuText
+[Graphs] YMSESYaxis
+[Website] Grafieken
+[Website] DailyTemperature
+[Website] WindSpeed
+[Website] WindDirection
+[Website] DailyRain
+[Website] Bearing
+[Website] AvBearing
+[Website] WindGust
+[Website] Rainfall
+[Website] RainfallRate
+[Website] AvgTemp
+[Website] MinTemp
+[Website] MaxTemp
+[Website] SunHours
+[Website] RelativeHumidity
+[Website] OutdoorHumidity
+[Website] IndoorHumidity
+[Website] TheoreticalMax
+[Website] Daily Rainfall
+[Website] SunshineHours
+[Website] Humidex
+[General] ParamCleanUp
+[AirQuality] Air Quality
+[MeteoCam] Barometer
+

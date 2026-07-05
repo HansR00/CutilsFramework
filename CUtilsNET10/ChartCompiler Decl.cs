@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -422,7 +423,7 @@ namespace CumulusUtils
             catch
             {
                 /* Don't take any action just make sure we can continue */
-                Sup.LogTraceErrorMessage( $"Parsing User Charts Definitions : Constructor - can't convert Min/Max barometer values: " +
+                Sup.LogMessage( $"Parsing User Charts Definitions : Constructor - can't convert Min/Max barometer values: " +
                   $"{MinPressure}/{MaxPressure}" +
                   $"{Sup.GetAlltimeRecordValue( "Pressure", "highpressurevalue", "" )}/{Sup.GetAlltimeRecordValue( "Pressure", "lowpressurevalue", "" )}" );
             }
@@ -612,7 +613,7 @@ namespace CumulusUtils
             }
             catch ( Exception e )
             {
-                Sup.LogTraceErrorMessage( $"Init ChartsCompiler - Exception creating SoilMoistureUnitsArray - {e.Message}" );
+                Sup.LogMessage( $"Init ChartsCompiler - Exception creating SoilMoistureUnitsArray - {e.Message}", TraceLevel.Error );
             }
         }
 

@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -370,8 +371,8 @@ namespace CumulusUtils
                     }
                     catch ( Exception e )
                     {
-                        Sup.LogTraceInfoMessage( $"GenTempSum : Exception {e.Message}" );
-                        Sup.LogTraceInfoMessage( $"GenTempSum : Exception year: {year}, i: {i}, yearList.count: {yearList.Count}" );
+                        Sup.LogMessage( $"GenTempSum : Exception {e.Message}", TraceLevel.Error );
+                        Sup.LogMessage( $"GenTempSum : Exception year: {year}, i: {i}, yearList.count: {yearList.Count}", TraceLevel.Error );
                         Environment.Exit( 0 );
                     }
 
@@ -501,8 +502,8 @@ namespace CumulusUtils
                     }
                     catch ( Exception e )
                     {
-                        Sup.LogTraceInfoMessage( $"GenTempSum : Exception {e.Message}" );
-                        Sup.LogTraceInfoMessage( $"GenTempSum : Exception year: {year}, i: {i}, yearList.count: {yearList.Count}" );
+                        Sup.LogMessage( $"GenTempSum : Exception {e.Message}", TraceLevel.Error );
+                        Sup.LogMessage( $"GenTempSum : Exception year: {year}, i: {i}, yearList.count: {yearList.Count}", TraceLevel.Error );
                         Environment.Exit( 0 );
                     }
 
@@ -552,8 +553,8 @@ namespace CumulusUtils
             int WinterToSpringTemperatureLimit = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "WinterToSpringTemperatureLimit", "0" ) );
             int SpringToSummerTemperatureLimit = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "SpringToSummerTemperatureLimit", "10" ) );
 
-            Sup.LogTraceInfoMessage( $"YearlySeasons : WinterToSpringTemperatureLimit = {WinterToSpringTemperatureLimit}" );
-            Sup.LogTraceInfoMessage( $"YearlySeasons : SpringToSummerTemperatureLimit = {SpringToSummerTemperatureLimit}" );
+            Sup.LogMessage( $"YearlySeasons : WinterToSpringTemperatureLimit = {WinterToSpringTemperatureLimit}", TraceLevel.Info );
+            Sup.LogMessage( $"YearlySeasons : SpringToSummerTemperatureLimit = {SpringToSummerTemperatureLimit}", TraceLevel.Info );
 
             for ( int year = CUtils.YearMin; year <= CUtils.YearMax; year++ )
             {
@@ -605,7 +606,7 @@ namespace CumulusUtils
                                 Spring = true;
                                 changeCounter = 0;
                                 thisYearSeasonList.Winter1 = i;
-                                Sup.LogTraceInfoMessage( $"YearlySeasons : {year} Spring starting on day {i}" );
+                                Sup.LogMessage( $"YearlySeasons : {year} Spring starting on day {i}", TraceLevel.Info );
                             }
                         }
                     }
@@ -624,7 +625,7 @@ namespace CumulusUtils
                                 Summer = true;
                                 changeCounter = 0;
                                 thisYearSeasonList.Spring = i - thisYearSeasonList.Winter1;
-                                Sup.LogTraceInfoMessage( $"YearlySeasons : {year} Summer starting on day {i}" );
+                                Sup.LogMessage( $"YearlySeasons : {year} Summer starting on day {i}", TraceLevel.Info );
                             }
                         }
                     }
@@ -643,7 +644,7 @@ namespace CumulusUtils
                                 Autumn = true;
                                 changeCounter = 0;
                                 thisYearSeasonList.Summer = i - thisYearSeasonList.Spring - thisYearSeasonList.Winter1;
-                                Sup.LogTraceInfoMessage( $"YearlySeasons : {year} Autumn starting on day {i}" );
+                                Sup.LogMessage( $"YearlySeasons : {year} Autumn starting on day {i}", TraceLevel.Info );
                             }
                         }
                     }
@@ -662,7 +663,7 @@ namespace CumulusUtils
                                 WinterEOY = true;
                                 changeCounter = 0;
                                 thisYearSeasonList.Autumn = i - thisYearSeasonList.Summer - thisYearSeasonList.Spring - thisYearSeasonList.Winter1;
-                                Sup.LogTraceInfoMessage( $"YearlySeasons : {year} Winter starting on day {i}" );
+                                Sup.LogMessage( $"YearlySeasons : {year} Winter starting on day {i}", TraceLevel.Info );
                             }
                         }
                     }
@@ -877,14 +878,14 @@ namespace CumulusUtils
             thisBuffer.AppendLine( di.ToString() );
             thisBuffer.AppendLine( "]});" );
 
-            Sup.LogTraceInfoMessage( $"GenerateClashOfAverages: Sum CumulusAverage {sumCumulusAverage / ThisList.Count}" );
-            Sup.LogTraceInfoMessage( $"GenerateClashOfAverages: Sum MinMaxAverage {sumMinMaxAverage / ThisList.Count}" );
+            Sup.LogMessage( $"GenerateClashOfAverages: Sum CumulusAverage {sumCumulusAverage / ThisList.Count}", TraceLevel.Info );
+            Sup.LogMessage( $"GenerateClashOfAverages: Sum MinMaxAverage {sumMinMaxAverage / ThisList.Count}", TraceLevel.Info );
 
             sumCumulusAverage = ThisList.Select( x => x.AverageTempThisDay ).Average();
             sumMinMaxAverage = ( ( ThisList.Select( x => x.MaxTemp ).Sum() + ThisList.Select( x => x.MinTemp ).Sum() ) / 2 ) / ThisList.Count;
 
-            Sup.LogTraceInfoMessage( $"GenerateClashOfAverages: Sum CumulusAverage ThisList.Select(x => x.AverageTempThisDay).Average(): {sumCumulusAverage}" );
-            Sup.LogTraceInfoMessage( $"GenerateClashOfAverages: Sum MinMaxAverage ((ThisList.Select(x => x.MaxTemp).Sum() + ThisList.Select(x => x.MinTemp).Sum())/2) / ThisList.Count: {sumMinMaxAverage}" );
+            Sup.LogMessage( $"GenerateClashOfAverages: Sum CumulusAverage ThisList.Select(x => x.AverageTempThisDay).Average(): {sumCumulusAverage}", TraceLevel.Info );
+            Sup.LogMessage( $"GenerateClashOfAverages: Sum MinMaxAverage ((ThisList.Select(x => x.MaxTemp).Sum() + ThisList.Select(x => x.MinTemp).Sum())/2) / ThisList.Count: {sumMinMaxAverage}", TraceLevel.Info );
 
             return;
         }
