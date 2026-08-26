@@ -91,6 +91,9 @@ namespace CumulusUtils
         private readonly bool StandAloneModule;
         readonly string Message;
 
+        // Add a cached JsonSerializerOptions instance to the class (near other readonly fields)
+        private static readonly JsonSerializerOptions s_jsonSerializerOptions = new JsonSerializerOptions { WriteIndented = false };
+
         #region Constructor
         public AirLink( CuSupport s )
         {
@@ -1314,7 +1317,8 @@ namespace CumulusUtils
                 {"wind", combinedBarbs}
             };
 
-            return JsonSerializer.Serialize( finalResult, new JsonSerializerOptions { WriteIndented = false } );
+            return JsonSerializer.Serialize(finalResult, s_jsonSerializerOptions);
+            //return JsonSerializer.Serialize( finalResult, s_jsonSerializerOptions );
         }
 
         #endregion

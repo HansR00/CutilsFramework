@@ -12,8 +12,8 @@ namespace CumulusUtils
 {
     public class InfoFromCMX
     {
-        public string Version { get; set; } = string.Empty;
-        public string Build { get; set; } = string.Empty;
+        public string version { get; set; } = string.Empty;
+        public string build { get; set; } = string.Empty;
         public string ProgramUpTime { get; set; } = string.Empty;
         public string NewBuildAvailable { get; set; } = string.Empty;  // gives 0 or 1
         public string NewBuildNumber { get; set; } = string.Empty;  // gives 0 or 1
@@ -56,8 +56,8 @@ namespace CumulusUtils
                 else
                     thisInfo = JsonSerializer.Deserialize<InfoFromCMX>( JSONstring );
 
-                Sup.LogMessage( $"GetCMXInfo API : Version: {thisInfo.Version}", TraceLevel.Info );
-                Sup.LogMessage( $"GetCMXInfo API : Build: {thisInfo.Build}", TraceLevel.Info );
+                Sup.LogMessage( $"GetCMXInfo API : Version: {thisInfo.version}", TraceLevel.Info );
+                Sup.LogMessage( $"GetCMXInfo API : Build: {thisInfo.build}", TraceLevel.Info );
                 Sup.LogMessage( $"GetCMXInfo API : ProgramUpTime: {thisInfo.ProgramUpTime}", TraceLevel.Info );
                 Sup.LogMessage( $"GetCMXInfo API : NewBuildAvailable: {thisInfo.NewBuildAvailable}", TraceLevel.Info );
                 Sup.LogMessage( $"GetCMXInfo API : NewBuildNumber: {thisInfo.NewBuildNumber}", TraceLevel.Info );

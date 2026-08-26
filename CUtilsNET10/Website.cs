@@ -480,7 +480,7 @@ If I forgot anybody or anything or made the wrong interpretation or reference, p
               "    <td style='width: 35%;text-align: left; font-size: smaller'>" +
               $"       {CuSupport.FormattedVersion()}<br/>" +
                "       Powered by <a href='https://cumulus.hosiene.co.uk/index.php'>Cumulus[MX]</a>&nbsp;" +
-              $"           <span id=programVersion>&nbsp;{thisCMXInfo.Version}&nbsp;(build:&nbsp;{thisCMXInfo.Build})</span>" +
+              $"           <span id=programVersion>&nbsp;{thisCMXInfo.version}&nbsp;(build:&nbsp;{thisCMXInfo.build})</span>" +
               $"             &nbsp;{( NewVersionAvailable ? "[New version available:&nbsp;build: " + thisCMXInfo.NewBuildNumber + "]" : "" )}<br/>" +
                "         See further under <a data-bs-toggle='modal' href='#CUabout'>About</a> / <a data-bs-toggle='modal' href='#CUlicense'>Licenses</a>.</td>" +
               $"   <td style='width:30%;text-align: center; font-size: smaller'>{Sup.GetUtilsIniValue( "Website", "FooterCenterText", "" )}</td>" +

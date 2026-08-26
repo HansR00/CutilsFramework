@@ -235,61 +235,80 @@ namespace CumulusUtils
                 of.WriteLine( "</div>" );
                 of.WriteLine( "<script>" );
 
-                of.Write( "var timeseries = [" );
+                StringBuilder sb = new StringBuilder( "var timeseries = [" );
                 int length = hourlyData.Time.Count;
                 for ( int n = 0; n < length; n++ )
                 {
-                    if ( n == length - 1 ) of.Write( $" {hourlyData.Time[ n ].ToString( "F0", CUtils.Inv )}" );
-                    else of.Write( $" {hourlyData.Time[ n ].ToString( "F0", CUtils.Inv )}, " );
+                    sb.Append( $" {hourlyData.Time[ n ].ToString( "F0", CUtils.Inv )}," );
                 }
 
-                of.WriteLine( "];" );
+                sb.Remove( sb.Length - 1, 1 );
+                sb.Append( "];" );
+                of.WriteLine( sb.ToString() );
 
-                of.Write( "var tempseries = [" );
+                sb = new StringBuilder( "var tempseries = [" );
                 int tempLength = hourlyData.Temperature2m.Count;
                 for ( int n = 0; n < tempLength; n++ )
                 {
-                    if ( n == tempLength - 1 ) of.Write( $" {hourlyData.Temperature2m[ n ].ToString( "F1", CUtils.Inv )}" );
-                    else of.Write( $" {hourlyData.Temperature2m[ n ].ToString( "F1", CUtils.Inv )}, " );
+                    sb.Append( $" {hourlyData.Temperature2m[ n ].ToString( "F1", CUtils.Inv )}," );
                 }
-                of.WriteLine( "];" );
+                sb.Remove( sb.Length - 1, 1 );
+                sb.Append( "];" );
+                of.WriteLine( sb.ToString() );
 
-                of.Write( "var rainseries = [" );
+                sb = new StringBuilder( "var rainseries = [" );
                 int rainLength = hourlyData.Precipitation.Count;
 
                 for ( int n = 0; n < rainLength; n++ )
                 {
-                    if ( n == rainLength - 1 ) of.Write( $" {hourlyData.Precipitation[ n ].ToString( "F1", CUtils.Inv )}" );
-                    else of.Write( $" {hourlyData.Precipitation[ n ].ToString( "F1", CUtils.Inv )}, " );
+                    sb.Append( $" {hourlyData.Precipitation[ n ].ToString( "F1", CUtils.Inv )}, " );
                 }
-                of.WriteLine( "];" );
+                sb.Remove( sb.Length - 1, 1 );
+                sb.Append( "];" );
+                of.WriteLine( sb.ToString() );
 
-                of.Write( "var pressureseries = [" );
+                sb = new StringBuilder( "var rainsumseries = [" );
+
+                float rainsum = 0;
+
+                for ( int n = 0; n < rainLength; n++ )
+                {
+                    rainsum += (float) hourlyData.Precipitation[ n ];
+                    sb.Append( $" {rainsum.ToString( "F1", CUtils.Inv )}, " );
+                }
+                sb.Remove( sb.Length - 1, 1 );
+                sb.Append( "];" );
+                of.WriteLine( sb.ToString() );
+
+                sb = new StringBuilder( "var pressureseries = [" );
                 int pressureLength = hourlyData.PressureMsl.Count;
                 for ( int n = 0; n < pressureLength; n++ )
                 {
-                    if ( n == pressureLength - 1 ) of.Write( $" {hourlyData.PressureMsl[ n ].ToString( "F1", CUtils.Inv )}" );
-                    else of.Write( $" {hourlyData.PressureMsl[ n ].ToString( "F1", CUtils.Inv )}, " );
+                    sb.Append( $" {hourlyData.PressureMsl[ n ].ToString( "F1", CUtils.Inv )}, " );
                 }
-                of.WriteLine( "];" );
+                sb.Remove( sb.Length - 1, 1 );
+                sb.Append( "];" );
+                of.WriteLine( sb.ToString() );
 
-                of.Write( "var windspeedseries = [" );
+                sb = new StringBuilder( "var windspeedseries = [" );
                 int windSpeedLength = hourlyData.WindSpeed10m.Count;
                 for ( int n = 0; n < windSpeedLength; n++ )
                 {
-                    if ( n == windSpeedLength - 1 ) of.Write( $" {hourlyData.WindSpeed10m[ n ].ToString( "F1", CUtils.Inv )}" );
-                    else of.Write( $" {hourlyData.WindSpeed10m[ n ].ToString( "F1", CUtils.Inv )}, " );
+                    sb.Append( $" {hourlyData.WindSpeed10m[ n ].ToString( "F1", CUtils.Inv )}, " );
                 }
-                of.WriteLine( "];" );
+                sb.Remove( sb.Length - 1, 1 );
+                sb.Append( "];" );
+                of.WriteLine( sb.ToString() );
 
-                of.Write( "var windgustseries = [" );
+                sb = new StringBuilder( "var windgustseries = [" );
                 int windGustLength = hourlyData.WindGusts10m.Count;
                 for ( int n = 0; n < windGustLength; n++ )
                 {
-                    if ( n == windGustLength - 1 ) of.Write( $" {hourlyData.WindGusts10m[ n ].ToString( "F1", CUtils.Inv )}" );
-                    else of.Write( $" {hourlyData.WindGusts10m[ n ].ToString( "F1", CUtils.Inv )}, " );
+                    sb.Append( $" {hourlyData.WindGusts10m[ n ].ToString( "F1", CUtils.Inv )}, " );
                 }
-                of.WriteLine( "];" );
+                sb.Remove( sb.Length - 1, 1 );
+                sb.Append( "];" );
+                of.WriteLine( sb.ToString() );
 
                 of.WriteLine( "function chartTPR() {" );
                 of.WriteLine( "chart = Highcharts.chart('chartcontainer', {" );
@@ -307,6 +326,9 @@ namespace CumulusUtils
                 of.WriteLine( $"        title: {{ text: '{Sup.GetStringsIniValue( "Forecasts", "OpenMeteoTempYaxisTitle", "Temperature" )} ({Sup.StationTemp.Text()})' }}," );
                 of.WriteLine( "    }, {" );
                 of.WriteLine( $"        title: {{ text: '{Sup.GetStringsIniValue( "Forecasts", "OpenMeteoPrecipYaxisTitle", "Precipitation" )} ({Sup.StationRain.Text()})' }}," );
+                of.WriteLine( "        opposite: true" );
+                of.WriteLine( "    }, {" );
+                of.WriteLine( $"        title: {{ text: '{Sup.GetStringsIniValue( "Forecasts", "OpenMeteoRainSumYaxisTitle", "PrecipitationSum" )} ({Sup.StationRain.Text()})' }}," );
                 of.WriteLine( "        opposite: true" );
                 of.WriteLine( "    }, {" );
                 of.WriteLine( $"        title: {{ text: '{Sup.GetStringsIniValue( "Forecasts", "OpenMeteoPressureYaxisTitle", "Pressure" )} ({Sup.StationPressure.Text()})'}}," );
@@ -331,8 +353,14 @@ namespace CumulusUtils
                 of.WriteLine( "        softMax: 1.0," );
                 of.WriteLine( $"        tooltip: {{ valueSuffix: ' {Sup.StationRain.Text()}' }}" );
                 of.WriteLine( "    }, {" );
-                of.WriteLine( $"        name: '{Sup.GetStringsIniValue( "Forecasts", "OpenMeteoPressureYaxisTitle", "Pressure" )}'," );
+                of.WriteLine( $"        name: '{Sup.GetStringsIniValue( "Forecasts", "OpenMeteoRainSumTitle", "Precipitation Sum" )}'," );
                 of.WriteLine( "        yAxis: 2," );
+                of.WriteLine( "        data: parseWeatherData(timeseries, rainsumseries)," );
+                of.WriteLine( "        color: 'SlateBlue'," );
+                of.WriteLine( $"        tooltip: {{ valueSuffix: ' {Sup.StationRain.Text()}' }}," );
+                of.WriteLine( "    }, {" );
+                of.WriteLine( $"        name: '{Sup.GetStringsIniValue( "Forecasts", "OpenMeteoPressureYaxisTitle", "Pressure" )}'," );
+                of.WriteLine( "        yAxis: 3," );
                 of.WriteLine( "        data: parseWeatherData(timeseries, pressureseries)," );
                 of.WriteLine( "        color: 'red'," );
                 of.WriteLine( $"        tooltip: {{ valueSuffix: ' {Sup.StationPressure.Text()}' }}," );

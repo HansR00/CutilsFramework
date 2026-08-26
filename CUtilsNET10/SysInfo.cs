@@ -45,7 +45,7 @@ namespace CumulusUtils
             Sup.LogMessage( "SystemStatus : starting", TraceLevel.Info );
 
             thisInfo = await thisIPC.GetCMXInfoAsync();
-            Sup.LogDebugMessage( $"CumulusMX Version: {thisInfo.Version} build {thisInfo.Build}" );
+            Sup.LogDebugMessage( $"CumulusMX Version: {thisInfo.version} build {thisInfo.build}" );
 
             using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{Sup.SysInfoOutputFilename}", false, Encoding.UTF8 ) )
             {
@@ -60,7 +60,7 @@ namespace CumulusUtils
                 of.WriteLine( $"<div style='margin:auto; text-align:left; width:{Sup.GetUtilsIniValue( "SysInfo", "ReportWidth", "700" )}px'><pre>" );
 
                 // Just for recognition of where we are : start of Station Info
-                of.WriteLine( $"Cumulus version: {thisInfo.Version} (build: {thisInfo.Build})" );
+                of.WriteLine( $"Cumulus version: {thisInfo.version} (build: {thisInfo.build})" );
                 of.WriteLine( $"Cumulus uptime: {thisInfo.ProgramUpTime}" );
                 of.WriteLine( $"Weather station: {CuSupport.StationInUse( StationType )}" );
 

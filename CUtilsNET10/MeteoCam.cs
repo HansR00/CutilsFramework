@@ -157,8 +157,7 @@ namespace CumulusUtils
             sb.AppendLine( "  <br />" );
 
             sb.AppendLine( "  <div class='container'>" );
-            sb.AppendLine( "  <image id='imageViewer' style='width:100%; height:75vh;'>" );
-
+            sb.AppendLine( $"  <image id='imageViewer' style='width:100%; height:75vh; {Sup.GetUtilsIniValue( "MeteoCam", "AdditionalViewerCSS", "" )}'>" );
             sb.AppendLine( "  <div class='text-block'>" );
             if ( WantToSeeLines.Contains( 'W' ) ) sb.AppendLine( $"{Sup.GetCUstringValue( "MeteoCam", "WindInBf", "Wind", true )}: <span id='TT1'></span> Bf<br/>" );
             if ( WantToSeeLines.Contains( 'T' ) ) sb.AppendLine( $"{Sup.GetCUstringValue( "MeteoCam", "Temperature", "Temperature", true )}: <span id='TT2'></span> {Sup.StationTemp.Text()}<br/>" );
@@ -257,7 +256,7 @@ namespace CumulusUtils
             sb.AppendLine( "</style>" );
             sb.AppendLine( "<div id='report'>" );
             sb.AppendLine( "<div class='container'>" );
-            sb.AppendLine( "  <image id='imageViewer' style='width:100%; height:75vh;'>" );
+            sb.AppendLine( $"  <image id='imageViewer' style='width:100%; height:75vh; {Sup.GetUtilsIniValue( "MeteoCam", "AdditionalViewerCSS", "" )}'>" );
             sb.AppendLine( "  <div class='text-block'>" );
             if ( WantToSeeLines.Contains( 'W' ) ) sb.AppendLine( $"{Sup.GetCUstringValue( "MeteoCam", "WindInBf", "Wind", true )}: <span id='TT1'></span> Bf<br/>" );
             if ( WantToSeeLines.Contains( 'T' ) ) sb.AppendLine( $"{Sup.GetCUstringValue( "MeteoCam", "Temperature", "Temperature", true )}: <span id='TT2'></span> {Sup.StationTemp.Text()}<br/>" );

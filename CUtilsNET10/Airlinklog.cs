@@ -3,6 +3,7 @@
  *
  */
 
+/*
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -493,6 +494,416 @@ namespace CumulusUtils
                 // release unmagaed resources here
                 disposed = true;
             }
+        }
+    }
+}
+*/
+
+/*
+ * Airlinklog - Part of CumulusUtils
+ *
+ */
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+
+namespace CumulusUtils
+{
+    public enum AirlinklogFieldName
+    {
+        thisDate, thisTime,
+        In_temp, In_hum,
+        In_pm1, In_pm2p5, In_pm2p5_1hr, In_pm2p5_3hr, In_pm2p5_24hr, In_pm2p5_nowcast, In_pm10, In_pm10_1hr, In_pm10_3hr, In_pm10_24hr, In_pm10_nowcast,
+        In_pct_1hr, In_pct_3hr, In_pct_24hr, In_pct_nowcast,
+        In_AQIpm2p5, In_AQIpm2p5_1hr, In_AQIpm2p5_3hr, In_AQIpm2p5_24hr, In_AQIpm2p5_nowcast, In_AQIPm10, In_AQIPm10_1hr, In_AQIPm10_3hr, In_AQIPm10_24hr, In_AQIPm10_nowcast,
+        Out_temp, Out_hum,
+        Out_pm1, Out_pm2p5, Out_pm2p5_1hr, Out_pm2p5_3hr, Out_pm2p5_24hr, Out_pm2p5_nowcast, Out_pm10, Out_pm10_1hr, Out_pm10_3hr, Out_pm10_24hr, Out_pm10_nowcast,
+        Out_pct_1hr, Out_pct_3hr, Out_pct_24hr, Out_pct_nowcast,
+        Out_AQIpm2p5, Out_AQIpm2p5_1hr, Out_AQIpm2p5_3hr, Out_AQIpm2p5_24hr, Out_AQIpm2p5_nowcast, Out_AQIPm10, Out_AQIPm10_1hr, Out_AQIPm10_3hr, Out_AQIPm10_24hr, Out_AQIPm10_nowcast
+    };
+
+    public struct AirlinklogValue
+    {
+        public DateTime ThisDate { get; set; }
+        public double? In_temp { get; set; }
+        public int? In_hum { get; set; }
+
+        // In
+        public double? In_pm1 { get; set; }
+        public double? In_pm2p5 { get; set; }
+        public double? In_pm2p5_1hr { get; set; }
+        public double? In_pm2p5_3hr { get; set; }
+        public double? In_pm2p5_24hr { get; set; }
+        public double? In_pm2p5_nowcast { get; set; }
+
+        public double? In_pm10 { get; set; }
+        public double? In_pm10_1hr { get; set; }
+        public double? In_pm10_3hr { get; set; }
+        public double? In_pm10_24hr { get; set; }
+        public double? In_pm10_nowcast { get; set; }
+
+        public int? In_pct_1hr { get; set; }
+        public int? In_pct_3hr { get; set; }
+        public int? In_pct_24hr { get; set; }
+        public int? In_pct_nowcast { get; set; }
+
+        public double? In_AQIpm2p5 { get; set; }
+        public double? In_AQIpm2p5_1hr { get; set; }
+        public double? In_AQIpm2p5_3hr { get; set; }
+        public double? In_AQIpm2p5_24hr { get; set; }
+        public double? In_AQIpm2p5_nowcast { get; set; }
+        public double? In_AQIPm10 { get; set; }
+        public double? In_AQIPm10_1hr { get; set; }
+        public double? In_AQIPm10_3hr { get; set; }
+        public double? In_AQIPm10_24hr { get; set; }
+        public double? In_AQIPm10_nowcast { get; set; }
+
+        // Out
+        public double? Out_temp { get; set; }
+        public int? Out_hum { get; set; }
+        public double? Out_pm1 { get; set; }
+        public double? Out_pm2p5 { get; set; }
+        public double? Out_pm2p5_1hr { get; set; }
+        public double? Out_pm2p5_3hr { get; set; }
+        public double? Out_pm2p5_24hr { get; set; }
+        public double? Out_pm2p5_nowcast { get; set; }
+        public double? Out_pm10 { get; set; }
+        public double? Out_pm10_1hr { get; set; }
+        public double? Out_pm10_3hr { get; set; }
+        public double? Out_pm10_24hr { get; set; }
+        public double? Out_pm10_nowcast { get; set; }
+
+        public int? Out_pct_1hr { get; set; }
+        public int? Out_pct_3hr { get; set; }
+        public int? Out_pct_24hr { get; set; }
+        public int? Out_pct_nowcast { get; set; }
+
+        public double? Out_AQIpm2p5 { get; set; }
+        public double? Out_AQIpm2p5_1hr { get; set; }
+        public double? Out_AQIpm2p5_3hr { get; set; }
+        public double? Out_AQIpm2p5_24hr { get; set; }
+        public double? Out_AQIpm2p5_nowcast { get; set; }
+        public double? Out_AQIPm10 { get; set; }
+        public double? Out_AQIPm10_1hr { get; set; }
+        public double? Out_AQIPm10_3hr { get; set; }
+        public double? Out_AQIPm10_24hr { get; set; }
+        public double? Out_AQIPm10_nowcast { get; set; }
+
+        public bool Valid { get; set; }
+    }
+
+    public class Airlinklog : IDisposable
+    {
+        private readonly CuSupport Sup;
+        private readonly bool IgnoreDataErrors;
+        private readonly string[] enumFieldTypeNames;
+        private readonly string[] AirlinklogList;
+
+        private string[]? lines;
+        private bool disposed;
+        private string filenameCopy;
+
+        private const int MaxErrors = 10;
+        private int ErrorCount;
+
+        public Airlinklog( CuSupport s )
+        {
+            Sup = s;
+            Sup.LogMessage( $"Airlinklog constructor: Using fixed path: | data/ |; file: | *log.txt", TraceLevel.Info );
+
+            // Get the list of Airlink logfile in the datadirectory and check what type of delimeters we have
+            AirlinklogList = Directory.GetFiles( "data/", "AirLink*.txt" );
+
+            if ( AirlinklogList.Length > 0 )
+            {
+                filenameCopy = "data/" + "copy_" + Path.GetFileName( AirlinklogList[ 0 ] );
+                Sup.LogMessage( $"Airlinklog constructor: Using {filenameCopy}", TraceLevel.Info );
+            }
+            else
+            {
+                filenameCopy = string.Empty;
+                return;
+            }
+
+            enumFieldTypeNames = Enum.GetNames<AirlinklogFieldName>();
+            IgnoreDataErrors = Sup.GetUtilsIniValue( "General", "IgnoreDataErrors", "true" ).Equals( "true", CUtils.Cmp );
+
+            if ( AirlinklogList.Length > 0 && Sup.GetUtilsIniValue( "AirLink", "CleanupAirlinkLogs", "false" ).Equals( "true", CUtils.Cmp ) )
+            {
+                // We keep two months of data, the rest can be discarded
+                foreach ( string thisFile in AirlinklogList )
+                {
+                    if ( CUtils.RunStarted.Month - File.GetLastWriteTime( thisFile ).Month > 2 )
+                    {
+                        try
+                        {
+                            File.Delete( thisFile );
+                        }
+                        catch ( Exception ex )
+                        {
+                            Sup.LogMessage( $"Airlinklog constructor: Can't clean up / delete {thisFile}: {ex.Message}", TraceLevel.Error );
+                        }
+                    }
+                }
+            }
+        }
+
+        public List<AirlinklogValue> MainAirLinkList { get; private set; } = new();
+
+        public List<AirlinklogValue> ReadAirlinklog()
+        {
+            // Get the list of values starting datetime NOW to Now - period by user definition GraphHours in section Graphs in Cumulus.ini
+            Sup.LogDebugMessage( "ReadAirlinklog: starting." );
+
+            bool NextFileTried = false;
+            bool PeriodComplete = false;
+            string Filename;
+
+            Sup.SetStartAndEndForData( out DateTime timeStart, out DateTime timeEnd );
+            Sup.LogMessage( $"AirLinklog: timeStart = {timeStart}; timeEnd = {timeEnd}", TraceLevel.Info );
+
+            //MainAirLinkList = new List<AirlinklogValue>();
+            Filename = $"data/AirLink{timeStart:yyyy}{timeStart:MM}log.txt";
+
+            if ( !File.Exists( Filename ) )
+            {
+                Sup.LogMessage( $"AirLinklog: Require {Filename} to start but it does not exist, aborting AirLinkLog", TraceLevel.Error );
+                return MainAirLinkList;
+            }
+
+            Sup.LogMessage( $"AirLinklog: Require {Filename} to start", TraceLevel.Info );
+
+            while ( !PeriodComplete )
+            {
+                filenameCopy = "data/" + "copy_" + Path.GetFileName( Filename );
+                if ( File.Exists( filenameCopy ) )
+                {
+                    File.Delete( filenameCopy );
+                }
+
+                try
+                {
+                    File.Copy( Filename, filenameCopy );
+                    lines = File.ReadAllLines( filenameCopy );
+
+                    foreach ( string line in lines )
+                    {
+                        var tmp = SetValues( line, timeStart );
+
+                        // valid is a consequence of errors in the datafile while the user expressed the wish to continue
+                        // through the ini parameter 'IgnoreDataErrors=true'
+                        if ( tmp.Valid )
+                        {
+                            MainAirLinkList.Add( tmp );
+                        }
+
+                        if ( tmp.ThisDate >= timeEnd )
+                        {
+                            Sup.LogDebugMessage( $"AirLinklog: Finished reading the log at {tmp.ThisDate}" );
+                            PeriodComplete = true;
+                            break;
+                        }
+                    }
+                }
+                finally
+                {
+                    if ( File.Exists( filenameCopy ) )
+                    {
+                        try
+                        {
+                            File.Delete( filenameCopy );
+                        }
+                        catch ( Exception ex )
+                        {
+                            Sup.LogMessage( $"Could not delete temporary file {filenameCopy}: {ex.Message}", TraceLevel.Warning );
+                        }
+                    }
+                }
+
+                if ( !PeriodComplete )
+                {
+                    if ( NextFileTried )
+                    {
+                        PeriodComplete = true;
+                    }
+                    else
+                    {
+                        NextFileTried = true;
+                        Filename = $"data/AirLink{timeEnd:yyyy}{timeEnd:MM}log.txt";  // Take care of a period passing month boundary
+                        Sup.LogMessage( $"AirLinklog: Require the next logfile: {Filename}", TraceLevel.Info );
+
+                        if ( !File.Exists( Filename ) )
+                        {
+                            Sup.LogMessage( $"AirLinklog: {Filename} does not exist so we need to stop reading", TraceLevel.Warning );
+                            PeriodComplete = true;
+                        }
+                    }
+                }
+            } // Loop over all files in AirlinkfileList
+
+            Sup.LogMessage( $"ReadAirlinklog: MainAirLinkList created: {MainAirLinkList.Count} records.", TraceLevel.Info );
+            Sup.LogMessage( "ReadAirlinklog: End", TraceLevel.Info );
+
+            return MainAirLinkList;
+        } // End ReadAirlinklog
+
+        private AirlinklogValue SetValues( string line, DateTime StartTime )
+        {
+            int FieldInUse = 0;
+            string[] lineSplit = line.Split( GlobConst.CommaSeparator );
+            var ThisValue = new AirlinklogValue();
+
+            try
+            {
+                // DateTime
+                FieldInUse = (int) AirlinklogFieldName.thisTime;
+                string tmpTimestring = lineSplit[ FieldInUse ];
+
+                ThisValue.ThisDate = CuSupport.UnixTimestampToDateTime( tmpTimestring );
+
+                if ( ThisValue.ThisDate < StartTime )
+                {
+                    // Not within date range, return invalid entry
+                    ThisValue.Valid = false;
+                    return ThisValue;
+                }
+
+                // Inside sensor
+                ThisValue.In_temp = TryParseDouble( lineSplit, (int) AirlinklogFieldName.In_temp );
+                ThisValue.In_hum = TryParseInt( lineSplit, (int) AirlinklogFieldName.In_hum );
+                ThisValue.In_pm1 = TryParseDouble( lineSplit, (int) AirlinklogFieldName.In_pm1 );
+                ThisValue.In_pm2p5 = TryParseDouble( lineSplit, (int) AirlinklogFieldName.In_pm2p5 );
+                ThisValue.In_pm2p5_1hr = TryParseDouble( lineSplit, (int) AirlinklogFieldName.In_pm2p5_1hr );
+                ThisValue.In_pm2p5_3hr = TryParseDouble( lineSplit, (int) AirlinklogFieldName.In_pm2p5_3hr );
+                ThisValue.In_pm2p5_24hr = TryParseDouble( lineSplit, (int) AirlinklogFieldName.In_pm2p5_24hr );
+                ThisValue.In_pm2p5_nowcast = TryParseDouble( lineSplit, (int) AirlinklogFieldName.In_pm2p5_nowcast );
+                ThisValue.In_pm10 = TryParseDouble( lineSplit, (int) AirlinklogFieldName.In_pm10 );
+                ThisValue.In_pm10_1hr = TryParseDouble( lineSplit, (int) AirlinklogFieldName.In_pm10_1hr );
+                ThisValue.In_pm10_3hr = TryParseDouble( lineSplit, (int) AirlinklogFieldName.In_pm10_3hr );
+                ThisValue.In_pm10_24hr = TryParseDouble( lineSplit, (int) AirlinklogFieldName.In_pm10_24hr );
+                ThisValue.In_pm10_nowcast = TryParseDouble( lineSplit, (int) AirlinklogFieldName.In_pm10_nowcast );
+                ThisValue.In_pct_1hr = TryParseInt( lineSplit, (int) AirlinklogFieldName.In_pct_1hr );
+                ThisValue.In_pct_3hr = TryParseInt( lineSplit, (int) AirlinklogFieldName.In_pct_3hr );
+                ThisValue.In_pct_24hr = TryParseInt( lineSplit, (int) AirlinklogFieldName.In_pct_24hr );
+                ThisValue.In_pct_nowcast = TryParseInt( lineSplit, (int) AirlinklogFieldName.In_pct_nowcast );
+                ThisValue.In_AQIpm2p5 = TryParseDouble( lineSplit, (int) AirlinklogFieldName.In_AQIpm2p5 );
+                ThisValue.In_AQIpm2p5_1hr = TryParseDouble( lineSplit, (int) AirlinklogFieldName.In_AQIpm2p5_1hr );
+                ThisValue.In_AQIpm2p5_3hr = TryParseDouble( lineSplit, (int) AirlinklogFieldName.In_AQIpm2p5_3hr );
+                ThisValue.In_AQIpm2p5_24hr = TryParseDouble( lineSplit, (int) AirlinklogFieldName.In_AQIpm2p5_24hr );
+                ThisValue.In_AQIpm2p5_nowcast = TryParseDouble( lineSplit, (int) AirlinklogFieldName.In_AQIpm2p5_nowcast );
+                ThisValue.In_AQIPm10 = TryParseDouble( lineSplit, (int) AirlinklogFieldName.In_AQIPm10 );
+                ThisValue.In_AQIPm10_1hr = TryParseDouble( lineSplit, (int) AirlinklogFieldName.In_AQIPm10_1hr );
+                ThisValue.In_AQIPm10_3hr = TryParseDouble( lineSplit, (int) AirlinklogFieldName.In_AQIPm10_3hr );
+                ThisValue.In_AQIPm10_24hr = TryParseDouble( lineSplit, (int) AirlinklogFieldName.In_AQIPm10_24hr );
+                ThisValue.In_AQIPm10_nowcast = TryParseDouble( lineSplit, (int) AirlinklogFieldName.In_AQIPm10_nowcast );
+
+                // Outside sensor
+                ThisValue.Out_temp = TryParseDouble( lineSplit, (int) AirlinklogFieldName.Out_temp );
+                ThisValue.Out_hum = TryParseInt( lineSplit, (int) AirlinklogFieldName.Out_hum );
+                ThisValue.Out_pm1 = TryParseDouble( lineSplit, (int) AirlinklogFieldName.Out_pm1 );
+                ThisValue.Out_pm2p5 = TryParseDouble( lineSplit, (int) AirlinklogFieldName.Out_pm2p5 );
+                ThisValue.Out_pm2p5_1hr = TryParseDouble( lineSplit, (int) AirlinklogFieldName.Out_pm2p5_1hr );
+                ThisValue.Out_pm2p5_3hr = TryParseDouble( lineSplit, (int) AirlinklogFieldName.Out_pm2p5_3hr );
+                ThisValue.Out_pm2p5_24hr = TryParseDouble( lineSplit, (int) AirlinklogFieldName.Out_pm2p5_24hr );
+                ThisValue.Out_pm2p5_nowcast = TryParseDouble( lineSplit, (int) AirlinklogFieldName.Out_pm2p5_nowcast );
+                ThisValue.Out_pm10 = TryParseDouble( lineSplit, (int) AirlinklogFieldName.Out_pm10 );
+                ThisValue.Out_pm10_1hr = TryParseDouble( lineSplit, (int) AirlinklogFieldName.Out_pm10_1hr );
+                ThisValue.Out_pm10_3hr = TryParseDouble( lineSplit, (int) AirlinklogFieldName.Out_pm10_3hr );
+                ThisValue.Out_pm10_24hr = TryParseDouble( lineSplit, (int) AirlinklogFieldName.Out_pm10_24hr );
+                ThisValue.Out_pm10_nowcast = TryParseDouble( lineSplit, (int) AirlinklogFieldName.Out_pm10_nowcast );
+                ThisValue.Out_pct_1hr = TryParseInt( lineSplit, (int) AirlinklogFieldName.Out_pct_1hr );
+                ThisValue.Out_pct_3hr = TryParseInt( lineSplit, (int) AirlinklogFieldName.Out_pct_3hr );
+                ThisValue.Out_pct_24hr = TryParseInt( lineSplit, (int) AirlinklogFieldName.Out_pct_24hr );
+                ThisValue.Out_pct_nowcast = TryParseInt( lineSplit, (int) AirlinklogFieldName.Out_pct_nowcast );
+                ThisValue.Out_AQIpm2p5 = TryParseDouble( lineSplit, (int) AirlinklogFieldName.Out_AQIpm2p5 );
+                ThisValue.Out_AQIpm2p5_1hr = TryParseDouble( lineSplit, (int) AirlinklogFieldName.Out_AQIpm2p5_1hr );
+                ThisValue.Out_AQIpm2p5_3hr = TryParseDouble( lineSplit, (int) AirlinklogFieldName.Out_AQIpm2p5_3hr );
+                ThisValue.Out_AQIpm2p5_24hr = TryParseDouble( lineSplit, (int) AirlinklogFieldName.Out_AQIpm2p5_24hr );
+                ThisValue.Out_AQIpm2p5_nowcast = TryParseDouble( lineSplit, (int) AirlinklogFieldName.Out_AQIpm2p5_nowcast );
+                ThisValue.Out_AQIPm10 = TryParseDouble( lineSplit, (int) AirlinklogFieldName.Out_AQIPm10 );
+                ThisValue.Out_AQIPm10_1hr = TryParseDouble( lineSplit, (int) AirlinklogFieldName.Out_AQIPm10_1hr );
+                ThisValue.Out_AQIPm10_3hr = TryParseDouble( lineSplit, (int) AirlinklogFieldName.Out_AQIPm10_3hr );
+                ThisValue.Out_AQIPm10_24hr = TryParseDouble( lineSplit, (int) AirlinklogFieldName.Out_AQIPm10_24hr );
+                ThisValue.Out_AQIPm10_nowcast = TryParseDouble( lineSplit, (int) AirlinklogFieldName.Out_AQIPm10_nowcast );
+
+                ThisValue.Valid = true;
+            }
+            catch ( Exception e ) when ( e is FormatException or OverflowException or IndexOutOfRangeException )
+            {
+                ErrorCount++;
+
+                if ( ErrorCount <= MaxErrors )
+                {
+                    Sup.LogMessage( $"AirlinkValue.SetValues fail: {e.Message}", TraceLevel.Error );
+                    if ( FieldInUse >= 0 && FieldInUse < enumFieldTypeNames.Length )
+                    {
+                        Sup.LogMessage( $"AirlinkValue.SetValues: in field nr {FieldInUse} ({enumFieldTypeNames[ FieldInUse ]})", TraceLevel.Error );
+                    }
+                    Sup.LogMessage( $"AirlinkValue.SetValues: line is: {line}", TraceLevel.Error );
+
+                    if ( FieldInUse >= 0 && FieldInUse < lineSplit.Length && string.IsNullOrEmpty( lineSplit[ FieldInUse ] ) )
+                    {
+                        Sup.LogMessage( $"AirlinkValue.SetValues: Field {( FieldInUse < enumFieldTypeNames.Length ? enumFieldTypeNames[ FieldInUse ] : "Unknown" )} is Empty", TraceLevel.Error );
+                    }
+                }
+
+                if ( !IgnoreDataErrors )
+                {
+                    throw;
+                }
+            }
+
+            return ThisValue;
+        }
+
+        private double? TryParseDouble( string[] lineSplit, int fieldIndex )
+        {
+            if ( fieldIndex < 0 || fieldIndex >= lineSplit.Length )
+                return null;
+
+            string value = lineSplit[ fieldIndex ];
+            if ( string.IsNullOrEmpty( value ) )
+                return null;
+
+            return double.TryParse( value, System.Globalization.NumberStyles.Any, CUtils.Inv, out var result ) ? result : null;
+        }
+
+        private int? TryParseInt( string[] lineSplit, int fieldIndex )
+        {
+            if ( fieldIndex < 0 || fieldIndex >= lineSplit.Length )
+                return null;
+
+            string value = lineSplit[ fieldIndex ];
+            if ( string.IsNullOrEmpty( value ) )
+                return null;
+
+            return int.TryParse( value, System.Globalization.NumberStyles.Any, CUtils.Inv, out var result ) ? result : null;
+        }
+
+        public void Dispose()
+        {
+            Dispose( true );
+            GC.SuppressFinalize( this );
+        }
+
+        protected virtual void Dispose( bool disposing )
+        {
+            if ( !disposed )
+            {
+                if ( disposing )
+                {
+                    // release managed resources here if needed
+                }
+
+                disposed = true;
+            }
+        }
+
+        ~Airlinklog()
+        {
+            Dispose( false );
         }
     }
 }
