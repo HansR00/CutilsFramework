@@ -39,6 +39,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -209,14 +210,14 @@ namespace CumulusUtils
                     case (int) ExtraSensorType.LaserDist:
                         sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
                         sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                        sb.AppendLine( $"    $('#ajxLaserDist{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' cm');" );
+                        sb.AppendLine( $"    $('#ajxLaserDist{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {Sup.StationLaser.Text()}');" );
                         sb.AppendLine( $"    $('#ajxLaserDist{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
                         sb.AppendLine( "  }" );
                         break;
                     case (int) ExtraSensorType.LaserDepth:
                         sb.AppendLine( $"  if ( oldobsExtra[{i}] != ExtraSensorRT[{i}]) {{" );
                         sb.AppendLine( $"    oldobsExtra[{i}] = ExtraSensorRT[{i}];" );
-                        sb.AppendLine( $"    $('#ajxLaserDepth{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' cm');" );
+                        sb.AppendLine( $"    $('#ajxLaserDepth{tmp.SensorIndex}').html(ExtraSensorRT[ {tmp.RTposition} ] + ' {Sup.StationLaser.Text()}');" );
                         sb.AppendLine( $"    $('#ajxLaserDepth{tmp.SensorIndex}').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
                         sb.AppendLine( "  }" );
                         break;
@@ -303,7 +304,8 @@ namespace CumulusUtils
                         sb.AppendLine( $"    $('#ajxLightningTime').html(ExtraSensorRT[ {tmp.RTposition + 1} ] + ' ' + ExtraSensorRT[ {tmp.RTposition + 2} ]);" );
                         sb.AppendLine( $"    $('#ajxLightningTime').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
 
-                        sb.AppendLine( $"    $('#ajxLightningDistance').html(Math.round(ExtraSensorRT[ {tmp.RTposition + 3} ]) + ' {Sup.StationDistance.Text()}');" );
+                        //sb.AppendLine( $"    $('#ajxLightningDistance').html(Math.round(ExtraSensorRT[ {tmp.RTposition + 3} ]) + ' {Sup.StationDistance.Text()}');" );
+                        sb.AppendLine( $"    $('#ajxLightningDistance').html(ExtraSensorRT[ {tmp.RTposition + 3} ] + ' {Sup.StationDistance.Text()}');" );
                         sb.AppendLine( $"    $('#ajxLightningDistance').css('color', '{Sup.GetUtilsIniValue( "Website", "ColorDashboardTextAccent", "Chartreuse" )}');" );
                         sb.AppendLine( "  }" );
 
@@ -780,7 +782,15 @@ namespace CumulusUtils
                             Sup.LogMessage( $"DoExtraSensorsWork: No ExtraSensorsRealTime for {tmp.Name} ({tmp.Type}) - has no realtime value.", TraceLevel.Warning );
                             break;
                         case (int) ExtraSensorType.Lightning:
-                            sb.Append( $"<#LightningStrikesToday> <#LightningTime format=\"g\"> <#LightningDistance rc=y> " );
+                            //sb.Append( $"<#LightningStrikesToday> <#LightningTime format=\"g\"> <#LightningDistance rc=y> " );
+                            // 1. Get the country's culture (e.g., "en-US" for United States)
+                            // CultureInfo countryCulture = CultureInfo.CurrentCulture;
+                            // DateTime now = DateTime.Now;
+
+                            // 2. Format with the country's date style + forced 24hr time
+                            string format = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern + " HH:mm";
+
+                            sb.Append( $"<#LightningStrikesToday> <#LightningTime format=\"{format}\"> <#LightningDistance rc=y> " );
                             break;
                         default:
                             Sup.LogMessage( $"DoExtraSensorsWork: Illegal ExtraSensor type {tmp.Type} - no realtime value.", TraceLevel.Error );

@@ -29,6 +29,7 @@ namespace CumulusUtils
         public Rain StationRain { get; set; }
         public Temp StationTemp { get; set; }
         public Distance StationDistance { get; set; }
+        public LaserDist StationLaser { get; set; }
         public Height StationHeight { get; set; }
         public string PerHour { get; set; }
 
@@ -239,6 +240,8 @@ namespace CumulusUtils
             int tmpDim = Convert.ToInt32( GetCumulusIniValue( "Station", "WindUnit", "2" ) );
             StationDistance = new Distance( (DistanceDim) tmpDim );                                         // CMX does not know Distance(unit) but Wind can be misused for this
 
+            StationLaser = new LaserDist( (LaserDim) Convert.ToInt32( GetCumulusIniValue( "Station", "LaserDistancehUnit", "0" ) ) );
+
             StationHeight = new Height( (HeightDim) Convert.ToInt32( GetCumulusIniValue( "Station", "CloudBaseInFeet", "0" ) ) );      // We use the CloudBaseInFeet param of CMX as default.
                                                                                                                                        // We'll see later if that needs modification
 
@@ -248,6 +251,7 @@ namespace CumulusUtils
             LogDebugMessage( $" CuSupport constructor : Unit Rain (mm,in): {StationRain.Text()}" );
             LogDebugMessage( $" CuSupport constructor : Unit T (C,F): {StationTemp.Text()}" );
             LogDebugMessage( $" CuSupport constructor : Unit Distance (m, mi, km, kn): {StationDistance.Text()}" );
+            LogDebugMessage( $" CuSupport constructor : Unit Laser (cm, in): {StationLaser.Text()}" );
             LogDebugMessage( $" CuSupport constructor : Unit Height (m, ft): {StationHeight.Text()}" );
 
         }

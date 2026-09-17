@@ -20,6 +20,7 @@ namespace CumulusUtils
     public enum RainDim { millimeter, inch }
     public enum PressureDim { millibar, hectopascal, inchHg }
     public enum DistanceDim { meter, mile, kilometer, nauticalmile }
+    public enum LaserDim { centimeter, inch}
     public enum HeightDim { meter, feet }
 
     //public enum
@@ -99,6 +100,33 @@ namespace CumulusUtils
         }
 
         public static int NrOfDecimals => 1;
+    }
+
+    public class LaserDist( LaserDim d )
+    {
+        string[] UnitLaserDistText { get; } = { "cm", "in" };
+
+        readonly double[,] ConversionFactors =
+        {
+            { 1.0,  0.393701 } ,  // cm to in
+            { 2.54, 1.0 }          // in to cm
+        };
+
+        public readonly LaserDim Dim = d;
+
+        public string Text() { return UnitLaserDistText[ (int) Dim ]; }
+        public string Text( LaserDim d ) { return UnitLaserDistText[ (int) d ]; }
+
+        public double Convert( LaserDim from, LaserDim to, double val )
+        {
+            return val * ConversionFactors[ (int) from, (int) to ];
+        }
+
+        public int NrOfDecimals()
+        {
+            if ( Dim == LaserDim.inch ) return 2;
+            else return 1;
+        }
     }
 
     public class Rain( RainDim w )

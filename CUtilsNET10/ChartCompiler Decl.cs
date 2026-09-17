@@ -391,7 +391,7 @@ namespace CumulusUtils
 
             //"LaserDist1","LaserDist2","LaserDist3","LaserDist4","LaserDepth1","LaserDepth2","LaserDepth3","LaserDepth4", 
             for ( int i = 0; i < 8; i++ )
-                PlotvarUnitsEXTRA[ 104 + i ] = "cm";
+                PlotvarUnitsEXTRA[ 104 + i ] = Sup.StationLaser.Text();
 
             //"CO2", "CO2_24h", "CO2_pm2p5", "CO2_pm2p5_24h","CO2_pm10","CO2_pm10_24h","CO2_temp","CO2_hum",
             PlotvarUnitsEXTRA[ 112 ] = CO2conc.Text();

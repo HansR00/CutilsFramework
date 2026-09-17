@@ -261,7 +261,7 @@ namespace CumulusUtils
 
                 for ( int n = 0; n < rainLength; n++ )
                 {
-                    sb.Append( $" {hourlyData.Precipitation[ n ].ToString( "F1", CUtils.Inv )}, " );
+                    sb.Append( $" {hourlyData.Precipitation[ n ].ToString( $"F{Sup.StationRain.NrOfDecimals()}", CUtils.Inv )}, " );
                 }
                 sb.Remove( sb.Length - 1, 1 );
                 sb.Append( "];" );
@@ -274,17 +274,26 @@ namespace CumulusUtils
                 for ( int n = 0; n < rainLength; n++ )
                 {
                     rainsum += (float) hourlyData.Precipitation[ n ];
-                    sb.Append( $" {rainsum.ToString( "F1", CUtils.Inv )}, " );
+                    sb.Append( $" {rainsum.ToString( $"F{Sup.StationRain.NrOfDecimals()}", CUtils.Inv )}, " );
                 }
                 sb.Remove( sb.Length - 1, 1 );
                 sb.Append( "];" );
                 of.WriteLine( sb.ToString() );
 
+                // OpenMeteo always gives pressure in hPa, so if the user uses inHg, we need to convert it to inHg for the chart
+                float tmpPress = 0;
+
                 sb = new StringBuilder( "var pressureseries = [" );
                 int pressureLength = hourlyData.PressureMsl.Count;
                 for ( int n = 0; n < pressureLength; n++ )
                 {
-                    sb.Append( $" {hourlyData.PressureMsl[ n ].ToString( "F1", CUtils.Inv )}, " );
+                    if ( Sup.StationPressure.Dim == PressureDim.inchHg )
+                        tmpPress = (float) Sup.StationPressure.Convert( PressureDim.hectopascal, Sup.StationPressure.Dim, (float) hourlyData.PressureMsl[ n ] );
+                    else
+                        // No conversion needed, just use the value as is
+                        tmpPress = (float) hourlyData.PressureMsl[ n ];
+
+                    sb.Append( $" {tmpPress.ToString( $"F{Sup.StationPressure.NrOfDecimals()}", CUtils.Inv )}, " );
                 }
                 sb.Remove( sb.Length - 1, 1 );
                 sb.Append( "];" );
