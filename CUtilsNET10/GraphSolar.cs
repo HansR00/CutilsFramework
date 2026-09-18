@@ -1,4 +1,4 @@
-﻿/*
+/*
  * GraphSolar - Part of CumulusUtils
  *
  */
@@ -45,6 +45,56 @@ namespace CumulusUtils
 {
     partial class Graphx
     {
+
+        private sealed class DaySolarValuesIndex
+        {
+            public required IReadOnlyDictionary<int, List<DaySolarValues>> ByYear { get; init; }
+            public required IReadOnlyDictionary<(int Year, int Month), List<DaySolarValues>> ByYearMonth { get; init; }
+        }
+
+        private readonly record struct SolarStats( float Average, float StdDev, float Min, float Max );
+
+        private static DaySolarValuesIndex BuildSolarIndex( List<DaySolarValues> values )
+        {
+            return new DaySolarValuesIndex
+            {
+                ByYear = values.GroupBy( x => x.ThisDate.Year ).ToDictionary( x => x.Key, x => x.ToList() ),
+                ByYearMonth = values.GroupBy( x => ( x.ThisDate.Year, x.ThisDate.Month ) ).ToDictionary( x => x.Key, x => x.ToList() )
+            };
+        }
+
+        private static SolarStats GetSolarHoursStats( List<DaySolarValues> values )
+        {
+            return GetSolarFieldStats( values, static v => v.SolarHours );
+        }
+
+        private static SolarStats GetSolarEnergyStats( List<DaySolarValues> values )
+        {
+            return GetSolarFieldStats( values, static v => v.SolarEnergy );
+        }
+
+        private static SolarStats GetSolarFieldStats( List<DaySolarValues> values, Func<DaySolarValues, float> selector )
+        {
+            int count = values.Count;
+            double sum = 0;
+            double sumSquares = 0;
+            float min = float.MaxValue;
+            float max = float.MinValue;
+
+            foreach ( DaySolarValues value in values )
+            {
+                float field = selector( value );
+                sum += field;
+                sumSquares += field * field;
+                if ( field < min ) min = field;
+                if ( field > max ) max = field;
+            }
+
+            double average = sum / count;
+            double variance = Math.Max( 0, ( sumSquares / count ) - ( average * average ) );
+            return new SolarStats( (float) average, (float) Math.Sqrt( variance ), min, max );
+        }
+
         #region declaration
 
         // PossibleIntervals are the loggingintervals in minutes with the possibilities as given in the Station Settings of CMX
@@ -77,19 +127,23 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "GenerateYearSolarHoursStatistics: Starting" );
 
+            DaySolarValuesIndex solarIndex = BuildSolarIndex( DailySolarValuesList );
+
             for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
-                List<DaySolarValues> yearlist = DailySolarValuesList.Where( x => x.ThisDate.Year == i ).ToList();
+                bool haveYear = solarIndex.ByYear.TryGetValue( i, out List<DaySolarValues>? yearlist ) && yearlist.Count > 0;
 
                 Sup.LogMessage( $"Generating Year Solar Hours Statistics, doing year {i}", TraceLevel.Info );
 
-                if ( yearlist.Any() )
+                if ( haveYear )
                 {
+                    SolarStats stats = GetSolarHoursStats( yearlist );
+
                     years.Add( i );
-                    average.Add( yearlist.Select( x => x.SolarHours ).Average() );
-                    stddev.Add( yearlist.Select( x => x.SolarHours ).StdDev() );
-                    minSolarHours.Add( yearlist.Select( x => x.SolarHours ).Min() );
-                    maxSolarHours.Add( yearlist.Select( x => x.SolarHours ).Max() );
+                    average.Add( stats.Average );
+                    stddev.Add( stats.StdDev );
+                    minSolarHours.Add( stats.Min );
+                    maxSolarHours.Add( stats.Max );
 
                     minminSH = Math.Min( minSolarHours.Last(), minminSH );
                     maxmaxSH = Math.Max( maxSolarHours.Last(), maxmaxSH );
@@ -240,19 +294,21 @@ namespace CumulusUtils
             List<float> minSolarHours = new List<float>();
             List<float> maxSolarHours = new List<float>();
 
+            DaySolarValuesIndex solarIndex = BuildSolarIndex( DailySolarValuesList );
+
             for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
-                List<DaySolarValues> yearMonthlist = DailySolarValuesList.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == thisMonth ).ToList();
-
                 //Sup.LogTraceInfoMessage( $"Generating Year Month Solar Hours Statistics, doing year {i} and month {thisMonth}" );
 
-                if ( yearMonthlist.Any() )
+                if ( solarIndex.ByYearMonth.TryGetValue( ( i, thisMonth ), out List<DaySolarValues>? yearMonthlist ) && yearMonthlist.Count > 0 )
                 {
+                    SolarStats stats = GetSolarHoursStats( yearMonthlist );
+
                     years.Add( i );
-                    average.Add( yearMonthlist.Select( x => x.SolarHours ).Average() );
-                    stddev.Add( yearMonthlist.Select( x => x.SolarHours ).StdDev() );
-                    minSolarHours.Add( yearMonthlist.Select( x => x.SolarHours ).Min() );
-                    maxSolarHours.Add( yearMonthlist.Select( x => x.SolarHours ).Max() );
+                    average.Add( stats.Average );
+                    stddev.Add( stats.StdDev );
+                    minSolarHours.Add( stats.Min );
+                    maxSolarHours.Add( stats.Max );
 
                     minminSH = Math.Min( minSolarHours.Last(), minminSH );
                     maxmaxSH = Math.Max( maxSolarHours.Last(), maxmaxSH );
@@ -404,19 +460,23 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "Generate GenerateYearSolarEnergyStatistics: Starting" );
 
+            DaySolarValuesIndex solarIndex = BuildSolarIndex( DailySolarValuesList );
+
             for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
-                List<DaySolarValues> yearlist = DailySolarValuesList.Where( x => x.ThisDate.Year == i ).ToList();
+                bool haveYear = solarIndex.ByYear.TryGetValue( i, out List<DaySolarValues>? yearlist ) && yearlist.Count > 0;
 
                 Sup.LogMessage( $"Generating Year Solar Energy Statistics, doing year {i}", TraceLevel.Info );
 
-                if ( yearlist.Any() )
+                if ( haveYear )
                 {
+                    SolarStats stats = GetSolarEnergyStats( yearlist );
+
                     years.Add( i );
-                    average.Add( yearlist.Select( x => x.SolarEnergy ).Average() );
-                    stddev.Add( yearlist.Select( x => x.SolarEnergy ).StdDev() );
-                    minSolarEnergy.Add( yearlist.Select( x => x.SolarEnergy ).Min() );
-                    maxSolarEnergy.Add( yearlist.Select( x => x.SolarEnergy ).Max() );
+                    average.Add( stats.Average );
+                    stddev.Add( stats.StdDev );
+                    minSolarEnergy.Add( stats.Min );
+                    maxSolarEnergy.Add( stats.Max );
 
                     minminSE = Math.Min( minSolarEnergy.Last(), minminSE );
                     maxmaxSE = Math.Max( maxSolarEnergy.Last(), maxmaxSE );
@@ -567,19 +627,21 @@ namespace CumulusUtils
             List<float> minSolarEnergy = new List<float>();
             List<float> maxSolarEnergy = new List<float>();
 
+            DaySolarValuesIndex solarIndex = BuildSolarIndex( DailySolarValuesList );
+
             for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
-                List<DaySolarValues> yearMonthlist = DailySolarValuesList.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == thisMonth ).ToList();
-
                 //Sup.LogTraceInfoMessage( $"Generating Year Month Solar Energy Statistics, doing year {i} and month {thisMonth}" );
 
-                if ( yearMonthlist.Any() )
+                if ( solarIndex.ByYearMonth.TryGetValue( ( i, thisMonth ), out List<DaySolarValues>? yearMonthlist ) && yearMonthlist.Count > 0 )
                 {
+                    SolarStats stats = GetSolarEnergyStats( yearMonthlist );
+
                     years.Add( i );
-                    average.Add( yearMonthlist.Select( x => x.SolarEnergy ).Average() );
-                    stddev.Add( yearMonthlist.Select( x => x.SolarEnergy ).StdDev() );
-                    minSolarEnergy.Add( yearMonthlist.Select( x => x.SolarEnergy ).Min() );
-                    maxSolarEnergy.Add( yearMonthlist.Select( x => x.SolarEnergy ).Max() );
+                    average.Add( stats.Average );
+                    stddev.Add( stats.StdDev );
+                    minSolarEnergy.Add( stats.Min );
+                    maxSolarEnergy.Add( stats.Max );
 
                     minminSH = Math.Min( minSolarEnergy.Last(), minminSH );
                     maxmaxSH = Math.Max( maxSolarEnergy.Last(), maxmaxSH );

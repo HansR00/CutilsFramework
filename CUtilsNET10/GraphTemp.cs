@@ -1,4 +1,4 @@
-﻿/*
+/*
  * GraphTemp - Part of CumulusUtils
  *
  */
@@ -14,6 +14,56 @@ namespace CumulusUtils
 {
     partial class Graphx
     {
+
+        private sealed class DayfileTemperatureIndex
+        {
+            public required IReadOnlyDictionary<int, List<DayfileValue>> ByYear { get; init; }
+            public required IReadOnlyDictionary<int, List<DayfileValue>> ByMonth { get; init; }
+            public required IReadOnlyDictionary<(int Year, int Month), List<DayfileValue>> ByYearMonth { get; init; }
+        }
+
+        private readonly record struct TemperatureStats( float Average, float StdDev, float Min, float Max );
+
+        private static DayfileTemperatureIndex BuildTemperatureIndex( List<DayfileValue> values )
+        {
+            return new DayfileTemperatureIndex
+            {
+                ByYear = values.GroupBy( x => x.ThisDate.Year ).ToDictionary( x => x.Key, x => x.ToList() ),
+                ByMonth = values.GroupBy( x => x.ThisDate.Month ).ToDictionary( x => x.Key, x => x.ToList() ),
+                ByYearMonth = values.GroupBy( x => ( x.ThisDate.Year, x.ThisDate.Month ) ).ToDictionary( x => x.Key, x => x.ToList() )
+            };
+        }
+
+        private static TemperatureStats GetTemperatureStats( List<DayfileValue> values )
+        {
+            int count = values.Count;
+            double sum = 0;
+            double sumSquares = 0;
+            float min = float.MaxValue;
+            float max = float.MinValue;
+
+            foreach ( DayfileValue value in values )
+            {
+                float averageTemp = value.AverageTempThisDay;
+                sum += averageTemp;
+                sumSquares += averageTemp * averageTemp;
+                if ( value.MinTemp < min ) min = value.MinTemp;
+                if ( value.MaxTemp > max ) max = value.MaxTemp;
+            }
+
+            double average = sum / count;
+            double variance = Math.Max( 0, ( sumSquares / count ) - ( average * average ) );
+            return new TemperatureStats( (float) average, (float) Math.Sqrt( variance ), min, max );
+        }
+
+        private static float GetMonthlyAverageTemp( List<DayfileValue> values )
+        {
+            if ( values.Count == 0 ) return -1;
+            double sum = 0;
+            foreach ( DayfileValue value in values ) sum += value.AverageTempThisDay;
+            return (float) ( sum / values.Count );
+        }
+
         private void GenMonthlyTempvsNOAAGraphData( List<DayfileValue> ThisList, StringBuilder thisBuffer )
         {
             int counter;
@@ -30,6 +80,8 @@ namespace CumulusUtils
             StringBuilder sb;
 
             Sup.LogDebugMessage( "GenMonthlyTempvsNOAAGraphData : starting" );
+
+            DayfileTemperatureIndex temperatureIndex = BuildTemperatureIndex( ThisList );
 
             NormalUsage = Sup.GetUtilsIniValue( "Graphs", "UseNormalTempReference", "Normal" );
 
@@ -60,13 +112,16 @@ namespace CumulusUtils
 
                 for ( int i = 1; i <= 12; i++ )
                 {
-                    if ( ThisList.Where( x => x.ThisDate.Month == i ).Any() )
+                    if ( temperatureIndex.ByMonth.TryGetValue( i, out List<DayfileValue>? monthValues ) && monthValues.Count > 0 )
                     {
-                        NOAATempStationAv[ i - 1 ] = ThisList.Where( x => x.ThisDate.Month == i ).Select( x => x.AverageTempThisDay ).Average();
-                        NOAATempStdDev[ i - 1 ] = ThisList.Where( x => x.ThisDate.Month == i ).Select( x => x.AverageTempThisDay ).StdDev();
+                        TemperatureStats stats = GetTemperatureStats( monthValues );
+                        NOAATempStationAv[ i - 1 ] = stats.Average;
+                        NOAATempStdDev[ i - 1 ] = stats.StdDev;
                     }
                     else
+                    {
                         NOAATempStationAv[ i - 1 ] = -1;
+                    }
 
                     Sup.LogMessage( $" Station Average values: {m[ i - 1 ]} -> {NOAATempStationAv[ i - 1 ].ToString( "F1", CUtils.Inv )}", TraceLevel.Info );
                 }
@@ -85,10 +140,9 @@ namespace CumulusUtils
                 for ( int j = 1; j <= 12; j++ )
                 {
                     //Now do the actual month work
-                    if ( ThisList.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == j ).Any() )
-                        MonthlyTempValues[ j - 1 ] = ThisList.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == j ).Select( x => x.AverageTempThisDay ).Average();
-                    else
-                        MonthlyTempValues[ j - 1 ] = -1;
+                    MonthlyTempValues[ j - 1 ] = temperatureIndex.ByYearMonth.TryGetValue( ( i, j ), out List<DayfileValue>? yearMonthValues )
+                        ? GetMonthlyAverageTemp( yearMonthValues )
+                        : -1;
                 }
             }
 
@@ -248,6 +302,8 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "GenStackedWarmDaysGraphData : starting" );
 
+            DayfileTemperatureIndex temperatureIndex = BuildTemperatureIndex( ThisList );
+
             if ( Sup.StationTemp.Dim == TempDim.fahrenheit ) // Fahrenheit
             {
                 Limit25C = (int) Sup.StationTemp.Convert( TempDim.celsius, TempDim.fahrenheit, 25.0 );   //(25 * 1.8 + 32);
@@ -260,12 +316,20 @@ namespace CumulusUtils
 
             for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
-                if ( ThisList.Where( x => x.ThisDate.Year == i ).Any() )
+                max25Count = 0;
+                max30Count = 0;
+                max35Count = 0;
+                max40Count = 0;
+
+                if ( temperatureIndex.ByYear.TryGetValue( i, out List<DayfileValue>? yearValues ) )
                 {
-                    max40Count = ThisList.Where( x => x.ThisDate.Year == i ).Where( x => x.MaxTemp >= Limit40C ).Count();
-                    max35Count = ThisList.Where( x => x.ThisDate.Year == i ).Where( x => x.MaxTemp >= Limit35C && x.MaxTemp < Limit40C ).Count();
-                    max30Count = ThisList.Where( x => x.ThisDate.Year == i ).Where( x => x.MaxTemp >= Limit30C && x.MaxTemp < Limit35C ).Count();
-                    max25Count = ThisList.Where( x => x.ThisDate.Year == i ).Where( x => x.MaxTemp >= Limit25C && x.MaxTemp < Limit30C ).Count();
+                    foreach ( DayfileValue value in yearValues )
+                    {
+                        if ( value.MaxTemp >= Limit40C ) max40Count++;
+                        else if ( value.MaxTemp >= Limit35C ) max35Count++;
+                        else if ( value.MaxTemp >= Limit30C ) max30Count++;
+                        else if ( value.MaxTemp >= Limit25C ) max25Count++;
+                    }
                 }
 
                 // and write the values to the list
@@ -393,6 +457,8 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "GenStackedFrostDaysGraphData : starting" );
 
+            DayfileTemperatureIndex temperatureIndex = BuildTemperatureIndex( ThisList );
+
             // Fahrenheit
             if ( Sup.StationTemp.Dim == TempDim.fahrenheit ) ZeroValue = 32;
 
@@ -400,10 +466,16 @@ namespace CumulusUtils
 
             for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
-                if ( ThisList.Where( x => x.ThisDate.Year == i ).Any() )
+                FrostDays = 0;
+                IceDays = 0;
+
+                if ( temperatureIndex.ByYear.TryGetValue( i, out List<DayfileValue>? yearValues ) )
                 {
-                    FrostDays = ThisList.Where( x => x.ThisDate.Year == i ).Where( x => x.MaxTemp >= ZeroValue && x.MinTemp < ZeroValue ).Count();
-                    IceDays = ThisList.Where( x => x.ThisDate.Year == i ).Where( x => x.MaxTemp <= ZeroValue ).Count();
+                    foreach ( DayfileValue value in yearValues )
+                    {
+                        if ( value.MaxTemp <= ZeroValue ) IceDays++;
+                        else if ( value.MinTemp < ZeroValue ) FrostDays++;
+                    }
                 }
 
                 // and write the values to the list
@@ -508,6 +580,8 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "Generate Heat Map Starting" );
 
+            DayfileTemperatureIndex temperatureIndex = BuildTemperatureIndex( Thislist );
+
             thisBuffer.AppendLine( "console.log('Heatmap Chart starting.');" );
             thisBuffer.AppendLine( "chart = thisHeatmap = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "chart:" );
@@ -607,7 +681,8 @@ namespace CumulusUtils
             {
                 Sup.LogMessage( $"Generating Heat Map data, doing year {i}", TraceLevel.Info );
 
-                List<DayfileValue> yearlist = Thislist.Where( x => x.ThisDate.Year == i ).ToList();
+                if ( !temperatureIndex.ByYear.TryGetValue( i, out List<DayfileValue>? yearlist ) )
+                    continue;
 
                 foreach ( DayfileValue day in yearlist )
                 {
@@ -634,20 +709,22 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "Generate GenerateYearTempStatistics Starting" );
 
+            DayfileTemperatureIndex temperatureIndex = BuildTemperatureIndex( Thislist );
+
             for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
-                List<DayfileValue> yearlist = Thislist.Where( x => x.ThisDate.Year == i ).ToList();
-
-                if ( yearlist.Count == 0 )
+                if ( !temperatureIndex.ByYear.TryGetValue( i, out List<DayfileValue>? yearlist ) || yearlist.Count == 0 )
                     continue;
 
                 Sup.LogMessage( $"Generating Year Temp Statistics, doing year {i}", TraceLevel.Info );
 
+                TemperatureStats stats = GetTemperatureStats( yearlist );
+
                 years.Add( i );
-                average.Add( yearlist.Select( x => x.AverageTempThisDay ).Average() );
-                stddev.Add( yearlist.Select( x => x.AverageTempThisDay ).StdDev() );
-                mintemp.Add( yearlist.Select( x => x.MinTemp ).Min() );
-                maxtemp.Add( yearlist.Select( x => x.MaxTemp ).Max() );
+                average.Add( stats.Average );
+                stddev.Add( stats.StdDev );
+                mintemp.Add( stats.Min );
+                maxtemp.Add( stats.Max );
             }
 
             thisBuffer.AppendLine( "console.log('Year Temp Stats Chart starting.');" );
@@ -790,19 +867,21 @@ namespace CumulusUtils
 
             //Sup.LogDebugMessage( "Generate GenerateYearMonthTempStatistics Start" );
 
+            DayfileTemperatureIndex temperatureIndex = BuildTemperatureIndex( Thislist );
+
             for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
-                List<DayfileValue> yearmonthlist = Thislist.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == thisMonth ).ToList();
-
                 Sup.LogMessage( $"Generating Year Month Temp Statistics, doing year {i} and month {thisMonth}", TraceLevel.Info );
 
-                if ( yearmonthlist.Any() )
+                if ( temperatureIndex.ByYearMonth.TryGetValue( ( i, thisMonth ), out List<DayfileValue>? yearmonthlist ) && yearmonthlist.Count > 0 )
                 {
+                    TemperatureStats stats = GetTemperatureStats( yearmonthlist );
+
                     years.Add( i );
-                    average.Add( yearmonthlist.Select( x => x.AverageTempThisDay ).Average() );
-                    stddev.Add( yearmonthlist.Select( x => x.AverageTempThisDay ).StdDev() );
-                    mintemp.Add( yearmonthlist.Select( x => x.MinTemp ).Min() );
-                    maxtemp.Add( yearmonthlist.Select( x => x.MaxTemp ).Max() );
+                    average.Add( stats.Average );
+                    stddev.Add( stats.StdDev );
+                    mintemp.Add( stats.Min );
+                    maxtemp.Add( stats.Max );
                 }
             }
 

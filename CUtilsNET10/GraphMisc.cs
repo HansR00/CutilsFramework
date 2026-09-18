@@ -1,4 +1,4 @@
-﻿/*
+/*
  * GraphMisc - Part of CumulusUtils
  *
  */
@@ -14,6 +14,63 @@ namespace CumulusUtils
 {
     partial class Graphx
     {
+
+        private sealed class DayfileMiscIndex
+        {
+            public required IReadOnlyDictionary<int, List<DayfileValue>> ByYear { get; init; }
+            public required IReadOnlyDictionary<(int Year, int Month), List<DayfileValue>> ByYearMonth { get; init; }
+        }
+
+        private static DayfileMiscIndex BuildMiscIndex( List<DayfileValue> values )
+        {
+            return new DayfileMiscIndex
+            {
+                ByYear = values.GroupBy( x => x.ThisDate.Year ).ToDictionary( x => x.Key, x => x.ToList() ),
+                ByYearMonth = values.GroupBy( x => ( x.ThisDate.Year, x.ThisDate.Month ) ).ToDictionary( x => x.Key, x => x.ToList() )
+            };
+        }
+
+        // Sum of EvapoTranspiration for a month-year bucket (single pass)
+        private static float GetMonthlyEvtSum( List<DayfileValue> values )
+        {
+            double sum = 0;
+            foreach ( DayfileValue value in values ) sum += value.EvapoTranspiration;
+            return (float) sum;
+        }
+
+        // Sorted-by-date view so hemisphere-aware season windows (StartDate..EndDate) resolve
+        // with binary-search bounds instead of a full scan of the dayfile list for every year.
+        private sealed class DayfileDateRangeLookup
+        {
+            private readonly List<DayfileValue> _ordered;
+
+            public DayfileDateRangeLookup( List<DayfileValue> values )
+            {
+                _ordered = new List<DayfileValue>( values );
+                _ordered.Sort( static ( a, b ) => a.ThisDate.CompareTo( b.ThisDate ) );
+            }
+
+            public List<DayfileValue> GetRange( DateTime startInclusive, DateTime endExclusive )
+            {
+                int lo = LowerBound( startInclusive );
+                int hi = LowerBound( endExclusive );
+                if ( hi <= lo ) return new List<DayfileValue>();
+                return _ordered.GetRange( lo, hi - lo );
+            }
+
+            private int LowerBound( DateTime target )
+            {
+                int lo = 0, hi = _ordered.Count;
+                while ( lo < hi )
+                {
+                    int mid = ( lo + hi ) >> 1;
+                    if ( _ordered[ mid ].ThisDate < target ) lo = mid + 1;
+                    else hi = mid;
+                }
+                return lo;
+            }
+        }
+
         #region Daily EVT
 
         private void GenDailyEVTGraphData( List<DayfileValue> ThisList, StringBuilder thisBuffer )
@@ -151,6 +208,8 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "GenMonthlyEVTGraphData : starting" );
 
+            DayfileMiscIndex miscIndex = BuildMiscIndex( ThisList );
+
             for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
                 MonthlyEVTValues = new float[ m.Length ];
@@ -160,10 +219,9 @@ namespace CumulusUtils
                 for ( int j = 1; j <= 12; j++ )
                 {
                     //Now do the actual month work
-                    if ( ThisList.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == j ).Any() )
-                        MonthlyEVTValues[ j - 1 ] = ThisList.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == j ).Select( x => x.EvapoTranspiration ).Sum();
-                    else
-                        MonthlyEVTValues[ j - 1 ] = -1;
+                    MonthlyEVTValues[ j - 1 ] = miscIndex.ByYearMonth.TryGetValue( ( i, j ), out List<DayfileValue>? monthValues ) && monthValues.Count > 0
+                        ? GetMonthlyEvtSum( monthValues )
+                        : -1;
                 }
             }
 
@@ -283,6 +341,8 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "GenTempSum : starting" );
 
+            DayfileDateRangeLookup dateLookup = new DayfileDateRangeLookup( ThisList );
+
             thisBuffer.AppendLine( "console.log('Temperature Sum Chart starting.');" );
             thisBuffer.AppendLine( "chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "  rangeSelector:" );
@@ -340,8 +400,7 @@ namespace CumulusUtils
                     EndDate = new DateTime( year + 1, 7, 1 );
                 }
 
-                List<DayfileValue> yearList = new List<DayfileValue>();
-                yearList = ThisList.Where( x => x.ThisDate >= StartDate && x.ThisDate < EndDate ).ToList();
+                List<DayfileValue> yearList = dateLookup.GetRange( StartDate, EndDate );
 
                 // Do data  exist on the startdate of the first year? If not than skip thios season
                 if ( ThisList[ 0 ].ThisDate > StartDate || !yearList.Any() ) continue;
@@ -412,6 +471,8 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "GrowingDegreeDays : starting" );
 
+            DayfileDateRangeLookup dateLookup = new DayfileDateRangeLookup( ThisList );
+
             thisBuffer.AppendLine( "console.log('Growing  Degree Days Chart starting.');" );
             thisBuffer.AppendLine( "chart = Highcharts.chart('chartcontainer', {" );
             thisBuffer.AppendLine( "  rangeSelector:" );
@@ -471,8 +532,7 @@ namespace CumulusUtils
                     EndDate = new DateTime( year + 1, 7, 1 );
                 }
 
-                List<DayfileValue> yearList = new List<DayfileValue>();
-                yearList = ThisList.Where( x => x.ThisDate >= StartDate && x.ThisDate < EndDate ).ToList();
+                List<DayfileValue> yearList = dateLookup.GetRange( StartDate, EndDate );
 
                 // Do data  exist on the startdate of the first year? If not than skip thios season
                 if ( ThisList[ 0 ].ThisDate > StartDate || !yearList.Any() ) continue;
@@ -550,6 +610,8 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "YearlySeasons : starting" );
 
+            DayfileDateRangeLookup dateLookup = new DayfileDateRangeLookup( ThisList );
+
             int WinterToSpringTemperatureLimit = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "WinterToSpringTemperatureLimit", "0" ) );
             int SpringToSummerTemperatureLimit = Convert.ToInt32( Sup.GetUtilsIniValue( "Graphs", "SpringToSummerTemperatureLimit", "10" ) );
 
@@ -572,8 +634,7 @@ namespace CumulusUtils
                     EndDate = new DateTime( year + 1, 7, 1 );
                 }
 
-                List<DayfileValue> yearList = new List<DayfileValue>();
-                yearList = ThisList.Where( x => x.ThisDate >= StartDate && x.ThisDate < EndDate ).ToList();
+                List<DayfileValue> yearList = dateLookup.GetRange( StartDate, EndDate );
 
                 // Do data  exist on the startdate of the first year? If not than skip thios season
                 if ( ThisList[ 0 ].ThisDate > StartDate || !yearList.Any() ) continue;

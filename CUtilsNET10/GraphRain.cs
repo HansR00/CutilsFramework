@@ -1,4 +1,4 @@
-﻿/*
+/*
  * GraphRain - Part of CumulusUtils
  *
  */
@@ -14,6 +14,82 @@ namespace CumulusUtils
 {
     partial class Graphx
     {
+
+        private sealed class DayfileRainIndex
+        {
+            public required IReadOnlyDictionary<int, List<DayfileValue>> ByYear { get; init; }
+            public required IReadOnlyDictionary<int, List<DayfileValue>> ByMonth { get; init; }
+            public required IReadOnlyDictionary<(int Year, int Month), List<DayfileValue>> ByYearMonth { get; init; }
+        }
+
+        private readonly record struct RainStats( float Average, float StdDev, float Min, float Max );
+
+        private static DayfileRainIndex BuildRainIndex( List<DayfileValue> values )
+        {
+            return new DayfileRainIndex
+            {
+                ByYear = values.GroupBy( x => x.ThisDate.Year ).ToDictionary( x => x.Key, x => x.ToList() ),
+                ByMonth = values.GroupBy( x => x.ThisDate.Month ).ToDictionary( x => x.Key, x => x.ToList() ),
+                ByYearMonth = values.GroupBy( x => ( x.ThisDate.Year, x.ThisDate.Month ) ).ToDictionary( x => x.Key, x => x.ToList() )
+            };
+        }
+
+        private static RainStats GetDailyRainStats( List<DayfileValue> values )
+        {
+            int count = values.Count;
+            double sum = 0;
+            double sumSquares = 0;
+            float min = float.MaxValue;
+            float max = float.MinValue;
+
+            foreach ( DayfileValue value in values )
+            {
+                float rain = value.TotalRainThisDay;
+                sum += rain;
+                sumSquares += rain * rain;
+                if ( rain < min ) min = rain;
+                if ( rain > max ) max = rain;
+            }
+
+            double average = sum / count;
+            double variance = Math.Max( 0, ( sumSquares / count ) - ( average * average ) );
+            return new RainStats( (float) average, (float) Math.Sqrt( variance ), min, max );
+        }
+
+        // Highest MonthlyRain value in a set of daily records (used for the per month per year maxima)
+        private static float GetMonthlyRainMax( List<DayfileValue> values )
+        {
+            float max = float.MinValue;
+            foreach ( DayfileValue value in values )
+                if ( value.MonthlyRain > max ) max = value.MonthlyRain;
+            return max;
+        }
+
+        private static float GetMonthlyRainMaxAverage( List<DayfileValue> values )
+        {
+            double sum = 0;
+            foreach ( DayfileValue value in values ) sum += value.MonthlyRain;
+            return (float) ( sum / values.Count );
+        }
+
+        private static float GetMonthlyRainMaxStdDev( List<DayfileValue> values )
+        {
+            int count = values.Count;
+            double sum = 0;
+            double sumSquares = 0;
+
+            foreach ( DayfileValue value in values )
+            {
+                double rain = value.MonthlyRain;
+                sum += rain;
+                sumSquares += rain * rain;
+            }
+
+            double average = sum / count;
+            double variance = Math.Max( 0, ( sumSquares / count ) - ( average * average ) );
+            return (float) Math.Sqrt( variance );
+        }
+
 
         #region DailyRain
         private void GenDailyRainGraphData( List<DayfileValue> ThisList, StringBuilder thisBuffer )
@@ -205,6 +281,8 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "GenMonthlyRainvsNOAAGraphData: starting" );
 
+            DayfileRainIndex rainIndex = BuildRainIndex( ThisList );
+
             NormalUsage = Sup.GetUtilsIniValue( "Graphs", "UseNormalRainReference", "Normal" );
 
             // Fill the Normal array - from tradition this is named after the NOAA but it can be from any Meteo organisation
@@ -232,21 +310,19 @@ namespace CumulusUtils
 
                 for ( int i = 1; i <= 12; i++ )
                 {
+                    // Collect the maximum MonthlyRain value for this month across all years
                     List<float> tmp = new List<float>();
 
-                    NOAARainStationAv[ i - 1 ] = 0;
-
-                    // First pass to detect the rain per month per year. Needed for estimating the StdDev
                     for ( int j = CUtils.YearMin; j <= CUtils.YearMax; j++ )
                     {
-                        if ( ThisList.Where( x => x.ThisDate.Month == i ).Where( x => x.ThisDate.Year == j ).Any() )
-                            tmp.Add( ThisList.Where( x => x.ThisDate.Month == i ).Where( x => x.ThisDate.Year == j ).Select( x => x.MonthlyRain ).Max() );
+                        if ( rainIndex.ByYearMonth.TryGetValue( ( j, i ), out List<DayfileValue>? monthYearValues ) && monthYearValues.Count > 0 )
+                            tmp.Add( GetMonthlyRainMax( monthYearValues ) );
                     }
 
-                    // Second pass to determine the average and StdDev
-                    if ( tmp.Any() )
+                    // Determine the average and StdDev
+                    if ( tmp.Count > 0 )
                     {
-                        NOAARainStationAv[ i - 1 ] = tmp.Average();  //= counter;
+                        NOAARainStationAv[ i - 1 ] = (float) tmp.Average();
                         NOAARainStdDev[ i - 1 ] = tmp.StdDev();
                     }
                     else
@@ -267,10 +343,9 @@ namespace CumulusUtils
                 for ( int j = 1; j <= 12; j++ )
                 {
                     //Now do the actual month work
-                    if ( ThisList.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == j ).Any() )
-                        MonthlyRainValues[ j - 1 ] = ThisList.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == j ).Select( x => x.MonthlyRain ).Max();
-                    else
-                        MonthlyRainValues[ j - 1 ] = -1;
+                    MonthlyRainValues[ j - 1 ] = rainIndex.ByYearMonth.TryGetValue( ( i, j ), out List<DayfileValue>? monthValues ) && monthValues.Count > 0
+                        ? GetMonthlyRainMax( monthValues )
+                        : -1;
                 }
             }
 
@@ -436,19 +511,21 @@ namespace CumulusUtils
 
             Sup.LogDebugMessage( "Generate GenerateYearRainStatistics Start" );
 
+            DayfileRainIndex rainIndex = BuildRainIndex( Thislist );
+
             for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
-                List<DayfileValue> yearlist = Thislist.Where( x => x.ThisDate.Year == i ).ToList();
-
-                if ( yearlist.Count == 0 ) continue;
+                if ( !rainIndex.ByYear.TryGetValue( i, out List<DayfileValue>? yearlist ) || yearlist.Count == 0 ) continue;
 
                 Sup.LogMessage( $"Generating Year Rain Statistics, doing year {i}", TraceLevel.Info );
 
+                RainStats stats = GetDailyRainStats( yearlist );
+
                 years.Add( i );
-                average.Add( yearlist.Select( x => x.TotalRainThisDay ).Average() );
-                stddev.Add( yearlist.Select( x => x.TotalRainThisDay ).StdDev() );
-                minrain.Add( yearlist.Select( x => x.TotalRainThisDay ).Min() );
-                maxrain.Add( yearlist.Select( x => x.TotalRainThisDay ).Max() );
+                average.Add( stats.Average );
+                stddev.Add( stats.StdDev );
+                minrain.Add( stats.Min );
+                maxrain.Add( stats.Max );
             }
 
             thisBuffer.AppendLine( "console.log('Year Rain Statistics Chart starting.');" );
@@ -591,19 +668,21 @@ namespace CumulusUtils
 
             //Sup.LogDebugMessage( "GenerateYearMonthRainStatistics : starting" );
 
+            DayfileRainIndex rainIndex = BuildRainIndex( Thislist );
+
             for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
             {
-                List<DayfileValue> yearmonthlist = Thislist.Where( x => x.ThisDate.Year == i ).Where( x => x.ThisDate.Month == thisMonth ).ToList();
-
                 Sup.LogMessage( $"Generating Year Month Rain Statistics, doing year {i} and month {thisMonth}", TraceLevel.Verbose );
 
-                if ( yearmonthlist.Any() )
+                if ( rainIndex.ByYearMonth.TryGetValue( ( i, thisMonth ), out List<DayfileValue>? yearmonthlist ) && yearmonthlist.Count > 0 )
                 {
+                    RainStats stats = GetDailyRainStats( yearmonthlist );
+
                     years.Add( i );
-                    average.Add( yearmonthlist.Select( x => x.TotalRainThisDay ).Average() );
-                    stddev.Add( yearmonthlist.Select( x => x.TotalRainThisDay ).StdDev() );
-                    minrain.Add( yearmonthlist.Select( x => x.TotalRainThisDay ).Min() );
-                    maxrain.Add( yearmonthlist.Select( x => x.TotalRainThisDay ).Max() );
+                    average.Add( stats.Average );
+                    stddev.Add( stats.StdDev );
+                    minrain.Add( stats.Min );
+                    maxrain.Add( stats.Max );
                 }
             }
 

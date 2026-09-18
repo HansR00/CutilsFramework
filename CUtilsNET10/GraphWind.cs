@@ -1,4 +1,4 @@
-﻿/*
+/*
  * GraphWind - Part of CumulusUtils
  *
  */
@@ -14,6 +14,59 @@ namespace CumulusUtils
 {
     partial class Graphx
     {
+
+        private sealed class DayfileWindIndex
+        {
+            public required IReadOnlyDictionary<int, List<DayfileValue>> ByYear { get; init; }
+            public required IReadOnlyDictionary<int, List<DayfileValue>> ByMonth { get; init; }
+            public required IReadOnlyDictionary<(int Year, int Month), List<DayfileValue>> ByYearMonth { get; init; }
+        }
+
+        private static DayfileWindIndex BuildWindIndex( List<DayfileValue> values )
+        {
+            return new DayfileWindIndex
+            {
+                ByYear = values.GroupBy( x => x.ThisDate.Year ).ToDictionary( x => x.Key, x => x.ToList() ),
+                ByMonth = values.GroupBy( x => x.ThisDate.Month ).ToDictionary( x => x.Key, x => x.ToList() ),
+                ByYearMonth = values.GroupBy( x => ( x.ThisDate.Year, x.ThisDate.Month ) ).ToDictionary( x => x.Key, x => x.ToList() )
+            };
+        }
+
+        // Count of days per windrun class for a set of dayfile records (single pass)
+        private static List<int> GetWindrunClassCounts( List<DayfileValue> values, IReadOnlyList<int> windrunClasses )
+        {
+            List<int> counts = new List<int>( windrunClasses.Count );
+            for ( int i = 0; i < windrunClasses.Count; i++ ) counts.Add( 0 );
+
+            foreach ( DayfileValue value in values )
+            {
+                float windRun = value.TotalWindRun;
+
+                for ( int c = 0; c < windrunClasses.Count; c++ )
+                {
+                    if ( c == 0 )
+                    {
+                        if ( windRun < windrunClasses[ c ] ) { counts[ c ]++; break; }
+                    }
+                    else if ( windRun < windrunClasses[ c ] && windRun >= windrunClasses[ c - 1 ] )
+                    {
+                        counts[ c ]++;
+                        break;
+                    }
+                }
+            }
+
+            return counts;
+        }
+
+        // Zero-wind count in one pass (MonthfileValue input)
+        private static int CountZeroGust( List<MonthfileValue> values )
+        {
+            int count = 0;
+            foreach ( MonthfileValue value in values ) if ( value.CMXLatestGust == 0 ) count++;
+            return count;
+        }
+
         // For WindRose
         private readonly int NrOfCompassSectors;
         private readonly float CompassSector;
@@ -167,7 +220,7 @@ namespace CumulusUtils
 
             if ( thisList.Any() )
             {
-                ZeroWindCount = thisList.Where( x => x.CMXLatestGust == 0 ).Count();
+                ZeroWindCount = CountZeroGust( thisList );
                 DataBuilder.Append( $"ZeroWind{ArrayCode} = {( (float) ZeroWindCount / thisList.Count * 100 ).ToString( "F1", CUtils.Inv )};\n" );
 
                 for ( int i = 1; i <= NrOfWindforceClasses; i++ )
@@ -221,11 +274,10 @@ namespace CumulusUtils
         {
             Sup.LogMessage( $"GenerateWindrunStatistics: Starting {year}", TraceLevel.Info );
 
-            StringBuilder sb = new StringBuilder();
-            List<int> WindrunMonthData;
-            List<List<int>> WindrunYearData = new List<List<int>>();
+            DayfileWindIndex windIndex = BuildWindIndex( thisList );
 
-            int tmp;
+            StringBuilder sb = new StringBuilder();
+            List<List<int>> WindrunYearData = new List<List<int>>();
 
             // Use the year nr, assume they are added in the increasing order
             // Do the all years as first entry in the list
@@ -233,22 +285,17 @@ namespace CumulusUtils
             {
                 List<DayfileValue> MonthList;
 
-                tmp = 0;
-
                 if ( year == 0 )
-                    MonthList = thisList.Where( x => x.ThisDate.Month == month ).ToList();
-                else
-                    MonthList = thisList.Where( x => x.ThisDate.Year == year ).Where( x => x.ThisDate.Month == month ).ToList();
-
-                WindrunMonthData = new List<int>();
-
-                for ( int WindrunClass = 0; WindrunClass < NrofWindrunClasses; WindrunClass++ )
                 {
-                    tmp = WindrunClass == 0 ? MonthList.Where( x => x.TotalWindRun < WindrunClasses[ WindrunClass ] ).Count() : MonthList.Where( x => x.TotalWindRun < WindrunClasses[ WindrunClass ] && x.TotalWindRun >= WindrunClasses[ WindrunClass - 1 ] ).Count();
-                    WindrunMonthData.Add( tmp ); // low windrun class is first in the list, last is the highest windrun
+                    if ( !windIndex.ByMonth.TryGetValue( month, out MonthList ) ) MonthList = new List<DayfileValue>();
+                }
+                else
+                {
+                    if ( !windIndex.ByYearMonth.TryGetValue( ( year, month ), out MonthList ) ) MonthList = new List<DayfileValue>();
                 }
 
-                WindrunYearData.Add( WindrunMonthData );
+                // Single pass over the month to fill the windrun class buckets
+                WindrunYearData.Add( GetWindrunClassCounts( MonthList, WindrunClasses ) );
             }
 
             thisBuffer.AppendLine( "chart = Highcharts.chart('chartcontainer', {" );
@@ -351,9 +398,11 @@ namespace CumulusUtils
             NrOfYears = YearMax - YearMin + 1;
 
             // Produce the arrays for the months without data. Required for the selection  generation in javascript later on
-            List<DayfileValue> yearlist = thisList.Where( x => x.ThisDate.Year == YearMin ).ToList();
+            DayfileWindIndex windMenuIndex = BuildWindIndex( thisList );
+
+            List<DayfileValue> yearlist = windMenuIndex.ByYear.TryGetValue( YearMin, out List<DayfileValue>? minYearList ) ? minYearList : new List<DayfileValue>();
             MonthsNotPresentYearMin = tmpIntArray.Except( yearlist.Select( x => x.ThisDate.Month ).Distinct() ).ToArray();
-            yearlist = thisList.Where( x => x.ThisDate.Year == YearMax ).ToList();
+            yearlist = windMenuIndex.ByYear.TryGetValue( YearMax, out List<DayfileValue>? maxYearList ) ? maxYearList : new List<DayfileValue>();
             MonthsNotPresentYearMax = tmpIntArray.Except( yearlist.Select( x => x.ThisDate.Month ).Distinct() ).ToArray();
             MonthsNotPresentAllYears = tmpIntArray.Except( thisList.Select( x => x.ThisDate.Month ).Distinct() ).ToArray();
 
