@@ -26,7 +26,7 @@ namespace CumulusUtils
             return new DayfileMiscIndex
             {
                 ByYear = values.GroupBy( x => x.ThisDate.Year ).ToDictionary( x => x.Key, x => x.ToList() ),
-                ByYearMonth = values.GroupBy( x => ( x.ThisDate.Year, x.ThisDate.Month ) ).ToDictionary( x => x.Key, x => x.ToList() )
+                ByYearMonth = values.GroupBy( x => (x.ThisDate.Year, x.ThisDate.Month) ).ToDictionary( x => x.Key, x => x.ToList() )
             };
         }
 
@@ -219,7 +219,7 @@ namespace CumulusUtils
                 for ( int j = 1; j <= 12; j++ )
                 {
                     //Now do the actual month work
-                    MonthlyEVTValues[ j - 1 ] = miscIndex.ByYearMonth.TryGetValue( ( i, j ), out List<DayfileValue>? monthValues ) && monthValues.Count > 0
+                    MonthlyEVTValues[ j - 1 ] = miscIndex.ByYearMonth.TryGetValue( (i, j), out List<DayfileValue>? monthValues ) && monthValues.Count > 0
                         ? GetMonthlyEvtSum( monthValues )
                         : -1;
                 }

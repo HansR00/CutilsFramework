@@ -195,7 +195,7 @@ namespace CumulusUtils
                 Sup.LogMessage( "GetOpenMeteoPredictionAsync thisURL: " + thisURL, TraceLevel.Info );
 
                 string JSONresult = await Isup.GetUrlDataAsync( new Uri( thisURL ) );
-                
+
                 Sup.LogMessage( $"GetOpenMeteoPrediction: JSONresult: {JSONresult} ", TraceLevel.Info );
 
                 data = JsonSerializer.Deserialize<WeatherResponse>( JSONresult );

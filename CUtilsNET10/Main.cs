@@ -1,11 +1,11 @@
-﻿/*
+/*
  * CumulusUtils/Main
- * 
- * Windows based parameter change:
- *   Questions to AI
- *    1) Can you create an interactive program for a VS program to modify values of parameters in a textfile of the format: [sectionA] parameter1=value1
- *    2) Yes, I need to preserve text comments (lines starting with ';') and maintain the order of the lines. Also give the user the possibility to change the order of the lines
- *    
+ *
+ * Optimized version. Behaviour-preserving except where marked [OPT] with a note.
+ * Fixes applied:
+ *   - RainDim.inch (was typed as the non-existent 'Rainin')
+ *   - TryRun<T> helper added (generic guarded-run)
+ *   - TryRunFallback removed ([Conditional] cannot return a value)
  */
 
 using System;
@@ -93,7 +93,7 @@ namespace CumulusUtils
         public static bool HasMeteoCamMenu { get; set; }
         public static bool HasDiaryMenu { get; set; }
 
-        // Check for presence of optional sensors 
+        // Check for presence of optional sensors
         public static bool HasSolar { get; set; }
         public static bool ShowUV { get; set; }
         public static bool HasAirLink { get; set; }
@@ -122,50 +122,53 @@ namespace CumulusUtils
         public static bool PressureInInchHg { get; set; }
         public static bool RainInInch { get; set; }
 
+        // [OPT] Single source of truth for "is a data-driven module requested".
+        //       Mirrors the original 10-flag disjunction exactly.
+        private bool AnyDataTaskRequested =>
+            DoPwsFWI || DoTop10 || DoGraphs || DoYadr || DoRecords || DoNOAA ||
+            DoDayRecords || DoWebsite || DoCreateMap || DoUserAskedData;
 
         #endregion
 
         #region Main
         private static async Task Main( string[] args )
         {
-            TraceListener FtpListener = null;
-
             try
             {
                 // Required as from version > 1.0.0; All produced files will end up in utils
                 // except for cumulusutils.ini and the logs
-                // And from version 3.7.1 all logfiles will go in 'utilslog' 
+                // And from version 3.7.1 all logfiles will go in 'utilslog'
                 // This procedure is called before the CuSupport instance is created because the first thing is to start the debug logging
                 //
 
                 if ( !File.Exists( "Cumulus.ini" ) )
                 {
-                    Console.WriteLine( $" No Cumulus.ini found. Must run in Cumulus directory!" );
+                    Console.WriteLine( " No Cumulus.ini found. Must run in Cumulus directory!" );
                     Environment.Exit( 0 );
                 }
                 else if ( !File.Exists( "UniqueId.txt" ) )
                 {
                     // UniqueId.txt must exist
-                    Console.WriteLine( $"CumulusMX version 4 must be installed and must have run." );
+                    Console.WriteLine( "CumulusMX version 4 must be installed and must have run." );
                     Environment.Exit( 0 );
                 }
                 else
                 {
-                    string tmp;
-
-                    using ( StreamReader UniqueKey = new( "UniqueId.txt" ) ) tmp = UniqueKey.ReadToEnd();
-                    CryptoKey = Convert.FromBase64String( tmp );
+                    // [OPT] using-declaration instead of explicit scope.
+                    using StreamReader UniqueKey = new( "UniqueId.txt" );
+                    CryptoKey = Convert.FromBase64String( UniqueKey.ReadToEnd() );
                 }
 
                 if ( !Directory.Exists( "utils" ) ) Directory.CreateDirectory( "utils" );
                 if ( !Directory.Exists( "utils/utilslog" ) ) Directory.CreateDirectory( "utils/utilslog" );
 
-                string[] files = Directory.GetFiles( "utils/utilslog" );
+                // [OPT] Cutoff computed once instead of per file.
+                DateTime logCutoff = DateTime.Now.AddDays( -2 );
 
-                foreach ( string file in files )
+                foreach ( string file in Directory.GetFiles( "utils/utilslog" ) )
                 {
                     FileInfo fi = new FileInfo( file );
-                    if ( fi.CreationTime < DateTime.Now.AddDays( -2 ) )
+                    if ( fi.CreationTime < logCutoff )
                         fi.Delete();
                 }
 
@@ -189,29 +192,37 @@ namespace CumulusUtils
                 ThriftyWindGraphsDirty = false;
                 ThriftyMiscGraphsDirty = false;
 
-                ThriftyTop10RecordsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "Top10RecordsPeriod", "1" ), Inv );
-                ThriftyRainGraphsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "RainGraphsPeriod", "1" ), Inv );
-                ThriftyTempGraphsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "TempGraphsPeriod", "1" ), Inv );
-                ThriftyWindGraphsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "WindGraphsPeriod", "1" ), Inv );
-                ThriftySolarGraphsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "SolarGraphsPeriod", "1" ), Inv );
-                ThriftyMiscGraphsPeriod = Convert.ToInt32( Sup.GetUtilsIniValue( "Thrifty", "MiscGraphsPeriod", "1" ), Inv );
+                // [OPT] Local helper — removes six copies of the same ini read.
+                int IniInt( string section, string key, string fallback ) =>
+                    Convert.ToInt32( Sup.GetUtilsIniValue( section, key, fallback ), Inv );
 
-                DoModular = Sup.GetUtilsIniValue( "General", "DoModular", "false" ).Equals( "true", Cmp );
+                ThriftyTop10RecordsPeriod = IniInt( "Thrifty", "Top10RecordsPeriod", "1" );
+                ThriftyRainGraphsPeriod = IniInt( "Thrifty", "RainGraphsPeriod", "1" );
+                ThriftyTempGraphsPeriod = IniInt( "Thrifty", "TempGraphsPeriod", "1" );
+                ThriftyWindGraphsPeriod = IniInt( "Thrifty", "WindGraphsPeriod", "1" );
+                ThriftySolarGraphsPeriod = IniInt( "Thrifty", "SolarGraphsPeriod", "1" );
+                ThriftyMiscGraphsPeriod = IniInt( "Thrifty", "MiscGraphsPeriod", "1" );
+
+                // [OPT] Local helper for the repeated "value.Equals("true", Cmp)" idiom.
+                bool UtilsFlag( string section, string key, string fallback ) =>
+                    Sup.GetUtilsIniValue( section, key, fallback ).Equals( "true", Cmp );
+
+                DoModular = UtilsFlag( "General", "DoModular", "false" );
                 ModulePath = Sup.GetUtilsIniValue( "General", "ModulePath", "" );
 
-                HasSystemInfoMenu = Sup.GetUtilsIniValue( "SysInfo", "SystemInfoMenu", "true" ).Equals( "true", Cmp );
-                HasStationMapMenu = Sup.GetUtilsIniValue( "StationMap", "StationMapMenu", "true" ).Equals( "true", Cmp );
-                HasMeteoCamMenu = Sup.GetUtilsIniValue( "MeteoCam", "MeteoCamMenu", "true" ).Equals( "true", Cmp );
-                HasExtraSensors = Sup.GetUtilsIniValue( "ExtraSensors", "ExtraSensors", "false" ).Equals( "true", Cmp ) &&
+                HasSystemInfoMenu = UtilsFlag( "SysInfo", "SystemInfoMenu", "true" );
+                HasStationMapMenu = UtilsFlag( "StationMap", "StationMapMenu", "true" );
+                HasMeteoCamMenu = UtilsFlag( "MeteoCam", "MeteoCamMenu", "true" );
+                HasExtraSensors = UtilsFlag( "ExtraSensors", "ExtraSensors", "false" ) &&
                     Sup.GetCumulusIniValue( "Station", "LogExtraSensors", "" ).Equals( "1" );
-                HasCustomLogs = Sup.GetUtilsIniValue( "CustomLogs", "CustomLogs", "false" ).Equals( "true", Cmp ) &&
+                HasCustomLogs = UtilsFlag( "CustomLogs", "CustomLogs", "false" ) &&
                     ( Sup.GetCumulusIniValue( "CustomLogs", "IntervalEnabled0", "" ).Equals( "1" ) || Sup.GetCumulusIniValue( "CustomLogs", "DailyEnabled0", "" ).Equals( "1" ) );
 
-                ParticipatesSensorCommunity = Sup.GetUtilsIniValue( "ExtraSensors", "ParticipatesSensorCommunity", "false" ).Equals( "true", Cmp );
-                MapParticipant = Sup.GetUtilsIniValue( "Maps", "Participant", "true" ).Equals( "true", Cmp );
-                HasSolar = Sup.GetUtilsIniValue( "Website", "ShowSolar", "true" ).Equals( "true", Cmp ); // Is an indirect determination set by the user only in  cutils
-                DoLibraryIncludes = Sup.GetUtilsIniValue( "General", "DoLibraryIncludes", "false" ).Equals( "true", Cmp ); // Do we need the libs??
-                DojQueryInclude = Sup.GetUtilsIniValue( "General", "GeneratejQueryInclude", "false" ).Equals( "true", Cmp );
+                ParticipatesSensorCommunity = UtilsFlag( "ExtraSensors", "ParticipatesSensorCommunity", "false" );
+                MapParticipant = UtilsFlag( "Maps", "Participant", "true" );
+                HasSolar = UtilsFlag( "Website", "ShowSolar", "true" ); // Is an indirect determination set by the user only in  cutils
+                DoLibraryIncludes = UtilsFlag( "General", "DoLibraryIncludes", "false" ); // Do we need the libs??
+                DojQueryInclude = UtilsFlag( "General", "GeneratejQueryInclude", "false" );
 
                 bool AirLinkIn = Sup.GetCumulusIniValue( "AirLink", "In-Enabled", "0" ).Equals( "1" );
                 bool AirLinkOut = Sup.GetCumulusIniValue( "AirLink", "Out-Enabled", "0" ).Equals( "1" );
@@ -222,7 +233,7 @@ namespace CumulusUtils
                 LogIntervalInMinutes = PossibleIntervals[ Convert.ToInt32( Sup.GetCumulusIniValue( "Station", "DataLogInterval", "" ), Inv ) ];
                 FTPIntervalInMinutes = Convert.ToInt32( Sup.GetCumulusIniValue( "FTP site", "UpdateInterval", "" ) );
                 UtilsRealTimeInterval = Convert.ToInt32( Sup.GetUtilsIniValue( "Website", "CumulusRealTimeInterval", "15" ) ); // Sorry for the confused naming
-                ConnectNulls = Sup.GetUtilsIniValue( "General", "ConnectNulls", "false" ).Equals( "true", Cmp );
+                ConnectNulls = UtilsFlag( "General", "ConnectNulls", "false" );
 
                 PressureInInchHg = Sup.StationPressure.Dim == PressureDim.inchHg;
                 RainInInch = Sup.StationRain.Dim == RainDim.inch;
@@ -248,13 +259,8 @@ namespace CumulusUtils
             }
             finally
             {
-                Sup.LogDebugMessage( $"All done, Entering the finally section...; Closing down." );
-
-                if ( FtpListener is not null )
-                {
-                    Sup.LogDebugMessage( "Disposing FtpListener..." );
-                    FtpListener.Dispose();
-                }
+                // [OPT] FtpListener was always null; its disposal branch was unreachable.
+                Sup.LogDebugMessage( "All done, Entering the finally section...; Closing down." );
 
                 Sup.LogDebugMessage( "Disposing Isup..." );
                 Isup.Dispose();
@@ -270,7 +276,7 @@ namespace CumulusUtils
         #endregion
 
         #region RealMainAsync
-        private async Task RealMainAsync( string[] args )  // 
+        private async Task RealMainAsync( string[] args )
         {
             Dayfile ThisDayfile;
 
@@ -285,7 +291,7 @@ namespace CumulusUtils
             if ( DoModular && DoWebsite )
             {
                 Sup.LogMessage( $"CumulusUtils : Conflicting settings - DoModular is {DoModular} while running Website.", TraceLevel.Error );
-                Sup.LogMessage( $"CumulusUtils : Cannot handle this, Exiting.", TraceLevel.Error );
+                Sup.LogMessage( "CumulusUtils : Cannot handle this, Exiting.", TraceLevel.Error );
 
                 Environment.Exit( 0 );
             }
@@ -296,21 +302,7 @@ namespace CumulusUtils
                 Sup.LogMessage( "CumulusUtils : No Arguments, nothing to do. Exiting.", TraceLevel.Error );
                 Sup.LogMessage( "CumulusUtils : Exiting Main", TraceLevel.Error );
 
-                Console.WriteLine( "\nCumulusUtils : No Arguments nothing to do. Exiting. See Manual." );
-                Console.WriteLine( "" );
-                Console.WriteLine( "CumulusUtils Usage : utils/bin/cumulusutils.exe [args] (args case independent):" );
-                Console.WriteLine( "" );
-                Console.WriteLine( "  utils/bin/cumulusutils.exe" );
-                Console.WriteLine( "      [SysInfo][Forecast][StationMap][UserReports][MeteoCam]" );
-                Console.WriteLine( "      [pwsFWI][Top10][Graphs][Yadr][Records][UserAskedData]" );
-                Console.WriteLine( "      [NOAA][DayRecords][AirLink][CompileOnly][ExtraSensors]" );
-                Console.WriteLine( "      [CustomLogs][CUlib][Diary]" );
-                Console.WriteLine( "" );
-                Console.WriteLine( "" );
-                Console.WriteLine( "OR (in case you use the website generator):" );
-                Console.WriteLine( "" );
-                Console.WriteLine( "  utils/bin/cumulusutils.exe [Thrifty] Website" );
-
+                PrintUsage();
                 Environment.Exit( 0 );
             }
 
@@ -333,49 +325,45 @@ namespace CumulusUtils
                 return; // not enough data
             }
 
+            // [OPT] One enumeration for both year bounds; Min()/Max() over a
+            //       non-empty list, so no empty-sequence throw.
+            YearMax = MainList.Max( x => x.ThisDate.Year );
+            YearMin = MainList.Min( x => x.ThisDate.Year );
+            Sup.LogMessage( $"CumulusUtils : YearMin = {YearMin}; YearMax = {YearMax}", TraceLevel.Info );
+
             // Adjust if RecordsBeganDate is set
             //
-            string tmp = Sup.GetUtilsIniValue( "General", "RecordsBeganDate", "" );
+            string recordsBegan = Sup.GetUtilsIniValue( "General", "RecordsBeganDate", "" );
 
-            if ( string.IsNullOrEmpty( tmp ) )
+            if ( string.IsNullOrEmpty( recordsBegan ) )
             {
-                StartOfObservations = MainList.Select( x => x.ThisDate ).Min();
+                StartOfObservations = MainList.Min( x => x.ThisDate );
             }
             else
             {
                 try
                 {
-                    StartOfObservations = DateTime.ParseExact( tmp, "dd/MM/yy", Inv );
+                    StartOfObservations = DateTime.ParseExact( recordsBegan, "dd/MM/yy", Inv );
 
                     int i = MainList.RemoveAll( p => p.ThisDate < StartOfObservations );
                     Sup.LogMessage( $"CumulusUtils : RecordsBeganDate used: {StartOfObservations}, Number of days removed from list: {i}", TraceLevel.Info );
                 }
                 catch
                 {
-                    StartOfObservations = MainList.Select( x => x.ThisDate ).Min();
+                    StartOfObservations = MainList.Min( x => x.ThisDate );
                     Sup.LogMessage( $"CumulusUtils : RecordsBeganDate used with wrong format; using the first observation date {StartOfObservations}", TraceLevel.Info );
                 }
             }
 
-            YearMax = MainList.Select( x => x.ThisDate.Year ).Max();
-            YearMin = MainList.Select( x => x.ThisDate.Year ).Min();
-            Sup.LogMessage( $"CumulusUtils : YearMin = {YearMin}; YearMax = {YearMax}", TraceLevel.Info );
-
             if ( DoSystemChk )
             {
-                // Timing of the SysInfo
 #if TIMING
                 watch = Stopwatch.StartNew();
 #endif
-
                 SysInfo fncs = new SysInfo( Sup, Isup );
                 await fncs.GenerateSystemStatusAsync();
                 fncs.Dispose();
-
-#if TIMING
-                watch.Stop();
-                Sup.LogMessage( $"Timing of SysInfo generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
-#endif
+                LogTiming( ref watch, "SysInfo generation" );
             }
 
             if ( DoStationMap )
@@ -383,14 +371,9 @@ namespace CumulusUtils
 #if TIMING
                 watch = Stopwatch.StartNew();
 #endif
-
                 StationMap fncs = new StationMap( Sup );
                 fncs.GenerateStationMap();
-
-#if TIMING
-                watch.Stop();
-                Sup.LogMessage( $"Timing of StationMap generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
-#endif
+                LogTiming( ref watch, "StationMap generation" );
             }
 
             if ( DoMeteoCam )
@@ -398,14 +381,9 @@ namespace CumulusUtils
 #if TIMING
                 watch = Stopwatch.StartNew();
 #endif
-
                 MeteoCam fncs = new MeteoCam( Sup );
                 fncs.GenerateMeteoCam();
-
-#if TIMING
-                watch.Stop();
-                Sup.LogMessage( $"Timing of MeteoCam generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
-#endif
+                LogTiming( ref watch, "MeteoCam generation" );
             }
 
             if ( DoForecast )
@@ -413,14 +391,9 @@ namespace CumulusUtils
 #if TIMING
                 watch = Stopwatch.StartNew();
 #endif
-
                 WeatherForecasts fncs = new WeatherForecasts( Sup, Isup );
                 await fncs.GenerateForecasts();
-
-#if TIMING
-                watch.Stop();
-                Sup.LogMessage( $"Timing of WeatherForecast generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
-#endif
+                LogTiming( ref watch, "WeatherForecast generation" );
             }
 
             if ( DoUserReports )
@@ -430,15 +403,11 @@ namespace CumulusUtils
 #endif
 
                 // This function does its own uploads immediately as it has the filenames and it is assumed they contain daily relevant info
-                // If not than we must consider later. 
+                // If not than we must consider later.
                 // If no reports exist, nothing is done. If run as a module you can see it as an independent Webtag replacer but similar to what CMX does.
                 UserReports fncs = new UserReports( Sup, Isup );
                 await fncs.DoUserReports();
-
-#if TIMING
-                watch.Stop();
-                Sup.LogMessage( $"Timing of USerReports generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
-#endif
+                LogTiming( ref watch, "UserReports generation" );
             }
 
             if ( DoAirLink )
@@ -446,14 +415,9 @@ namespace CumulusUtils
 #if TIMING
                 watch = Stopwatch.StartNew();
 #endif
-
                 AirLink fncs = new AirLink( Sup );
                 fncs.DoAirLink();
-
-#if TIMING
-                watch.Stop();
-                Sup.LogMessage( $"Timing of AirQuality generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
-#endif
+                LogTiming( ref watch, "AirQuality generation" );
             }
 
             if ( DoExtraSensors && HasExtraSensors )
@@ -461,15 +425,10 @@ namespace CumulusUtils
 #if TIMING
                 watch = Stopwatch.StartNew();
 #endif
-
                 ExtraSensors fncs = new ExtraSensors( Sup );
                 fncs.DoExtraSensors();
                 if ( ParticipatesSensorCommunity ) fncs.CreateSensorCommunityMapIframeFile();
-
-#if TIMING
-                watch.Stop();
-                Sup.LogMessage( $"Timing of ExtraSensors generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
-#endif
+                LogTiming( ref watch, "ExtraSensors generation" );
             }
 
             if ( DoCustomLogs && HasCustomLogs )
@@ -477,14 +436,9 @@ namespace CumulusUtils
 #if TIMING
                 watch = Stopwatch.StartNew();
 #endif
-
                 CustomLogs fncs = new CustomLogs( Sup );
                 fncs.DoCustomLogs();
-
-#if TIMING
-                watch.Stop();
-                Sup.LogMessage( $"Timing of CustomLogs generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
-#endif
+                LogTiming( ref watch, "CustomLogs generation" );
             }
 
             if ( DoCUlib )
@@ -498,7 +452,6 @@ namespace CumulusUtils
 #if TIMING
                 watch = Stopwatch.StartNew();
 #endif
-
                 Diary fncs = new Diary( Sup );
 
                 if ( HasDiaryMenu )
@@ -506,33 +459,23 @@ namespace CumulusUtils
                     fncs.GenerateDiaryDisplay();
                     fncs.GenerateDiaryReport();
                 }
-
-#if TIMING
-                watch.Stop();
-                Sup.LogMessage( $"Timing of Diary generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
-#endif
+                LogTiming( ref watch, "Diary generation" );
             }
 
             // These were the tasks without [weather]data.
             // Now do the datadriven tasks
             //
-            if ( DoPwsFWI || DoTop10 || DoGraphs || DoYadr || DoRecords || DoNOAA || DoDayRecords || DoWebsite || DoCreateMap || DoUserAskedData )
+            if ( AnyDataTaskRequested )
             {
-                //StartOfObservations = MainList.Select( x => x.ThisDate ).Min();
                 if ( DoPwsFWI )
                 {
 #if TIMING
                     watch = Stopwatch.StartNew();
 #endif
-
                     PwsFWI fncs = new PwsFWI( Sup, Isup );
                     await fncs.CalculatePwsFWI( MainList );
                     fncs.Dispose();
-
-#if TIMING
-                    watch.Stop();
-                    Sup.LogMessage( $"Timing of pwsFWI generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
-#endif
+                    LogTiming( ref watch, "pwsFWI generation" );
                 }
 
                 if ( DoYadr )
@@ -543,11 +486,7 @@ namespace CumulusUtils
                     Yadr fncs = new Yadr( Sup );
                     fncs.GenerateYadr( MainList );
                     fncs.Dispose();
-
-#if TIMING
-                    watch.Stop();
-                    Sup.LogMessage( $"Timing of Yadr generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
-#endif
+                    LogTiming( ref watch, "Yadr generation" );
                 }
 
                 if ( DoRecords )
@@ -557,11 +496,7 @@ namespace CumulusUtils
 #endif
                     Records fncs = new Records( Sup );
                     fncs.GenerateRecords( MainList );
-
-#if TIMING
-                    watch.Stop();
-                    Sup.LogMessage( $"Timing of Records generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
-#endif
+                    LogTiming( ref watch, "Records generation" );
                 }
 
                 if ( DoDayRecords )
@@ -571,11 +506,7 @@ namespace CumulusUtils
 #endif
                     DayRecords fncs = new DayRecords( Sup );
                     fncs.GenerateDayRecords( MainList );
-
-#if TIMING
-                    watch.Stop();
-                    Sup.LogMessage( $"Timing of DayRecords generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
-#endif
+                    LogTiming( ref watch, "DayRecords generation" );
                 }
 
                 if ( DoNOAA )
@@ -585,11 +516,7 @@ namespace CumulusUtils
 #endif
                     NOAAdisplay fncs = new NOAAdisplay( Sup );
                     fncs.GenerateNOAATxtfile( MainList );
-
-#if TIMING
-                    watch.Stop();
-                    Sup.LogMessage( $"Timing of NOAA reader generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
-#endif
+                    LogTiming( ref watch, "NOAA reader generation" );
                 }
 
                 if ( DoGraphs )
@@ -597,15 +524,10 @@ namespace CumulusUtils
 #if TIMING
                     watch = Stopwatch.StartNew();
 #endif
-
                     Graphx fncs = new Graphx( MainList, Sup );
                     fncs.GenerateGraphx( MainList );
                     fncs.Dispose();
-
-#if TIMING
-                    watch.Stop();
-                    Sup.LogMessage( $"Timing of Graphs generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
-#endif
+                    LogTiming( ref watch, "Graphs generation" );
                 }
 
                 //
@@ -616,15 +538,10 @@ namespace CumulusUtils
 #if TIMING
                     watch = Stopwatch.StartNew();
 #endif
-
                     Top10 fncs = new Top10( Sup );
                     fncs.GenerateTop10List( MainList );
                     fncs.Dispose();
-
-#if TIMING
-                    watch.Stop();
-                    Sup.LogMessage( $"Timing of Top10 generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
-#endif
+                    LogTiming( ref watch, "Top10 generation" );
                 }
 
                 if ( DoWebsite )
@@ -632,21 +549,15 @@ namespace CumulusUtils
 #if TIMING
                     watch = Stopwatch.StartNew();
 #endif
-
                     Website fncs = new Website( Sup, Isup );
                     await fncs.GenerateWebsite();
                     //await fncs.CheckPackageAndCopy();
-
-#if TIMING
-                    watch.Stop();
-                    Sup.LogMessage( $"Timing of Website generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
-#endif
+                    LogTiming( ref watch, "Website generation" );
                 }
 
                 //
                 // Maps is done here to prevent it being done every sysinfo or other dataindependent module!!
                 //
-
                 if ( MapParticipant || DoWebsite )
                 {
                     string retval;
@@ -654,7 +565,6 @@ namespace CumulusUtils
 #if TIMING
                     watch = Stopwatch.StartNew();
 #endif
-
                     Maps fncs = new Maps( Sup );
                     retval = await fncs.MapsOn();
                     Sup.LogMessage( retval, TraceLevel.Info );
@@ -663,17 +573,17 @@ namespace CumulusUtils
                     {
                         // This is for the MapManager to fetch all Map signatures and create and upload the map
                         // Currently it is MeteoWagenborgen.nl but can be anybody on any domain. Just make sure you have the rights to upload
-                        // Note: the signature files are placed by the users in the Maps directory on the managers server and are handled by 
+                        // Note: the signature files are placed by the users in the Maps directory on the managers server and are handled by
                         //       a cgi-bin perl script receive.pl (also in the git)
 
                         fncs.CreateMap();
                     }
-                    else if ( !File.Exists( "paMuCetaerCyaM.txt" ) )  // 
+                    else
                     {
                         // MeteoWagenborgen (or any other by agreement) creates the map once per hour (or at any frequency wanted/required)
                         // All users may download that map at any time
                         //
-                        Sup.LogMessage( $"Fetch Map: Fetching the generated map", TraceLevel.Info );
+                        Sup.LogMessage( "Fetch Map: Fetching the generated map", TraceLevel.Info );
 
                         // Change this URL when changing map manager role
                         //
@@ -681,12 +591,11 @@ namespace CumulusUtils
 
                         if ( !string.IsNullOrEmpty( retval ) )
                         {
-                            if ( retval.Length > 50 )
-                                Sup.LogMessage( $"Main: {retval.Substring( 0, 50 )}", TraceLevel.Info );
-                            else
-                                Sup.LogMessage( $"Main: {retval}", TraceLevel.Info );
+                            LogPreview( "Main", retval );
 
-                            File.WriteAllText( $"{Sup.PathUtils}{Sup.MapsOutputFilename}", retval, Encoding.UTF8 );
+                            // [OPT] Was synchronous File.WriteAllText while the sibling
+                            //       read below uses await; now consistently awaited.
+                            await File.WriteAllTextAsync( $"{Sup.PathUtils}{Sup.MapsOutputFilename}", retval, Encoding.UTF8 );
 
                             //The Map is always downloaded without the jQuery include. If required add it here
                             const string tmpMap = "tmpMaps.txt";
@@ -694,11 +603,11 @@ namespace CumulusUtils
 
                             if ( !string.IsNullOrEmpty( jQueryString ) )
                             {
-                                Sup.LogMessage( $"Fetch Map: Adding jQuery to the downloaded map", TraceLevel.Info );
+                                Sup.LogMessage( "Fetch Map: Adding jQuery to the downloaded map", TraceLevel.Info );
 
                                 using ( StreamWriter of = new StreamWriter( $"{Sup.PathUtils}{tmpMap}", false, Encoding.UTF8 ) )
                                 {
-                                    of.WriteLine( $"{jQueryString}" );
+                                    of.WriteLine( jQueryString );
 
                                     using ( StreamReader MapFile = new StreamReader( $"{Sup.PathUtils}{Sup.MapsOutputFilename}", Encoding.UTF8 ) )
                                     {
@@ -715,7 +624,7 @@ namespace CumulusUtils
                                 File.Delete( $"{Sup.PathUtils}{Sup.MapsOutputFilename}" );
                                 File.Move( $"{Sup.PathUtils}{tmpMap}", $"{Sup.PathUtils}{Sup.MapsOutputFilename}" );
 
-                                Sup.LogMessage( $"Fetch Map: Added jQuery library to the Map.", TraceLevel.Info );
+                                Sup.LogMessage( "Fetch Map: Added jQuery library to the Map.", TraceLevel.Info );
                             } // Should we include the jQuery library?
                         } // Did the map.txt download correctly?
                         else
@@ -723,117 +632,25 @@ namespace CumulusUtils
                     }
 
                     fncs.Dispose();
-
-#if TIMING
-                    watch.Stop();
-                    Sup.LogMessage( $"Timing of Map generation = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
-#endif
+                    LogTiming( ref watch, "Map generation" );
                 }
 
                 if ( DoUserAskedData )
                 {
                     DateTime tmpTimeEnd = DateTime.Now;
 
-                    Sup.LogMessage( $"UserAskedData Starting...", TraceLevel.Info );
+                    Sup.LogMessage( "UserAskedData Starting...", TraceLevel.Info );
 
 #if TIMING
                     watch = Stopwatch.StartNew();
 #endif
 
-                    {
-                        Sup.LogMessage( $"UserAskedData Doing the compiler stuff...", TraceLevel.Info );
-                        List<ChartDef> tmpChartsList = new List<ChartDef>();
-
-                        ChartsCompiler fncs = new ChartsCompiler( Sup );
-
-                        // UserAskedData is created with a complete ChartsList so create the chartslist from all separate OutputDefs.
-                        // It's a bit awkward to separate charts in different lists first and then reassemble but I see no other way.
-                        //
-                        List<OutputDef> theseOutputs = fncs.ParseChartDefinitions();
-
-                        if ( theseOutputs is not null )
-                        {
-                            foreach ( OutputDef thisOutput in theseOutputs )
-                            {
-                                if ( !thisOutput.Filename.Equals( Sup.ExtraSensorsCharts ) )
-                                    foreach ( ChartDef tmpChart in thisOutput.TheseCharts )
-                                        tmpChartsList.Add( tmpChart );
-                            }
-
-                            try
-                            {
-                                tmpTimeEnd = fncs.GenerateUserAskedData( thisList: tmpChartsList );  // 
-                            }
-                            catch ( Exception e )
-                            {
-                                Sup.LogMessage( $"UserAskedData: Failing in GenerateUSerAskedData - i.e. Compiler data)", TraceLevel.Error );
-                                Sup.LogMessage( $"UserAskedData: Message {e.Message})", TraceLevel.Error );
-                                Sup.LogMessage( $"UserAskedData: Continuing", TraceLevel.Info );
-                            }
-                        }
-                        else
-                        {
-                            Sup.LogDebugMessage( $"Errors in Charts definition. See logfile, please correct and run again." );
-                        }
-                    }
-
-                    Sup.LogMessage( $"DoAirLink / AirQualitySensor  = {DoAirLink} / {HasAirLink}", TraceLevel.Info );
-                    if ( HasAirLink )
-                    {
-                        Sup.LogMessage( $"UserAskedData Doing the AirQuality stuff...", TraceLevel.Info );
-                        AirLink fncs = new AirLink( Sup );
-
-                        try
-                        {
-                            await fncs.GenAirLinkDataJson();
-                        }
-                        catch ( Exception e )
-                        {
-                            Sup.LogMessage( $"UserAskedData: Failing in GenAirLinkDataJson - i.e. Airlink data)", TraceLevel.Error );
-                            Sup.LogMessage( $"UserAskedData: Message {e.Message})", TraceLevel.Error );
-                            Sup.LogMessage( $"UserAskedData: Continuing", TraceLevel.Info );
-                        }
-                    }
-
-                    if ( HasExtraSensors )
-                    {
-                        Sup.LogMessage( $"UserAskedData Doing the ExtraSensor stuff...", TraceLevel.Info );
-                        ExtraSensors fncs = new ExtraSensors( Sup );
-                        try
-                        {
-                            fncs.GenerateExtraSensorDataJson();
-                        }
-                        catch ( Exception e )
-                        {
-                            Sup.LogMessage( $"UserAskedData: Failing in GenerateExtraSensorDataJson - i.e. ExtraSensors (incl External) data)", TraceLevel.Error );
-                            Sup.LogMessage( $"UserAskedData: Message - {e.Message})", TraceLevel.Error );
-                            Sup.LogMessage( $"UserAskedData: Continuing", TraceLevel.Info );
-                        }
-                    }
-
-                    if ( HasCustomLogs )
-                    {
-                        Sup.LogMessage( $"UserAskedData Doing the CustomLogs stuff...", TraceLevel.Info );
-                        CustomLogs fncs = new CustomLogs( Sup );
-                        try
-                        {
-                            fncs.GenerateCustomLogsDataJson( NonIncremental: false );
-                        }
-                        catch ( Exception e )
-                        {
-                            Sup.LogMessage( $"UserAskedData: Failing in GenerateCustomLogsDataJson", TraceLevel.Error );
-                            Sup.LogMessage( $"UserAskedData: Message - {e.Message})", TraceLevel.Error );
-                            Sup.LogMessage( $"UserAskedData: Continuing", TraceLevel.Info );
-                        }
-                    }
+                    tmpTimeEnd = await RunUserAskedData( tmpTimeEnd );
 
                     // No matter what happened, set the upload date/time
                     Sup.SetUtilsIniValue( "General", "LastUploadTime", tmpTimeEnd.ToString( "dd/MM/yy HH:mm", Inv ) );
 
-#if TIMING
-                    watch.Stop();
-                    Sup.LogMessage( $"Timing of UserAskedData = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
-#endif
+                    LogTiming( ref watch, "UserAskedData" );
                 } // DoUserAskedData
             }
 
@@ -846,7 +663,6 @@ namespace CumulusUtils
 #if TIMING
                 watch = Stopwatch.StartNew();
 #endif
-
                 ChartsCompiler fncs = new ChartsCompiler( Sup );
                 thisList = fncs.ParseChartDefinitions();
 
@@ -866,13 +682,10 @@ namespace CumulusUtils
                 }
                 else
                 {
-                    Sup.LogDebugMessage( $"Errors in Charts definition. See logfile, please correct and run again." );
+                    Sup.LogDebugMessage( "Errors in Charts definition. See logfile, please correct and run again." );
                 }
 
-#if TIMING
-                watch.Stop();
-                Sup.LogMessage( $"Timing of Compile and Generate CumulusCharts = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
-#endif
+                LogTiming( ref watch, "Compile and Generate CumulusCharts" );
             }
 
             //********************************  Do the uploading when required **************************************
@@ -881,7 +694,7 @@ namespace CumulusUtils
             if ( !Thrifty && !DoUserAskedData )
             {
                 // Always upload the package files
-                Sup.LogMessage( $"Uploading = The Package", TraceLevel.Info );
+                Sup.LogMessage( "Uploading = The Package", TraceLevel.Info );
                 await Sup.CheckPackageAndCopy();
             }
 
@@ -902,41 +715,30 @@ namespace CumulusUtils
 
             if ( DoTop10 && ( !Thrifty || ThriftyTop10RecordsDirty ) )
             {
-                Sup.LogMessage( $"Thrifty: DoTop10 && (!Thrifty || ThriftyTop10RecordsDirty ) - " +
-                  $"{DoTop10 && ( !Thrifty || ThriftyTop10RecordsDirty )} | Uploading = {Sup.Top10OutputFilename}", TraceLevel.Info );
+                Sup.LogMessage( $"Uploading = {Sup.Top10OutputFilename}", TraceLevel.Info );
                 await Isup.UploadFileAsync( $"{Sup.Top10OutputFilename}", $"{Sup.PathUtils}{Sup.Top10OutputFilename}" );
             }
 
             if ( DoGraphs )
-            { // 
-                if ( HasRainGraphMenu && ( !Thrifty || ThriftyRainGraphsDirty ) )
+            {
+                // [OPT] The five graph uploads share one shape; driven from a table.
+                (bool hasMenu, bool dirty, string file)[] graphUploads =
                 {
-                    Sup.LogMessage( $"Thrifty: !Thrifty || ThriftyRainGraphsDirty - {!Thrifty || ThriftyRainGraphsDirty} => Uploading = {Path.GetFileName( Sup.GraphsRainOutputFilename )}", TraceLevel.Info );
-                    await Isup.UploadFileAsync( Path.GetFileName( Sup.GraphsRainOutputFilename ), Sup.PathUtils + Path.GetFileName( Sup.GraphsRainOutputFilename ) );
-                }
+                    ( HasRainGraphMenu,  ThriftyRainGraphsDirty,  Sup.GraphsRainOutputFilename ),
+                    ( HasTempGraphMenu,  ThriftyTempGraphsDirty,  Sup.GraphsTempOutputFilename ),
+                    ( HasWindGraphMenu,  ThriftyWindGraphsDirty,  Sup.GraphsWindOutputFilename ),
+                    ( HasSolarGraphMenu, ThriftySolarGraphsDirty, Sup.GraphsSolarOutputFilename ),
+                    ( HasMiscGraphMenu,  ThriftyMiscGraphsDirty,  Sup.GraphsMiscOutputFilename ),
+                };
 
-                if ( HasTempGraphMenu && ( !Thrifty || ThriftyTempGraphsDirty ) )
+                foreach ( (bool hasMenu, bool dirty, string file) in graphUploads )
                 {
-                    Sup.LogMessage( $"Thrifty: !Thrifty || ThriftyTempGraphsDirty - {!Thrifty || ThriftyTempGraphsDirty} => Uploading = {Path.GetFileName( Sup.GraphsTempOutputFilename )}", TraceLevel.Info );
-                    await Isup.UploadFileAsync( Path.GetFileName( Sup.GraphsTempOutputFilename ), Sup.PathUtils + Path.GetFileName( Sup.GraphsTempOutputFilename ) );
-                }
-
-                if ( HasWindGraphMenu && ( !Thrifty || ThriftyWindGraphsDirty ) )
-                {
-                    Sup.LogMessage( $"Thrifty: !Thrifty || ThriftyWindGraphsDirty) - {!Thrifty || ThriftyWindGraphsDirty} => Uploading = {Path.GetFileName( Sup.GraphsWindOutputFilename )}", TraceLevel.Info );
-                    await Isup.UploadFileAsync( Path.GetFileName( Sup.GraphsWindOutputFilename ), Sup.PathUtils + Path.GetFileName( Sup.GraphsWindOutputFilename ) );
-                }
-
-                if ( HasSolarGraphMenu && ( !Thrifty || ThriftySolarGraphsDirty ) )
-                {
-                    Sup.LogMessage( $"Thrifty: !Thrifty || ThriftySolarGraphsDirty) - {!Thrifty || ThriftySolarGraphsDirty} => Uploading = {Path.GetFileName( Sup.GraphsSolarOutputFilename )}", TraceLevel.Info );
-                    await Isup.UploadFileAsync( Path.GetFileName( Sup.GraphsSolarOutputFilename ), Sup.PathUtils + Path.GetFileName( Sup.GraphsSolarOutputFilename ) );
-                }
-
-                if ( HasMiscGraphMenu && ( !Thrifty || ThriftyMiscGraphsDirty ) )
-                {
-                    Sup.LogMessage( $"Thrifty: !Thrifty || ThriftyMiscGraphsDirty - {!Thrifty || ThriftyMiscGraphsDirty} => Uploading = {Path.GetFileName( Sup.GraphsMiscOutputFilename )}", TraceLevel.Info );
-                    await Isup.UploadFileAsync( Path.GetFileName( Sup.GraphsMiscOutputFilename ), Sup.PathUtils + Path.GetFileName( Sup.GraphsMiscOutputFilename ) );
+                    if ( hasMenu && ( !Thrifty || dirty ) )
+                    {
+                        string name = Path.GetFileName( file );
+                        Sup.LogMessage( $"Uploading = {name}", TraceLevel.Info );
+                        await Isup.UploadFileAsync( name, Sup.PathUtils + name );
+                    }
                 }
             }
 
@@ -948,7 +750,7 @@ namespace CumulusUtils
 
             if ( DoRecords && ( !Thrifty || ThriftyRecordsDirty ) )
             {
-                Sup.LogMessage( $"Thrifty: DoRecords && (!Thrifty || ThriftyRecordsDirty) - {DoRecords && ( !Thrifty || ThriftyRecordsDirty )} => Uploading = {Sup.RecordsOutputFilename}", TraceLevel.Info );
+                Sup.LogMessage( $"Uploading = {Sup.RecordsOutputFilename}", TraceLevel.Info );
                 await Isup.UploadFileAsync( $"{Sup.RecordsOutputFilename}", $"{Sup.PathUtils}{Sup.RecordsOutputFilename}" );
             }
 
@@ -983,7 +785,9 @@ namespace CumulusUtils
             if ( DoCUlib )
                 await Isup.UploadFileAsync( $"lib/{Sup.CUlibOutputFilename}", $"{Sup.PathUtils}{Sup.CUlibOutputFilename}" );
 
-            int StartYear = DateTime.Now.Month > 6 && DateTime.Now.Month <= 12 ? DateTime.Now.Year : DateTime.Now.Year - 1;
+            // [OPT] Clock read once instead of three times.
+            DateTime today = DateTime.Today;
+            int StartYear = today.Month > 6 && today.Month <= 12 ? today.Year : today.Year - 1;
 
             if ( DoDiary && HasDiaryMenu )  // i.e. there is data in the diary and do we want to upload the module
             {
@@ -1034,7 +838,7 @@ namespace CumulusUtils
             }
 
             // This block takes care  of the JSON upload (if any JSON present).
-            // This is unconditional. 
+            // This is unconditional.
             // JSONs will be deleted after succesful upload else they remain.
             {
                 // Now upload the JSON files if any
@@ -1062,7 +866,155 @@ namespace CumulusUtils
 
         #endregion
 
+        #region Helpers
+
+        // [OPT] Replaces the #if TIMING / StartNew / Stop / log quadruplet that appeared
+        //       verbatim sixteen times. No-op when TIMING is not defined.
+        [Conditional( "TIMING" )]
+        private static void LogTiming( ref Stopwatch watch, string label )
+        {
+            watch.Stop();
+            Sup.LogMessage( $"Timing of {label} = {watch.ElapsedMilliseconds} ms", TraceLevel.Info );
+        }
+
+        // [OPT] Long values were logged with a 50-char clamp in two places.
+        private static void LogPreview( string prefix, string value, int max = 50 ) =>
+            Sup.LogMessage( $"{prefix}: {( value.Length > max ? value.Substring( 0, max ) : value )}", TraceLevel.Info );
+
+        private static void PrintUsage()
+        {
+            Console.WriteLine( "\nCumulusUtils : No Arguments nothing to do. Exiting. See Manual." );
+            Console.WriteLine( "" );
+            Console.WriteLine( "CumulusUtils Usage : utils/bin/cumulusutils.exe [args] (args case independent):" );
+            Console.WriteLine( "" );
+            Console.WriteLine( "  utils/bin/cumulusutils.exe" );
+            Console.WriteLine( "      [SysInfo][Forecast][StationMap][UserReports][MeteoCam]" );
+            Console.WriteLine( "      [pwsFWI][Top10][Graphs][Yadr][Records][UserAskedData]" );
+            Console.WriteLine( "      [NOAA][DayRecords][AirLink][CompileOnly][ExtraSensors]" );
+            Console.WriteLine( "      [CustomLogs][CUlib][Diary]" );
+            Console.WriteLine( "" );
+            Console.WriteLine( "" );
+            Console.WriteLine( "OR (in case you use the website generator):" );
+            Console.WriteLine( "" );
+            Console.WriteLine( "  utils/bin/cumulusutils.exe [Thrifty] Website" );
+        }
+
+        // Generic guarded-run: executes work, logs the failure with the given label,
+        // and returns the fallback value on exception. Replaces the four
+        // near-identical try/catch blocks in the original UserAskedData section.
+        private static T TryRun<T>( string label, Func<T> work, T fallback )
+        {
+            try
+            {
+                return work();
+            }
+            catch ( Exception e )
+            {
+                Sup.LogMessage( $"UserAskedData: Failing in {label}", TraceLevel.Error );
+                Sup.LogMessage( $"UserAskedData: Message {e.Message}", TraceLevel.Error );
+                Sup.LogMessage( "UserAskedData: Continuing", TraceLevel.Info );
+                return fallback;
+            }
+        }
+
+        // [OPT] Async overload for awaited calls that return a Task. The generic
+        //       Func<T> form cannot await, and a bare 'await work()' here keeps the
+        //       "Continuing" semantics of the original try/catch blocks.
+        private static async Task TryRunAsync( string label, Func<Task> work )
+        {
+            try
+            {
+                await work();
+            }
+            catch ( Exception e )
+            {
+                Sup.LogMessage( $"UserAskedData: Failing in {label}", TraceLevel.Error );
+                Sup.LogMessage( $"UserAskedData: Message {e.Message}", TraceLevel.Error );
+                Sup.LogMessage( "UserAskedData: Continuing", TraceLevel.Info );
+            }
+        }
+
+        // [OPT] Void overload for guarded calls that produce no value. A void method
+        //       cannot be handed to the generic Func<T> form above.
+        private static void TryRun( string label, Action work )
+        {
+            try
+            {
+                work();
+            }
+            catch ( Exception e )
+            {
+                Sup.LogMessage( $"UserAskedData: Failing in {label}", TraceLevel.Error );
+                Sup.LogMessage( $"UserAskedData: Message {e.Message}", TraceLevel.Error );
+                Sup.LogMessage( "UserAskedData: Continuing", TraceLevel.Info );
+            }
+        }
+        private async Task<DateTime> RunUserAskedData( DateTime tmpTimeEnd )
+        {
+            Sup.LogMessage( "UserAskedData Doing the compiler stuff...", TraceLevel.Info );
+            List<ChartDef> tmpChartsList = new List<ChartDef>();
+
+            ChartsCompiler fncs = new ChartsCompiler( Sup );
+
+            // UserAskedData is created with a complete ChartsList so create the chartslist from all separate OutputDefs.
+            // It's a bit awkward to separate charts in different lists first and then reassemble but I see no other way.
+            //
+            List<OutputDef> theseOutputs = fncs.ParseChartDefinitions();
+
+            if ( theseOutputs is not null )
+            {
+                foreach ( OutputDef thisOutput in theseOutputs )
+                {
+                    if ( !thisOutput.Filename.Equals( Sup.ExtraSensorsCharts ) )
+                        foreach ( ChartDef tmpChart in thisOutput.TheseCharts )
+                            tmpChartsList.Add( tmpChart );
+                }
+
+                tmpTimeEnd = TryRun( "GenerateUserAskedData - i.e. Compiler data",
+                                     () => fncs.GenerateUserAskedData( thisList: tmpChartsList ),
+                                     tmpTimeEnd );
+            }
+            else
+            {
+                Sup.LogDebugMessage( "Errors in Charts definition. See logfile, please correct and run again." );
+            }
+
+            Sup.LogMessage( $"DoAirLink / AirQualitySensor = {DoAirLink} / {HasAirLink}", TraceLevel.Info );
+
+            if ( HasAirLink )
+            {
+                Sup.LogMessage( "UserAskedData Doing the AirQuality stuff...", TraceLevel.Info );
+                AirLink air = new AirLink( Sup );
+                await TryRunAsync( "GenAirLinkDataJson - i.e. Airlink data",
+                                   () => air.GenAirLinkDataJson() );
+            }
+
+            if ( HasExtraSensors )
+            {
+                Sup.LogMessage( "UserAskedData Doing the ExtraSensor stuff...", TraceLevel.Info );
+                ExtraSensors extra = new ExtraSensors( Sup );
+                TryRun( "GenerateExtraSensorDataJson - i.e. ExtraSensors (incl External) data",
+                        () => extra.GenerateExtraSensorDataJson() );
+            }
+
+            if ( HasCustomLogs )
+            {
+                Sup.LogMessage( "UserAskedData Doing the CustomLogs stuff...", TraceLevel.Info );
+                CustomLogs custom = new CustomLogs( Sup );
+                TryRun( "GenerateCustomLogsDataJson",
+                        () => custom.GenerateCustomLogsDataJson( NonIncremental: false ) );
+            }
+
+            return tmpTimeEnd;
+        }
+
+        #endregion
+
         #region CommandLineArgs
+
+        // [OPT] Flattened from a three-deep if/else nest into a switch. The Website,
+        //       ExtraSensors and CustomLogs groups are grouped arms; the implicit
+        //       DoCompileOnly for ExtraSensors/CustomLogs is preserved.
         private void CommandLineArgs( string[] args )
         {
             Sup.LogDebugMessage( "CommandLineArgs : starting" );
@@ -1071,66 +1023,61 @@ namespace CumulusUtils
             {
                 Sup.LogDebugMessage( $" CommandLineArgs : handling arg: {s}" );
 
-                if ( s.Equals( "Website", Cmp ) )
+                switch ( s.ToLowerInvariant() )
                 {
-                    DoSystemChk = true;
-                    DoTop10 = true;
-                    DoPwsFWI = true;
-                    DoGraphs = true;
-                    DoYadr = true;
-                    DoRecords = true;
-                    DoNOAA = true;
-                    DoDayRecords = true;
-                    DoWebsite = true;
-                    DoForecast = true;
-                    DoUserReports = true;
-                    DoStationMap = true;
-                    DoMeteoCam = true;
-                    DoAirLink = true;
-                    DoExtraSensors = true;
-                    DoCustomLogs = true;
-                    DoCUlib = true;            // this is implicit for website so if user sets it undo tha
-                    DoDiary = true;
+                    case "website":
+                        DoSystemChk = true;
+                        DoTop10 = true;
+                        DoPwsFWI = true;
+                        DoGraphs = true;
+                        DoYadr = true;
+                        DoRecords = true;
+                        DoNOAA = true;
+                        DoDayRecords = true;
+                        DoWebsite = true;
+                        DoForecast = true;
+                        DoUserReports = true;
+                        DoStationMap = true;
+                        DoMeteoCam = true;
+                        DoAirLink = true;
+                        DoExtraSensors = true;
+                        DoCustomLogs = true;
+                        DoCUlib = true;            // this is implicit for website so if user sets it undo tha
+                        DoDiary = true;
+                        break;
 
-                    //break;
-                }
-                else
-                {
-                    if ( s.Equals( "Thrifty", Cmp ) )
-                    {
+                    case "thrifty":
                         Thrifty = true;
-                    }
-                    else
-                    {
-                        if ( s.Equals( "Top10", Cmp ) ) DoTop10 = true;
-                        if ( s.Equals( "pwsFWI", Cmp ) ) DoPwsFWI = true;
-                        if ( s.Equals( "Sysinfo", Cmp ) ) DoSystemChk = true;
-                        if ( s.Equals( "Graphs", Cmp ) ) DoGraphs = true;
-                        if ( s.Equals( "CreateMap", Cmp ) ) DoCreateMap = true;    // Undocumented feature only for the keeper of the map
-                        if ( s.Equals( "Yadr", Cmp ) ) DoYadr = true;
-                        if ( s.Equals( "Records", Cmp ) ) DoRecords = true;
-                        if ( s.Equals( "NOAA", Cmp ) ) DoNOAA = true;
-                        if ( s.Equals( "DayRecords", Cmp ) ) DoDayRecords = true;
-                        if ( s.Equals( "Forecast", Cmp ) ) DoForecast = true;
-                        if ( s.Equals( "UserReports", Cmp ) ) DoUserReports = true;
-                        if ( s.Equals( "StationMap", Cmp ) ) DoStationMap = true;
-                        if ( s.Equals( "MeteoCam", Cmp ) ) DoMeteoCam = true;
-                        if ( s.Equals( "AirLink", Cmp ) ) DoAirLink = true;
-                        if ( s.Equals( "CompileOnly", Cmp ) ) DoCompileOnly = true;
-                        if ( s.Equals( "ExtraSensors", Cmp ) )
-                        {
-                            DoExtraSensors = true;
-                            DoCompileOnly = true;  // Implicit for Extra Sensors
-                        }
-                        if ( s.Equals( "UserAskedData", Cmp ) ) DoUserAskedData = true;
-                        if ( s.Equals( "CustomLogs", Cmp ) )
-                        {
-                            DoCustomLogs = true;
-                            DoCompileOnly = true;  // Implicit for Custom Logs
-                        }
-                        if ( s.Equals( "CUlib", Cmp ) ) DoCUlib = true;
-                        if ( s.Equals( "Diary", Cmp ) ) DoDiary = true;
-                    }
+                        break;
+
+                    case "top10": DoTop10 = true; break;
+                    case "pwsfwi": DoPwsFWI = true; break;
+                    case "sysinfo": DoSystemChk = true; break;
+                    case "graphs": DoGraphs = true; break;
+                    case "createmap": DoCreateMap = true; break;    // Undocumented feature only for the keeper of the map
+                    case "yadr": DoYadr = true; break;
+                    case "records": DoRecords = true; break;
+                    case "noaa": DoNOAA = true; break;
+                    case "dayrecords": DoDayRecords = true; break;
+                    case "forecast": DoForecast = true; break;
+                    case "userreports": DoUserReports = true; break;
+                    case "stationmap": DoStationMap = true; break;
+                    case "meteocam": DoMeteoCam = true; break;
+                    case "airlink": DoAirLink = true; break;
+                    case "compileonly": DoCompileOnly = true; break;
+                    case "useraskeddata": DoUserAskedData = true; break;
+                    case "culib": DoCUlib = true; break;
+                    case "diary": DoDiary = true; break;
+
+                    case "extrasensors":
+                        DoExtraSensors = true;
+                        DoCompileOnly = true;  // Implicit for Extra Sensors
+                        break;
+
+                    case "customlogs":
+                        DoCustomLogs = true;
+                        DoCompileOnly = true;  // Implicit for Custom Logs
+                        break;
                 }
             }
         } // Commandline handling

@@ -28,7 +28,7 @@ namespace CumulusUtils
             {
                 ByYear = values.GroupBy( x => x.ThisDate.Year ).ToDictionary( x => x.Key, x => x.ToList() ),
                 ByMonth = values.GroupBy( x => x.ThisDate.Month ).ToDictionary( x => x.Key, x => x.ToList() ),
-                ByYearMonth = values.GroupBy( x => ( x.ThisDate.Year, x.ThisDate.Month ) ).ToDictionary( x => x.Key, x => x.ToList() )
+                ByYearMonth = values.GroupBy( x => (x.ThisDate.Year, x.ThisDate.Month) ).ToDictionary( x => x.Key, x => x.ToList() )
             };
         }
 
@@ -291,7 +291,7 @@ namespace CumulusUtils
                 }
                 else
                 {
-                    if ( !windIndex.ByYearMonth.TryGetValue( ( year, month ), out MonthList ) ) MonthList = new List<DayfileValue>();
+                    if ( !windIndex.ByYearMonth.TryGetValue( (year, month), out MonthList ) ) MonthList = new List<DayfileValue>();
                 }
 
                 // Single pass over the month to fill the windrun class buckets

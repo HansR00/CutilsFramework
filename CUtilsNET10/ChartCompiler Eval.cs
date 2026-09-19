@@ -1,4 +1,4 @@
-﻿/*
+/*
  * ChartsCompiler Eval - Part of CumulusUtils
  *
  */
@@ -11,7 +11,6 @@ namespace CumulusUtils
 {
     partial class ChartsCompiler
     {
-
         #region Equations
         bool Equationblock = false;
 
@@ -112,10 +111,11 @@ namespace CumulusUtils
 
         #region Expression
 
-        readonly string[] Operators = { "+", "-", "*", "/", "," }; // The comma is not really an operator but is needed for the pow function
-                                                                   // and possibly other parameters for other functions in future
-        readonly string[] Brackets = { "(", ")" };
-        readonly string[] Functions = { "sum", "sqrt", "exp", "ln", "pow", "max", "min" };
+        private static readonly System.Collections.Frozen.FrozenSet<string> OperatorSet = System.Collections.Frozen.FrozenSet.ToFrozenSet( [ "+", "-", "*", "/", "," ], StringComparer.Ordinal );
+        private static readonly System.Collections.Frozen.FrozenSet<string> FunctionSet = System.Collections.Frozen.FrozenSet.ToFrozenSet( [ "sum", "sqrt", "exp", "ln", "pow", "max", "min" ], StringComparer.OrdinalIgnoreCase );
+        readonly string[] Operators = [ "+", "-", "*", "/", "," ];
+        readonly string[] Brackets = [ "(", ")" ];
+        readonly string[] Functions = [ "sum", "sqrt", "exp", "ln", "pow", "max", "min" ];
 
         string Expression( string[] Exp, ref bool EquationSubstitution, bool CommaPermitted )
         {
@@ -130,7 +130,7 @@ namespace CumulusUtils
 
                 if ( tmp is not null )
                 {
-                    while ( i < Exp.Length && Array.Exists( Operators, word => word.Equals( Exp[ i ] ) ) )
+                    while ( i < Exp.Length && OperatorSet.Contains( Exp[ i ] ) )
                     {
                         if ( Exp[ i ] == "," && !CommaPermitted )
                         {
@@ -217,7 +217,7 @@ namespace CumulusUtils
                     {
                         string tmpWord = Exp[ i ];
 
-                        if ( Array.Exists( Functions, word => word.Equals( tmpWord, CUtils.Cmp ) ) )
+                        if ( FunctionSet.Contains( tmpWord ) )
                         {
                             // It is a function so translate to the javascript equivalent. To do so we must know its argument so we continue in Term
                             // Expecting ( and ) with an expression in between
@@ -328,29 +328,51 @@ namespace CumulusUtils
 
         List<string> PrepareRawExpression( string rawExpression )
         {
-            string tmp = "";
-            List<string> rawExp = new List<string>();
+            if ( string.IsNullOrWhiteSpace( rawExpression ) )
+                return [];
 
-            rawExpression = CuSupport.StringRemoveWhiteSpace( rawExpression, " " );
+            // Direct span tokenization: avoids string allocation per character
+            ReadOnlySpan<char> span = rawExpression.AsSpan();
+            var rawExp = new List<string>( capacity: span.Length / 2 + 1 );
+            int tokenStart = -1;
 
-            for ( int i = 0; i < rawExpression.Length; i++ )
-                if ( Array.Exists( Operators, word => word.Equals( "" + rawExpression[ i ] ) ) ||
-                     Array.Exists( Brackets, word => word.Equals( "" + rawExpression[ i ] ) ) )
+            for ( int i = 0; i < span.Length; i++ )
+            {
+                char c = span[ i ];
+                if ( char.IsWhiteSpace( c ) )
                 {
-                    if ( !string.IsNullOrEmpty( tmp ) )
-                        rawExp.Add( tmp );
-                    rawExp.Add( "" + rawExpression[ i ] );
-                    tmp = "";
+                    if ( tokenStart != -1 )
+                    {
+                        rawExp.Add( span.Slice( tokenStart, i - tokenStart ).ToString() );
+                        tokenStart = -1;
+                    }
+                    continue;
                 }
-                else
-                    tmp += rawExpression[ i ];
 
-            if ( !string.IsNullOrEmpty( tmp ) )
-                rawExp.Add( tmp );
+                if ( IsOperatorOrBracket( c ) )
+                {
+                    if ( tokenStart != -1 )
+                    {
+                        rawExp.Add( span.Slice( tokenStart, i - tokenStart ).ToString() );
+                        tokenStart = -1;
+                    }
+                    rawExp.Add( c.ToString() );
+                }
+                else if ( tokenStart == -1 )
+                {
+                    tokenStart = i;
+                }
+            }
+
+            if ( tokenStart != -1 )
+                rawExp.Add( span.Slice( tokenStart ).ToString() );
 
             return rawExp;
         }
 
+        private static bool IsOperatorOrBracket( char c ) =>
+            c is '+' or '-' or '*' or '/' or ',' or '(' or ')';
+
         #endregion
-    } // Class DefineCharts
-}// Namespace
+    }
+}

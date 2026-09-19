@@ -1,4 +1,4 @@
-﻿/*
+/*
  * ChartsCompiler Parser - Part of CumulusUtils
  *
  */
@@ -9,7 +9,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace CumulusUtils
 {
@@ -32,25 +31,39 @@ namespace CumulusUtils
 
         public List<OutputDef> ParseChartDefinitions()
         {
-            // Make the whole file into one string with meaningful contents separated by singles space
-            if ( File.Exists( $"{Sup.PathUtils}{Sup.CutilsChartsDef}" ) )
+            // Read definition file and tokenize tokens efficiently without O(N^2) string allocations
+            string defPath = $"{Sup.PathUtils}{Sup.CutilsChartsDef}";
+            if ( File.Exists( defPath ) )
             {
-                string[] DefLinesArray;
-                string DefContents = "";
+                Keywords = new List<string>( capacity: 1024 );
+                foreach ( string rawLine in File.ReadLines( defPath, Encoding.UTF8 ) )
+                {
+                    ReadOnlySpan<char> line = rawLine.AsSpan().Trim();
+                    if ( line.IsEmpty || line[ 0 ] == ';' )
+                        continue;
 
-                DefLinesArray = File.ReadAllLines( $"{Sup.PathUtils}{Sup.CutilsChartsDef}", Encoding.UTF8 );
-
-                foreach ( string line in DefLinesArray )
-                    if ( string.IsNullOrEmpty( line ) || line[ 0 ] == ';' ) continue;
-                    else
-                        DefContents += line + ' ';
-
-                DefContents = Regex.Replace( DefContents, @"\s+", " " );
-
-                // The where clause takes care of (trailing) empty lines. 
-                // Have to review this I don't understand why they don't just get replaced by space.
-                char[] charSeparators = new char[] { ' ' };
-                Keywords = DefContents.Split( charSeparators ).Where( s => !string.IsNullOrWhiteSpace( s ) ).ToList();
+                    // Tokenize whitespace-separated words
+                    int tokenStart = -1;
+                    for ( int i = 0; i < line.Length; i++ )
+                    {
+                        if ( char.IsWhiteSpace( line[ i ] ) )
+                        {
+                            if ( tokenStart != -1 )
+                            {
+                                Keywords.Add( line.Slice( tokenStart, i - tokenStart ).ToString() );
+                                tokenStart = -1;
+                            }
+                        }
+                        else if ( tokenStart == -1 )
+                        {
+                            tokenStart = i;
+                        }
+                    }
+                    if ( tokenStart != -1 )
+                    {
+                        Keywords.Add( line.Slice( tokenStart ).ToString() );
+                    }
+                }
             }
             else
                 return null;
@@ -694,10 +707,10 @@ namespace CumulusUtils
                                         AllOutputs.Add( thisOutput );
 
                                         AllCharts = new List<ChartDef>();
-                                        thisOutput = new OutputDef
-                                        {
-                                            Filename = Keywords[ CurrPosition ]
-                                        };
+                                        thisOutput = new OutputDef( Keywords[ CurrPosition ] );
+                                        //{
+                                        //    Filename = Keywords[ CurrPosition ]
+                                        //};
                                     }
 
                                     CurrPosition++;  // Keyword next to the filename

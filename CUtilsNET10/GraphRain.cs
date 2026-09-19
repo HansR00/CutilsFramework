@@ -30,7 +30,7 @@ namespace CumulusUtils
             {
                 ByYear = values.GroupBy( x => x.ThisDate.Year ).ToDictionary( x => x.Key, x => x.ToList() ),
                 ByMonth = values.GroupBy( x => x.ThisDate.Month ).ToDictionary( x => x.Key, x => x.ToList() ),
-                ByYearMonth = values.GroupBy( x => ( x.ThisDate.Year, x.ThisDate.Month ) ).ToDictionary( x => x.Key, x => x.ToList() )
+                ByYearMonth = values.GroupBy( x => (x.ThisDate.Year, x.ThisDate.Month) ).ToDictionary( x => x.Key, x => x.ToList() )
             };
         }
 
@@ -315,14 +315,14 @@ namespace CumulusUtils
 
                     for ( int j = CUtils.YearMin; j <= CUtils.YearMax; j++ )
                     {
-                        if ( rainIndex.ByYearMonth.TryGetValue( ( j, i ), out List<DayfileValue>? monthYearValues ) && monthYearValues.Count > 0 )
+                        if ( rainIndex.ByYearMonth.TryGetValue( (j, i), out List<DayfileValue>? monthYearValues ) && monthYearValues.Count > 0 )
                             tmp.Add( GetMonthlyRainMax( monthYearValues ) );
                     }
 
                     // Determine the average and StdDev
                     if ( tmp.Count > 0 )
                     {
-                        NOAARainStationAv[ i - 1 ] = (float) tmp.Average();
+                        NOAARainStationAv[ i - 1 ] = tmp.Average();
                         NOAARainStdDev[ i - 1 ] = tmp.StdDev();
                     }
                     else
@@ -343,7 +343,7 @@ namespace CumulusUtils
                 for ( int j = 1; j <= 12; j++ )
                 {
                     //Now do the actual month work
-                    MonthlyRainValues[ j - 1 ] = rainIndex.ByYearMonth.TryGetValue( ( i, j ), out List<DayfileValue>? monthValues ) && monthValues.Count > 0
+                    MonthlyRainValues[ j - 1 ] = rainIndex.ByYearMonth.TryGetValue( (i, j), out List<DayfileValue>? monthValues ) && monthValues.Count > 0
                         ? GetMonthlyRainMax( monthValues )
                         : -1;
                 }
@@ -674,7 +674,7 @@ namespace CumulusUtils
             {
                 Sup.LogMessage( $"Generating Year Month Rain Statistics, doing year {i} and month {thisMonth}", TraceLevel.Verbose );
 
-                if ( rainIndex.ByYearMonth.TryGetValue( ( i, thisMonth ), out List<DayfileValue>? yearmonthlist ) && yearmonthlist.Count > 0 )
+                if ( rainIndex.ByYearMonth.TryGetValue( (i, thisMonth), out List<DayfileValue>? yearmonthlist ) && yearmonthlist.Count > 0 )
                 {
                     RainStats stats = GetDailyRainStats( yearmonthlist );
 

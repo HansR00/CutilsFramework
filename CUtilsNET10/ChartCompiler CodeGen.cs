@@ -1,4 +1,4 @@
-﻿/*
+/*
  * ChartsCompiler CodeGen - Part of CumulusUtils
  *
  */

@@ -59,7 +59,7 @@ namespace CumulusUtils
             return new DaySolarValuesIndex
             {
                 ByYear = values.GroupBy( x => x.ThisDate.Year ).ToDictionary( x => x.Key, x => x.ToList() ),
-                ByYearMonth = values.GroupBy( x => ( x.ThisDate.Year, x.ThisDate.Month ) ).ToDictionary( x => x.Key, x => x.ToList() )
+                ByYearMonth = values.GroupBy( x => (x.ThisDate.Year, x.ThisDate.Month) ).ToDictionary( x => x.Key, x => x.ToList() )
             };
         }
 
@@ -300,7 +300,7 @@ namespace CumulusUtils
             {
                 //Sup.LogTraceInfoMessage( $"Generating Year Month Solar Hours Statistics, doing year {i} and month {thisMonth}" );
 
-                if ( solarIndex.ByYearMonth.TryGetValue( ( i, thisMonth ), out List<DaySolarValues>? yearMonthlist ) && yearMonthlist.Count > 0 )
+                if ( solarIndex.ByYearMonth.TryGetValue( (i, thisMonth), out List<DaySolarValues>? yearMonthlist ) && yearMonthlist.Count > 0 )
                 {
                     SolarStats stats = GetSolarHoursStats( yearMonthlist );
 
@@ -633,7 +633,7 @@ namespace CumulusUtils
             {
                 //Sup.LogTraceInfoMessage( $"Generating Year Month Solar Energy Statistics, doing year {i} and month {thisMonth}" );
 
-                if ( solarIndex.ByYearMonth.TryGetValue( ( i, thisMonth ), out List<DaySolarValues>? yearMonthlist ) && yearMonthlist.Count > 0 )
+                if ( solarIndex.ByYearMonth.TryGetValue( (i, thisMonth), out List<DaySolarValues>? yearMonthlist ) && yearMonthlist.Count > 0 )
                 {
                     SolarStats stats = GetSolarEnergyStats( yearMonthlist );
 

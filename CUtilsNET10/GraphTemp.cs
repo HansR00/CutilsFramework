@@ -30,7 +30,7 @@ namespace CumulusUtils
             {
                 ByYear = values.GroupBy( x => x.ThisDate.Year ).ToDictionary( x => x.Key, x => x.ToList() ),
                 ByMonth = values.GroupBy( x => x.ThisDate.Month ).ToDictionary( x => x.Key, x => x.ToList() ),
-                ByYearMonth = values.GroupBy( x => ( x.ThisDate.Year, x.ThisDate.Month ) ).ToDictionary( x => x.Key, x => x.ToList() )
+                ByYearMonth = values.GroupBy( x => (x.ThisDate.Year, x.ThisDate.Month) ).ToDictionary( x => x.Key, x => x.ToList() )
             };
         }
 
@@ -140,7 +140,7 @@ namespace CumulusUtils
                 for ( int j = 1; j <= 12; j++ )
                 {
                     //Now do the actual month work
-                    MonthlyTempValues[ j - 1 ] = temperatureIndex.ByYearMonth.TryGetValue( ( i, j ), out List<DayfileValue>? yearMonthValues )
+                    MonthlyTempValues[ j - 1 ] = temperatureIndex.ByYearMonth.TryGetValue( (i, j), out List<DayfileValue>? yearMonthValues )
                         ? GetMonthlyAverageTemp( yearMonthValues )
                         : -1;
                 }
@@ -873,7 +873,7 @@ namespace CumulusUtils
             {
                 Sup.LogMessage( $"Generating Year Month Temp Statistics, doing year {i} and month {thisMonth}", TraceLevel.Info );
 
-                if ( temperatureIndex.ByYearMonth.TryGetValue( ( i, thisMonth ), out List<DayfileValue>? yearmonthlist ) && yearmonthlist.Count > 0 )
+                if ( temperatureIndex.ByYearMonth.TryGetValue( (i, thisMonth), out List<DayfileValue>? yearmonthlist ) && yearmonthlist.Count > 0 )
                 {
                     TemperatureStats stats = GetTemperatureStats( yearmonthlist );
 

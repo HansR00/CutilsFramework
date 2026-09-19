@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Graphs - Part of CumulusUtils
  *
  */
@@ -15,6 +15,40 @@ namespace CumulusUtils
 {
     partial class Graphx : IDisposable
     {
+
+        private sealed class DayfileGraphIndex
+        {
+            public required IReadOnlyDictionary<int, List<DayfileValue>> ByYear { get; init; }
+        }
+
+        private static DayfileGraphIndex BuildGraphIndex( List<DayfileValue> values )
+        {
+            return new DayfileGraphIndex
+            {
+                ByYear = values.GroupBy( x => x.ThisDate.Year ).ToDictionary( x => x.Key, x => x.ToList() )
+            };
+        }
+
+        // Yearly rain sums and valid-day counts in a single grouped pass.
+        private static Dictionary<int, (int DayCount, float RainSum)> GetYearlyRainTotals( List<DayfileValue> values )
+        {
+            Dictionary<int, (int DayCount, float RainSum)> totals = new Dictionary<int, (int DayCount, float RainSum)>();
+
+            foreach ( DayfileValue value in values )
+            {
+                int year = value.ThisDate.Year;
+
+                if ( !totals.TryGetValue( year, out (int DayCount, float RainSum) acc ) )
+                    acc = (0, 0);
+
+                acc.DayCount++;
+                acc.RainSum += value.TotalRainThisDay;
+                totals[ year ] = acc;
+            }
+
+            return totals;
+        }
+
         #region Declarations
 
         private readonly bool GraphDailyRain,
@@ -1190,6 +1224,9 @@ namespace CumulusUtils
                 Sup.LogMessage( $" GenerateNOAAparameters: NOAARainNormYearAv {NOAARainNormYearAv:F1}", TraceLevel.Info );
             }
 
+            // Single grouped pass over the dayfile list: valid-day counts and yearly rain sums.
+            Dictionary<int, (int DayCount, float RainSum)> yearlyRainTotals = GetYearlyRainTotals( ThisList );
+
             // Use station Average
             if ( NormalUsage.Equals( "StationAverage", CUtils.Cmp ) || NormalUsage.Equals( "Both", CUtils.Cmp ) )
             {
@@ -1199,25 +1236,28 @@ namespace CumulusUtils
 
                 for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
                 {
-                    if ( ThisList.Where( x => x.ThisDate.Year == i ).Count() < 350 /* Cal.GetDaysInYear(i) */ )
+                    if ( !yearlyRainTotals.TryGetValue( i, out (int DayCount, float RainSum) yearTotals ) || yearTotals.DayCount < 350 /* Cal.GetDaysInYear(i) */ )
                     {
-                        Sup.LogMessage( $" GenerateNOAAparameters : StationRainYearAv; year {i} has only {ThisList.Where( x => x.ThisDate.Year == i ).Count()} valid days i.s.o. 350", TraceLevel.Info );
+                        Sup.LogMessage( $" GenerateNOAAparameters : StationRainYearAv; year {i} has only {yearTotals.DayCount} valid days i.s.o. 350", TraceLevel.Info );
                         Sup.LogMessage( $" GenerateNOAAparameters : Skipping year {i}", TraceLevel.Info );
                         continue; // Incomplete year - have to reset to nr of days per year 
                     }
 
-                    tmp.Add( ThisList.Where( x => x.ThisDate.Year == i ).Select( x => x.TotalRainThisDay ).Sum() );
+                    tmp.Add( yearTotals.RainSum );
                 }
 
-                // Second pass to determine the average and StdDev
-                if ( tmp.Any() ) StationRainYearAv = tmp.Average();
+                // Determine the average
+                if ( tmp.Count > 0 ) StationRainYearAv = tmp.Average();
 
                 Sup.LogMessage( $" GenerateNOAAparameters : StationRainYearAv {StationRainYearAv}", TraceLevel.Info );
             }
 
             //  Now get the highest year rainfall ever
             for ( int i = CUtils.YearMin; i <= CUtils.YearMax; i++ )
-                MaxYearlyRainAlltime = Math.Max( ThisList.Where( x => x.ThisDate.Year == i ).Select( x => x.TotalRainThisDay ).Sum(), MaxYearlyRainAlltime );
+            {
+                if ( yearlyRainTotals.TryGetValue( i, out (int DayCount, float RainSum) yearTotals ) )
+                    MaxYearlyRainAlltime = Math.Max( yearTotals.RainSum, MaxYearlyRainAlltime );
+            }
 
             return;
         }

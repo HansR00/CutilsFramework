@@ -1,4 +1,4 @@
-﻿/*
+/*
  * UnitsAndConversions - Part of CumulusUtils
  *
  */
@@ -6,13 +6,12 @@
 namespace CumulusUtils
 {
     /*
-     * These classes contain the units and the correspponding texts and provide the conversions between the different units 
-     * (e.g. celsius -> fahrenheit and v.v. and m/s -> km/h and v.v. etc...)
-     * Each class has the following methods:
-     *   1) Constructor(TempDim) which defines the default dimension of this instance (e.g. °C , mm or hPa etc...)
-     *   2) UnitText() or UnitText(TempDim) outputs a string for the unit either the default (no argument) or for the specified Dimension (argument)
-     *   3) Convert( val, dim) converts the value (in the default/defined dimension to the given dimension. If dim is equal to CreationTime dimension no conversion is made
-     *   
+     * Unit wrappers: each class holds the station default dimension, unit text,
+     * and conversion between dimensions (e.g. °C ↔ °F, m/s ↔ km/h).
+     *
+     *  1) Constructor(dim) sets the default dimension for this instance
+     *  2) Text() / Text(dim) returns the unit string
+     *  3) Convert(from, to, val) converts; identity when from == to
      */
 
     public enum TempDim { celsius, fahrenheit }
@@ -20,31 +19,26 @@ namespace CumulusUtils
     public enum RainDim { millimeter, inch }
     public enum PressureDim { millibar, hectopascal, inchHg }
     public enum DistanceDim { meter, mile, kilometer, nauticalmile }
-    public enum LaserDim { centimeter, inch}
+    public enum LaserDim { centimeter, inch }
     public enum HeightDim { meter, feet }
-
-    //public enum
 
     public class Temp( TempDim t )
     {
-        static string[] UnitTempText { get; } = { "°C", "°F" };
+        private static readonly string[] UnitTempText = [ "°C", "°F" ];
+
         public readonly TempDim Dim = t;
 
-        public string Text() { return UnitTempText[ (int) Dim ]; }
-        public string Text( TempDim t ) { return UnitTempText[ (int) t ]; }
+        public string Text() => UnitTempText[ (int) Dim ];
+        public string Text( TempDim t ) => UnitTempText[ (int) t ];
 
         public double Convert( TempDim from, TempDim to, double val )
         {
-            if ( from == TempDim.fahrenheit )
-                if ( to == TempDim.fahrenheit )
-                    return val;
-                else
-                    return ( val - 32 ) / 1.8;
-            else // Dim must be celsius
-                if ( to == TempDim.celsius )
-                    return val;
-                else
-                    return val * 1.8 + 32;
+            if ( from == to )
+                return val;
+
+            return from == TempDim.fahrenheit
+                ? ( val - 32 ) / 1.8
+                : val * 1.8 + 32;
         }
 
         public static int NrOfDecimals => 1;
@@ -52,168 +46,148 @@ namespace CumulusUtils
 
     public class Wind
     {
-        string[] UnitWindText { get; } = { "m/s", "mph", "km/h", "kts" };
-
-        readonly double[,] ConversionFactors =
+        private static readonly double[,] ConversionFactors =
         {
-          { 1.0,     2.23694, 3.6,     1.94384 } ,  // m/s to mph, km/h, kts
-          { 0.44704, 1.0,     1.60934, 0.868976} ,  // mph to m/s, km/h, kts
-          { 0.277778,0.621371,1.0,     0.539957} ,  // kmh to m/s, mph, kts
-          { 0.514444,1.15078, 1.852,   1.0}         // kts to m/s, mph, km/h
+            { 1.0,      2.23694,  3.6,      1.94384  },  // m/s  → mph, km/h, kts
+            { 0.44704,  1.0,      1.60934,  0.868976 },  // mph  → m/s, km/h, kts
+            { 0.277778, 0.621371, 1.0,      0.539957 },  // km/h → m/s, mph,  kts
+            { 0.514444, 1.15078,  1.852,    1.0      }   // kts  → m/s, mph,  km/h
         };
+
+        private readonly string[] unitWindText = [ "m/s", "mph", "km/h", "kts" ];
 
         public readonly WindDim Dim;
 
-        public Wind( WindDim w, CuSupport s ) { Dim = w; UnitWindText[ 2 ] = $"km{s.PerHour}"; }
+        public Wind( WindDim w, CuSupport s )
+        {
+            Dim = w;
+            unitWindText[ 2 ] = $"km{s.PerHour}";
+        }
 
-        public string Text() { return UnitWindText[ (int) Dim ]; }
-        public string Text( WindDim w ) { return UnitWindText[ (int) w ]; }
+        public string Text() => unitWindText[ (int) Dim ];
+        public string Text( WindDim w ) => unitWindText[ (int) w ];
 
         public double Convert( WindDim from, WindDim to, double val )
-        {
-            return val * ConversionFactors[ (int) from, (int) to ];
-        }
+            => from == to ? val : val * ConversionFactors[ (int) from, (int) to ];
+
         public static int NrOfDecimals => 1;
     }
 
     public class Distance( DistanceDim d )
     {
-        // Note: when speed is m/s,  distance is expressed in km
-        string[] UnitDistanceText { get; } = { "m", "mi", "km", "nm" };
+        // When speed is m/s, distance is expressed in km
+        private static readonly string[] UnitDistanceText = [ "m", "mi", "km", "nm" ];
 
-        readonly double[,] ConversionFactors =
+        private static readonly double[,] ConversionFactors =
         {
-          { 1.0,     0.000621371, 0.001,   0.000539957 } ,  // m to mi, km, nm
-          { 1609.34, 1.0,         1.60934, 0.868976 } ,     // mi to m, km, nm
-          { 1000,    0.621371,    1.0,     0.539957 } ,     // km to m, mp, nm
-          { 1852,    1.15078,     1.852,   1.0}             // nm to m, km, mi
+            { 1.0,     0.000621371, 0.001,   0.000539957 },  // m  → mi, km, nm
+            { 1609.34, 1.0,         1.60934, 0.868976    },  // mi → m,  km, nm
+            { 1000,    0.621371,    1.0,     0.539957    },  // km → m,  mi, nm
+            { 1852,    1.15078,     1.852,   1.0         }   // nm → m,  mi, km
         };
 
         public readonly DistanceDim Dim = d;
 
-        public string Text() { return UnitDistanceText[ (int) Dim ]; }
-        public string Text( WindDim d ) { return UnitDistanceText[ (int) d ]; }
+        public string Text() => UnitDistanceText[ (int) Dim ];
+        public string Text( DistanceDim d ) => UnitDistanceText[ (int) d ];
 
         public double Convert( DistanceDim from, DistanceDim to, double val )
-        {
-            return val * ConversionFactors[ (int) from, (int) to ];
-        }
+            => from == to ? val : val * ConversionFactors[ (int) from, (int) to ];
 
         public static int NrOfDecimals => 1;
     }
 
     public class LaserDist( LaserDim d )
     {
-        string[] UnitLaserDistText { get; } = { "cm", "in" };
+        private static readonly string[] UnitLaserDistText = [ "cm", "in" ];
 
-        readonly double[,] ConversionFactors =
+        private static readonly double[,] ConversionFactors =
         {
-            { 1.0,  0.393701 } ,  // cm to in
-            { 2.54, 1.0 }          // in to cm
+            { 1.0,  0.393701 },  // cm → in
+            { 2.54, 1.0      }   // in → cm
         };
 
         public readonly LaserDim Dim = d;
 
-        public string Text() { return UnitLaserDistText[ (int) Dim ]; }
-        public string Text( LaserDim d ) { return UnitLaserDistText[ (int) d ]; }
+        public string Text() => UnitLaserDistText[ (int) Dim ];
+        public string Text( LaserDim d ) => UnitLaserDistText[ (int) d ];
 
         public double Convert( LaserDim from, LaserDim to, double val )
-        {
-            return val * ConversionFactors[ (int) from, (int) to ];
-        }
+            => from == to ? val : val * ConversionFactors[ (int) from, (int) to ];
 
-        public int NrOfDecimals()
-        {
-            if ( Dim == LaserDim.inch ) return 2;
-            else return 1;
-        }
+        public int NrOfDecimals() => Dim == LaserDim.inch ? 2 : 1;
     }
 
     public class Rain( RainDim w )
     {
-        string[] UnitRainText { get; } = { "mm", "in" };
+        private static readonly string[] UnitRainText = [ "mm", "in" ];
 
-        readonly double[,] ConversionFactors =
+        private static readonly double[,] ConversionFactors =
         {
-            { 1.0,  0.0393701 } ,  // mm to in
-            { 25.4, 1.0 }          // in to mm
+            { 1.0,  0.0393701 },  // mm → in
+            { 25.4, 1.0       }   // in → mm
         };
 
         public readonly RainDim Dim = w;
 
-        public string Text() { return UnitRainText[ (int) Dim ]; }
-        public string Text( RainDim r ) { return UnitRainText[ (int) r ]; }
+        public string Text() => UnitRainText[ (int) Dim ];
+        public string Text( RainDim r ) => UnitRainText[ (int) r ];
 
         public double Convert( RainDim from, RainDim to, double val )
-        {
-            return val * ConversionFactors[ (int) from, (int) to ];
-        }
+            => from == to ? val : val * ConversionFactors[ (int) from, (int) to ];
 
-        public int NrOfDecimals()
-        {
-            if ( Dim == RainDim.inch ) return 2;
-            else return 1;
-        }
+        public int NrOfDecimals() => Dim == RainDim.inch ? 2 : 1;
     }
 
     public class Pressure( PressureDim p )
     {
-        string[] UnitPressureText { get; } = { "mb", "hPa", "inHg" };
+        private static readonly string[] UnitPressureText = [ "mb", "hPa", "inHg" ];
 
-        readonly double[,] ConversionFactors =
+        private static readonly double[,] ConversionFactors =
         {
-          { 1.0,     1.0,     0.02953 } ,   // mb to hPa, inHg
-          { 1.0,     1.0,     0.02953 } ,   // hPa to mb, inHg
-          { 33.8639, 33.8639, 1.0 }         // inHg to mb, hPa
+            { 1.0,     1.0,     0.02953 },  // mb   → hPa, inHg
+            { 1.0,     1.0,     0.02953 },  // hPa  → mb,  inHg
+            { 33.8639, 33.8639, 1.0     }   // inHg → mb,  hPa
         };
 
         public readonly PressureDim Dim = p;
 
-        public string Text() { return UnitPressureText[ (int) Dim ]; }
-        public string Text( PressureDim p ) { return UnitPressureText[ (int) p ]; }
+        public string Text() => UnitPressureText[ (int) Dim ];
+        public string Text( PressureDim p ) => UnitPressureText[ (int) p ];
 
         public double Convert( PressureDim from, PressureDim to, double val )
-        {
-            return val * ConversionFactors[ (int) from, (int) to ];
-        }
+            => from == to ? val : val * ConversionFactors[ (int) from, (int) to ];
 
-        public int NrOfDecimals()
-        {
-            if ( Dim == PressureDim.inchHg ) return 2;
-            else return 0;
-        }
+        public int NrOfDecimals() => Dim == PressureDim.inchHg ? 2 : 0;
     }
 
     public class Height( HeightDim d )
     {
-        // Note: Height is either in feet or in meters
-        string[] UnitHeightText { get; } = { "m", "ft" };
+        private static readonly string[] UnitHeightText = [ "m", "ft" ];
 
-        readonly double[,] ConversionFactors =
+        private static readonly double[,] ConversionFactors =
         {
-            { 1.0,     3.28084 } ,  // m to feet
-            { 0.3048,  1.0     }    // feet to m
+            { 1.0,    3.28084 },  // m  → ft
+            { 0.3048, 1.0     }   // ft → m
         };
 
         public readonly HeightDim Dim = d;
 
-        public string Text() { return UnitHeightText[ (int) Dim ]; }
-        public string Text( HeightDim d ) { return UnitHeightText[ (int) d ]; }
+        public string Text() => UnitHeightText[ (int) Dim ];
+        public string Text( HeightDim d ) => UnitHeightText[ (int) d ];
 
         public double Convert( HeightDim from, HeightDim to, double val )
-        {
-            return val * ConversionFactors[ (int) from, (int) to ];
-        }
+            => from == to ? val : val * ConversionFactors[ (int) from, (int) to ];
 
         public static int NrOfDecimals => 1;
     }
 
-    public class CO2conc
+    public static class CO2conc
     {
         public static string Text() => "ppm";
     }
 
-    public class PMconc
+    public static class PMconc
     {
         public static string Text() => "μg/m3";
     }

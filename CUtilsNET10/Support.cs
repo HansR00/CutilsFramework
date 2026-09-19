@@ -1,4 +1,4 @@
-﻿/*
+/*
  * CuSupport - Part of CumulusUtils
  *
  */
@@ -21,7 +21,10 @@ namespace CumulusUtils
     public class CuSupport : IDisposable
     {
         // Is it a version number beta shown at users?
-        private const string beta = ".NET 10";
+        private const string beta = ".NET 10 beta1";
+
+        private static readonly DateTime UnixEpoch = new DateTime( 1970, 1, 1, 0, 0, 0, DateTimeKind.Utc );
+        private static readonly Regex WhitespaceRegex = new Regex( @"\s+", RegexOptions.Compiled );
 
         #region declarations
         public Wind StationWind { get; set; }
@@ -82,8 +85,6 @@ namespace CumulusUtils
         public bool LoggingOn { get; set; }
         public TraceSwitch CUTraceSwitch { get; set; }
 
-
-
         public string DemarcationLineExtraSensors { get; } = "; ExtraSensorCharts";
         public string DemarcationLineCustomLogs { get; } = "; CustomLogsCharts";
 
@@ -104,24 +105,20 @@ namespace CumulusUtils
         {
             if ( !File.Exists( "Cumulus.ini" ) )
             {
-                Console.WriteLine( $" No Cumulus.ini found. Must run in Cumulus directory!" );
+                Console.WriteLine( " No Cumulus.ini found. Must run in Cumulus directory!" );
                 Environment.Exit( 0 );
             }
             else
             {
-                string filenameCopy = "copy_Cumulus.ini";
-                if ( File.Exists( filenameCopy ) )
-                    File.Delete( filenameCopy );
-                File.Copy( "Cumulus.ini", filenameCopy );
-
+                const string filenameCopy = "copy_Cumulus.ini";
+                File.Copy( "Cumulus.ini", filenameCopy, overwrite: true );
                 Ini = new IniFile( filenameCopy, this );
             }
 
             if ( !File.Exists( "cumulusutils.ini" ) )
             {
                 // All entries will be created when called for because I changed the IniFiles library. Search for: HAR
-                StreamWriter of = new StreamWriter( "cumulusutils.ini" );
-                of.Dispose();
+                File.WriteAllText( "cumulusutils.ini", string.Empty );
             }
 
             MyIni = new IniFile( "cumulusutils.ini", this );
@@ -133,11 +130,11 @@ namespace CumulusUtils
             }
 
             // We need strings.ini entries for the ExtraSensor module
-            if ( !File.Exists( "strings.ini" ) ) File.Copy( "samplestrings.ini", "strings.ini" );
-            if ( File.Exists( "strings.ini" ) ) StringsIni = new IniFile( "strings.ini", this );
+            if ( !File.Exists( "strings.ini" ) && File.Exists( "samplestrings.ini" ) )
+                File.Copy( "samplestrings.ini", "strings.ini" );
+            if ( File.Exists( "strings.ini" ) )
+                StringsIni = new IniFile( "strings.ini", this );
 
-            // Init the logging
-            //
             InitLogging();
 
             // Do the locale thing
@@ -148,102 +145,50 @@ namespace CumulusUtils
 
             try
             {
-                Language = Locale.Substring( 0, 2 ).ToUpper( CUtils.Inv );
-                Country = Locale.Substring( 3, 2 ).ToUpper( CUtils.Inv );
-
-                CUtils.ThisCulture = CultureInfo.GetCultureInfo( Locale );
+                ApplyLocale( Locale );
             }
-            catch ( Exception e ) when ( e is CultureNotFoundException )
+            catch ( Exception e ) when ( e is CultureNotFoundException || e is ArgumentException )
             {
                 LogDebugMessage( $" Invalid Locale : {Locale}" );
                 LogMessage( $" Invalid Culture : {e.Message}", TraceLevel.Error );
                 LogMessage( $" Invalid Culture for the system : {Locale}", TraceLevel.Error );
-                LogMessage( $" Using English GB locale : en-GB", TraceLevel.Warning );
-                Locale = "en-GB";
-                Language = "EN";
-                Country = "GB";
-
-                CUtils.ThisCulture = CultureInfo.GetCultureInfo( Locale );
+                LogMessage( " Using English GB locale : en-GB", TraceLevel.Warning );
+                ApplyLocale( "en-GB" );
             }
             catch ( Exception e )
             {
-                // Hope we never get here
-                LogDebugMessage( $" Unknown exceeption - Invalid Culture : {e.Message}" );
+                LogDebugMessage( $" Unknown exception - Invalid Culture : {e.Message}" );
                 throw;
             }
 
             if ( !CUtils.Thrifty )
             {
-                using ( StreamWriter of = new StreamWriter( $"{PathUtils}HighchartsLanguage.js", false, Encoding.UTF8 ) )
-                {
-                    // This file is from version 8.0 also used for the time is UTC and Timezonde defs.
-
-                    StringBuilder str = new StringBuilder();
-
-                    str.AppendLine( "Highcharts.lang = {" );
-                    str.AppendLine( "  lang:{" );
-                    str.Append( "    months:[" );
-                    for ( int i = 0; i < 12; i++ )
-                    {
-                        str.Append( $"'{CUtils.ThisCulture.DateTimeFormat.GetMonthName( i + 1 )}'," );
-                    }
-                    str.Remove( str.Length - 1, 1 );
-                    str.AppendLine( "]," );
-
-                    str.Append( "    shortMonths:[" );
-                    for ( int i = 0; i < 12; i++ )
-                    {
-                        str.Append( $"'{CUtils.ThisCulture.DateTimeFormat.AbbreviatedMonthNames[ i ]}'," );
-                    }
-                    str.Remove( str.Length - 1, 1 );
-                    str.AppendLine( "]," );
-
-                    str.Append( "    weekdays:[" );
-                    for ( int i = 0; i < 7; i++ )
-                    {
-                        str.Append( $"'{CUtils.ThisCulture.DateTimeFormat.DayNames[ i ]}'," );
-                    }
-                    str.Remove( str.Length - 1, 1 );
-                    str.AppendLine( "]," );
-                    str.AppendLine( "    thousandsSep: \"\"" );
-                    str.AppendLine( "  }," );
-
-                    // Now set the time and timezone defs
-                    str.AppendLine( $"time:{{timezone: '{GetCumulusIniValue( "Station", "TimeZone", "" )}'}}" );
-
-                    str.AppendLine( "};" );
-
-                    of.WriteLine( $"{str}" );
-                    of.WriteLine( $"highchartsOptions = Highcharts.setOptions(Highcharts.lang);" );
-                }
+                WriteHighchartsLanguageFile();
             }
 
-            // And include the file highchartsLanguage.js after the HighchartsOptions.js
             LogDebugMessage( $" CUstrings[xx].ini : CUstrings{Language}.ini looked for." );
 
-            if ( !File.Exists( $"CUstrings{Language}.ini" ) )
+            string cuStringsPath = $"CUstrings{Language}.ini";
+            if ( !File.Exists( cuStringsPath ) )
             {
                 LogMessage( $" No CUstrings{Language}.ini found.", TraceLevel.Warning );
-
-                StreamWriter of = new StreamWriter( $"CUstrings{Language}.ini" );
-                of.Dispose();
+                File.WriteAllText( cuStringsPath, string.Empty );
             }
 
-            CUstringIni = new IniFile( $"CUstrings{Language}.ini", this );
+            CUstringIni = new IniFile( cuStringsPath, this );
 
             PerHour = GetCUstringValue( "General", "PerHour", "/hr", false );
-            StationWind = new Wind( (WindDim) Convert.ToInt32( GetCumulusIniValue( "Station", "WindUnit", "2" ) ), this );             // default does not count: comes from CMX, for me km/h
-            StationPressure = new Pressure( (PressureDim) Convert.ToInt32( GetCumulusIniValue( "Station", "PressureUnit", "1" ) ) );   // default does not count: comes from CMX, for me hPa
-            StationRain = new Rain( (RainDim) Convert.ToInt32( GetCumulusIniValue( "Station", "RainUnit", "0" ) ) );                   // default does not count: comes from CMX, for me mm
-            StationTemp = new Temp( (TempDim) Convert.ToInt32( GetCumulusIniValue( "Station", "TempUnit", "0" ) ) );                   // default does not count: comes from CMX, for me C
 
-            int tmpDim = Convert.ToInt32( GetCumulusIniValue( "Station", "WindUnit", "2" ) );
-            StationDistance = new Distance( (DistanceDim) tmpDim );                                         // CMX does not know Distance(unit) but Wind can be misused for this
+            WindDim windDim = ParseStationUnit<WindDim>( "WindUnit", "2" );
+            StationWind = new Wind( windDim, this );
+            StationDistance = new Distance( (DistanceDim) windDim ); // CMX has no Distance unit; reuse WindUnit
 
-            StationLaser = new LaserDist( (LaserDim) Convert.ToInt32( GetCumulusIniValue( "Station", "LaserDistancehUnit", "0" ) ) );
-
-            StationHeight = new Height( (HeightDim) Convert.ToInt32( GetCumulusIniValue( "Station", "CloudBaseInFeet", "0" ) ) );      // We use the CloudBaseInFeet param of CMX as default.
-                                                                                                                                       // We'll see later if that needs modification
+            StationPressure = new Pressure( ParseStationUnit<PressureDim>( "PressureUnit", "1" ) );
+            StationRain = new Rain( ParseStationUnit<RainDim>( "RainUnit", "0" ) );
+            StationTemp = new Temp( ParseStationUnit<TempDim>( "TempUnit", "0" ) );
+            // CMX key is historically misspelled as LaserDistancehUnit
+            StationLaser = new LaserDist( ParseStationUnit<LaserDim>( "LaserDistancehUnit", "0" ) );
+            StationHeight = new Height( ParseStationUnit<HeightDim>( "CloudBaseInFeet", "0" ) );
 
             LogDebugMessage( $" CumulusUtils version: {UnformattedVersion()}" );
             LogDebugMessage( $" CuSupport constructor : Unit Wind (m/s, mph, km/h, kts): {StationWind.Text()}" );
@@ -253,7 +198,52 @@ namespace CumulusUtils
             LogDebugMessage( $" CuSupport constructor : Unit Distance (m, mi, km, kn): {StationDistance.Text()}" );
             LogDebugMessage( $" CuSupport constructor : Unit Laser (cm, in): {StationLaser.Text()}" );
             LogDebugMessage( $" CuSupport constructor : Unit Height (m, ft): {StationHeight.Text()}" );
+        }
 
+        private void ApplyLocale( string locale )
+        {
+            Locale = locale;
+            string[] parts = locale.Split( '-', '_' );
+            Language = parts.Length > 0 && parts[ 0 ].Length >= 2
+                ? parts[ 0 ][ ..2 ].ToUpper( CUtils.Inv )
+                : "EN";
+            Country = parts.Length > 1 && parts[ 1 ].Length >= 2
+                ? parts[ 1 ][ ..2 ].ToUpper( CUtils.Inv )
+                : "GB";
+
+            CUtils.ThisCulture = CultureInfo.GetCultureInfo( locale );
+        }
+
+        private void WriteHighchartsLanguageFile()
+        {
+            using StreamWriter of = new StreamWriter( $"{PathUtils}HighchartsLanguage.js", false, Encoding.UTF8 );
+            // This file is from version 8.0 also used for time/timezone defs.
+
+            DateTimeFormatInfo dtf = CUtils.ThisCulture.DateTimeFormat;
+            StringBuilder str = new StringBuilder();
+
+            str.AppendLine( "Highcharts.lang = {" );
+            str.AppendLine( "  lang:{" );
+
+            str.Append( "    months:[" );
+            str.Append( string.Join( ",", Enumerable.Range( 1, 12 ).Select( i => $"'{dtf.GetMonthName( i )}'" ) ) );
+            str.AppendLine( "]," );
+
+            str.Append( "    shortMonths:[" );
+            str.Append( string.Join( ",", Enumerable.Range( 0, 12 ).Select( i => $"'{dtf.AbbreviatedMonthNames[ i ]}'" ) ) );
+            str.AppendLine( "]," );
+
+            str.Append( "    weekdays:[" );
+            str.Append( string.Join( ",", Enumerable.Range( 0, 7 ).Select( i => $"'{dtf.DayNames[ i ]}'" ) ) );
+            str.AppendLine( "]," );
+            str.AppendLine( "    thousandsSep: \"\"" );
+            str.AppendLine( "  }," );
+
+            str.AppendLine( $"time:{{timezone: '{GetCumulusIniValue( "Station", "TimeZone", "" )}'}}" );
+            str.AppendLine( "};" );
+
+            of.WriteLine( $"{str}" );
+            of.WriteLine( "highchartsOptions = Highcharts.setOptions(Highcharts.lang);" );
         }
 
         #endregion
@@ -265,52 +255,53 @@ namespace CumulusUtils
 
         public string GetUtilsIniValue( string section, string key, string def )
         {
-            string tmp;
-
-            tmp = MyIni.GetValue( section, key, def );
+            string tmp = MyIni.GetValue( section, key, def );
 
             if ( !string.IsNullOrEmpty( tmp ) && tmp.Contains( "<#" ) )
             {
-                // Not Empty string AND must contain a webtag only then we will go replace
-                // This will not be often and many so I take the performance risk to create the IPC object locally and use 
+                // Not empty AND contains a webtag — only then replace
                 CmxIPC thisIPC = new CmxIPC( this, CUtils.Isup );
 
-                Task<string> AsyncTask = thisIPC.ReplaceWebtagsPostAsync( tmp );
-                AsyncTask.Wait();
-                tmp = AsyncTask.Result;
+                Task<string> asyncTask = thisIPC.ReplaceWebtagsPostAsync( tmp );
+                asyncTask.Wait();
+                tmp = asyncTask.Result;
             }
 
             LogMessage( DateTime.Now + $" GetUtilsIniValue {key} / {tmp}", TraceLevel.Verbose );
 
-            return ( tmp );
+            return tmp;
         }
 
         public void SetUtilsIniValue( string section, string key, string def ) => MyIni.SetValue( section, key, def );
 
         public string GetCUstringValue( string section, string key, string def, bool javaScript )
         {
-            // From this one: https://stackoverflow.com/questions/7265315/replace-multiple-characters-in-a-c-sharp-string
-            //
             string tmp = CUstringIni.GetValue( section, key, def );
 
             if ( string.IsNullOrEmpty( tmp ) )
-                return ( tmp );
+                return tmp;
 
             if ( javaScript && tmp.Contains( '\'' ) )
-            {
-                char[] separators = new char[] { '\'' };
-                string[] temp = tmp.Split( separators, StringSplitOptions.None );
-                tmp = string.Join( @"\'", temp );
-            }
+                tmp = tmp.Replace( "'", @"\'" );
 
             LogMessage( DateTime.Now + $" GetCUstringValue {key} / {tmp}", TraceLevel.Verbose );
 
-            return ( tmp );
+            return tmp;
         }
 
         public void SetCUstringValue( string section, string key, string def ) => CUstringIni.SetValue( section, key, def );
 
-        //private void EndMyIniFile() { if ( MyIni is not null ) { MyIni.Flush(); MyIni.Refresh(); } if ( CUstringIni is not null ) { CUstringIni.Flush(); CUstringIni.Refresh(); } }
+        private T ParseStationUnit<T>( string key, string fallback ) where T : struct, Enum
+        {
+            string raw = GetCumulusIniValue( "Station", key, fallback );
+            if ( int.TryParse( raw, NumberStyles.Integer, CUtils.Inv, out int n )
+                && Enum.IsDefined( typeof( T ), n ) )
+                return (T) (object) n;
+
+            LogMessage( $" Invalid Station.{key} value '{raw}', using {fallback}.", TraceLevel.Warning );
+            return (T) (object) int.Parse( fallback, CUtils.Inv );
+        }
+
         private static void EndMyIniFile() { }
 
         #endregion
@@ -323,7 +314,10 @@ namespace CumulusUtils
             //   Note: using illegal unit numbers - like 5 - causes the chart not to display
             //   See: https://api.highcharts.com/highstock/plotOptions.series.dataGrouping.units
             //   ['hour',[1, 2, 3, 4, 6, 8, 12] ]
-            int tmp = Convert.ToInt32( GetCumulusIniValue( "Graphs", "GraphHours", "" ) ) / 24;
+            if ( !int.TryParse( GetCumulusIniValue( "Graphs", "GraphHours", "0" ), NumberStyles.Integer, CUtils.Inv, out int hours ) )
+                hours = 0;
+
+            int tmp = hours / 24;
             return tmp <= 4 ? tmp : 6;
         }
 
@@ -388,7 +382,7 @@ namespace CumulusUtils
 
             if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes )
             {
-                // Use the jQuery modal, by setting the DoLibraryIncludes to false the user has control whether or not to use the 
+                // Use the jQuery modal, by setting the DoLibraryIncludes to false the user has control whether or not to use the
                 // supplied includes or do it all by her/himself
                 tmp.AppendLine(
                     $"<div class='modal' id='{chartId}' style='font-family: Verdana, Geneva, Tahoma, sans-serif;font-size: 120%;'>" +
@@ -402,7 +396,7 @@ namespace CumulusUtils
             }
             else
             {
-                // Use the bootstrap modal --- tabindex='-1' 
+                // Use the bootstrap modal --- tabindex='-1'
                 tmp.AppendLine( $"<div class='modal fade' id='{chartId}' role='dialog' aria-hidden='true'>" +
                 "  <div class='modal-dialog modal-dialog-centered modal-dialog modal-lg' role='document'>" +
                 "    <div class='modal-content'>" +
@@ -428,70 +422,62 @@ namespace CumulusUtils
 
         #region Methods Utilities
 
-        // Replace white space with either nothing (empty replacement string) or with whatever you want (mostly single space)
-        private static readonly Regex sWhitespace = new Regex( @"\s+" );
-        public static string StringRemoveWhiteSpace( string InputWithSpaces, string ReplacementOfSpaces ) => sWhitespace.Replace( InputWithSpaces, ReplacementOfSpaces );
+        public static string StringRemoveWhiteSpace( string InputWithSpaces, string ReplacementOfSpaces )
+            => WhitespaceRegex.Replace( InputWithSpaces, ReplacementOfSpaces );
 
         public static string StationInUse( int i )
         {
             string[] StationDesc =
             {
-            "Davis Vantage Pro",            // 0
-			"Davis Vantage Pro2",           // 1
-			"Oregon Scientific WMR-928",    // 2
-			"Oregon Scientific WM-918",     // 3
-			"EasyWeather",                  // 4
-			"Fine Offset",                  // 5
-			"LaCrosse WS2300",              // 6
-			"Fine Offset with Solar",       // 7
-			"Oregon Scientific WMR100",     // 8
-			"Oregon Scientific WMR200",     // 9
-			"Instromet",                    // 10
-			"Davis WLL",                    // 11
-			"GW1000",                       // 12
-			"HTTP WUnderground",            // 13
-			"HTTP Ecowitt",                 // 14
-			"HTTP Ambient",                 // 15
-			"WeatherFlow Tempest",          // 16
-			"Simulator",                    // 17
-			"Ecowitt Cloud",                // 18
-			"Davis Cloud (WLL/WLC)",        // 19
-			"Davis Cloud (VP2)",            // 20
-			"JSON Data",                    // 21
-			"Ecowitt HTTP API"              // 22
+                "Davis Vantage Pro",            // 0
+                "Davis Vantage Pro2",           // 1
+                "Oregon Scientific WMR-928",    // 2
+                "Oregon Scientific WM-918",     // 3
+                "EasyWeather",                  // 4
+                "Fine Offset",                  // 5
+                "LaCrosse WS2300",              // 6
+                "Fine Offset with Solar",       // 7
+                "Oregon Scientific WMR100",     // 8
+                "Oregon Scientific WMR200",     // 9
+                "Instromet",                    // 10
+                "Davis WLL",                    // 11
+                "GW1000",                       // 12
+                "HTTP WUnderground",            // 13
+                "HTTP Ecowitt",                 // 14
+                "HTTP Ambient",                 // 15
+                "WeatherFlow Tempest",          // 16
+                "Simulator",                    // 17
+                "Ecowitt Cloud",                // 18
+                "Davis Cloud (WLL/WLC)",        // 19
+                "Davis Cloud (VP2)",            // 20
+                "JSON Data",                    // 21
+                "Ecowitt HTTP API"              // 22
             };
 
-            if ( i < 0 || i > StationDesc.Length - 1 )
+            if ( i < 0 || i >= StationDesc.Length )
                 return "Unknown Station";
-            else
-                return StationDesc[ i ];
+
+            return StationDesc[ i ];
+        }
+
+        private static string AssemblyVersionCore()
+        {
+            Version v = typeof( CuSupport ).Assembly.GetName().Version;
+            return $"{v.Major.ToString( CUtils.Inv )}.{v.Minor.ToString( CUtils.Inv )}.{v.Build.ToString( CUtils.Inv )}";
         }
 
         public static string FormattedVersion()
         {
-            string _ver;
+            string _ver = AssemblyVersionCore();
 
-            _ver = typeof( CuSupport ).Assembly.GetName().Version.Major.ToString( CUtils.Inv ) + "." +
-                          typeof( CuSupport ).Assembly.GetName().Version.Minor.ToString( CUtils.Inv ) + "." +
-                          typeof( CuSupport ).Assembly.GetName().Version.Build.ToString( CUtils.Inv );
-
-            _ver = String.Format( CUtils.Inv, $"<a href='https://cumulus.hosiene.co.uk/viewtopic.php?f=44&t=17998' target='_blank'>CumulusUtils</a> " +
+            _ver = string.Format( CUtils.Inv, "<a href='https://cumulus.hosiene.co.uk/viewtopic.php?f=44&t=17998' target='_blank'>CumulusUtils</a> " +
                                   $"Version {_ver} " + beta +
-                                  $" - generated at " + DateTime.Now.ToString( "g", CUtils.ThisCulture ) );  // .ToString( "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture )
+                                  $" - generated at " + DateTime.Now.ToString( "g", CUtils.ThisCulture ) );
 
             return _ver;
         }
 
-        public static string UnformattedVersion()
-        {
-            string _ver;
-
-            _ver = typeof( CuSupport ).Assembly.GetName().Version.Major.ToString( CUtils.Inv ) + "." +
-                          typeof( CuSupport ).Assembly.GetName().Version.Minor.ToString( CUtils.Inv ) + "." +
-                          typeof( CuSupport ).Assembly.GetName().Version.Build.ToString( CUtils.Inv );
-
-            return _ver + " " + beta;
-        }
+        public static string UnformattedVersion() => AssemblyVersionCore() + " " + beta;
 
         public static string Copyright() => "&copy; GNU GPL v3";
 
@@ -533,7 +519,6 @@ namespace CumulusUtils
             sb.AppendLine( $"<script src=\"https://code.highcharts.com/stock/{SpecificHighchartsVersion}modules/exporting.js\" ></script>" );
             sb.AppendLine( $"<script src=\"https://code.highcharts.com/stock/{SpecificHighchartsVersion}modules/heatmap.js\"></script>" );
             sb.AppendLine( $"<script src='https://code.highcharts.com/stock/{SpecificHighchartsVersion}modules/windbarb.js'></script>" );
-            sb.AppendLine( $"<script src='https://code.highcharts.com/stock/{SpecificHighchartsVersion}indicators/indicators.js'></script>" );
             sb.AppendLine( $"<script src='https://code.highcharts.com/stock/{SpecificHighchartsVersion}indicators/trendline.js'></script>" );
             sb.AppendLine( $"<script defer src='https://code.highcharts.com/{SpecificHighchartsVersion}modules/accessibility.js'></script>" );
 
@@ -562,25 +547,20 @@ namespace CumulusUtils
 
         public bool DateIsToday( DateTime thisDate )
         {
-            bool retval;
-
             TimeSpan thisSpan = DateTime.Now - thisDate;
 
             LogMessage( $"DateIsToday for thisDate: {thisDate} | thisDate.DayOfYear: {thisDate.DayOfYear} versus Now.DayOfYear: {DateTime.Now.DayOfYear})", TraceLevel.Info );
             LogMessage( $"DateIsToday: thisSpan: {thisSpan} | thisSpan.TotalDays = {thisSpan.TotalDays}", TraceLevel.Info );
 
-            if ( thisSpan.TotalDays > 1 ) retval = false;
-            else retval = true;
-
-            return retval;
+            return thisSpan.TotalDays <= 1;
         }
 
         public void SetStartAndEndForData( out DateTime Start, out DateTime End )
         {
-            DateTime Now = DateTime.Now;
-            Now = new DateTime( Now.Year, Now.Month, Now.Day, Now.Hour, Now.Minute, 0 );
+            DateTime now = DateTime.Now;
+            now = new DateTime( now.Year, now.Month, now.Day, now.Hour, now.Minute, 0 );
 
-            End = Now.AddMinutes( -Now.Minute % Math.Max( CUtils.FTPIntervalInMinutes, CUtils.LogIntervalInMinutes ) );
+            End = now.AddMinutes( -now.Minute % Math.Max( CUtils.FTPIntervalInMinutes, CUtils.LogIntervalInMinutes ) );
 
             if ( CUtils.Isup.IsIncrementalAllowed() )
             {
@@ -592,14 +572,11 @@ namespace CumulusUtils
                 {
                     Start = End.AddHours( -CUtils.HoursInGraph );
                 }
-
             }
             else
             {
                 Start = End.AddHours( -CUtils.HoursInGraph );
             }
-
-            return;
         }
 
         #endregion
@@ -629,14 +606,14 @@ namespace CumulusUtils
             catch ( Exception e ) when ( e is ArgumentException || e is ArgumentNullException )
             {
                 LogMessage( $"Initial: Exception parsing the TraceLevel - {e.Message}", TraceLevel.Error );
-                LogMessage( $"Initial: Setting level to Warning.", TraceLevel.Warning );
+                LogMessage( "Initial: Setting level to Warning.", TraceLevel.Warning );
                 CUTraceSwitch.Level = TraceLevel.Warning;
             }
 
             if ( LoggingOn )
             {
                 ThisListener = new TextWriterTraceListener( $"utils/utilslog/{DateTime.Now.ToString( "yyMMddHHmm", CUtils.Inv )}cumulusutils.log" );
-                Trace.Listeners.Add( ThisListener );  // Used for messages under the conditions of the Switch: None, Error, Warning, Information, Verbose
+                Trace.Listeners.Add( ThisListener );
                 Trace.AutoFlush = true;
             }
 
@@ -644,23 +621,22 @@ namespace CumulusUtils
 
             if ( Environment.OSVersion.Platform.Equals( PlatformID.Unix ) )
             {
-                // Shut up the default listener
                 LogDebugMessage( "CumulusUtils Initial: Shutting down the default listener" );
                 LogMessage( "CumulusUtils Initial: Shutting down the default listener", TraceLevel.Info );
-                Trace.Listeners.RemoveAt( 0 );
+                if ( Trace.Listeners.Count > 0 )
+                    Trace.Listeners.RemoveAt( 0 );
             }
         }
 
         public void LogDebugMessage( string message )
         {
-            if ( NormalMessageToConsole ) Console.WriteLine( DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + message );
-            if ( LoggingOn ) Debug.WriteLine( DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " ) + message );
+            string stamp = DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff " );
+            if ( NormalMessageToConsole ) Console.WriteLine( stamp + message );
+            if ( LoggingOn ) Debug.WriteLine( stamp + message );
         }
 
-        //if (CUTraceSwitch.Level != TraceLevel.Off && level <= CUTraceSwitch.Level );
         public void LogMessage( string message, TraceLevel level = TraceLevel.Info )
         {
-            // Check if the current switch level allows this message level
             if ( CUTraceSwitch.Level >= level )
             {
                 string prefix = level switch
@@ -680,20 +656,22 @@ namespace CumulusUtils
 
         #region Javascript / Unix time conversions
 
-
-        public static long DateTimeToJS( DateTime timestamp ) => (long) ( timestamp - new DateTime( 1970, 1, 1, 0, 0, 0 ) ).TotalSeconds * 1000;
-        public static long DateTimeToUnix( DateTime timestamp ) => (long) ( timestamp - new DateTime( 1970, 1, 1, 0, 0, 0 ) ).TotalSeconds;
-        public static long DateTimeToJSUTC( DateTime timestamp ) => (long) ( timestamp.ToUniversalTime() - new DateTime( 1970, 1, 1, 0, 0, 0 ) ).TotalSeconds * 1000;
-        public static long DateTimeToUnixUTC( DateTime timestamp ) => (long) ( timestamp.ToUniversalTime() - new DateTime( 1970, 1, 1, 0, 0, 0 ) ).TotalSeconds;
-        public static DateTime UnixTimestampToDateTime( string unixTime ) => new DateTime( 1970, 1, 1, 0, 0, 0 ).AddSeconds( Convert.ToInt64( unixTime ) ).ToLocalTime();
+        public static long DateTimeToJS( DateTime timestamp ) => (long) ( timestamp - UnixEpoch ).TotalSeconds * 1000;
+        public static long DateTimeToUnix( DateTime timestamp ) => (long) ( timestamp - UnixEpoch ).TotalSeconds;
+        public static long DateTimeToJSUTC( DateTime timestamp ) => (long) ( timestamp.ToUniversalTime() - UnixEpoch ).TotalSeconds * 1000;
+        public static long DateTimeToUnixUTC( DateTime timestamp ) => (long) ( timestamp.ToUniversalTime() - UnixEpoch ).TotalSeconds;
+        public static DateTime UnixTimestampToDateTime( string unixTime ) => UnixEpoch.AddSeconds( Convert.ToInt64( unixTime ) ).ToLocalTime();
 
         #endregion
 
         #region Upload Package
 
-        private readonly string[] Package = new string[] {"CUgauges.js","HighchartsDefaults.js","HighchartsLanguage.js",
-                                     "suncalc.js","CUtween.min.js", "CUsteelseries.min.js","CURGraph.rose.js","CURGraph.common.core.js","CUlanguage.js",
-                                     "CUgauges-ss.css"};
+        private static readonly string[] Package =
+        [
+            "CUgauges.js", "HighchartsDefaults.js", "HighchartsLanguage.js",
+            "suncalc.js", "CUtween.min.js", "CUsteelseries.min.js", "CURGraph.rose.js",
+            "CURGraph.common.core.js", "CUlanguage.js", "CUgauges-ss.css"
+        ];
 
         public async Task<bool> CheckPackageAndCopy()
         {
@@ -701,50 +679,35 @@ namespace CumulusUtils
             {
                 string filename = PathUtils + file;
 
-                if ( File.Exists( filename ) )
-                {
-                    string FTPfilename = "";
-
-                    if ( Path.GetExtension( filename ).Equals( ".txt" ) )
-                    {
-                        FTPfilename = file;
-                    }
-
-                    if ( Path.GetExtension( filename ).Equals( ".js" ) )
-                    {
-                        FTPfilename = "lib/" + file;
-                    }
-
-                    if ( Path.GetExtension( filename ).Equals( ".css" ) )
-                    {
-                        FTPfilename = "css/" + file;
-                    }
-
-                    // Copy file
-
-                    if ( string.IsNullOrEmpty( FTPfilename ) )
-                    {
-                        LogMessage( $"CheckPackageAndCopy: File (IsNullOrEmpty) can't be copied. Cancelling operation.", TraceLevel.Warning );
-                        LogMessage( "CheckPackageAndCopy: Website not created/updated. Website may not be [fully] operational", TraceLevel.Warning );
-                        LogMessage( "CheckPackageAndCopy: NOTE: This has no influence on the operation of Cumulus itself.", TraceLevel.Warning );
-
-                        return false;
-                    }
-                    else
-                    {
-                        if ( await CUtils.Isup.UploadFileAsync( FTPfilename, filename ) )
-                            LogMessage( $"CheckPackageAndCopy: Uploaded {filename} to {FTPfilename}", TraceLevel.Info );
-                        else
-                        {
-                            LogMessage( $"CheckPackageAndCopy: Upload of {filename} to {FTPfilename} failed.", TraceLevel.Error );
-                            return false;
-                        }
-                    }
-                }
-                else // File does  not exist
+                if ( !File.Exists( filename ) )
                 {
                     LogMessage( $"CheckPackageAndCopy: File {filename} is missing.", TraceLevel.Info );
                     LogMessage( "CheckPackageAndCopy: Website may not be [fully] operational but file may still exist from previous installation.", TraceLevel.Info );
+                    continue;
+                }
+
+                string FTPfilename = Path.GetExtension( filename ) switch
+                {
+                    ".txt" => file,
+                    ".js" => "lib/" + file,
+                    ".css" => "css/" + file,
+                    _ => ""
+                };
+
+                if ( string.IsNullOrEmpty( FTPfilename ) )
+                {
+                    LogMessage( "CheckPackageAndCopy: File (IsNullOrEmpty) can't be copied. Cancelling operation.", TraceLevel.Warning );
+                    LogMessage( "CheckPackageAndCopy: Website not created/updated. Website may not be [fully] operational", TraceLevel.Warning );
+                    LogMessage( "CheckPackageAndCopy: NOTE: This has no influence on the operation of Cumulus itself.", TraceLevel.Warning );
+                    return false;
+                }
+
+                if ( await CUtils.Isup.UploadFileAsync( FTPfilename, filename ) )
+                    LogMessage( $"CheckPackageAndCopy: Uploaded {filename} to {FTPfilename}", TraceLevel.Info );
+                else
+                {
+                    LogMessage( $"CheckPackageAndCopy: Upload of {filename} to {FTPfilename} failed.", TraceLevel.Error );
+                    return false;
                 }
             }
 
@@ -755,57 +718,45 @@ namespace CumulusUtils
 
         #region IDisposable CuSupport
 
-        private bool disposedValue; // To detect redundant calls
+        private bool disposedValue;
 
         protected virtual void Dispose( bool disposing )
         {
-            if ( !disposedValue )
+            if ( disposedValue )
+                return;
+
+            if ( disposing )
             {
-                if ( disposing )
-                {
-                    // TODO: dispose managed state (managed objects).
-                }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
-                EndMyIniFile();
-                //Console.WriteLine( "After EndMyIniFile" );
-
-                MyIni.CheckAndCleanUp();
-                SetUtilsIniValue( "General", "ParamCleanUp", "true" ); // make sure it works for the language as well
-                CUstringIni.CheckAndCleanUp();
-
-                // Reset to false so the user has explicitely to enable (=true) it again 
-                SetUtilsIniValue( "General", "ParamCleanUp", "false" );
-                CUstringIni.SaveToFile();
-                MyIni.SaveToFile();
-
-                // Nothing to do with  the CMX and the CMX Strings and the all time records
-
-                string filenameCopy = "copy_Cumulus.ini";
-                if ( File.Exists( filenameCopy ) )
-                    File.Delete( filenameCopy );
-
-                if ( LoggingOn ) ThisListener.Dispose();
-                //Console.WriteLine( "After Disposing ThisListener" );
-
-                disposedValue = true;
+                if ( LoggingOn )
+                    ThisListener?.Dispose();
             }
+
+            EndMyIniFile();
+
+            MyIni.CheckAndCleanUp();
+            SetUtilsIniValue( "General", "ParamCleanUp", "true" ); // make sure it works for the language as well
+            CUstringIni.CheckAndCleanUp();
+
+            // Reset to false so the user has explicitely to enable (=true) it again
+            SetUtilsIniValue( "General", "ParamCleanUp", "false" );
+            CUstringIni.SaveToFile();
+            MyIni.SaveToFile();
+
+            const string filenameCopy = "copy_Cumulus.ini";
+            if ( File.Exists( filenameCopy ) )
+                File.Delete( filenameCopy );
+
+            disposedValue = true;
         }
 
-        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
         ~CuSupport()
         {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose( false );
         }
 
-        // This code added to correctly implement the disposable pattern.
         public void Dispose()
         {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose( true );
-            // TODO: uncomment the following line if the finalizer is overridden above.
             GC.SuppressFinalize( this );
         }
 
@@ -822,26 +773,41 @@ namespace CumulusUtils
         //
         public static float StdDev( this IEnumerable<float> values )
         {
-            double ret = 0;
-            int count = values.Count();
-            if ( count >= 2 )
+            if ( values is ICollection<float> coll )
             {
-                //Compute the Average
-                double avg = values.Average();
+                int count = coll.Count;
+                if ( count < 2 )
+                    return 0;
 
-                //Perform the Sum of (value-avg)^2
-                double sum = values.Sum( d => ( d - avg ) * ( d - avg ) );
+                double avg = 0;
+                foreach ( float d in coll )
+                    avg += d;
+                avg /= count;
 
-                //Put it all together
-                ret = Math.Sqrt( sum / ( count - 1 ) ); // Must be N-1 for the estimator of sigma so, count must be >=2
+                double sum = 0;
+                foreach ( float d in coll )
+                    sum += ( d - avg ) * ( d - avg );
+
+                return (float) Math.Sqrt( sum / ( count - 1 ) );
             }
-            return (float) ret;
+
+            int n = 0;
+            double mean = 0;
+            double m2 = 0;
+            foreach ( float x in values )
+            {
+                n++;
+                double delta = x - mean;
+                mean += delta / n;
+                m2 += delta * ( x - mean );
+            }
+
+            return n >= 2 ? (float) Math.Sqrt( m2 / ( n - 1 ) ) : 0;
         }
 
         public static T[] RemoveAt<T>( this T[] source, int index )
         {
-            if ( source is null )
-                throw new ArgumentNullException( paramName: nameof( source ), "RemoveAt method used with array argument Null." );
+            ArgumentNullException.ThrowIfNull( source );
 
             T[] dest = new T[ source.Length - 1 ];
             if ( index > 0 )
@@ -853,40 +819,16 @@ namespace CumulusUtils
             return dest;
         }
 
-
-        // Used for the [flags] in the axis for the USer Defined Graphs
+        // Used for the [flags] in the axis for the User Defined Graphs
         // https://stackoverflow.com/questions/677204/counting-the-number-of-flags-set-on-an-enumeration
         // https://en.wikipedia.org/wiki/Hamming_weight
 
         public static UInt64 CountFlags( this AxisType axis )
         {
-            UInt32 c;
-
-            // Just for the fun of it :D
-
-            //try
-            //{  // Maybe required for overflow testing, howver the unchecked seems to take care of it.
-
             UInt32 v = (UInt32) axis;
-            v = v - ( ( v >> 1 ) & 0x55555555 ); // reuse input as temporary
-            v = ( v & 0x33333333 ) + ( ( v >> 2 ) & 0x33333333 ); // temp
-            c = unchecked(( ( v + ( v >> 4 ) ) & 0xF0F0F0F ) * 0x1010101) >> 24; // count
-
-            // When needed: the 64 bit version
-            //UInt64 i = (UInt64)axis;
-            //i = i - ((i >> 1) & 0x5555555555555555UL);
-            //i = (i & 0x3333333333333333UL) + ((i >> 2) & 0x3333333333333333UL);
-            //return unchecked(((i + (i >> 4)) & 0xF0F0F0F0F0F0F0FUL) * 0x101010101010101UL) >> 56;
-
-            //Console.WriteLine($"CountFlags result 1 {c}");
-            //}
-            //catch (Exception e)
-            //{
-            //  Console.WriteLine($"CountFlags Exception {e.Message}");
-            //  Console.WriteLine($"CountFlags result 3 {c}");
-            //}
-
-            //Console.WriteLine($"CountFlags result 2 {c}");
+            v = v - ( ( v >> 1 ) & 0x55555555 );
+            v = ( v & 0x33333333 ) + ( ( v >> 2 ) & 0x33333333 );
+            UInt32 c = unchecked(( ( v + ( v >> 4 ) ) & 0xF0F0F0F ) * 0x1010101) >> 24;
             return c;
         }
 
@@ -901,55 +843,26 @@ namespace CumulusUtils
     #region Random Generator
     public static class RandomGenerator
     {
-        // Instantiate random number generator.  
-        // It is better to keep a single Random instance 
-        // and keep using Next on the same instance.  
-        private static readonly Random _random = new Random();
-
-        // Generates a random number within a range.      
         public static int RandomNumber( int min, int max )
         {
-            return _random.Next( min, max );
+            return Random.Shared.Next( min, max );
         }
 
-        // Generates a random string with a given size.    
         public static string RandomString( int size, bool lowerCase = false )
         {
-            var builder = new StringBuilder( size );
-
-            // Unicode/ASCII Letters are divided into two blocks
-            // (Letters 65–90 / 97–122):   
-            // The first group containing the uppercase letters and
-            // the second group containing the lowercase.  
-
-            // char is a single Unicode character  
+            Span<char> buffer = size <= 256 ? stackalloc char[ size ] : new char[ size ];
             char offset = lowerCase ? 'a' : 'A';
-            const int lettersOffset = 26; // A...Z or a..z: length = 26  
+            const int lettersOffset = 26;
 
-            for ( var i = 0; i < size; i++ )
-            {
-                var @char = (char) _random.Next( offset, offset + lettersOffset );
-                builder.Append( @char );
-            }
+            for ( int i = 0; i < size; i++ )
+                buffer[ i ] = (char) Random.Shared.Next( offset, offset + lettersOffset );
 
-            return lowerCase ? builder.ToString().ToLower( CultureInfo.CurrentCulture ) : builder.ToString();
+            return new string( buffer );
         }
 
-        // Generates a random password.  
-        // 4-LowerCase + 4-Digits + 2-UpperCase  
         public static string RandomPassword()
         {
-            var passwordBuilder = new StringBuilder();
-
-            // 4-Letters lower case   
-            passwordBuilder.Append( RandomString( 4, true ) );
-
-            // 4-Digits between 1000 and 9999  
-            passwordBuilder.Append( RandomNumber( 1000, 9999 ) );
-
-            // 2-Letters upper case  
-            passwordBuilder.Append( RandomString( 2 ) );
-            return passwordBuilder.ToString();
+            return RandomString( 4, true ) + RandomNumber( 1000, 9999 ) + RandomString( 2 );
         }
     }
 
@@ -961,9 +874,8 @@ namespace CumulusUtils
     {
         public static byte[] GenerateKey()
         {
-            var key = new byte[ 256 / 8 ]; // use 256 bits
-            var rnd = new Random();
-            rnd.NextBytes( key );
+            var key = new byte[ 256 / 8 ];
+            RandomNumberGenerator.Fill( key );
             return key;
         }
 
@@ -994,7 +906,7 @@ namespace CumulusUtils
         {
             try
             {
-                if ( encryptedText.Length == 0 )
+                if ( string.IsNullOrEmpty( encryptedText ) )
                     return string.Empty;
 
                 var data = Convert.FromBase64String( encryptedText );
@@ -1019,13 +931,12 @@ namespace CumulusUtils
 
         private static byte[] Encrypt( string data, ICryptoTransform cryptoTransform )
         {
-            if ( data is null || data.Length <= 0 )
-                throw new ArgumentException( "Invalid data", nameof( data ) );
+            ArgumentException.ThrowIfNullOrEmpty( data );
 
             using var memoryStream = new MemoryStream();
             using ( var cryptoStream = new CryptoStream( memoryStream, cryptoTransform, CryptoStreamMode.Write ) )
+            using ( var writer = new StreamWriter( cryptoStream ) )
             {
-                using var writer = new StreamWriter( cryptoStream );
                 writer.Write( data );
             }
 
@@ -1034,7 +945,7 @@ namespace CumulusUtils
 
         private static string Decrypt( byte[] data, ICryptoTransform cryptoTransform )
         {
-            if ( data is null || data.Length <= 0 )
+            if ( data is null || data.Length == 0 )
                 throw new ArgumentException( "Invalid data", nameof( data ) );
 
             using var memoryStream = new MemoryStream( data );
@@ -1043,7 +954,6 @@ namespace CumulusUtils
 
             return reader.ReadToEnd();
         }
-
     }
 
     #endregion

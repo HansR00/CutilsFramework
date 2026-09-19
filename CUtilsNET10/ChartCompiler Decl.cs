@@ -1,4 +1,4 @@
-﻿/*
+/*
  * ChartsCompiler Declaration - Part of CumulusUtils
  *
  */
@@ -23,13 +23,13 @@ namespace CumulusUtils
     };
     public enum PlotvarRangeType { Recent, Extra, Daily, All };
 
-    public struct OutputDef( string filename )
+    public sealed class OutputDef( string filename )
     {
         public string Filename { get; set; } = filename;
         public List<ChartDef> TheseCharts = new List<ChartDef>();
     }
 
-    public struct ChartDef( string thisId, string thisTitle )
+    public sealed class ChartDef( string thisId, string thisTitle )
     {
         public PlotvarRangeType Range { get; set; } = PlotvarRangeType.Recent;
         public AxisType Axis = AxisType.None;
@@ -53,7 +53,7 @@ namespace CumulusUtils
     }
 
     // The structure 
-    public struct Plotvar
+    public sealed class Plotvar
     {
         public string Keyword;            // The actual keyword to use in the graph and make it understandable
         public string PlotVar;            // like 'Temp', 'wdir' etc... : the id in the JSON

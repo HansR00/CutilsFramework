@@ -1317,7 +1317,7 @@ namespace CumulusUtils
                 {"wind", combinedBarbs}
             };
 
-            return JsonSerializer.Serialize(finalResult, s_jsonSerializerOptions);
+            return JsonSerializer.Serialize( finalResult, s_jsonSerializerOptions );
             //return JsonSerializer.Serialize( finalResult, s_jsonSerializerOptions );
         }
 
