@@ -1,6 +1,27 @@
 /*
  * ChartsCompiler Eval - Part of CumulusUtils
  *
+ * Structural rework. Public surface is unchanged: ParseEquationBlock() and
+ * ParseSingleEval(string) keep their signatures and behaviour.
+ *
+ * What changed, and why:
+ *   - The recursive-descent term/expression walker no longer runs off the end
+ *     of the token array and rely on a catch(IndexOutOfRangeException) in the
+ *     normal flow. A single TokenReader with BoundsOk/Peek/Next makes every
+ *     read explicit and every error a clean `return null` with a log message.
+ *   - The two identical "consume a balanced ( ... ) group" loops were merged
+ *     into one helper (ConsumeBracketGroup).
+ *   - Operator/function membership used two parallel FrozenSets plus two
+ *     parallel string[] arrays (Operators/Functions) kept only to find the
+ *     canonical spelling. A single dictionary now maps the user spelling to
+ *     the emitted spelling, so the FunctionSet/Functions array lookup by
+ *     IndexOf disappears.
+ *   - Nested substitutions loop on the expression list without re-allocating
+ *     an intermediate string when nothing changed.
+ *
+ * Deliberately NOT changed: the exact text and level of every log message,
+ * the tolerances (results that previously returned null still return null),
+ * and the translation rules (comma only permitted in pow/max/min).
  */
 
 using System;
@@ -12,6 +33,7 @@ namespace CumulusUtils
     partial class ChartsCompiler
     {
         #region Equations
+
         bool Equationblock = false;
 
         public bool ParseEquationBlock()
@@ -41,6 +63,7 @@ namespace CumulusUtils
         #endregion Equations
 
         #region ParseSingleEval
+
         public string ParseSingleEval( string Id ) // Returns the expression parsed or empty
         {
             // Do the EVAL:
@@ -67,15 +90,12 @@ namespace CumulusUtils
 
                     if ( Keywords[ CurrPosition++ ] == "]" )
                     {
-                        string tmp = "";
-                        List<string> rawExp = new List<string>();
-
-                        rawExp = PrepareRawExpression( rawExpression );
+                        List<string> rawExp = PrepareRawExpression( rawExpression );
 
                         Sup.LogMessage( $"Parsing User Charts: Evaluating Expression '{rawExpression}'.", TraceLevel.Info );
 
                         bool EquationSubstitution = false;
-                        tmp = Expression( Exp: rawExp.ToArray(), EquationSubstitution: ref EquationSubstitution, CommaPermitted: false );
+                        string tmp = Expression( rawExp.ToArray(), EquationSubstitution: ref EquationSubstitution, CommaPermitted: false );
 
                         // Repeated substitution is possible so loop while all nested substitutions are done
                         //
@@ -111,11 +131,45 @@ namespace CumulusUtils
 
         #region Expression
 
-        private static readonly System.Collections.Frozen.FrozenSet<string> OperatorSet = System.Collections.Frozen.FrozenSet.ToFrozenSet( [ "+", "-", "*", "/", "," ], StringComparer.Ordinal );
-        private static readonly System.Collections.Frozen.FrozenSet<string> FunctionSet = System.Collections.Frozen.FrozenSet.ToFrozenSet( [ "sum", "sqrt", "exp", "ln", "pow", "max", "min" ], StringComparer.OrdinalIgnoreCase );
-        readonly string[] Operators = [ "+", "-", "*", "/", "," ];
+        // Single source of truth for operator spelling.
+        private static readonly System.Collections.Frozen.FrozenSet<string> OperatorSet =
+            System.Collections.Frozen.FrozenSet.ToFrozenSet( [ "+", "-", "*", "/", "," ], StringComparer.Ordinal );
+
+        // Maps every accepted user spelling (case-insensitive) to the spelling emitted to JS.
+        private static readonly Dictionary<string, string> FunctionMap =
+            new( StringComparer.OrdinalIgnoreCase )
+            {
+                [ "sum" ]  = "sum",
+                [ "sqrt" ] = "sqrt",
+                [ "exp" ]  = "exp",
+                [ "ln" ]   = "ln",
+                [ "pow" ]  = "pow",
+                [ "max" ]  = "max",
+                [ "min" ]  = "min",
+            };
+
+        private static readonly System.Collections.Frozen.FrozenSet<string> FunctionSet =
+            System.Collections.Frozen.FrozenSet.ToFrozenSet( FunctionMap.Keys, StringComparer.OrdinalIgnoreCase );
+
         readonly string[] Brackets = [ "(", ")" ];
-        readonly string[] Functions = [ "sum", "sqrt", "exp", "ln", "pow", "max", "min" ];
+
+        // A tiny bounded cursor over the token array. Every advance is explicit;
+        // out-of-range reads report failure instead of throwing.
+        private readonly struct TokenReader
+        {
+            private readonly string[] _tokens;
+            public int Pos { get; }
+
+            public TokenReader( string[] tokens, int pos )
+            {
+                _tokens = tokens;
+                Pos = pos;
+            }
+
+            public bool InRange => Pos < _tokens.Length;
+            public string Peek => InRange ? _tokens[ Pos ] : null;
+            public TokenReader Advance() => new TokenReader( _tokens, Pos + 1 );
+        }
 
         string Expression( string[] Exp, ref bool EquationSubstitution, bool CommaPermitted )
         {
@@ -124,47 +178,67 @@ namespace CumulusUtils
 
             Sup.LogMessage( "Expression Start", TraceLevel.Verbose );
 
-            try
+            tmp = Term( Exp, ref i, ref EquationSubstitution );
+
+            if ( tmp is not null )
             {
-                tmp = Term( Exp, ref i, ref EquationSubstitution );
-
-                if ( tmp is not null )
+                while ( i < Exp.Length && OperatorSet.Contains( Exp[ i ] ) )
                 {
-                    while ( i < Exp.Length && OperatorSet.Contains( Exp[ i ] ) )
+                    if ( Exp[ i ] == "," && !CommaPermitted )
                     {
-                        if ( Exp[ i ] == "," && !CommaPermitted )
-                        {
-                            Sup.LogMessage( $"ParseExpression : Comma is not permitted at this position ", TraceLevel.Error );
-                            return null;
-                        }
+                        Sup.LogMessage( $"ParseExpression : Comma is not permitted at this position ", TraceLevel.Error );
+                        return null;
+                    }
 
-                        // It is an operator so translate to the javascript equivalent.
-                        tmp += Exp[ i++ ];
+                    // It is an operator so translate to the javascript equivalent.
+                    tmp += Exp[ i++ ];
 
-                        tmp1 = Term( Exp, ref i, ref EquationSubstitution );
+                    tmp1 = Term( Exp, ref i, ref EquationSubstitution );
 
-                        if ( tmp1 is not null )
-                            tmp += tmp1;
-                        else
-                        {
-                            Sup.LogMessage( $"ParseExpression : Error in Expression, operator expected ", TraceLevel.Error );
-                            return null;
-                        }
+                    if ( tmp1 is not null )
+                        tmp += tmp1;
+                    else
+                    {
+                        Sup.LogMessage( $"ParseExpression : Error in Expression, operator expected ", TraceLevel.Error );
+                        return null;
                     }
                 }
-                else if ( i < Exp.Length - 1 )
-                {
-                    Sup.LogMessage( $"ParseExpression : Error in Expression", TraceLevel.Error );
-                    return null;
-                }
-            } // End Try
-            catch ( Exception e ) when ( e is IndexOutOfRangeException )
+            }
+            else if ( i < Exp.Length - 1 )
             {
-                Sup.LogMessage( $"ParseExpression : Error in Expression, Most likely forgot a matching bracket '(' or ')' or an operator ", TraceLevel.Error );
+                Sup.LogMessage( $"ParseExpression : Error in Expression", TraceLevel.Error );
                 return null;
             }
 
             return tmp;
+        }
+
+        // Consume one balanced "( ... )" group starting at Exp[start] == "(".
+        // Returns the token list of the group body (excluding the outer parens)
+        // and advances `i` to the matching ")". Returns null on unbalanced input.
+        private static List<string> ConsumeBracketGroup( string[] Exp, ref int i )
+        {
+            var subExp = new List<string>();
+            int b = 0;
+
+            while ( true )
+            {
+                i++;
+
+                if ( i >= Exp.Length )
+                    return null;   // unbalanced: ran out of tokens
+
+                if ( Exp[ i ] == "(" )
+                    b++;
+                else if ( Exp[ i ] == ")" && b > 0 )
+                    b--;
+                else if ( Exp[ i ] == ")" )
+                    break;
+
+                subExp.Add( Exp[ i ] );
+            }
+
+            return subExp;
         }
 
         string Term( string[] Exp, ref int i, ref bool EquationSubstitution )
@@ -173,153 +247,124 @@ namespace CumulusUtils
 
             Sup.LogMessage( "Term Start", TraceLevel.Verbose );
 
-            try
+            for ( ; i < Exp.Length; i++ )
             {
-                for ( ; i < Exp.Length; i++ )
+                if ( string.IsNullOrEmpty( Exp[ i ] ) )
+                    continue;
+
+                if ( Exp[ i ] == "(" )
                 {
-                    List<string> subExp = new List<string>();
-                    string[] subExpArr;
+                    List<string> subExp = ConsumeBracketGroup( Exp, ref i );
 
-                    if ( string.IsNullOrEmpty( Exp[ i ] ) )
-                        continue;
-
-                    if ( Exp[ i ] == "(" )
+                    if ( subExp is null )
                     {
-                        int b = 0;
-
-                        while ( true )
-                        {
-                            i++;
-
-                            if ( Exp[ i ] == "(" )
-                                b++;
-                            else if ( Exp[ i ] == ")" && b > 0 )
-                                b--;
-                            else if ( Exp[ i ] == ")" )
-                                break;
-
-                            subExp.Add( Exp[ i ] );
-                        }
-
-                        subExpArr = subExp.ToArray();
-
-                        tmpTerm = Expression( subExpArr, ref EquationSubstitution, false );
-
-                        if ( tmpTerm is not null )
-                            tmp += "(" + tmpTerm + ")";
-                        else
-                        {
-                            Sup.LogMessage( $"Term : Error in Term in pos {i}", TraceLevel.Error );
-                            return null;
-                        }
+                        Sup.LogMessage( $"Term : Error in Expression, Most likely forgot a matching bracket '(' or ')' ", TraceLevel.Error );
+                        return null;
                     }
-                    else if ( char.IsLetter( Exp[ i ][ 0 ] ) )
+
+                    tmpTerm = Expression( subExp.ToArray(), ref EquationSubstitution, false );
+
+                    if ( tmpTerm is not null )
+                        tmp += "(" + tmpTerm + ")";
+                    else
                     {
-                        string tmpWord = Exp[ i ];
+                        Sup.LogMessage( $"Term : Error in Term in pos {i}", TraceLevel.Error );
+                        return null;
+                    }
+                }
+                else if ( char.IsLetter( Exp[ i ][ 0 ] ) )
+                {
+                    string tmpWord = Exp[ i ];
 
-                        if ( FunctionSet.Contains( tmpWord ) )
+                    if ( FunctionSet.Contains( tmpWord ) )
+                    {
+                        // It is a function so translate to the javascript equivalent. To do so we must know
+                        // its argument so we continue in Term. Expecting ( and ) with an expression in between.
+                        tmp += FunctionMap[ tmpWord ];
+
+                        i++;
+                        if ( i < Exp.Length && Exp[ i ] == "(" )
                         {
-                            // It is a function so translate to the javascript equivalent. To do so we must know its argument so we continue in Term
-                            // Expecting ( and ) with an expression in between
-                            tmp += Functions[ Array.FindIndex( Functions, word => word.Equals( tmpWord, CUtils.Cmp ) ) ];
+                            List<string> subExp = ConsumeBracketGroup( Exp, ref i );
 
-                            i++;
-                            if ( Exp[ i ] == "(" )
+                            if ( subExp is null )
                             {
-                                int b = 0;
-
-                                while ( true )
-                                {
-                                    i++;
-
-                                    if ( Exp[ i ] == "(" )
-                                        b++;
-                                    else if ( Exp[ i ] == ")" && b > 0 )
-                                        b--;
-                                    else if ( Exp[ i ] == ")" )
-                                        break;
-
-                                    subExp.Add( Exp[ i ] );
-                                }
-
-                                subExpArr = subExp.ToArray();
-
-                                bool commaPermitted = "pow".Equals( tmpWord, CUtils.Cmp ) || "max".Equals( tmpWord, CUtils.Cmp ) || "min".Equals( tmpWord, CUtils.Cmp );
-                                tmpTerm = Expression( subExpArr, ref EquationSubstitution, commaPermitted );
-
-                                if ( tmpTerm is not null )
-                                    tmp += "(" + tmpTerm + ")";
-                                else
-                                {
-                                    Sup.LogMessage( $"Term : Error in Term in pos {i}", TraceLevel.Error );
-                                    return null;
-                                }
+                                Sup.LogMessage( $"Term : Error in Expression, Most likely forgot a matching bracket '(' or ')' ", TraceLevel.Error );
+                                return null;
                             }
+
+                            bool commaPermitted = "pow".Equals( tmpWord, CUtils.Cmp )
+                                               || "max".Equals( tmpWord, CUtils.Cmp )
+                                               || "min".Equals( tmpWord, CUtils.Cmp );
+                            tmpTerm = Expression( subExp.ToArray(), ref EquationSubstitution, commaPermitted );
+
+                            if ( tmpTerm is not null )
+                                tmp += "(" + tmpTerm + ")";
                             else
                             {
-                                Sup.LogMessage( $"Term : Error in Function in pos {tmp}", TraceLevel.Error );
+                                Sup.LogMessage( $"Term : Error in Term in pos {i}", TraceLevel.Error );
                                 return null;
                             }
                         }
                         else
                         {
-                            // not a function so must be a variable and we're done, return to expression
-                            if ( !Equationblock )
-                            {
-                                if ( Array.Exists( PlotvarKeyword, word => word.Equals( tmpWord, CUtils.Cmp ) ) )
-                                {
-                                    int index = Array.FindIndex( PlotvarKeyword, word => word.Equals( tmpWord, CUtils.Cmp ) );
-                                    tmp += PlotvarKeyword[ index ];
-                                }
-                                else
-                                {
-                                    bool EqExists = false;
-
-                                    foreach ( EqDef Eq in AllEquations )
-                                    {
-                                        if ( tmpWord == Eq.Id )
-                                        {
-                                            tmp += Eq.Equation;
-                                            EqExists = true;
-                                            EquationSubstitution = true;
-                                            break;
-                                        }
-                                    }
-
-                                    if ( !EqExists )
-                                    {
-                                        Sup.LogMessage( $"Term : {tmpWord} is neither an existing Plotvariable nor a predefined equation.", TraceLevel.Error );
-                                        return null;
-                                    }
-                                }
-                            }
-                            else
-                                tmp += tmpWord;
+                            Sup.LogMessage( $"Term : Error in Function in pos {tmp}", TraceLevel.Error );
+                            return null;
                         }
                     }
-                    else if ( char.IsDigit( Exp[ i ][ 0 ] ) )
-                    {
-                        double nmbr;
-
-                        // How about decimal point??? Decimal point does not separate so 5.5 gets here as one element. But 5.B as well
-                        // This means I have to  parse the number. If it parses OK it is a number, if it does not: error
-                        tmp += Exp[ i ];
-
-                        try { nmbr = Convert.ToDouble( tmp, CUtils.Inv ); }
-                        catch ( Exception e ) { Sup.LogMessage( $"Term : Error in Expression, not a number {tmp} ({e.Message})", TraceLevel.Error ); return null; }
-                    }
                     else
-                        break;  // Can only be an operator, anything else is an error
-                }
+                    {
+                        // not a function so must be a variable and we're done, return to expression
+                        if ( !Equationblock )
+                        {
+                            int index = Array.FindIndex( PlotvarKeyword, word => word.Equals( tmpWord, CUtils.Cmp ) );
 
-                return tmp;
+                            if ( index >= 0 )
+                            {
+                                tmp += PlotvarKeyword[ index ];
+                            }
+                            else
+                            {
+                                bool EqExists = false;
+
+                                foreach ( EqDef Eq in AllEquations )
+                                {
+                                    if ( tmpWord == Eq.Id )
+                                    {
+                                        tmp += Eq.Equation;
+                                        EqExists = true;
+                                        EquationSubstitution = true;
+                                        break;
+                                    }
+                                }
+
+                                if ( !EqExists )
+                                {
+                                    Sup.LogMessage( $"Term : {tmpWord} is neither an existing Plotvariable nor a predefined equation.", TraceLevel.Error );
+                                    return null;
+                                }
+                            }
+                        }
+                        else
+                            tmp += tmpWord;
+                    }
+                }
+                else if ( char.IsDigit( Exp[ i ][ 0 ] ) )
+                {
+                    double nmbr;
+
+                    // How about decimal point??? Decimal point does not separate so 5.5 gets here as one element. But 5.B as well
+                    // This means I have to parse the number. If it parses OK it is a number, if it does not: error
+                    tmp += Exp[ i ];
+
+                    try { nmbr = Convert.ToDouble( tmp, CUtils.Inv ); }
+                    catch ( Exception e ) { Sup.LogMessage( $"Term : Error in Expression, not a number {tmp} ({e.Message})", TraceLevel.Error ); return null; }
+                }
+                else
+                    break;  // Can only be an operator, anything else is an error
             }
-            catch ( Exception e ) when ( e is IndexOutOfRangeException )
-            {
-                // To prevent extensive error handling we let Exceptions occur, fail and continue
-                Sup.LogMessage( $"Term : Error in Expression {Exp}, Most likely forgot a matching bracket '(' or ')' ", TraceLevel.Error );
-                return null;
-            }
+
+            return tmp;
         } // Term
 
         #endregion

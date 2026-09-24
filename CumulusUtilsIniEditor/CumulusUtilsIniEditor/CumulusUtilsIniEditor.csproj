@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>CumulusUtilsIniEditor</AssemblyName>
+    <RootNamespace>CumulusUtilsIniEditor</RootNamespace>
+    <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
+    <Version>1.1.0</Version>
+    <Product>CumulusUtils.ini Editor</Product>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Zorg dat de helpteksten naast de exe belanden. -->
+    <None Update="cumulusutils-help.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

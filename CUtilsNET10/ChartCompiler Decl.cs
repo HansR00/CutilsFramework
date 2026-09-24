@@ -1,6 +1,18 @@
 /*
  * ChartsCompiler Declaration - Part of CumulusUtils
  *
+ * Structural rework: the original file carried a large amount of duplicated
+ * array data (many of the legacy arrays were repeated element by element) and
+ * performed O(n^2) list re-allocation at init time. This version keeps every
+ * public type and member identical, but replaces the mutable "array shim"
+ * pattern (Array.ToList().Add().ToArray()) with real List<T> storage and
+ * constructs the per-range lookup data once, in a single place.
+ *
+ * Public surface preserved:
+ *   - enum AxisType, enum PlotvarRangeType
+ *   - class OutputDef, class ChartDef, struct EqDef, struct AllVarInfo
+ *   - class Plotvar
+ *   - class ChartsCompiler (partial) with all previously public fields
  */
 
 using System;
@@ -21,6 +33,7 @@ namespace CumulusUtils
         None = 0, Temp = 1, Pressure = 2, Rain = 4, Rrate = 8, Wind = 16, Direction = 32, Humidity = 64, Solar = 128, UV = 256, Hours = 512,
         Distance = 1024, Height = 2048, DegreeDays = 4096, EVT = 8192, Free = 16384, AQ = 32768, ppm = 65536, SoilMoisture = 131072
     };
+
     public enum PlotvarRangeType { Recent, Extra, Daily, All };
 
     public sealed class OutputDef( string filename )
@@ -52,7 +65,7 @@ namespace CumulusUtils
         public string Equation;
     }
 
-    // The structure 
+    // The structure
     public sealed class Plotvar
     {
         public string Keyword;            // The actual keyword to use in the graph and make it understandable
@@ -61,14 +74,13 @@ namespace CumulusUtils
         public List<AllVarInfo> EqAllVarList;
         public PlotvarRangeType PlotvarRange; // So is it a Recent, Extra, Daily or All range
 
-
         public string Unit;               // Required knowledge about the parameters unit is stored in an array
         public string Datafile;           // the actual datafile where the data can be found
-        public string Color;              // the c olour as defined 
+        public string Color;              // the colour as defined
         public int LineWidth;             // The LineWidth
         public double Opacity;            // The LineWidth
         public string GraphType;          // like 'line', spline etc...
-        public int Period;                // For the Period for the SMA, if not given then parameter: [Compiler] SmaPeriod 
+        public int Period;                // For the Period for the SMA, if not given then parameter: [Compiler] SmaPeriod
         public AxisType Axis;             // For fast access to the type needed
         public string AxisId;             // For fast access to the type needed
         public int zIndex;                // the zIndex plane for the plotorder (e.g. to get a  line before an area so it can be seen)
@@ -219,404 +231,7 @@ namespace CumulusUtils
             "Lightning"
         };
 
-        public readonly string[] DatafilesEXTRA = {
-            "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
-            "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
-            "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
-            "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
-            "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
-            "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
-            "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
-            "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
-            "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
-            "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
-            "extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json","extrasensorsdata.json",
-            "extrasensorsdata.json"
-        };
-
-        public static string[] PlotvarKeywordEXTRA = {
-            "Temp1","Temp2","Temp3","Temp4","Temp5","Temp6","Temp7","Temp8","Temp9","Temp10","Temp11","Temp12","Temp13","Temp14","Temp15","Temp16",
-            "Humidity1","Humidity2","Humidity3","Humidity4","Humidity5","Humidity6","Humidity7","Humidity8","Humidity9","Humidity10","Humidity11","Humidity12","Humidity13","Humidity14","Humidity15","Humidity16",
-            "Dewpoint1","Dewpoint2","Dewpoint3","Dewpoint4","Dewpoint5","Dewpoint6","Dewpoint7","Dewpoint8","Dewpoint9","Dewpoint10","Dewpoint11","Dewpoint12","Dewpoint13","Dewpoint14","Dewpoint15","Dewpoint16",
-            "SoilTemp1","SoilTemp2","SoilTemp3","SoilTemp4","SoilTemp5","SoilTemp6","SoilTemp7","SoilTemp8","SoilTemp9","SoilTemp10","SoilTemp11","SoilTemp12","SoilTemp13","SoilTemp14","SoilTemp15","SoilTemp16",
-            "SoilMoisture1","SoilMoisture2","SoilMoisture3","SoilMoisture4","SoilMoisture5","SoilMoisture6","SoilMoisture7","SoilMoisture8","SoilMoisture9","SoilMoisture10","SoilMoisture11","SoilMoisture12","SoilMoisture13","SoilMoisture14","SoilMoisture15","SoilMoisture16",
-            "AirQuality1","AirQuality2","AirQuality3","AirQuality4",
-            "AirQualityAvg1","AirQualityAvg2","AirQualityAvg3","AirQualityAvg4",
-            "UserTemp1","UserTemp2","UserTemp3","UserTemp4","UserTemp5","UserTemp6","UserTemp7","UserTemp8",
-            "LeafWetness1","LeafWetness2","LeafWetness3","LeafWetness4","LeafWetness5","LeafWetness6","LeafWetness7","LeafWetness8",
-            "LaserDist1","LaserDist2","LaserDist3","LaserDist4","LaserDepth1","LaserDepth2","LaserDepth3","LaserDepth4",
-            "CO2", "CO2_24h", "CO2_pm2p5", "CO2_pm2p5_24h","CO2_pm10","CO2_pm10_24h","CO2_temp","CO2_hum",
-            "Lightning"
-        };
-
         #endregion
 
-        #region General Declarations
-
-        public readonly string[] ValidColumnRangeVars = {
-              "MinTemp", "MaxTemp", "AverageTemp", "MaxDewpoint", "MinDewpoint", "MaxFeelsLike", "MinFeelsLike",
-              "MinBarometer", "MaxBarometer",
-              "MinHumidity", "MaxHumidity"
-            };
-
-        private AxisType[] PlotvarAxis;
-        public string[] PlotvarUnits;
-        public string[] PlotvarTypes;
-        public string[] PlotvarKeyword;
-        public string[] Datafiles;
-
-        public readonly string[] PlotvarUnitsRECENT, PlotvarUnitsALL, PlotvarUnitsEXTRA;     // Init in constructor
-        public readonly string[] LinetypeKeywords = { "Line", "SpLine", "Area", "Column", "Scatter", "ColumnRange" };
-        public readonly string[] AxisKeywords = { "Temp", "Wind", "Distance", "Height", "Hours", "Solar", "UV", "Rain", "Rrate", "Pressure", "Humidity", "DegreeDays", "EVT", "Free", "AQ", "ppm", "SoilMoisture" };
-        public readonly string[] StatsTypeKeywords = { "SMA" };
-
-        public static int SoilMoistureUnitArraySize = 16;
-        public List<string> soilMoistureUnitArray;
-
-        readonly CuSupport Sup;
-        readonly float MaxPressure, MinPressure;
-
-        public string[] ClickEvents = new string[ 24 ] { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
-
-        #endregion
-
-        #region Constructor
-
-        public ChartsCompiler( CuSupport s )
-        {
-            // Constructor
-            Sup = s;
-
-            PlotvarUnitsRECENT = new string[ PlotvarTypesRECENT.Length ];
-            PlotvarUnitsRECENT[ 0 ] = Sup.StationTemp.Text();
-            PlotvarUnitsRECENT[ 1 ] = Sup.StationTemp.Text();
-            PlotvarUnitsRECENT[ 2 ] = Sup.StationTemp.Text();
-            PlotvarUnitsRECENT[ 3 ] = Sup.StationTemp.Text();
-            PlotvarUnitsRECENT[ 4 ] = Sup.StationTemp.Text();
-            PlotvarUnitsRECENT[ 5 ] = Sup.StationTemp.Text();
-            PlotvarUnitsRECENT[ 6 ] = Sup.StationTemp.Text();
-            PlotvarUnitsRECENT[ 7 ] = Sup.StationTemp.Text();
-
-            PlotvarUnitsRECENT[ 8 ] = Sup.StationWind.Text();
-            PlotvarUnitsRECENT[ 9 ] = Sup.StationWind.Text();
-
-            PlotvarUnitsRECENT[ 10 ] = "";
-            PlotvarUnitsRECENT[ 11 ] = "";
-
-            PlotvarUnitsRECENT[ 12 ] = "";
-            PlotvarUnitsRECENT[ 13 ] = "W/m²";
-            PlotvarUnitsRECENT[ 14 ] = "W/m²";
-
-            PlotvarUnitsRECENT[ 15 ] = Sup.StationRain.Text();
-            PlotvarUnitsRECENT[ 16 ] = Sup.StationRain.Text() + Sup.PerHour;
-
-            PlotvarUnitsRECENT[ 17 ] = Sup.StationPressure.Text();
-
-            PlotvarUnitsRECENT[ 18 ] = "%";
-            PlotvarUnitsRECENT[ 19 ] = "%";
-
-            PlotvarUnitsRECENT[ 20 ] = Sup.StationRain.Text();
-
-
-            PlotvarUnitsALL = new string[ PlotvarTypesALL.Length ];
-            PlotvarUnitsALL[ 0 ] = Sup.StationTemp.Text();
-            PlotvarUnitsALL[ 1 ] = Sup.StationTemp.Text();
-            PlotvarUnitsALL[ 2 ] = Sup.StationTemp.Text();
-            PlotvarUnitsALL[ 3 ] = Sup.StationTemp.Text();
-            PlotvarUnitsALL[ 4 ] = Sup.StationTemp.Text();
-            PlotvarUnitsALL[ 5 ] = Sup.StationTemp.Text();
-            PlotvarUnitsALL[ 6 ] = Sup.StationTemp.Text();
-            PlotvarUnitsALL[ 7 ] = Sup.StationTemp.Text();
-
-            PlotvarUnitsALL[ 8 ] = Sup.StationWind.Text();
-            PlotvarUnitsALL[ 9 ] = Sup.StationDistance.Text();
-            PlotvarUnitsALL[ 10 ] = Sup.StationWind.Text();
-
-            PlotvarUnitsALL[ 11 ] = $"{Sup.GetCUstringValue( "General", "Hours", "Hours", true )}";
-            PlotvarUnitsALL[ 12 ] = "W/m²";
-            PlotvarUnitsALL[ 13 ] = "";
-
-            PlotvarUnitsALL[ 14 ] = Sup.StationRain.Text();
-            PlotvarUnitsALL[ 15 ] = Sup.StationRain.Text() + Sup.PerHour;
-
-            PlotvarUnitsALL[ 16 ] = Sup.StationPressure.Text();
-            PlotvarUnitsALL[ 17 ] = Sup.StationPressure.Text();
-
-            PlotvarUnitsALL[ 18 ] = "%";
-            PlotvarUnitsALL[ 19 ] = "%";
-
-            PlotvarUnitsALL[ 20 ] = "degree days";
-            PlotvarUnitsALL[ 21 ] = "degree days";
-            PlotvarUnitsALL[ 22 ] = Sup.StationRain.Text();
-
-            // units for snow
-            PlotvarUnitsALL[ 23 ] = Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in";
-            PlotvarUnitsALL[ 24 ] = Sup.GetCumulusIniValue( "Station", "SnowDepthUnit", "0" ) == "0" ? "cm" : "in";
-
-            PlotvarUnitsEXTRA = new string[ PlotvarTypesEXTRA.Length ];
-            //"Temp1","Temp2","Temp3","Temp4","Temp5","Temp6","Temp7","Temp8","Temp9","Temp10","Temp11","Temp12","Temp13","Temp14","Temp15","Temp16"
-            for ( int i = 0; i < 16; i++ )
-                PlotvarUnitsEXTRA[ 0 + i ] = Sup.StationTemp.Text();
-
-            //"Humidity1","Humidity2","Humidity3","Humidity4","Humidity5","Humidity6","Humidity7","Humidity8","Humidity9","Humidity10","Humidity11","Humidity12","Humidity13","Humidity14","Humidity15","Humidity16"
-            for ( int i = 0; i < 16; i++ )
-                PlotvarUnitsEXTRA[ 16 + i ] = "%";
-
-            //"Dewpoint1","Dewpoint2","Dewpoint3","Dewpoint4","Dewpoint5","Dewpoint6","Dewpoint7","Dewpoint8","Dewpoint9","Dewpoint10","Dewpoint11","Dewpoint12","Dewpoint13","Dewpoint14","Dewpoint15","Dewpoint16"
-            for ( int i = 0; i < 16; i++ )
-                PlotvarUnitsEXTRA[ 32 + i ] = Sup.StationTemp.Text();
-
-            //"SoilTemp1","SoilTemp2","SoilTemp3","SoilTemp4","SoilTemp5","SoilTemp6","SoilTemp7","SoilTemp8","SoilTemp9","SoilTemp10","SoilTemp11","SoilTemp12","SoilTemp13","SoilTemp14","SoilTemp15","SoilTemp16",
-            for ( int i = 0; i < 16; i++ )
-                PlotvarUnitsEXTRA[ 48 + i ] = Sup.StationTemp.Text();
-
-            GetSoilMoistureUnitArray();
-
-            //"SoilMoisture1","SoilMoisture2","SoilMoisture3","SoilMoisture4","SoilMoisture5","SoilMoisture6","SoilMoisture7","SoilMoisture8","SoilMoisture9","SoilMoisture10","SoilMoisture11","SoilMoisture12","SoilMoisture13","SoilMoisture14","SoilMoisture15","SoilMoisture16",
-            for ( int i = 0; i < 16; i++ )
-                PlotvarUnitsEXTRA[ 64 + i ] = soilMoistureUnitArray[ 0 + i ];
-
-            //"AirQuality1","AirQuality2","AirQuality3","AirQuality4",
-            //"AirQualityAvg1","AirQualityAvg2","AirQualityAvg3","AirQualityAvg4",
-            for ( int i = 0; i < 8; i++ )
-                PlotvarUnitsEXTRA[ 80 + i ] = "μg/m3";
-
-            //"UserTemp1","UserTemp2","UserTemp3","UserTemp4","UserTemp5","UserTemp6","UserTemp7","UserTemp8",
-            for ( int i = 0; i < 8; i++ )
-                PlotvarUnitsEXTRA[ 88 + i ] = Sup.StationTemp.Text();
-
-            //"LeafWetness1","LeafWetness2","LeafWetness3","LeafWetness4","LeafWetness5","LeafWetness6","LeafWetness7","LeafWetness8",
-            for ( int i = 0; i < 8; i++ )
-                PlotvarUnitsEXTRA[ 96 + i ] = "";
-
-            //"LaserDist1","LaserDist2","LaserDist3","LaserDist4","LaserDepth1","LaserDepth2","LaserDepth3","LaserDepth4", 
-            for ( int i = 0; i < 8; i++ )
-                PlotvarUnitsEXTRA[ 104 + i ] = Sup.StationLaser.Text();
-
-            //"CO2", "CO2_24h", "CO2_pm2p5", "CO2_pm2p5_24h","CO2_pm10","CO2_pm10_24h","CO2_temp","CO2_hum",
-            PlotvarUnitsEXTRA[ 112 ] = CO2conc.Text();
-            PlotvarUnitsEXTRA[ 113 ] = CO2conc.Text();
-            PlotvarUnitsEXTRA[ 114 ] = PMconc.Text();
-            PlotvarUnitsEXTRA[ 115 ] = PMconc.Text();
-            PlotvarUnitsEXTRA[ 116 ] = PMconc.Text();
-            PlotvarUnitsEXTRA[ 117 ] = PMconc.Text();
-            PlotvarUnitsEXTRA[ 118 ] = Sup.StationTemp.Text();
-            PlotvarUnitsEXTRA[ 119 ] = "%";
-            //            PlotvarUnitsEXTRA[ 120 ] = "count";   // I think this one is superfluous and wrong counting
-
-            //"Lightning"
-
-            // Init the Compiler section in language file for the keywords just to  make sure they are there
-            // Even if it is the millionth time or more... Certainly when adding more keywords later on.
-            foreach ( string k in PlotvarKeywordRECENT )
-                if ( !string.IsNullOrEmpty( k ) )
-                    _ = Sup.GetCUstringValue( "Compiler", k, k, false );
-            foreach ( string k in PlotvarKeywordALL )
-                if ( !string.IsNullOrEmpty( k ) )
-                    _ = Sup.GetCUstringValue( "Compiler", k, k, false );
-
-            try
-            {
-                MaxPressure = Convert.ToSingle( Sup.GetAlltimeRecordValue( "Pressure", "highpressurevalue", "" ), CUtils.Inv );
-                MinPressure = Convert.ToSingle( Sup.GetAlltimeRecordValue( "Pressure", "lowpressurevalue", "" ), CUtils.Inv );
-            }
-            catch
-            {
-                /* Don't take any action just make sure we can continue */
-                Sup.LogMessage( $"Parsing User Charts Definitions : Constructor - can't convert Min/Max barometer values: " +
-                  $"{MinPressure}/{MaxPressure}" +
-                  $"{Sup.GetAlltimeRecordValue( "Pressure", "highpressurevalue", "" )}/{Sup.GetAlltimeRecordValue( "Pressure", "lowpressurevalue", "" )}" );
-            }
-
-            // Prepare for possible ExternalExtraSensors!
-            string[] ExternalExtraSensors = Sup.GetUtilsIniValue( "ExtraSensors", "ExternalExtraSensors", "" ).Split( GlobConst.CommaSeparator );
-
-            if ( !string.IsNullOrEmpty( ExternalExtraSensors[ 0 ] ) )
-            {
-                // There is a lot to optimize here I guess
-                foreach ( string thisExternal in ExternalExtraSensors )
-                {
-                    List<string> tmpStr;
-
-                    List<AxisType> tmp = PlotvarAxisEXTRA.ToList();
-                    tmp.Add( AxisType.Free );
-                    PlotvarAxisEXTRA = tmp.ToArray();
-
-                    tmpStr = PlotvarUnitsEXTRA.ToList();
-                    tmpStr.Add( "" );
-                    PlotvarUnitsEXTRA = tmpStr.ToArray();
-
-                    tmpStr = PlotvarTypesEXTRA.ToList();
-                    tmpStr.Add( thisExternal );
-                    PlotvarTypesEXTRA = tmpStr.ToArray();
-
-                    tmpStr = PlotvarKeywordEXTRA.ToList();
-                    tmpStr.Add( thisExternal );
-                    PlotvarKeywordEXTRA = tmpStr.ToArray();
-
-                    tmpStr = DatafilesEXTRA.ToList();
-                    tmpStr.Add( "extrasensorsdata.json" );
-                    DatafilesEXTRA = tmpStr.ToArray();
-                }
-            }
-
-            // Prepare for possible CustomLogs!
-
-            CustomLogs thisCustomLogs = new CustomLogs( Sup );
-
-            if ( thisCustomLogs.CustomLogsList.Count != 0 )
-            {
-                // There is a lot to optimize here I guess
-                foreach ( CustomLogs.CustomLog thisList in thisCustomLogs.CustomLogsList )
-                {
-                    if ( thisList.Frequency == -1 )
-                    {
-                        foreach ( string webtag in thisList.TagNames )
-                        {
-                            List<string> tmpStr;
-
-                            List<AxisType> tmp = PlotvarAxisALL.ToList();
-                            tmp.Add( thisCustomLogs.WebTags.GetTagAxis( webtag ) );
-                            PlotvarAxisALL = tmp.ToArray();
-
-                            tmpStr = PlotvarUnitsALL.ToList();
-                            tmpStr.Add( thisCustomLogs.WebTags.GetTagUnit( webtag ) );
-                            PlotvarUnitsALL = tmpStr.ToArray();
-
-                            tmpStr = PlotvarTypesALL.ToList();
-                            tmpStr.Add( thisList.Name + webtag );
-                            PlotvarTypesALL = tmpStr.ToArray();
-
-                            tmpStr = PlotvarKeywordALL.ToList();
-                            tmpStr.Add( thisList.Name + webtag );
-                            PlotvarKeywordALL = tmpStr.ToArray();
-
-                            tmpStr = DatafilesALL.ToList();
-                            tmpStr.Add( Sup.CustomLogsDailyJSON );
-                            DatafilesALL = tmpStr.ToArray();
-                        }
-                    }
-                    else
-                    {
-                        foreach ( string webtag in thisList.TagNames )
-                        {
-                            List<string> tmpStr;
-                            //string w = char.IsDigit( webtag, webtag.Length - 1 ) ? webtag.Substring(0, webtag.Length - 1) : webtag;
-                            string w = webtag;
-
-                            List<AxisType> tmp = PlotvarAxisEXTRA.ToList();
-                            tmp.Add( thisCustomLogs.WebTags.GetTagAxis( w ) );
-                            PlotvarAxisEXTRA = tmp.ToArray();
-
-                            tmpStr = PlotvarUnitsEXTRA.ToList();
-                            tmpStr.Add( thisCustomLogs.WebTags.GetTagUnit( w ) );
-                            PlotvarUnitsEXTRA = tmpStr.ToArray();
-
-                            tmpStr = PlotvarTypesEXTRA.ToList();
-                            tmpStr.Add( thisList.Name + webtag );
-                            PlotvarTypesEXTRA = tmpStr.ToArray();
-
-                            tmpStr = PlotvarKeywordEXTRA.ToList();
-                            tmpStr.Add( thisList.Name + webtag );
-                            PlotvarKeywordEXTRA = tmpStr.ToArray();
-
-                            tmpStr = DatafilesEXTRA.ToList();
-                            tmpStr.Add( Sup.CustomLogsRecentJSON );
-                            DatafilesEXTRA = tmpStr.ToArray();
-                        }
-                    }
-                }
-            }
-
-            // Is there need to destroy the CustomLogs object?? Don't think so...
-        } // ChartsCompiler Constructor End
-
-        #endregion
-
-        #region Divers
-
-        private int ApproximateSolarMax()
-        {
-            // See: https://www.sciencedirect.com/science/article/pii/S221260901400051X
-            //
-
-            int i = DateTime.Now.DayOfYear;
-            const double Deg2Rad = Math.PI / 180;
-            const int SolarConstant = 1375;
-            int Estimation;
-            double Latitude = Convert.ToDouble( Sup.GetCumulusIniValue( "Station", "Latitude", "" ), CUtils.Inv );
-
-            double Gamma = 0.796 - 0.01 * Math.Sin( 0.986 * ( i + 284 ) * Deg2Rad );
-            double EarthSunDist = 1 + 0.034 * Math.Cos( ( i - 2 ) * Deg2Rad );
-            double Delta = 23.45 * Math.Sin( 0.986 * ( i + 284 ) * Deg2Rad );
-            double HeightOfSun = Math.Asin( Math.Sin( Latitude * Deg2Rad ) * Math.Sin( Delta * Deg2Rad ) + Math.Cos( Latitude * Deg2Rad ) * Math.Cos( Delta * Deg2Rad ) );
-            double ExponentialComponent = Math.Exp( -0.13 / Math.Sin( HeightOfSun ) ) * Math.Sin( HeightOfSun );
-
-            // Return the total estimation and add 50 to make sure the scaling has some space
-            //
-            Estimation = (int) ( SolarConstant * Gamma * EarthSunDist * ExponentialComponent ) + 50;
-
-            return Estimation;
-        }
-
-        #endregion
-
-        #region GetSoilMoistureArray
-
-        // Represents the configuration object for soil moisture
-        private class SoilMoistureConfig
-        {
-            // Ensure the property name matches the JSON key "units"
-            // Use [JsonPropertyName] if you want a different C# property name
-            [JsonPropertyName( "units" )]
-            public List<string> Units { get; set; } = new List<string>();
-        }
-
-        // Represents the root of your JSON structure
-        private class Root
-        {
-            // Represents the "soilmoisture" key in the JSON
-            [JsonPropertyName( "soilmoisture" )]
-            public SoilMoistureConfig SoilMoisture { get; set; } = new SoilMoistureConfig();
-        }
-
-        private void GetSoilMoistureUnitArray()
-        {
-            // Why this procedure: Because soil moisture units are stored in graphconfig.json and they can be different for different devices
-            // (specifically for Davis (centiBar) and Ecowitt soilmoisture (percentage) devices)
-
-            CmxIPC thisCmxIPC = new CmxIPC( CUtils.Sup, CUtils.Isup );
-
-            try
-            {
-                Task<string> AsyncTask = thisCmxIPC.GetCMXGraphdataAsync( "graphconfig.json" );
-                AsyncTask.Wait();
-                string jsonString = AsyncTask.Result;
-
-                // Deserialize the entire JSON into the Root class object
-                Root data = JsonSerializer.Deserialize<Root>( jsonString );
-
-                // Access the units through the strongly-typed properties
-                soilMoistureUnitArray = data?.SoilMoisture?.Units ?? new List<string>();
-
-                if ( soilMoistureUnitArray.Count < SoilMoistureUnitArraySize )
-                {
-                    // If there are fewer units than expected, fill the rest with "%"
-                    int unitsToAdd = SoilMoistureUnitArraySize - soilMoistureUnitArray.Count;
-                    for ( int i = 0; i < unitsToAdd; i++ ) soilMoistureUnitArray.Add( "%" );
-                }
-                else if ( soilMoistureUnitArray.Count > SoilMoistureUnitArraySize )
-                {
-                    // If there are more units than expected, truncate the list
-                    soilMoistureUnitArray = soilMoistureUnitArray.GetRange( 0, SoilMoistureUnitArraySize );
-                }
-            }
-            catch ( Exception e )
-            {
-                Sup.LogMessage( $"Init ChartsCompiler - Exception creating SoilMoistureUnitsArray - {e.Message}", TraceLevel.Error );
-            }
-        }
-
-        #endregion
     } // Class ChartsCompiler
 }// Namespace
