@@ -1,35 +1,31 @@
 /*
  * ChartsCompiler CodeGen - Part of CumulusUtils
  *
- * Structural rework. Public surface unchanged: GenerateUserDefinedCharts(...)
- * and GenerateUserAskedData(...) keep their signatures and produce the same
- * HTML/JavaScript output.
+ */
+
+/* Highcharts date/time format specifiers (https://api.highcharts.com/class-reference/Highcharts.Time) :
+ * 
+ *        * Supported format keys:
  *
- * What changed, and why:
- *   - The CreateAxis() if/else-if ladder (17 near-identical blocks that each
- *     re-check !AxisSet.HasFlag(x) and each open with the same title/opposite
- *     lines) is driven by a small AxisSpec table. Each axis type declares its
- *     required title key, unit source, domain hints, labels formatter and the
- *     flags it sets. This removes ~180 lines of duplication while emitting
- *     byte-identical attribute text.
- *   - The "opposite axis" toggle is expressed once (NextOpposite) instead of
- *     being repeated in every branch.
- *   - The per-plotvar series emission keeps its exact structure, but the
- *     repeated "name/id/data" triple is emitted through EmitSeriesHead().
- *   - The datafile-suffix slicing ({df[..df.IndexOf('.')]}) is done through a
- *     cached BaseName() helper so the dot is located once per datafile.
- *   - The AddSeries/axis/chart text builders keep their own StringBuilder;
- *     no behavioural change to ordering or whitespace.
- *
- * Deliberately NOT changed: the emitted strings (including the CDN includes,
- * the modal markup, the compiler footer, and every Highcharts option), the
- * "#if !RELEASE" whitespace-removal behaviour, and the return contract of
- * GenerateUserAskedData.
- *
- * NOTE on CreateAxis emission order: the original walks the plotvars and emits
- * an axis at the first plotvar of each not-yet-seen axis type. The table below
- * preserves that exact order (first matching axis type wins), because a plotvar
- * carries a single AxisType flag.
+ *        %a: Short weekday, like 'Mon'
+ *        %A: Long weekday, like 'Monday'
+ *        %d: Two digit day of the month, 01 to 31
+ *        %e: Day of the month, 1 through 31
+ *        %w: Day of the week, 0 through 6
+ *        %b: Short month, like 'Jan'
+ *        %B: Long month, like 'January'
+ *        %m: Two digit month number, 01 through 12
+ *        %y: Two digits year, like 09 for 2009
+ *        %Y: Four digits year, like 2009
+ *        %H: Two digits hours in 24h format, 00 through 23
+ *        %k: Hours in 24h format, 0 through 23
+ *        %I: Two digits hours in 12h format, 00 through 11
+ *        %l: Hours in 12h format, 1 through 12
+ *        %M: Two digits minutes, 00 through 59
+ *        %p: Upper case AM or PM
+ *        %P: Lower case AM or PM
+ *        %S: Two digits seconds, 00 through 59
+ *        %L: Milliseconds (naming from Ruby)
  */
 
 using System;
@@ -101,6 +97,8 @@ namespace CumulusUtils
 
             GenericJavascript.AppendLine( "var chart, config, freezing;" );
 
+            //var InitCumulusCharts = () => { };
+
             // The Document Ready function
             GenericJavascript.Append( "$( function(){  " );
 
@@ -109,6 +107,8 @@ namespace CumulusUtils
             //   2) CUtils.DojQueryInclude || CUtils.DoLibraryIncludes is used to determine compileonly is used for another website
             //   3) If UniqueOutputId > 0 the Init is not called by the runtime system and needs to be done here
             //   4) If the condition is true, the chart needs the initialisation on itself
+            //      --- this must be a rewrite: initialisation should always be done from the runtime such that we know what the last chart is and that the timer can 
+            //      refresh whatever chart is loaded
 
             GenericJavascript.Append( $"InitCumulusCharts = InitCumulusCharts{UniqueOutputId};" );
             GenericJavascript.Append( "InitCumulusCharts();" );
@@ -135,7 +135,7 @@ namespace CumulusUtils
             foreach ( string df in theseDatafiles )
             {
                 if ( !string.IsNullOrEmpty( df ) )
-                    GenericJavascript.AppendLine( $", {BaseName( df )}Ajax()" );
+                    GenericJavascript.AppendLine( $", {df[ ..df.IndexOf( '.' ) ]}Ajax()" );
             }
 
             // Add the WindBarbs line
@@ -164,7 +164,7 @@ namespace CumulusUtils
             GenericJavascript.AppendLine( "function GraphconfigAjax(){" );
             GenericJavascript.AppendLine( "  console.log( 'Highcharts version : ' + Highcharts.version );" );
             GenericJavascript.AppendLine( "  return $.ajax({" );
-            GenericJavascript.AppendLine( $"    url: '{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}graphconfig.json', cache: true, datatype: 'json'})" );
+            GenericJavascript.AppendLine( $"    url: '{Sup.GetUtilsIniValue( "Website", "CumulusRealTimeLocation", "" )}graphconfig.json', cache: true, datatype: 'json'}})" );
             GenericJavascript.AppendLine( "    .done( function(resp) {" +
                 "      config = resp;" +
                 "      freezing = config.temp.units === 'C' ? 0 : 32;" +
@@ -183,7 +183,7 @@ namespace CumulusUtils
             {
                 if ( !string.IsNullOrEmpty( df ) )
                 {
-                    AjaxJavascript.AppendLine( $"function {BaseName( df )}Ajax(){{" );
+                    AjaxJavascript.AppendLine( $"function {df[ ..df.IndexOf( '.' ) ]}Ajax(){{" );
 
                     foreach ( AllVarInfo avi in AllVars )
                         if ( df == avi.Datafile )
@@ -255,7 +255,7 @@ namespace CumulusUtils
                 // A bit awkward method, may change that sometime haha...
                 if ( filename.Equals( Sup.CustomLogsCharts ) )
                 {
-                    // Add some code to subdivide the realtime tables into RECENT and DAILY and show only one of them.
+                    // Add some code to subdivide the realtime tables into RECENT and DAILY and show only one of them. 
                     // They are already defined of limited length and have an overflow.
                     MenuJavascript.AppendLine( $"if (prevChartRange != {(int) thisChart.Range} ) {{" );
                     MenuJavascript.AppendLine( "  $( '.slideOptions' ).slideUp('slow');" );
@@ -279,46 +279,74 @@ namespace CumulusUtils
                 TheCharts.Append( "      xAxis:" );
                 if ( thisChart.HasWindBarbs ) TheCharts.Append( '[' );
 
-                TheCharts.AppendLine( "      {title: {text: null}," );
-
+                TheCharts.AppendLine( "      {type: 'datetime', crosshair: true, ordinal: false,dateTimeLabelFormats:{day: '%e %b',week: '%e %b %y',month: '%b %y',year: '%Y'}}," );
                 if ( thisChart.HasWindBarbs )
                 {
                     if ( thisChart.WindBarbsBelow )
-                        TheCharts.AppendLine( "      opposite: true, min: 1, max: 1, tickLength: 0, visible: false, height: '0%', top: '100%', offset: 0, labels: {enabled: false}," );
+                        TheCharts.AppendLine( "{linkedTo:0, labels: {enabled: false}, offset: 0}" );
                     else
-                        TheCharts.AppendLine( "      opposite: true, min: 2, max: 2, tickLength: 0, visible: false, height: '0%', top: '0%', labels: {enabled: false}," );
+                        TheCharts.AppendLine( "{linkedTo:0, opposite: true, labels: {enabled: false} }" );
+
+                    TheCharts.AppendLine( "]," );
                 }
+                TheCharts.AppendLine( "      yAxis:{ visible: false }," );
+
+                TheCharts.AppendLine( "      legend:{enabled: true}," );
 
                 if ( thisChart.HasScatter )
-                    TheCharts.Append( "      lineWidth: 0, states: { hover: { lineWidthPlus: 0 } }" );
-                //if ( thisChart.HasScatter ) TheCharts.AppendLine("      allowDecimals: false,");   commented out because of undefined behaviour of the renderer
-
-                TheCharts.AppendLine( "}," );
-
-                if ( thisChart.HasWindBarbs && !thisChart.WindBarbsBelow ) TheCharts.AppendLine( "    floating: false," );
-
-                TheCharts.AppendLine( "    yAxis: []," );
-
-                TheCharts.AppendLine( "    legend:{ enabled: true, align: 'center', verticalAlign: 'bottom', layout: 'horizontal' }," );
-
-                // Tooltip: the following is a bit of a hack but it works
-                if ( thisChart.Range == PlotvarRangeType.Recent || thisChart.Range == PlotvarRangeType.Extra || thisChart.Range == PlotvarRangeType.Daily )
-                    TheCharts.AppendLine( "    tooltip:{ split: false, shared: true, valueDecimals: 1 }," );
+                {
+                    TheCharts.AppendLine( "      plotOptions: { scatter: {cursor: 'pointer'," +
+                        $"{( Graphx.UseHighchartsBoostModule ? "boostThreshold: 200," : "" )} lineWidth:0," +
+                        $"marker: {{radius: {thisChart.PlotVars.First().LineWidth} }}, " +
+                        "}}," );
+                    TheCharts.AppendLine( "      tooltip: { xDateFormat: '%A, %b %e %H:%M ', " +
+                        "pointFormatter() {return this.series.name + ': ' + this.y}," +
+                        "headerFormat: '{point.key}<br>' }," );
+                }
                 else
-                    TheCharts.AppendLine( "    tooltip:{ split: false, shared: true }," );
+                {
+                    TheCharts.AppendLine( $"      plotOptions: {{ series: {{ connectNulls: {Sup.GetUtilsIniValue( "General", "ConnectNulls", "false" ).ToLower()}, turboThreshold: 0, " +
+                            "states: { hover: { halo: { size: 5,opacity: 0.25} } }," +
+                            "marker: { enabled: false, states: { hover: { enabled: true, radius: 0.1} } } }, }," );
+                    TheCharts.AppendLine( $"      tooltip: {{split: true, valueDecimals: 1, xDateFormat: '%A, %b %e, %H:%M'}}," );
+                }
 
-                TheCharts.AppendLine( "    chart:{ zoomType: 'x', animation: false }," );
-                TheCharts.AppendLine( "    boost:{ useGPUTranslations: true }," );
+                TheCharts.AppendLine( "      series:[]," );
 
-                if ( !UseHighchartsBoostModule ) TheCharts.AppendLine( "    boost:{ enabled: false }," );
+                if ( thisChart.Range == PlotvarRangeType.Recent || thisChart.Range == PlotvarRangeType.Extra )
+                {
+                    TheCharts.AppendLine( "      rangeSelector:{" );
 
-                TheCharts.AppendLine( "      navigator:{ enabled: true }," );
-                TheCharts.AppendLine( "      scrollbar:{ enabled: true }," );
+                    if ( thisChart.HasWindBarbs && !thisChart.WindBarbsBelow ) TheCharts.AppendLine( "    floating: true, y: -50," );
 
-                if ( thisChart.Zoom == -1 )
-                    TheCharts.AppendLine( "      rangeSelector:{allButtonsEnabled: true, selected: 4 }" );
+                    TheCharts.AppendLine( "      buttons:[{" );
+                    TheCharts.AppendLine( $"       count: {CUtils.HoursInGraph / 4},type: 'hour',text: '{CUtils.HoursInGraph / 4}h'}}, {{" );
+                    TheCharts.AppendLine( $"       count: {CUtils.HoursInGraph / 2},type: 'hour',text: '{CUtils.HoursInGraph / 2}h'}}, {{" );
+                    TheCharts.AppendLine( "        type: 'all',text: 'All'}]," );
+                    TheCharts.AppendLine( "      inputEnabled: false," );
+
+                    if ( thisChart.Zoom == -1 )
+                        TheCharts.AppendLine( "     selected: 2 }" );
+                    else
+                        TheCharts.AppendLine( $"     selected: {thisChart.Zoom} - 1 }}" );
+                }
                 else
-                    TheCharts.AppendLine( $"      rangeSelector:{{allButtonsEnabled: true, selected: {thisChart.Zoom} - 1 }}" );
+                {
+                    if ( thisChart.Range == PlotvarRangeType.Daily )
+                    {
+                        if ( thisChart.Zoom == -1 )
+                            TheCharts.AppendLine( "      rangeSelector:{allButtonsEnabled: true, selected: 0 }" );
+                        else
+                            TheCharts.AppendLine( $"      rangeSelector:{{allButtonsEnabled: true, selected: {thisChart.Zoom} - 1 }}" );
+                    }
+                    else
+                    {
+                        if ( thisChart.Zoom == -1 )
+                            TheCharts.AppendLine( "      rangeSelector:{allButtonsEnabled: true, selected: 4 }" );
+                        else
+                            TheCharts.AppendLine( $"      rangeSelector:{{allButtonsEnabled: true, selected: {thisChart.Zoom} - 1 }}" );
+                    }
+                }
 
                 TheCharts.AppendLine( "  });" );
 
@@ -482,7 +510,7 @@ namespace CumulusUtils
                 if ( thisChart.HasWindBarbs )
                 {
                     // Since the data is in m/s in the WindBarbData array it has to be converted back for the tooltip
-                    //
+                    // 
 
                     AddSeriesJavascript.AppendLine( "  thisChart.addSeries({ " );
                     AddSeriesJavascript.AppendLine( $"    name: '{Sup.GetCUstringValue( "Compiler", "WindBarbs", "WindBarbs", true )}'," );
@@ -548,7 +576,7 @@ namespace CumulusUtils
                 {
                     if ( !CUtils.DoWebsite && CUtils.DoLibraryIncludes )
                     {
-                        // Use the jQuery modal, by setting the DoLibraryIncludes to false the user has control whether or not to use the
+                        // Use the jQuery modal, by setting the DoLibraryIncludes to false the user has control whether or not to use the 
                         // supplied includes or do it all by her/himself
                         Html.AppendLine(
                             $"<div class='modal' id='{thisChart.Id}' style='font-family: Verdana, Geneva, Tahoma, sans-serif;font-size: 120%;'>" +
@@ -562,7 +590,7 @@ namespace CumulusUtils
                     }
                     else
                     {
-                        // Use the bootstrap modal --- tabindex='-1'
+                        // Use the bootstrap modal --- tabindex='-1' 
                         Html.AppendLine( $"<div class='modal fade' id='{thisChart.Id}' role='dialog' aria-hidden='true'>" +
                         "  <div class='modal-dialog modal-dialog-centered modal-dialog modal-lg' role='document'>" +
                         "    <div class='modal-content'>" +
@@ -597,40 +625,9 @@ namespace CumulusUtils
             } // using output file
         } // End Function GenerateUserDefinedCharts
 
-        // The datafile basename (before the first '.'), computed at the one place it is needed.
-        private static string BaseName( string datafile )
-        {
-            int dot = datafile.IndexOf( '.' );
-            return dot < 0 ? datafile : datafile[ ..dot ];
-        }
-
         #endregion
 
         #region CreateAxis
-
-        // One row per axis type. Title is built from the (section, key, default)
-        // triple passed to GetCUstringValue; UnitSource says where the "(unit)"
-        // part comes from; Extra lines are the type-specific options emitted
-        // verbatim between the generic title/opposite and the shared tail.
-        private readonly struct AxisSpec
-        {
-            public readonly AxisType Flag;
-            public readonly string TitleSection;
-            public readonly string TitleKey;
-            public readonly string TitleDefault;
-            public readonly bool TitleHasUnitBrackets;
-            public readonly string LabelsFormatter;   // null => plain labels
-            public readonly bool DecimalsFormatter;   // true => numberFormat labels
-            public readonly int Decimals;              // for numberFormat
-
-            public AxisSpec( AxisType flag, string section, string key, string def, bool hasUnit,
-                             string labelsFormatter = null, bool decimalsFormatter = false, int decimals = 0 )
-            {
-                Flag = flag; TitleSection = section; TitleKey = key; TitleDefault = def;
-                TitleHasUnitBrackets = hasUnit; LabelsFormatter = labelsFormatter;
-                DecimalsFormatter = decimalsFormatter; Decimals = decimals;
-            }
-        }
 
         void CreateAxis( ChartDef thisChart, StringBuilder buf, ref AxisType AxisSet )
         {
@@ -648,7 +645,7 @@ namespace CumulusUtils
                     // Check fo a possible second soilmoisture axis with the other unit (either cb (Davis) or % (Ecowitt)
                     // assuming there can't be a second unit switch
 
-                    if ( thisPlotvar.Unit == LastSoilMoistureUnitUsed ) { continue; } // the axis already exists
+                    if ( thisPlotvar.Unit == LastSoilMoistureUnitUsed ) { continue; } // the axis already exists 
                     else LastSoilMoistureUnitUsed = thisPlotvar.Unit; // remember the unit for which the axis is made
                 }
 
@@ -660,14 +657,7 @@ namespace CumulusUtils
                 // Generic attributes:
                 buf.Append( $"id: '{thisPlotvar.AxisId}'," );
 
-                // Determine which single axis type this plotvar introduces.
-                AxisType t = thisPlotvar.Axis;
-                string unit = thisPlotvar.Unit;
-
-                // Helper for the recurring "labels:{align...}" fragment
-                string LabelAlign() => opposite ? "align: 'left',x: 5,y: -2" : "align: 'right',x: -5, y: -2";
-
-                if ( t.HasFlag( AxisType.Temp ) && !AxisSet.HasFlag( AxisType.Temp ) )
+                if ( thisPlotvar.Axis.HasFlag( AxisType.Temp ) && !AxisSet.HasFlag( AxisType.Temp ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Temperature", "Temperature", true )} ({Sup.StationTemp.Text()})'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
@@ -678,9 +668,9 @@ namespace CumulusUtils
                     buf.Append( "plotLines:[{value: freezing,color: 'rgb(0, 0, 180)',width: 1,zIndex: 2}]," );
                     AxisSet |= AxisType.Temp;
                 }
-                else if ( t.HasFlag( AxisType.Pressure ) && !AxisSet.HasFlag( AxisType.Pressure ) )
+                else if ( thisPlotvar.Axis.HasFlag( AxisType.Pressure ) && !AxisSet.HasFlag( AxisType.Pressure ) )
                 {
-                    buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Pressure", "Pressure", true )} ({unit})'}}," );
+                    buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Pressure", "Pressure", true )} ({thisPlotvar.Unit})'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( $"softMin: {MinPressure.ToString( $"F{Sup.StationPressure.NrOfDecimals()}" ).Replace( ',', '.' )}, " +
                         $"softMax: {MaxPressure.ToString( $"F{Sup.StationPressure.NrOfDecimals()}" ).Replace( ',', '.' )}, " +
@@ -694,9 +684,9 @@ namespace CumulusUtils
 
                     AxisSet |= AxisType.Pressure;
                 }
-                else if ( t.HasFlag( AxisType.Rain ) && !AxisSet.HasFlag( AxisType.Rain ) )
+                else if ( thisPlotvar.Axis.HasFlag( AxisType.Rain ) && !AxisSet.HasFlag( AxisType.Rain ) )
                 {
-                    buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Rain", "Rain", true )} ({unit})'}}," );
+                    buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Rain", "Rain", true )} ({thisPlotvar.Unit})'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( $"endOnTick: false, softMax: {( Sup.StationRain.NrOfDecimals() == 2 ? "0.04" : "1" )},min: 0,showLastLabel: true," );
 
@@ -708,9 +698,9 @@ namespace CumulusUtils
 
                     AxisSet |= AxisType.Rain;
                 }
-                else if ( t.HasFlag( AxisType.Rrate ) && !AxisSet.HasFlag( AxisType.Rrate ) )
+                else if ( thisPlotvar.Axis.HasFlag( AxisType.Rrate ) && !AxisSet.HasFlag( AxisType.Rrate ) )
                 {
-                    buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Rainrate", "Rain Rate", true )} ({unit})'}}," );
+                    buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Rainrate", "Rain Rate", true )} ({thisPlotvar.Unit})'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( $"endOnTick: false, softMax: {( CUtils.RainInInch ? "0.04" : "1" )},min: 0,showLastLabel: true," );
 
@@ -722,15 +712,15 @@ namespace CumulusUtils
 
                     AxisSet |= AxisType.Rrate;
                 }
-                else if ( t.HasFlag( AxisType.Wind ) && !AxisSet.HasFlag( AxisType.Wind ) )
+                else if ( thisPlotvar.Axis.HasFlag( AxisType.Wind ) && !AxisSet.HasFlag( AxisType.Wind ) )
                 {
-                    buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Wind", "Wind", true )} ({unit})'}}," );
+                    buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Wind", "Wind", true )} ({thisPlotvar.Unit})'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( "allowDecimals: false,showLastLabel: true," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}," );
                     AxisSet |= AxisType.Wind;
                 }
-                else if ( t.HasFlag( AxisType.Direction ) && !AxisSet.HasFlag( AxisType.Direction ) )
+                else if ( thisPlotvar.Axis.HasFlag( AxisType.Direction ) && !AxisSet.HasFlag( AxisType.Direction ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Direction", "Direction", true )} (Compass / degrees)'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
@@ -740,7 +730,7 @@ namespace CumulusUtils
                     buf.Append( "allowDecimals: false," );
                     AxisSet |= AxisType.Direction;
                 }
-                else if ( t.HasFlag( AxisType.UV ) && !AxisSet.HasFlag( AxisType.UV ) )
+                else if ( thisPlotvar.Axis.HasFlag( AxisType.UV ) && !AxisSet.HasFlag( AxisType.UV ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "UVindex", "UV index", true )}'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
@@ -748,7 +738,7 @@ namespace CumulusUtils
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}," );
                     AxisSet |= AxisType.UV;
                 }
-                else if ( t.HasFlag( AxisType.Solar ) && !AxisSet.HasFlag( AxisType.Solar ) )
+                else if ( thisPlotvar.Axis.HasFlag( AxisType.Solar ) && !AxisSet.HasFlag( AxisType.Solar ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "SolarRadiation", "Solar Radiation", true )} (W/m²)'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
@@ -757,7 +747,7 @@ namespace CumulusUtils
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}," );
                     AxisSet |= AxisType.Solar;
                 }
-                else if ( t.HasFlag( AxisType.Humidity ) && !AxisSet.HasFlag( AxisType.Humidity ) )
+                else if ( thisPlotvar.Axis.HasFlag( AxisType.Humidity ) && !AxisSet.HasFlag( AxisType.Humidity ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Humidity", "Humidity", true )} (%)'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
@@ -766,7 +756,7 @@ namespace CumulusUtils
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}," );
                     AxisSet |= AxisType.Humidity;
                 } // End of block generatiing the Exis info
-                else if ( t.HasFlag( AxisType.Hours ) && !AxisSet.HasFlag( AxisType.Hours ) )
+                else if ( thisPlotvar.Axis.HasFlag( AxisType.Hours ) && !AxisSet.HasFlag( AxisType.Hours ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "General", "Hours", "Hours", true )}'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
@@ -775,36 +765,36 @@ namespace CumulusUtils
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}," );
                     AxisSet |= AxisType.Hours;
                 } // End of block generatiing the Exis info
-                else if ( t.HasFlag( AxisType.EVT ) && !AxisSet.HasFlag( AxisType.EVT ) )
+                else if ( thisPlotvar.Axis.HasFlag( AxisType.EVT ) && !AxisSet.HasFlag( AxisType.EVT ) )
                 {
-                    buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Evapotranspiration", "Evapotranspiration", true )} ({unit})'}}," );
+                    buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Evapotranspiration", "Evapotranspiration", true )} ({thisPlotvar.Unit})'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( $"softMax: 1,min: 0,showLastLabel: true," );
                     buf.Append( "allowDecimals: false," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}," );
                     AxisSet |= AxisType.EVT;
                 }
-                else if ( t.HasFlag( AxisType.Distance ) && !AxisSet.HasFlag( AxisType.Distance ) )
+                else if ( thisPlotvar.Axis.HasFlag( AxisType.Distance ) && !AxisSet.HasFlag( AxisType.Distance ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "Distance", "Distance", true )} " +
-                        $"({( string.IsNullOrEmpty( unit ) ? new Distance( DistanceDim.kilometer ).Text() : unit )})'}}," );
+                        $"({( string.IsNullOrEmpty( thisPlotvar.Unit ) ? new Distance( DistanceDim.kilometer ).Text() : thisPlotvar.Unit )})'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( $"softMax: 10,softMin: 0,showLastLabel: true," );
                     buf.Append( "allowDecimals: false," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}," );
                     AxisSet |= AxisType.Distance;
                 }
-                else if ( t.HasFlag( AxisType.Height ) && !AxisSet.HasFlag( AxisType.Height ) )
+                else if ( thisPlotvar.Axis.HasFlag( AxisType.Height ) && !AxisSet.HasFlag( AxisType.Height ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Compiler", "Height", "Height", true )} " +
-                        $"({( string.IsNullOrEmpty( unit ) ? Sup.StationHeight.Text() : unit )})'}}," );
+                        $"({( string.IsNullOrEmpty( thisPlotvar.Unit ) ? Sup.StationHeight.Text() : thisPlotvar.Unit )})'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( $"softMax: 10,softMin: 0,showLastLabel: true," );
                     buf.Append( "allowDecimals: false," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}," );
                     AxisSet |= AxisType.Height;
                 }
-                else if ( t.HasFlag( AxisType.DegreeDays ) && !AxisSet.HasFlag( AxisType.DegreeDays ) )
+                else if ( thisPlotvar.Axis.HasFlag( AxisType.DegreeDays ) && !AxisSet.HasFlag( AxisType.DegreeDays ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Website", "DegreeDays", "DegreeDays", true )}'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
@@ -813,7 +803,7 @@ namespace CumulusUtils
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )}," );
                     AxisSet |= AxisType.DegreeDays;
                 }
-                else if ( t.HasFlag( AxisType.Free ) && !AxisSet.HasFlag( AxisType.Free ) )
+                else if ( thisPlotvar.Axis.HasFlag( AxisType.Free ) && !AxisSet.HasFlag( AxisType.Free ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Compiler", $"{thisChart.Id}Dimensionless", "Dimensionless", true )}'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
@@ -821,7 +811,7 @@ namespace CumulusUtils
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )} ," );
                     AxisSet |= AxisType.Free;
                 }
-                else if ( t.HasFlag( AxisType.AQ ) && !AxisSet.HasFlag( AxisType.AQ ) )
+                else if ( thisPlotvar.Axis.HasFlag( AxisType.AQ ) && !AxisSet.HasFlag( AxisType.AQ ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Compiler", "ParticulateMatter", "Particulate Matter", true )} (μg/m3)'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
@@ -829,7 +819,7 @@ namespace CumulusUtils
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )} ," );
                     AxisSet |= AxisType.AQ;
                 }
-                else if ( t.HasFlag( AxisType.ppm ) && !AxisSet.HasFlag( AxisType.ppm ) )
+                else if ( thisPlotvar.Axis.HasFlag( AxisType.ppm ) && !AxisSet.HasFlag( AxisType.ppm ) )
                 {
                     buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Compiler", "PartsPerMillion", "Parts Per Million", true )} (ppm)'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
@@ -837,10 +827,10 @@ namespace CumulusUtils
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )} ," );
                     AxisSet |= AxisType.ppm;
                 }
-                else if ( t.HasFlag( AxisType.SoilMoisture ) )
+                else if ( thisPlotvar.Axis.HasFlag( AxisType.SoilMoisture ) )
                 {
                     //
-                    buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Compiler", "SoilMoisture ", "Soil Moisture", true )} ({unit})'}}," );
+                    buf.Append( $"title:{{text:'{Sup.GetCUstringValue( "Compiler", "SoilMoisture ", "Soil Moisture", true )} ({thisPlotvar.Unit})'}}," );
                     buf.Append( $"opposite: {opposite.ToString().ToLowerInvariant()}," );
                     buf.Append( $"max: 100,min: 0,showLastLabel: true," );
                     buf.Append( $"{( opposite ? "labels:{align: 'left',x: 5,y: -2}" : "labels:{align: 'right',x: -5, y: -2}" )} ," );
@@ -901,13 +891,17 @@ namespace CumulusUtils
             else
                 SumFunctionGenerated = true;
 
+            //buf.AppendLine( "// This is the Compiler Runtime for the functions" );
             buf.AppendLine( "function sum( curVal, valArray, curIndex, thisEpochDate)" );
             buf.AppendLine( "{" );
+            //buf.AppendLine( "  // Fill the value in the valuearray to be plotted and restart the value on first of januari - implicit year cycle for the sum function" );
             buf.AppendLine( "  thisDate = new Date( thisEpochDate );" );
             buf.AppendLine( "  if (( thisDate.getMonth() == 0 && thisDate.getDate() == 1) || curIndex == 0 ) {" );
+            //buf.AppendLine( "    console.log('!!' + thisDate + ' / ' + curVal + ' / ' + curIndex);" );
             buf.AppendLine( "    valArray.push( [ thisEpochDate, curVal ] );" );
             buf.AppendLine( "  }" );
             buf.AppendLine( "  else {" );
+            //buf.AppendLine( "    console.log(thisDate + ' / ' + curVal + ' / ' + curIndex);" );
             buf.AppendLine( "    tmp = valArray[ curIndex - 1 ][ 1 ] + curVal;" );
             buf.AppendLine( "    valArray.push( [ thisEpochDate, tmp ] );" );
             buf.AppendLine( "  }" );
@@ -917,91 +911,258 @@ namespace CumulusUtils
         #endregion
 
         #region Datagenerator
-
         public DateTime GenerateUserAskedData( List<ChartDef> thisList )
         {
             Sup.LogDebugMessage( $"Generating Compiler UserAskedData: Starting" );
 
-            if ( thisList?.Count == 0 ) return DateTime.MinValue;
+            if ( thisList?.Any() != true )
+            {
+                Sup.LogMessage( $"Generating UserAskedData: Nothing to do", TraceLevel.Info );
+                return DateTime.Now;
+            }
 
-            // Determine what data is needed
-            bool DoDailyAndAll = thisList.Any( c => c.PlotVars.Any( v => v.PlotvarRange == PlotvarRangeType.Daily || v.PlotvarRange == PlotvarRangeType.All ) );
-            bool DoRecent = thisList.Any( c => c.PlotVars.Any( v => v.PlotvarRange == PlotvarRangeType.Recent ) );
-            bool DoExtra = thisList.Any( c => c.PlotVars.Any( v => v.PlotvarRange == PlotvarRangeType.Extra ) );
+            // Take the Interval frequency or the LogInterval (whichever is the largest) and use the minute value being a multiple of that one cycle below the now time as the end time
+            // Then go the hours in Graphs back to complete the full cycle. 
+            // So with a 10 min FTP cycle and Now = 08h09 the endtime must be 08h00 -> the minute value MOD FTP frequency
+            // This should give it the same starttime as the CMX JSONS, this is relevant for the wind addition later on.
+            // This is also shared with the UserAskedData JSON creation -> it has become a shared function for start and endtime related to the intervals.
+            //
+            Sup.SetStartAndEndForData( out DateTime timeStart, out DateTime timeEnd );
+            Sup.LogMessage( $"GenerateUserAskedData: timeStart = {timeStart}; timeEnd = {timeEnd}", TraceLevel.Info );
 
-            List<string> Recent = new List<string>();
-            List<string> Daily = new List<string>();
-            List<string> All = new List<string>();
+            StringBuilder Recent = new StringBuilder( "{" );
+            StringBuilder Daily = new StringBuilder( "{" );
+            StringBuilder All = new StringBuilder( "{" );
+
+            // Make the partial MonthFilelist for the RECENT variable
+            Monthfile thisMonthlist = new Monthfile( Sup );
+            List<MonthfileValue> RoughList = thisMonthlist.ReadPartialMonthlyLogs( timeStart, timeEnd );
+            List<MonthfileValue> MonthlyListToWriteOut = RoughList.Where( b => b.ThisDate <= timeEnd ).Where( a => a.ThisDate >= timeStart ).ToList();
+            thisMonthlist.Dispose();
+
+            // Do the ALL/DAILY only once a day
+
+            _ = DateTime.TryParse( Sup.GetUtilsIniValue( "Compiler", "DoneToday", $"{DateTime.Now.AddDays( -1 ):s}" ), out DateTime DoneToday );
+
+            Sup.LogMessage( $"Generate UserAskedData: DoneToday = {DoneToday}.", TraceLevel.Info );
+
+            bool DoDailyAndAll = !Sup.DateIsToday( DoneToday );
 
             if ( DoDailyAndAll )
             {
-                foreach ( ChartDef thisChart in thisList )
+                Sup.LogMessage( $"Generate UserAskedData: Must generate the ALL Range.", TraceLevel.Info );
+                Sup.SetUtilsIniValue( "Compiler", "DoneToday", $"{DateTime.Now:s}" );
+            }
+            else
+                Sup.LogMessage( $"Generate UserAskedData: Must NOT generate the ALL Range.", TraceLevel.Info );
+
+            foreach ( ChartDef thisChart in thisList )
+            {
+                Sup.LogMessage( $"Generate UserAskedData - Loop over Chart: {thisChart.Id})", TraceLevel.Info );
+                foreach ( Plotvar thisVar in thisChart.PlotVars )
                 {
-                    foreach ( Plotvar thisVar in thisChart.PlotVars )
+                    Sup.LogMessage( $"Generate UserAskedData - Testing {thisVar.PlotVar} into {thisVar.Datafile} (Range is {thisVar.PlotvarRange})", TraceLevel.Info );
+                    if ( thisVar.Datafile.StartsWith( "CUserdata" ) )
                     {
-                        if ( thisVar.Datafile.StartsWith( "CUserdata" ) )
+                        // This is one to generate. Write out this variable. 
+                        // NOTE: there can be more variables in this file so the writing is always append
+                        Sup.LogMessage( $"Generate UserAskedData - generating {thisVar.PlotVar} into {thisVar.Datafile} (Range is {thisVar.PlotvarRange})", TraceLevel.Info );
+                        switch ( thisVar.PlotvarRange )
                         {
-                            switch ( thisVar.PlotvarRange )
-                            {
-                                case PlotvarRangeType.Daily:
-                                    foreach ( MonthfileValue entry in MonthlyListToWriteOut )
-                                        Daily.Add( $"{MonthlyListToWriteOut.IndexOf( entry )};{entry.Date.Date:yyyyMMdd};{thisVar.Keyword};{entry.Value.ToString( CUtils.Inv )}" );
+                            case PlotvarRangeType.Extra:
+                            case PlotvarRangeType.Recent:
+                                Recent.Append( $"\"{thisVar.PlotVar}\":[" );
+                                foreach ( MonthfileValue entry in MonthlyListToWriteOut )
+                                    Recent.Append( $"[{CuSupport.DateTimeToJSUTC( entry.ThisDate )},{entry.Evt.ToString( "F1", CUtils.Inv )}]," );
+                                Recent.Remove( Recent.Length - 1, 1 );
+                                Recent.Append( $"]," );
+
+                                break;
+
+                            case PlotvarRangeType.Daily:
+                            case PlotvarRangeType.All:
+                                if ( !DoDailyAndAll )
                                     break;
-                                case PlotvarRangeType.All:
-                                    All.Add( $"{thisVar.Keyword}" );
-                                    break;
-                            }
+
+                                All.Append( $"\"{thisVar.PlotVar}\":[" );
+
+                                if ( thisVar.PlotVar.Equals( "heatingdegreedays" ) )
+                                    foreach ( DayfileValue entry in CUtils.MainList )
+                                        All.Append( $"[{CuSupport.DateTimeToJSUTC( entry.ThisDate )},{entry.HeatingDegreeDays.ToString( "F1", CUtils.Inv )}]," );
+
+                                else if ( thisVar.PlotVar.Equals( "coolingdegreedays" ) )
+                                    foreach ( DayfileValue entry in CUtils.MainList )
+                                        All.Append( $"[{CuSupport.DateTimeToJSUTC( entry.ThisDate )},{entry.CoolingDegreeDays.ToString( "F1", CUtils.Inv )}]," );
+
+                                else if ( thisVar.PlotVar.Equals( "evapotranspiration" ) )
+                                    foreach ( DayfileValue entry in CUtils.MainList )
+                                        All.Append( $"[{CuSupport.DateTimeToJSUTC( entry.ThisDate )},{entry.EvapoTranspiration.ToString( "F1", CUtils.Inv )}]," );
+
+                                All.Remove( All.Length - 1, 1 );
+                                All.Append( $"]," );
+
+                                break;
+
+                            default:
+                                Sup.LogMessage( "Generate UserAskedData - Switch default is an internal error! Must be set while parsing the charts)", TraceLevel.Error );
+                                break;
                         }
-                    }
-                }
-            }
+                    } // else: data must come from CMX
+                } // foreach Plotvar
+            } // foreach Chart
 
-            if ( DoDailyAndAll )
+            // Done so cleanup and finish the Stringbuilders and write out to files
+            if ( Recent.Length > 1 )
             {
-                // This is the writeout of the Daily and All data
-                if ( Daily.Count > 1 )
-                {
-                    using ( StreamWriter sw = new StreamWriter( $"{Sup.PathUtils}{Sup.CUserdataDAILY}", false, Encoding.UTF8 ) )
-                    {
-                        sw.WriteLine( CuSupport.CopyrightForGeneratedFiles() );
-                        foreach ( string s in Daily ) sw.WriteLine( s );
-                    }
-                }
+                Recent.Remove( Recent.Length - 1, 1 );
+                Recent.Append( '}' );
+                using ( StreamWriter sw = new StreamWriter( $"{Sup.PathUtils}{Sup.CUserdataRECENT}", false, Encoding.UTF8 ) ) { sw.Write( Recent.ToString() ); }
             }
 
-            return DateTime.MinValue;
-        }
+            if ( Daily.Length > 1 )
+            {
+                Daily.Remove( Daily.Length - 1, 1 );
+                Daily.Append( '}' );
+                using ( StreamWriter sw = new StreamWriter( $"{Sup.PathUtils}{Sup.CUserdataDAILY}", false, Encoding.UTF8 ) ) { sw.Write( Daily.ToString() ); }
+            }
+
+            if ( All.Length > 1 )
+            {
+                All.Remove( All.Length - 1, 1 );
+                All.Append( '}' );
+                using ( StreamWriter sw = new StreamWriter( $"{Sup.PathUtils}{Sup.CUserdataALL}", false, Encoding.UTF8 ) ) { sw.Write( All.ToString() ); }
+            }
+
+            return timeEnd;
+        } // End Generate JSON
 
         #endregion
 
         #region Additional generating functions
-
         private List<AllVarInfo> CheckAllVariablesInThisSetOfCharts( List<ChartDef> theseCharts )
         {
-            Sup.LogMessage( $"Compiler - CheckAllVariablesInThisSetOfCharts", TraceLevel.Verbose );
-
             List<AllVarInfo> AllVars = new List<AllVarInfo>();
+            AllVarInfo tmpVarInfo = new AllVarInfo();
 
+            bool found = false;
+
+            // Make a list from all variables in 
             foreach ( ChartDef c in theseCharts )
                 foreach ( Plotvar p in c.PlotVars )
                 {
-                    bool found = false;
-
-                    foreach ( AllVarInfo avi in AllVars )
-                        if ( p.Keyword.Equals( avi.KeywordName, CUtils.Cmp ) ) { found = true; break; }
+                    if ( AllVars.Count != 0 )
+                    {
+                        foreach ( AllVarInfo avi in AllVars )
+                        {
+                            if ( p.Keyword.Equals( avi.KeywordName, CUtils.Cmp ) )
+                            {
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
 
                     if ( !found )
                     {
-                        AllVarInfo tmpVarInfo = new AllVarInfo
-                        {
-                            KeywordName = p.Keyword,
-                            TypeName = p.PlotVar,
-                            Datafile = p.Datafile
-                        };
-
+                        tmpVarInfo.KeywordName = p.Keyword;
+                        tmpVarInfo.TypeName = p.PlotVar;
+                        tmpVarInfo.Datafile = p.Datafile;
                         AllVars.Add( tmpVarInfo );
+
+                        Sup.LogMessage( $"CeckAllVariablesInThisSetOfCharts: Keyword: {tmpVarInfo.KeywordName}; Plotvar: {tmpVarInfo.TypeName}; Datafile: {tmpVarInfo.Datafile}", TraceLevel.Verbose );
                     }
+                    else
+                        found = false;
                 }
+
+            found = false;
+
+            foreach ( ChartDef c in theseCharts )
+                foreach ( Plotvar p in c.PlotVars )
+                    if ( p.Equation is null )
+                    {
+                        if ( p.GraphType == "columnrange" )
+                        {
+                            Sup.LogMessage( $"CeckAllVariablesInThisSetOfCharts: ColumnRange var {p.Keyword}", TraceLevel.Verbose );
+                            string pvSuffix = p.PlotVar[ 3.. ];
+
+                            tmpVarInfo.Datafile = p.Datafile;
+                            tmpVarInfo.KeywordName = $"min{pvSuffix}";
+                            tmpVarInfo.TypeName = $"min{pvSuffix}";
+                            AllVars.Add( tmpVarInfo );
+                            Sup.LogMessage( $"CeckAllVariablesInThisSetOfCharts: Keyword: {tmpVarInfo.KeywordName}; Plotvar: {tmpVarInfo.TypeName}; Datafile: {tmpVarInfo.Datafile}", TraceLevel.Verbose );
+
+                            tmpVarInfo.Datafile = p.Datafile;
+                            tmpVarInfo.KeywordName = $"max{pvSuffix}";
+                            tmpVarInfo.TypeName = $"max{pvSuffix}";
+                            AllVars.Add( tmpVarInfo );
+                            Sup.LogMessage( $"CeckAllVariablesInThisSetOfCharts: Keyword: {tmpVarInfo.KeywordName}; Plotvar: {tmpVarInfo.TypeName}; Datafile: {tmpVarInfo.Datafile}", TraceLevel.Verbose );
+                        }
+                        else
+                            continue;
+                    }
+                    else
+                    {
+                        Sup.LogMessage( $"CeckAllVariablesInThisSetOfCharts: Equation var {p.Keyword}", TraceLevel.Verbose );
+                        // In case of an equation with its own var name some info needs to be set for codegen to function correctly
+                        //
+                        if ( p.PlotvarRange == PlotvarRangeType.All || p.PlotvarRange == PlotvarRangeType.Daily )
+                        {
+                            PlotvarTypes = PlotvarTypesALL;
+                            PlotvarKeyword = PlotvarKeywordALL;
+                            Datafiles = DatafilesALL;
+                        }
+                        else if ( p.PlotvarRange == PlotvarRangeType.Recent ) // rangetype is RECENT
+                        {
+                            PlotvarTypes = PlotvarTypesRECENT;
+                            PlotvarKeyword = PlotvarKeywordRECENT;
+                            Datafiles = DatafilesRECENT;
+                        }
+                        else if ( p.PlotvarRange == PlotvarRangeType.Extra ) // rangetype is EXTRA
+                        {
+                            PlotvarTypes = PlotvarTypesEXTRA;
+                            PlotvarKeyword = PlotvarKeywordEXTRA;
+                            Datafiles = DatafilesEXTRA;
+                        }
+                        else
+                        {
+                            Sup.LogMessage( $"Error PlovarRangeType for {p.Keyword}: {p.PlotvarRange}", TraceLevel.Error );
+                            return null;
+                        }
+
+                        foreach ( string pt in PlotvarTypes )
+                        {
+                            string pk = PlotvarKeyword[ Array.FindIndex( PlotvarTypes, word => word.Equals( pt, CUtils.Cmp ) ) ];
+                            string df = Datafiles[ Array.FindIndex( PlotvarTypes, word => word.Equals( pt, CUtils.Cmp ) ) ];
+
+                            if ( p.Equation.Contains( pk, CUtils.Cmp ) )
+                            {
+                                found = false;
+
+                                foreach ( AllVarInfo a in AllVars )
+                                    if ( a.KeywordName.Equals( pk, CUtils.Cmp ) )
+                                    {
+                                        tmpVarInfo = a;
+                                        found = true;
+                                        break;
+                                    }
+
+                                if ( !found )
+                                {
+                                    tmpVarInfo.KeywordName = pk;
+                                    tmpVarInfo.TypeName = pt;
+                                    tmpVarInfo.Datafile = df;
+                                    AllVars.Add( tmpVarInfo );
+                                }
+                                else
+                                    found = false;
+
+                                Sup.LogMessage( $"CeckAllVariablesInThisSetOfCharts (found: {found}): Keyword: {tmpVarInfo.KeywordName}; Plotvar: {tmpVarInfo.TypeName}; Datafile: {tmpVarInfo.Datafile}", TraceLevel.Verbose );
+
+                                p.EqAllVarList.Add( tmpVarInfo );
+                            }
+                        }
+                    }
 
             return AllVars;
         }

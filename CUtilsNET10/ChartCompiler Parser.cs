@@ -1,24 +1,6 @@
 /*
  * ChartsCompiler Parser - Part of CumulusUtils
  *
- * Structural rework. Public surface unchanged: ParseChartDefinitions() keeps
- * its signature and its "return null == fall back to default charts" contract.
- *
- * What changed, and why:
- *   - The three near-identical STATS range-selection blocks and the three
- *     near-identical PLOT range-selection blocks now go through one small
- *     SelecTotvarRange() helper. The tables selected (and the resulting
- *     PlotvarRange) are identical to before.
- *   - The duplicate-STATS lookup previously walked thisChart.PlotVars twice
- *     (once with .Where(...).Count()==1 and again with .Where(...).First());
- *     it is now a single scan (TryFindStatsSource) returning the match.
- *   - Whitespace tokenization reuses the Keywords list (Clear instead of
- *     reallocate) and short-circuits an empty file with an explicit check
- *     rather than reading past the end.
- *
- * Deliberately NOT changed: every log message and its level, the exact set of
- * accepted keywords, the EndChart/Info/Output ordering logic, the elementary
- * ColumnRange and STATS cross-checks, and the try/catch fallback behaviour.
  */
 
 using System;
@@ -27,6 +9,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace CumulusUtils
 {
@@ -47,97 +30,34 @@ namespace CumulusUtils
         readonly List<OutputDef> AllOutputs = new List<OutputDef>();
         OutputDef thisOutput = new OutputDef( "cumuluscharts.txt" );
 
-        // Selects the axis/types/keyword/datafile/unit tables for a range. The
-        // caller advances CurrPosition only when the range keyword was present
-        // (matching the original inline blocks).
-        private void SelectPlotvarRange( PlotvarRangeType range )
-        {
-            switch ( range )
-            {
-                case PlotvarRangeType.All:
-                    PlotvarAxis    = PlotvarAxisALL;
-                    PlotvarTypes   = PlotvarTypesALL;
-                    PlotvarKeyword = PlotvarKeywordALL;
-                    Datafiles      = DatafilesALL;
-                    PlotvarUnits   = PlotvarUnitsALL;
-                    break;
-
-                case PlotvarRangeType.Extra:
-                    PlotvarAxis    = PlotvarAxisEXTRA;
-                    PlotvarTypes   = PlotvarTypesEXTRA;
-                    PlotvarKeyword = PlotvarKeywordEXTRA;
-                    Datafiles      = DatafilesEXTRA;
-                    PlotvarUnits   = PlotvarUnitsEXTRA;
-                    break;
-
-                case PlotvarRangeType.Recent:
-                default:
-                    PlotvarAxis    = PlotvarAxisRECENT;
-                    PlotvarTypes   = PlotvarTypesRECENT;
-                    PlotvarKeyword = PlotvarKeywordRECENT;
-                    Datafiles      = DatafilesRECENT;
-                    PlotvarUnits   = PlotvarUnitsRECENT;
-                    break;
-            }
-        }
-
-        // Single scan for the "Stats variable already declared on this chart with an equation" case.
-        private static Plotvar TryFindStatsSource( ChartDef chart, string keyword )
-        {
-            foreach ( Plotvar p in chart.PlotVars )
-                if ( p.Keyword.Equals( keyword ) && !p.Equation.Equals( "" ) )
-                    return p;
-
-            return null;
-        }
-
         public List<OutputDef> ParseChartDefinitions()
         {
-            // Read definition file and tokenize tokens efficiently without O(N^2) string allocations
-            string defPath = $"{Sup.PathUtils}{Sup.CutilsChartsDef}";
-            if ( File.Exists( defPath ) )
+            // Make the whole file into one string with meaningful contents separated by singles space
+            if ( File.Exists( $"{Sup.PathUtils}{Sup.CutilsChartsDef}" ) )
             {
-                Keywords ??= new List<string>( capacity: 1024 );
-                Keywords.Clear();
+                string[] DefLinesArray;
+                string DefContents = "";
 
-                foreach ( string rawLine in File.ReadLines( defPath, Encoding.UTF8 ) )
-                {
-                    ReadOnlySpan<char> line = rawLine.AsSpan().Trim();
-                    if ( line.IsEmpty || line[ 0 ] == ';' )
-                        continue;
+                DefLinesArray = File.ReadAllLines( $"{Sup.PathUtils}{Sup.CutilsChartsDef}", Encoding.UTF8 );
 
-                    // Tokenize whitespace-separated words
-                    int tokenStart = -1;
-                    for ( int i = 0; i < line.Length; i++ )
-                    {
-                        if ( char.IsWhiteSpace( line[ i ] ) )
-                        {
-                            if ( tokenStart != -1 )
-                            {
-                                Keywords.Add( line.Slice( tokenStart, i - tokenStart ).ToString() );
-                                tokenStart = -1;
-                            }
-                        }
-                        else if ( tokenStart == -1 )
-                        {
-                            tokenStart = i;
-                        }
-                    }
-                    if ( tokenStart != -1 )
-                    {
-                        Keywords.Add( line.Slice( tokenStart ).ToString() );
-                    }
-                }
+                foreach ( string line in DefLinesArray )
+                    if ( string.IsNullOrEmpty( line ) || line[ 0 ] == ';' ) continue;
+                    else
+                        DefContents += line + ' ';
+
+                DefContents = Regex.Replace( DefContents, @"\s+", " " );
+
+                // The where clause takes care of (trailing) empty lines. 
+                // Have to review this I don't understand why they don't just get replaced by space.
+                char[] charSeparators = new char[] { ' ' };
+                Keywords = DefContents.Split( charSeparators ).Where( s => !string.IsNullOrWhiteSpace( s ) ).ToList();
             }
             else
                 return null;
 
-            if ( Keywords.Count == 0 )
-                return null;
-
             Sup.LogDebugMessage( $"DefineUsercharts: Parsing User charts definitions - starting" );
 
-            try  // Any error condition will fail the parsing and return null, falling back to default charts.
+            try  // Any error condition will fail the parsing and return null, falling back to default charts. Elaborate later with error messages
             {
                 if ( Keywords[ CurrPosition ].Equals( "Equations", CUtils.Cmp ) )
                 {
@@ -223,9 +143,16 @@ namespace CumulusUtils
                         {
                             CurrPosition++;
 
-                            // int.TryParse never throws; the previous catch was unreachable.
-                            _ = int.TryParse( Keywords[ CurrPosition++ ], out int tmp );
-                            thisChart.Zoom = tmp;
+                            try
+                            {
+                                _ = int.TryParse( Keywords[ CurrPosition++ ], out int tmp );
+                                thisChart.Zoom = tmp;
+                            }
+                            catch ( Exception e )
+                            {
+                                Sup.LogMessage( $"Parsing User Charts '{thisChart.Id}' Exception: {e.Message}", TraceLevel.Error );
+                                Sup.LogMessage( $"Parsing User Charts '{thisChart.Id}' : Error around Zoom value of '{thisChart.Id}'", TraceLevel.Error );
+                            }
                         } // End ZOOM
 
                         if ( Keywords[ CurrPosition ].Equals( "Has", CUtils.Cmp ) )
@@ -290,21 +217,33 @@ namespace CumulusUtils
 
                             if ( Keywords[ CurrPosition ].Equals( "Daily", CUtils.Cmp ) || Keywords[ CurrPosition ].Equals( "All", CUtils.Cmp ) )
                             {
-                                SelectPlotvarRange( PlotvarRangeType.All );
+                                PlotvarAxis = PlotvarAxisALL;
+                                PlotvarTypes = PlotvarTypesALL;
+                                PlotvarKeyword = PlotvarKeywordALL;
+                                Datafiles = DatafilesALL;
+                                PlotvarUnits = PlotvarUnitsALL;
                                 thisPlotvar.PlotvarRange = PlotvarRangeType.All;
 
                                 CurrPosition++;
                             }
                             else if ( Keywords[ CurrPosition ].Equals( "Recent", CUtils.Cmp ) )
                             {
-                                SelectPlotvarRange( PlotvarRangeType.Recent );
+                                PlotvarAxis = PlotvarAxisRECENT;
+                                PlotvarTypes = PlotvarTypesRECENT;
+                                PlotvarKeyword = PlotvarKeywordRECENT;
+                                Datafiles = DatafilesRECENT;
+                                PlotvarUnits = PlotvarUnitsRECENT;
                                 thisPlotvar.PlotvarRange = PlotvarRangeType.Recent;
 
                                 CurrPosition++;
                             }
                             else if ( Keywords[ CurrPosition ].Equals( "Extra", CUtils.Cmp ) )
                             {
-                                SelectPlotvarRange( PlotvarRangeType.Extra );
+                                PlotvarAxis = PlotvarAxisEXTRA;
+                                PlotvarTypes = PlotvarTypesEXTRA;
+                                PlotvarKeyword = PlotvarKeywordEXTRA;
+                                Datafiles = DatafilesEXTRA;
+                                PlotvarUnits = PlotvarUnitsEXTRA;
                                 thisPlotvar.PlotvarRange = PlotvarRangeType.Extra;
 
                                 CurrPosition++;
@@ -312,34 +251,44 @@ namespace CumulusUtils
                             else
                             {
                                 //No Range specification so: use default : Recent
-                                SelectPlotvarRange( PlotvarRangeType.Recent );
+                                PlotvarAxis = PlotvarAxisRECENT;
+                                PlotvarTypes = PlotvarTypesRECENT;
+                                PlotvarKeyword = PlotvarKeywordRECENT;
+                                Datafiles = DatafilesRECENT;
+                                PlotvarUnits = PlotvarUnitsRECENT;
+
                                 thisPlotvar.PlotvarRange = PlotvarRangeType.Recent;
                             }
 
-                            // HansR: how to validate a STATS variable for an equation:
+                            // HansR: how to validate and STATS variable for an equation:
                             // 1) Check if it is present in the Plotvar array if true continue immediately
                             // 2) Check if the Keyword for the STATS exists already and has an equation (not an empty string)
                             // 3) NOTE: The STATS line must come AFTER the PLOT line of the equation!!
 
-                            int index = Array.FindIndex( PlotvarKeyword, word => word.Equals( Keywords[ CurrPosition ], CUtils.Cmp ) );
-                            Plotvar statsSource = index == -1 ? TryFindStatsSource( thisChart, Keywords[ CurrPosition ] ) : null;
-
-                            if ( index != -1 || statsSource is not null )
+                            if ( Array.Exists( PlotvarKeyword, word => word.Equals( Keywords[ CurrPosition ], CUtils.Cmp ) ) ||
+                                 ( thisChart.PlotVars.Where( p => p.Keyword.Equals( Keywords[ CurrPosition ] ) && !p.Equation.Equals( "" ) ).Count() == 1 ) )
                             {
+                                // The plot var exists, create the entry for the chart and check the other attributes
+                                int index = Array.FindIndex( PlotvarKeyword, word => word.Equals( Keywords[ CurrPosition ], CUtils.Cmp ) );
+
                                 if ( index == -1 )
                                 {
                                     // Get the info on the plotvar with EVAL for which we make the STATS
-                                    thisPlotvar.Keyword = statsSource.Keyword;
-                                    thisPlotvar.PlotVar = statsSource.PlotVar;
-                                    thisPlotvar.Unit = statsSource.Unit;
-                                    thisPlotvar.Datafile = statsSource.Datafile;
-                                    thisPlotvar.AxisId = statsSource.AxisId;
-                                    thisPlotvar.Axis = statsSource.Axis;
+                                    Plotvar tmp = thisChart.PlotVars.Where( p => p.Keyword.Equals( Keywords[ CurrPosition ] ) && !p.Equation.Equals( "" ) ).FirstOrDefault();
+
+                                    thisPlotvar.Keyword = tmp.Keyword;
+                                    thisPlotvar.PlotVar = tmp.PlotVar;
+                                    thisPlotvar.Unit = tmp.Unit;
+                                    thisPlotvar.Datafile = tmp.Datafile;
+                                    thisPlotvar.AxisId = tmp.AxisId;
+                                    thisPlotvar.Axis = tmp.Axis;
                                     thisChart.Axis |= thisPlotvar.Axis;
+
                                 }
                                 else
                                 {
                                     // This is a regular plotvar from the known ones so just set the info as known
+
                                     thisPlotvar.Keyword = PlotvarKeyword[ index ];
                                     thisPlotvar.PlotVar = PlotvarTypes[ index ];
                                     thisPlotvar.Unit = PlotvarUnits[ index ];
@@ -360,6 +309,7 @@ namespace CumulusUtils
                             if ( Array.Exists( StatsTypeKeywords, word => word.Equals( Keywords[ CurrPosition ], CUtils.Cmp ) ) )
                             {
                                 // atm only SMA is valid. For more statistic functions we need to expand this section
+
                                 thisPlotvar.GraphType = Keywords[ CurrPosition ].ToLowerInvariant();
                                 CurrPosition++;
 
@@ -391,13 +341,22 @@ namespace CumulusUtils
 
                             if ( Keywords[ CurrPosition ].Equals( "Recent", CUtils.Cmp ) )
                             {
-                                SelectPlotvarRange( PlotvarRangeType.Recent );
+                                PlotvarAxis = PlotvarAxisRECENT;
+                                PlotvarTypes = PlotvarTypesRECENT;
+                                PlotvarKeyword = PlotvarKeywordRECENT;
+                                Datafiles = DatafilesRECENT;
+                                PlotvarUnits = PlotvarUnitsRECENT;
+
                                 thisPlotvar.PlotvarRange = PlotvarRangeType.Recent;
                                 CurrPosition++;
                             }
                             else if ( Keywords[ CurrPosition ].Equals( "Daily", CUtils.Cmp ) || Keywords[ CurrPosition ].Equals( "All", CUtils.Cmp ) )
                             {
-                                SelectPlotvarRange( PlotvarRangeType.All );
+                                PlotvarAxis = PlotvarAxisALL;
+                                PlotvarTypes = PlotvarTypesALL;
+                                PlotvarKeyword = PlotvarKeywordALL;
+                                Datafiles = DatafilesALL;
+                                PlotvarUnits = PlotvarUnitsALL;
 
                                 if ( Keywords[ CurrPosition ].Equals( "Daily", CUtils.Cmp ) )
                                     thisPlotvar.PlotvarRange = PlotvarRangeType.Daily;
@@ -408,23 +367,32 @@ namespace CumulusUtils
                             }
                             else if ( Keywords[ CurrPosition ].Equals( "Extra", CUtils.Cmp ) )
                             {
-                                SelectPlotvarRange( PlotvarRangeType.Extra );
+                                PlotvarAxis = PlotvarAxisEXTRA; //PlotvarAxisEXTRA;
+                                PlotvarTypes = PlotvarTypesEXTRA;
+                                PlotvarKeyword = PlotvarKeywordEXTRA;
+                                Datafiles = DatafilesEXTRA;
+                                PlotvarUnits = PlotvarUnitsEXTRA;
+
                                 thisPlotvar.PlotvarRange = PlotvarRangeType.Extra;
                                 CurrPosition++;
                             }
                             else
                             {
                                 // No Range specification so: use default : Recent
-                                SelectPlotvarRange( PlotvarRangeType.Recent );
+                                PlotvarAxis = PlotvarAxisRECENT;
+                                PlotvarTypes = PlotvarTypesRECENT;
+                                PlotvarKeyword = PlotvarKeywordRECENT;
+                                Datafiles = DatafilesRECENT;
+                                PlotvarUnits = PlotvarUnitsRECENT;
                                 thisPlotvar.PlotvarRange = PlotvarRangeType.Recent;
                             }
 
-                            // So check if the plotvar Keyword translates to a true CMX data variable
-                            int index = Array.FindIndex( PlotvarKeyword, word => word.Equals( Keywords[ CurrPosition ], CUtils.Cmp ) );
-
-                            if ( index != -1 )
+                            // So check if the plotvar Keyword translates to a true CMX data  variable
+                            if ( Array.Exists( PlotvarKeyword, word => word.Equals( Keywords[ CurrPosition ], CUtils.Cmp ) ) )
                             {
                                 // The plot var exists, create the entry for the chart and check the other attributes
+                                int index = Array.FindIndex( PlotvarKeyword, word => word.Equals( Keywords[ CurrPosition ], CUtils.Cmp ) );
+
                                 thisPlotvar.Keyword = PlotvarKeyword[ index ];
                                 thisPlotvar.PlotVar = PlotvarTypes[ index ];
                                 thisPlotvar.Unit = PlotvarUnits[ index ];
@@ -432,6 +400,7 @@ namespace CumulusUtils
                                 thisPlotvar.AxisId = $"{PlotvarAxis[ index ]}";
                                 thisPlotvar.Axis = PlotvarAxis[ index ];
                                 thisChart.Axis |= thisPlotvar.Axis;
+
                             }
                             else
                             {
@@ -598,7 +567,7 @@ namespace CumulusUtils
                                 {
                                     Sup.LogMessage( $"Parsing User Charts '{thisChart.Id}' : AXIS specification ignored in absence of (correct) EVAL equation for {thisPlotvar.Keyword}", TraceLevel.Error );
                                     Sup.LogMessage( $"Parsing User Charts '{thisChart.Id}' : Axis specification only relevant for Equations, continuing...", TraceLevel.Error );
-                                    CurrPosition++; // this one gets us on the next KeyWord
+                                    CurrPosition++; // this  one gets us on the next KeyWord
                                 }
                                 else
                                 {
@@ -725,7 +694,10 @@ namespace CumulusUtils
                                         AllOutputs.Add( thisOutput );
 
                                         AllCharts = new List<ChartDef>();
-                                        thisOutput = new OutputDef( Keywords[ CurrPosition ] );
+                                        thisOutput = new OutputDef
+                                        {
+                                            Filename = Keywords[ CurrPosition ]
+                                        };
                                     }
 
                                     CurrPosition++;  // Keyword next to the filename
